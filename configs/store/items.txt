@@ -1,0 +1,204 @@
+"Store"
+{
+	"Main Info Panel"
+	{
+		"Shop Toplists"
+		{
+			"type"							"link"
+			"command"						"sm_storetop"
+			"unique_id"						"uid_toplists_toplists"
+		}
+	}
+	
+	"Player Skins"
+	{
+		"Tofu"
+		{
+			"model" "models/player/custom_player/thas/my_model/tofu_v3/tofu.mdl"
+			"arms" "models/player/custom_player/thas/my_model/tofu_v3/tofu_arms.mdl"
+			"team" "4" // Ts = 2 , CT = 3, both = 4
+			"type" "playerskin"
+			"preview" "1" // Enable the preview for this item, only item that support preview can use this feature
+			"unique_id" "uid_model_tofu" // You must have "unique_id" 
+			"price" "0"
+		}
+		
+		"Woody"
+		{
+			"model" "models/player/custom_player/owston/woody/woody.mdl"
+			"arms" "models/weapons/ct_arms_gign.mdl"
+			"team" "4"
+			"type" "playerskin"
+			"preview" "1"
+			
+			"unique_id"			"uid_model_woody"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "900"
+					"time" "86400"
+					
+				
+				}
+				"7 days"
+				{
+					"price" "6000"
+					"time" "604800"
+					
+				}
+				"60 days"
+				{
+					"price" "24000"
+					"time" "2592000"			
+				}
+			}
+		}
+		
+		
+		"Exclusive Skins"
+		{
+			"nuclear silo"
+			{
+				"Ganyu"
+				{
+					"model" "models/player/custom_player/j1bros/genshin_impact/ganyu/ganyu_fix.mdl"
+					"arms" "models/player/custom_player/j1bros/genshin_impact/ganyu/ganyu_arms.mdl"
+					"team" "4"
+					"type" "playerskin"
+					"steam" "STEAM_1:0:161198379"
+					"preview" "1"
+					"body" "23"
+					"skin" "0"
+					"unique_id" "uid_model_genshin_ganyu"
+					"price" "0"
+				}
+			}
+		}
+	}
+		
+	"Zombie Skins"
+	{
+		"Normal Zombie"
+		{
+			"model" "models/player/custom_player/maoling/pvz/zombie/zombie.mdl"
+			"class" "PvZ_Normal"
+			"zombie" "1"
+			"type" "zrclass"
+			"preview" "1"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "400"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "1550"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "12000"
+					"time" "2592000"
+				}
+			}
+		}
+	}
+	
+	"Pets"
+	{
+		
+		"Chicken"
+		{
+			"model"						"models/chicken/chicken.mdl"
+			"position"					"50.0 0.0 0.0"
+			"angles"					"0.0 0.0 0.0"
+			"idle"						"idle01"
+			"run"						"run01"
+			"type"						"pet"
+			"preview"					"1"
+			"trade" "4"	
+			"unique_id"					"uid_pet_chicken"
+			"price" "300"
+		}
+		
+		"Tiny Haipa"
+		{
+			"model" "models/maoling/pet/misc/haipa/haipa_v2.mdl"
+			"position" "25.0 -20.0 0.0"
+			"angles" "0.0 340.0 0.0"
+			"idle" "ACT_DOTA_IDLE"
+			"idle2" "ACT_DOTA_IDLE_RARE"
+			"run" "ACT_DOTA_RUN"
+			"preview"					"1"
+			"unique_id"					"uid_pet_tiny_haipa"
+			"trade" "4"
+			"type" "pet"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "750"
+					"time" "86400"
+				}
+				"7 days"
+				{
+
+					"price" "3500"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "12000"
+					"time"	"2592000"
+				}
+			}			
+		}
+	}
+	
+	// End of chat stuff
+	"Fun & Entertainmaint"
+	{
+		"description"						"    gambling, emotes, sound & fun stuff"
+		"MyCasino"
+		{
+			"description"					"    Gamble your Credits"
+			"shortcut"						"casino"
+			"JackPot"
+			{
+				"type"						"link"
+				"command"					"sm_jackpot"
+				"unique_id"					"uid_jackpot_jackpot"
+			}
+			"Roulette"
+			{
+				"type"						"link"
+				"command"					"sm_roulette"
+				"unique_id"					"uid_roulette_roulette"
+			}
+			"Crowns"
+			{
+				"type"						"link"
+				"command"					"sm_crowns"
+				"unique_id"					"uid_crowns_crowns"
+			}
+			
+			"Blackjack"
+			{
+				"type"						"link"
+				"command"					"sm_bj"
+				"unique_id"					"uid_blackjack_blackjack"
+			}
+			
+			"Rock Paper Scissors"
+			{
+				"type"						"link"
+				"command"					"sm_ssp"
+				"unique_id"					"uid_rps_rps"
+			}
+		}
+	}
+	
+}
