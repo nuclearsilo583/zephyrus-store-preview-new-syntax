@@ -36,7 +36,7 @@
 #include <tf2_stocks>
 #include <tf2items>
 #include <gifts>
-#include <scp>
+//#include <scp>
 #include <thirdperson>
 #include <saxtonhale>
 #endif
@@ -152,7 +152,7 @@ int SilentChatTrigger = 0;
 //////////////////////////////
 
 #if !defined STANDALONE_BUILD
-#include "store/hats.sp"
+//#include "store/hats.sp"
 #include "store/tracers.sp"
 //#include "store/playerskins.sp"
 //#include "store/trails.sp"
@@ -164,7 +164,7 @@ int SilentChatTrigger = 0;
 //#include "store/betting.sp"
 //#include "store/watergun.sp"
 #include "store/gifts.sp"
-#include "store/scpsupport.sp"
+//#include "store/scpsupport.sp"
 //#include "store/weapons.sp"
 //#include "store/help.sp"
 //#include "store/jetpack.sp"
@@ -302,7 +302,7 @@ public void OnPluginStart()
 
 	// Initialize the modules	
 #if !defined STANDALONE_BUILD
-	Hats_OnPluginStart();
+	//Hats_OnPluginStart();
 	Tracers_OnPluginStart();
 	//Trails_OnPluginStart();
 	//PlayerSkins_OnPluginStart();
@@ -314,7 +314,7 @@ public void OnPluginStart()
 	//Watergun_OnPluginStart();
 	//Betting_OnPluginStart();
 	Gifts_OnPluginStart();
-	SCPSupport_OnPluginStart();
+	//SCPSupport_OnPluginStart();
 	//Weapons_OnPluginStart();
 	//Help_OnPluginStart();
 	//Jetpack_OnPluginStart();
