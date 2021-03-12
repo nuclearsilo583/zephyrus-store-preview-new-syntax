@@ -14,28 +14,28 @@ enum AdminItem
 	nImmunity
 }
 
-new g_eAdmins[STORE_MAX_ITEMS][AdminItem];
-new g_iAdmins = 0;
+int g_eAdmins[STORE_MAX_ITEMS][AdminItem];
+int g_iAdmins = 0;
 
-public AdminGroup_OnPluginStart()
+public void AdminGroup_OnPluginStart()
 {
 	Store_RegisterHandler("admin", "group", AdminGroup_OnMapStart, AdminGroup_Reset, AdminGroup_Config, AdminGroup_Equip, AdminGroup_Remove, true);
 }
 
-public AdminGroup_OnMapStart()
+public void AdminGroup_OnMapStart()
 {
 }
 
-public AdminGroup_Reset()
+public void AdminGroup_Reset()
 {
 	g_iAdmins = 0;
 }
 
-public AdminGroup_Config(&Handle:kv, itemid)
+public bool AdminGroup_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iAdmins);
 
-	new String:group[64];
+	char group[64];
 	KvGetString(kv, "flags", g_eAdmins[g_iAdmins][szFlags], 32);
 	KvGetString(kv, "group", STRING(group));
 
@@ -46,11 +46,11 @@ public AdminGroup_Config(&Handle:kv, itemid)
 	return true;
 }
 
-public AdminGroup_Equip(client, id)
+public int AdminGroup_Equip(int client,int id)
 {
-	new data = Store_GetDataIndex(id);
+	int data = Store_GetDataIndex(id);
 
-	new AdminId:Admin = GetUserAdmin(client);
+	AdminId Admin = view_as<AdminId>(GetUserAdmin(client));
 	if(Admin == INVALID_ADMIN_ID)
 	{
 		Admin = CreateAdmin();
@@ -63,15 +63,16 @@ public AdminGroup_Equip(client, id)
 	if(GetAdminImmunityLevel(Admin) < g_eAdmins[data][nImmunity])
 		SetAdminImmunityLevel(Admin,  g_eAdmins[data][nImmunity]);
 
-	new String:tmp[32];
+	char tmp[32];
 	strcopy(STRING(tmp), g_eAdmins[data][szFlags]);
-	new len = strlen(tmp);
-	new AdminFlag:flag;
-	for (new i=0; i<len; i++)
+	any len = strlen(tmp);
+	//any AdminFlag:flag;
+	any flag = ReadFlagString(g_eAdmins[data][szFlags]);
+	for (int i=0; i<len; i++)
 	{
 		if (!FindFlagByChar(tmp[i], flag))
 			continue;
-		SetAdminFlag(Admin, flag, true);
+		SetAdminFlag(Admin, view_as<AdminFlag>(flag), true);
 	}
 
 	RunAdminCacheChecks(client);
@@ -79,6 +80,6 @@ public AdminGroup_Equip(client, id)
 	return -1;
 }
 
-public AdminGroup_Remove(client, id)
+public int AdminGroup_Remove(int client,int id)
 {
 }

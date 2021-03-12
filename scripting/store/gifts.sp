@@ -7,15 +7,15 @@
 #include <zephstocks>
 #endif
 
-new g_cvarGiftsEnabled = -1;
-new g_cvarGiftsMinimum = -1;
-new g_cvarGiftsMaximum = -1;
-new g_cvarGiftsFlag = -1;
+int g_cvarGiftsEnabled = -1;
+int g_cvarGiftsMinimum = -1;
+int g_cvarGiftsMaximum = -1;
+int g_cvarGiftsFlag = -1;
 
 #if defined STANDALONE_BUILD
-public OnPluginStart()
+public void OnPluginStart()
 #else
-public Gifts_OnPluginStart()
+public void Gifts_OnPluginStart()
 #endif
 {
 #if defined STANDALONE_BUILD
@@ -39,7 +39,7 @@ public Gifts_OnPluginStart()
 	Gifts_RegisterPlugin(Gifts_OnPickUp);
 }
 
-public Action:Command_Drop(client, args)
+public Action Command_Drop(int client,int args)
 {
 	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag][aCache]))
 	{
@@ -59,17 +59,17 @@ public Action:Command_Drop(client, args)
 		return Plugin_Handled;
 	}
 
-	decl String:m_szTmp[64];
+	char m_szTmp[64];
 	GetCmdArg(1, m_szTmp, sizeof(m_szTmp));
 	
-	new m_iCredits = StringToInt(m_szTmp);
+	int m_iCredits = StringToInt(m_szTmp);
 	if(g_eClients[client][iCredits]<m_iCredits || m_iCredits<=0)
 	{
 		Chat(client, "%t", "Credit Invalid Amount");
 		return Plugin_Handled;
 	}
 
-	decl Float:pos[3];
+	float pos[3];
 	GetClientAbsOrigin(client, pos);
 	pos[2]+=20.0;
 	Gifts_SpawnGift(Gifts_OnPickUpCredit, "", -1.0, pos, m_iCredits, client);
@@ -83,30 +83,30 @@ public Action:Command_Drop(client, args)
 	return Plugin_Handled;
 }
 
-public Gifts_OnMenu(&Handle:menu, client, itemid)
+public void Gifts_OnMenu(Handle menu, int client,int itemid)
 {
 	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
 		return;
 	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag][aCache]))
 		return;
 
-	new target = Store_GetClientTarget(client);
+	int target = Store_GetClientTarget(client);
 	if(!Store_IsClientVIP(target) && !Store_IsItemInBoughtPackage(target, itemid))
 		AddMenuItemEx(menu, ITEMDRAW_DEFAULT, "drop_gift", "%t", "Drop Gift");
 }
 
-public bool:Gifts_OnHandler(client, String:info[], itemid)
+public bool Gifts_OnHandler(int client, char[] info, int itemid)
 {
 	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
 		return false;
 
 	if(strcmp(info, "drop_gift")==0)
 	{
-		new m_eItem[Store_Item];
-		new m_eHandler[Type_Handler];
+		any m_eItem[Store_Item];
+		any m_eHandler[Type_Handler];
 		Store_GetItem(itemid, m_eItem);
 		Store_GetHandler(m_eItem[iHandler], m_eHandler);
-		decl String:m_szTitle[128];
+		char m_szTitle[128];
 		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Gift_Drop", m_eItem[szName], m_eHandler[szType]);
 		Store_SetClientMenu(client, 2);
 		if(Store_ShouldConfirm())
@@ -120,53 +120,53 @@ public bool:Gifts_OnHandler(client, String:info[], itemid)
 	return false;
 }
 
-public Gifts_MenuHandler(Handle:menu, MenuAction:action, client, param2)
+public void Gifts_MenuHandler(Handle menu, MenuAction action, int client, int param2)
 {
 	if(action == MenuAction_Select)
 	{
 		if(menu == INVALID_HANDLE)
 		{
-			new target = Store_GetClientTarget(client);
-			decl Float:pos[3];
+			int target = Store_GetClientTarget(client);
+			float pos[3];
 			GetClientAbsOrigin(target, pos);
 			pos[2]+=20.0;
 
-			new output[Client_Item];
+			any output[Client_Item];
 			Store_GetClientItem(client, param2, output);
 
-			new Handle:data = CreateDataPack();
+			Handle data = CreateDataPack();
 			WritePackCell(data, param2);
 			WritePackCell(data, output[iDateOfPurchase]);
 			WritePackCell(data, output[iDateOfExpiration]);
 			WritePackCell(data, output[iPriceOfPurchase]);
 			ResetPack(data);
 
-			Gifts_SpawnGift(Gifts_OnPickUpItem, "", -1.0, pos, _:data, target);
+			Gifts_SpawnGift(Gifts_OnPickUpItem, "", -1.0, pos, view_as<int>(data), target);
 			Store_RemoveItem(target, param2);
 		}
 	}
 }
 
-public Gifts_OnPickUp(client)
+public void Gifts_OnPickUp(int client)
 {
-	new m_iCredits = GetRandomInt(g_eCvars[g_cvarGiftsMinimum][aCache], g_eCvars[g_cvarGiftsMaximum][aCache]);
+	int m_iCredits = GetRandomInt(g_eCvars[g_cvarGiftsMinimum][aCache], g_eCvars[g_cvarGiftsMaximum][aCache]);
 	Store_SetClientCredits(client, Store_GetClientCredits(client)+m_iCredits);
 	Chat(client, "%t", "Gift Credit Picked", m_iCredits);
 }
 
-public Gifts_OnPickUpItem(client, data, owner)
+public void Gifts_OnPickUpItem(int client, int data,int owner)
 {
-	new Handle:m_hData = Handle:data;
+	Handle m_hData = view_as<Handle>(data);
 
-	new itemid = ReadPackCell(m_hData);
-	new purchase = ReadPackCell(m_hData);
-	new expiration = ReadPackCell(m_hData);
-	new price = ReadPackCell(m_hData);
+	int itemid = ReadPackCell(m_hData);
+	any purchase = ReadPackCell(m_hData);
+	any expiration = ReadPackCell(m_hData);
+	int price = ReadPackCell(m_hData);
 
 	CloseHandle(m_hData);
 
-	new m_eItem[Store_Item];
-	new m_eHandler[Type_Handler];
+	any m_eItem[Store_Item];
+	any m_eHandler[Type_Handler];
 	Store_GetItem(itemid, m_eItem);
 	Store_GetHandler(m_eItem[iHandler], m_eHandler);
 
@@ -176,7 +176,7 @@ public Gifts_OnPickUpItem(client, data, owner)
 	Store_LogMessage(client, 0, "Picked up a gift containing the following item: %s", m_eItem[szName]);
 }
 
-public Gifts_OnPickUpCredit(client, data, owner)
+public void Gifts_OnPickUpCredit(int client,int data,int owner)
 {
 	Store_SetClientCredits(client, Store_GetClientCredits(client)+data);
 	Chat(client, "%t", "Gift Credit Picked", data);

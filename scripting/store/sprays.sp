@@ -6,19 +6,19 @@
 #include <zephstocks>
 #endif
 
-new String:g_szSprays[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
-new g_iSprayPrecache[STORE_MAX_ITEMS] = {-1,...};
-new g_iSprayCache[MAXPLAYERS+1] = {-1,...};
-new g_iSprayLimit[MAXPLAYERS+1] = {0,...};
-new g_iSprays = 0;
+char g_szSprays[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
+int g_iSprayPrecache[STORE_MAX_ITEMS] = {-1,...};
+int g_iSprayCache[MAXPLAYERS+1] = {-1,...};
+int g_iSprayLimit[MAXPLAYERS+1] = {0,...};
+int g_iSprays = 0;
 
-new g_cvarSprayLimit = -1;
-new g_cvarSprayDistance = -1;
+int g_cvarSprayLimit = -1;
+int g_cvarSprayDistance = -1;
 
 #if defined STANDALONE_BUILD
-public OnPluginStart()
+public void OnPluginStart()
 #else
-public Sprays_OnPluginStart()
+public void Sprays_OnPluginStart()
 #endif
 {
 	g_cvarSprayLimit = RegisterConVar("sm_store_spray_limit", "30", "Number of seconds between two sprays", TYPE_INT);
@@ -28,11 +28,11 @@ public Sprays_OnPluginStart()
 		Store_RegisterHandler("spray", "material", Sprays_OnMapStart, Sprays_Reset, Sprays_Config, Sprays_Equip, Sprays_Remove, true);
 }
 
-public Sprays_OnMapStart()
+public void Sprays_OnMapStart()
 {
-	new String:m_szDecal[PLATFORM_MAX_PATH];
+	char m_szDecal[PLATFORM_MAX_PATH];
 
-	for(new i=0;i<g_iSprays;++i)
+	for(int i=0;i<g_iSprays;++i)
 	{
 		if(FileExists(g_szSprays[i], true))
 		{
@@ -48,12 +48,12 @@ public Sprays_OnMapStart()
 	PrecacheSound("player/sprayer.wav", true);
 }
 
-public Sprays_OnClientConnected(client)
+public void Sprays_OnClientConnected(int client)
 {
 	g_iSprayCache[client]=-1;
 }
 
-public Sprays_OnPlayerRunCmd(client, buttons)
+public void Sprays_OnPlayerRunCmd(int client,any buttons)
 {
 	if(buttons & IN_USE && g_iSprayCache[client] != -1 && g_iSprayLimit[client]<=GetTime())
 	{
@@ -61,12 +61,12 @@ public Sprays_OnPlayerRunCmd(client, buttons)
 	}
 }
 
-public Sprays_Reset()
+public void Sprays_Reset()
 {
 	g_iSprays = 0;
 }
 
-public Sprays_Config(&Handle:kv, itemid)
+public bool Sprays_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iSprays);
 	KvGetString(kv, "material", g_szSprays[g_iSprays], sizeof(g_szSprays[]));
@@ -79,31 +79,31 @@ public Sprays_Config(&Handle:kv, itemid)
 	return false;
 }
 
-public Sprays_Equip(client, id)
+public int Sprays_Equip(int client,int id)
 {
-	new m_iData = Store_GetDataIndex(id);
+	int m_iData = Store_GetDataIndex(id);
 	g_iSprayCache[client]=m_iData;
 	return 0;
 }
 
-public Sprays_Remove(client)
+public int Sprays_Remove(int client)
 {
 	g_iSprayCache[client]=-1;
 	return 0;
 }
 
-public Sprays_Create(client)
+public void Sprays_Create(int client)
 {
 	if(!IsPlayerAlive(client))
 		return;
 
-	decl Float:m_flEye[3];
+	float m_flEye[3];
 	GetClientEyePosition(client, m_flEye);
 
-	decl Float:m_flView[3];
+	float m_flView[3];
 	GetPlayerEyeViewPoint(client, m_flView);
 
-	if(GetVectorDistance(m_flEye, m_flView) > Float:g_eCvars[g_cvarSprayDistance][aCache])
+	if(GetVectorDistance(m_flEye, m_flView) > view_as<float>(g_eCvars[g_cvarSprayDistance][aCache]))
 		return;
 
 	TE_Start("World Decal");
@@ -117,10 +117,10 @@ public Sprays_Create(client)
 }
 
 
-stock GetPlayerEyeViewPoint(client, Float:m_fPosition[3])
+stock void GetPlayerEyeViewPoint(int client, float m_fPosition[3])
 {
-	decl Float:m_flRotation[3];
-	decl Float:m_flPosition[3];
+	float m_flRotation[3];
+	float m_flPosition[3];
 
 	GetClientEyeAngles(client, m_flRotation);
 	GetClientEyePosition(client, m_flPosition);

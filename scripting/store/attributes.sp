@@ -7,17 +7,17 @@
 #endif
 
 #if defined STANDALONE_BUILD
-public OnPluginStart()
+public void OnPluginStart()
 #else
-public Attributes_OnPluginStart()
+public void Attributes_OnPluginStart()
 #endif
 {
 	HookEvent("player_spawn", Attributes_PlayerSpawn);
 }
 
-public Action:Attributes_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public Action Attributes_PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
@@ -25,10 +25,10 @@ public Action:Attributes_PlayerSpawn(Handle:event, const String:name[], bool:don
 	// Reset client
 	SetEntityGravity(client, 1.0);
 
-	new idx = -1;
-	new item_idx = -1;
-	new item[Store_Item];
-	decl String:m_szValue[16];
+	int idx = -1;
+	int item_idx = -1;
+	any item[Store_Item];
+	char m_szValue[16];
 	while((item_idx=Store_IterateEquippedItems(client, idx, true))!=-1)
 	{
 		Store_GetItem(item_idx, item);

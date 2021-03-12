@@ -10,27 +10,27 @@
  *
  * @return 1 if it's a VSH map, 0 otherwise.
  */
-native bool:VSH_IsSaxtonHaleModeMap();
+native bool VSH_IsSaxtonHaleModeMap();
 
 /**
  *
  * @return True if VSH is enabled, false otherwise.
  */
-native bool:VSH_IsSaxtonHaleModeEnabled();
+native bool VSH_IsSaxtonHaleModeEnabled();
 
 /**
  * Returns the userid of the current Hale.
  *
  * @return		    	Userid of current Hale/boss (-1 if invalid/doesn't exist).
  */
-native VSH_GetSaxtonHaleUserId();
+native int VSH_GetSaxtonHaleUserId();
 
 /**
  * Current team number for the boss.
  *
  * @return		    	Hale's team number (as in the TFTeam enum)
  */
-native VSH_GetSaxtonHaleTeam();
+native int VSH_GetSaxtonHaleTeam();
 
 /**
  * Current special
@@ -40,21 +40,21 @@ native VSH_GetSaxtonHaleTeam();
  *						2 - HHH
  *						4 - CBS
  */
-native VSH_GetSpecialRoundIndex();
+native int VSH_GetSpecialRoundIndex();
 
 /**
  * Hale's current health.
  *
  * @return		    	An integer representing Hale's health.
  */
-native VSH_GetSaxtonHaleHealth();
+native int VSH_GetSaxtonHaleHealth();
 
 /**
  * Hale's initial health.
  *
  * @return		    	An integer representing Hale's max/initial health.
  */
-native VSH_GetSaxtonHaleHealthMax();
+native int VSH_GetSaxtonHaleHealthMax();
 
 /**
  * Damage dealt by a client.
@@ -62,7 +62,7 @@ native VSH_GetSaxtonHaleHealthMax();
  * @param client 		Client index.
  * @return		    	Damage dealt by the client for the current round.
  */
-native VSH_GetClientDamage(client);
+native float VSH_GetClientDamage(int client);
 
 /**
  * The current round state for VSH.
@@ -72,7 +72,7 @@ native VSH_GetClientDamage(client);
  *				1 - VSH during round
  *				2 - VSH after round end
  */
-native VSH_GetRoundState();
+native int VSH_GetRoundState();
 
 /**
  * When Hale attempts to superjump/teleport.
@@ -80,7 +80,7 @@ native VSH_GetRoundState();
  * @param bSuperDuper 	Boolean for whether the jump is a superjump.
  * @return		    Change bSuperDuper and return Plugin_Changed to change it. Plugin_Stop or Plugin_Handled to stop the jump.
  */
-forward Action:VSH_OnDoJump(&bool:bSuperDuper);
+forward Action VSH_OnDoJump(bool bSuperDuper);
 
 /**
  * When Hale attemps to use rage.
@@ -88,14 +88,14 @@ forward Action:VSH_OnDoJump(&bool:bSuperDuper);
  * @param RageDist 	Distance that the boss's rage reaches.
  * @return		    Plugin_Stop or Plugin_Handled will prevent rage, change RageDist and return Plugin_Changed to change the distance.
  */
-forward Action:VSH_OnDoRage(&Float:RageDist);
+forward Action VSH_OnDoRage(float RageDist);
 
 /**
  * When Hale uses the weighdown.
  *
  * @return		    Plugin_Stop/Plugin_Handled will prevent Weighdown
  */
-forward Action:VSH_OnDoWeighdown();
+forward Action VSH_OnDoWeighdown();
 
 /**
  * Called at the start of each round, when the music begins to play (even if the round has no music).
@@ -108,9 +108,9 @@ forward Action:VSH_OnDoWeighdown();
  * @return			Plugin_Stop or Plugin_Handled to prevent the music from playing (stops the music/forward for the entire round),
  *				or change the values and return Plugin_Changed to change the music. REMEMBER TO CHANGE THE TIME AS WELL.
  */
-forward Action:VSH_OnMusic(String:sound[], &Float:time);
+forward Action VSH_OnMusic(char[] sound, float time);
 
-public SharedPlugin:__pl_SaxtonHale = 
+public SharedPlugin __pl_SaxtonHale = 
 {
 	name = "saxtonhale",
 	file = "saxtonhale.smx",
@@ -122,7 +122,7 @@ public SharedPlugin:__pl_SaxtonHale =
 };
 
 #if !defined REQUIRE_PLUGIN
-public __pl_SaxtonHale_SetNTVOptional()
+public void __pl_SaxtonHale_SetNTVOptional()
 {
 	MarkNativeAsOptional("VSH_IsSaxtonHaleModeMap");
 	MarkNativeAsOptional("VSH_IsSaxtonHaleModeEnabled");

@@ -38,7 +38,7 @@
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			Entity index of the newly created item.
  */
-native TF2Items_GiveNamedItem(iClient, Handle:hItem);
+native any TF2Items_GiveNamedItem(int iClient, Handle hItem);
 
 /**
  * Creates a TF2Items object, wich can be used to override the parameters of an
@@ -48,7 +48,7 @@ native TF2Items_GiveNamedItem(iClient, Handle:hItem);
  * @param iFlags		Flags used to specify what to override.
  * @return				Handle to the TFItems object.
  */
-native Handle:TF2Items_CreateItem(iFlags);
+native Handle TF2Items_CreateItem(int iFlags);
 
 /**
  * Sets the flags to determine what the item will override on the GiveNamedItem.
@@ -58,7 +58,7 @@ native Handle:TF2Items_CreateItem(iFlags);
  * @param iFlags		Flags used to specify what to override.
  * @noreturn
  */
-native TF2Items_SetFlags(Handle:hItem, iFlags);
+native void TF2Items_SetFlags(Handle hItem,int iFlags);
 
 /**
  * Sets the new entity classname used for the item's entity.
@@ -67,7 +67,7 @@ native TF2Items_SetFlags(Handle:hItem, iFlags);
  * @param strClassName		New classname to use for the entity.
  * @noreturn
  */
-native TF2Items_SetClassname(Handle:hItemOverride, String:strClassName[]);
+native void TF2Items_SetClassname(Handle hItemOverride, char[] strClassName);
 
 /**
  * Sets the item's Definition Index, wich tells the game what item it is. Each
@@ -78,7 +78,7 @@ native TF2Items_SetClassname(Handle:hItemOverride, String:strClassName[]);
  * @param iItemDefIndex		New definition index.
  * @noreturn
  */
-native TF2Items_SetItemIndex(Handle:hItem, iItemDefIndex);
+native void TF2Items_SetItemIndex(Handle hItem,any iItemDefIndex);
 
 /**
  * Sets the item's quality value, wich determines what color will be used for
@@ -88,7 +88,7 @@ native TF2Items_SetItemIndex(Handle:hItem, iItemDefIndex);
  * @param iEntityQuality		New item quality.
  * @noreturn
  */
-native TF2Items_SetQuality(Handle:hItem, iEntityQuality);
+native void TF2Items_SetQuality(Handle hItem,any iEntityQuality);
 
 /**
  * Sets the item's level value. This value can range from 0 to 127.
@@ -97,7 +97,7 @@ native TF2Items_SetQuality(Handle:hItem, iEntityQuality);
  * @param iEntityLevel		New item level.
  * @noreturn
  */
-native TF2Items_SetLevel(Handle:hItem, iEntityLevel);
+native void TF2Items_SetLevel(Handle hItem,any iEntityLevel);
 
 /**
  * Sets the number of attributes that will be used on the item. The maximum
@@ -107,7 +107,7 @@ native TF2Items_SetLevel(Handle:hItem, iEntityLevel);
  * @param iNumAttributes		Number of attributes.
  * @noreturn
  */
-native TF2Items_SetNumAttributes(Handle:hItem, iNumAttributes);
+native void TF2Items_SetNumAttributes(Handle hItem,any iNumAttributes);
 
 /**
  * Setups the given attribute index to use the attribute and values specified
@@ -119,7 +119,7 @@ native TF2Items_SetNumAttributes(Handle:hItem, iNumAttributes);
  * @param flValue				The value assigned to the attribute (how much health, damage, etc.).
  * @noreturn
  */
-native TF2Items_SetAttribute(Handle:hItem, iSlotIndex, iAttribDefIndex, Float:flValue);
+native any TF2Items_SetAttribute(Handle hItem,int iSlotIndex,any iAttribDefIndex, float flValue);
 
 /**
  * Retrieves the flags used to determine what the item will override on the
@@ -128,7 +128,7 @@ native TF2Items_SetAttribute(Handle:hItem, iSlotIndex, iAttribDefIndex, Float:fl
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			Returns the flags used by the item.
  */
-native TF2Items_GetFlags(Handle:hItem);
+native any TF2Items_GetFlags(Handle hItem);
 
 /**
  * Gets the entity classname we'll use for the item.
@@ -136,7 +136,7 @@ native TF2Items_GetFlags(Handle:hItem);
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			New classname to use for the entity.
  */
-native TF2Items_GetClassname(Handle:hItem, String:strDest[], iDestSize);
+native any TF2Items_GetClassname(Handle hItem, char[] strDest, any iDestSize);
 
 /**
  * Gets the new item definition index we'll use to override.
@@ -144,7 +144,7 @@ native TF2Items_GetClassname(Handle:hItem, String:strDest[], iDestSize);
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			New definition index.
  */
-native TF2Items_GetItemIndex(Handle:hItem); 
+native any TF2Items_GetItemIndex(Handle hItem); 
 
 /**
  * Gets the item's quality value, wich determines what color will be used for
@@ -154,7 +154,7 @@ native TF2Items_GetItemIndex(Handle:hItem);
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			New entity quality.
  */
-native TF2Items_GetQuality(Handle:hItem); 
+native any TF2Items_GetQuality(Handle hItem); 
 
 /**
  * Gets the item's level value. This value can range from 0 to 127.
@@ -162,7 +162,7 @@ native TF2Items_GetQuality(Handle:hItem);
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			New entity level.
  */
-native TF2Items_GetLevel(Handle:hItem);
+native any TF2Items_GetLevel(Handle hItem);
 
 /**
  * Gets the number of attributes that will be used on the item. The maximum
@@ -171,7 +171,7 @@ native TF2Items_GetLevel(Handle:hItem);
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			Number of attributes.
  */
-native TF2Items_GetNumAttributes(Handle:hItem);
+native any TF2Items_GetNumAttributes(Handle hItem);
 
 /**
  * Retrieves the attribute definition index used at the specified index on the
@@ -180,7 +180,7 @@ native TF2Items_GetNumAttributes(Handle:hItem);
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			The attribute definition index to use.
  */
-native TF2Items_GetAttributeId(Handle:hItem, iSlotIndex);
+native any TF2Items_GetAttributeId(Handle hItem,any iSlotIndex);
 
 /**
  * Retrieves the value used for the attribute at the specified index on the item
@@ -189,7 +189,7 @@ native TF2Items_GetAttributeId(Handle:hItem, iSlotIndex);
  * @param hItem		Handle to the TF2Items object that we'll be operating with.
  * @return			The attribute value to use.
  */
-native Float:TF2Items_GetAttributeValue(Handle:hItem, iSlotIndex); 
+native float TF2Items_GetAttributeValue(Handle hItem,int iSlotIndex); 
 
 // ====[ FORWARDS ]============================================================
 /**
@@ -204,14 +204,14 @@ native Float:TF2Items_GetAttributeValue(Handle:hItem, iSlotIndex);
  * @param iItemDefinitionIndex	Item definition index.
  * @param hItem					Handle to a TF2Item object wich describes what values will be overriden.
  */
-forward Action:TF2Items_OnGiveNamedItem(client, String:classname[], iItemDefinitionIndex, &Handle:hItem);
+forward Action TF2Items_OnGiveNamedItem(int client, char[] classname,any iItemDefinitionIndex, Handle &hItem);
 
-forward TF2Items_OnGiveNamedItem_Post(client, String:classname[], itemDefinitionIndex, itemLevel, itemQuality, entityIndex);
+forward void TF2Items_OnGiveNamedItem_Post(int client, char[] classname,any itemDefinitionIndex,any itemLevel,any itemQuality,any entityIndex);
 
 /**
  * Do not edit below this line!
  */
-public Extension:__ext_tf2items = 
+public Extension __ext_tf2items = 
 {
 	name = "TF2Items",
 	file = "tf2items.ext.2.ep2v",
@@ -224,7 +224,7 @@ public Extension:__ext_tf2items =
 }
 
 #if !defined REQUIRE_EXTENSIONS
-public __ext_tf2items_SetNTVOptional()
+public void __ext_tf2items_SetNTVOptional()
 {
 	MarkNativeAsOptional("TF2Items_GetAttributeValue");
 	MarkNativeAsOptional("TF2Items_GetAttributeId");

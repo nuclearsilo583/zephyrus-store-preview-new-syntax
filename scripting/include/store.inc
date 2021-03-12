@@ -3,7 +3,7 @@
 #endif
 #define _store_included
 
-new g_cvarChatTag = -1;
+int g_cvarChatTag = -1;
 #define CHAT_TAG g_eCvars[g_cvarChatTag][sCache]
 
 #define ITEM_NAME_LENGTH 64
@@ -35,7 +35,7 @@ enum Store_Item
 	bool:bBuyable,
 	bool:bIgnoreVIP,
 	bool:bPreview,
-	Handle:hAttributes
+	Handle:hAttributes,
 }
 
 enum Type_Handler
@@ -63,35 +63,35 @@ enum Client_Item
 	iPriceOfPurchase,
 }
 
-native Store_RegisterHandler(String:type[], String:uniquekey[], Function:mapstart = INVALID_FUNCTION, Function:reset = INVALID_FUNCTION, Function:config = INVALID_FUNCTION, Function:use = INVALID_FUNCTION, Function:remove = INVALID_FUNCTION, bool:equipable = true, bool:raw = false);
-native Store_RegisterMenuHandler(String:identifier[], Function:menu, Function:handler);
-native Store_SetDataIndex(itemid, index);
-native Store_GetDataIndex(itemid);
-native Store_GetEquippedItem(client, String:type[], slot=0);
-native Store_IsClientLoaded(client);
-native Store_DisplayPreviousMenu(client);
-native Store_SetClientMenu(client, num);
-native Store_GetClientCredits(client);
-native Store_SetClientCredits(client, credits);
-native Store_IsClientVIP(client);
-native Store_IsItemInBoughtPackage(client, itemid, uid=-1);
-native Store_ShouldConfirm();
-native Store_DisplayConfirmMenu(client, String:title[], Function:callback, data);
-native Store_GetItem(itemid, output[Store_Item]);
-native Store_GetHandler(index, output[Type_Handler]);
-native Store_GiveItem(client, itemid, purchase=0, expiration=0, price=0);
-native Store_RemoveItem(client, itemid);
-native Store_GetClientItem(client, itemid, output[Client_Item]);
-native Store_GetClientTarget(client);
-native Store_GiveClientItem(client, recipient, itemid);
-native Store_HasClientItem(client, itemid);
-native Store_IterateEquippedItems(client, &start, bool:attributes=false);
+native int Store_RegisterHandler(char[] type, char[] uniquekey, Function mapstart = INVALID_FUNCTION, Function reset = INVALID_FUNCTION, Function config = INVALID_FUNCTION, Function use = INVALID_FUNCTION, Function remove = INVALID_FUNCTION, bool equipable = true, bool raw = false);
+native int Store_RegisterMenuHandler(char[] identifier, Function menu, Function handler);
+native void Store_SetDataIndex(int itemid, int index);
+native int Store_GetDataIndex(int itemid);
+native int Store_GetEquippedItem(int client, char[] type, int slot=0);
+native bool Store_IsClientLoaded(int client);
+native void Store_DisplayPreviousMenu(int client);
+native void Store_SetClientMenu(int client, int num);
+native int Store_GetClientCredits(int client);
+native void Store_SetClientCredits(int client, int credits);
+native bool Store_IsClientVIP(int client);
+native bool Store_IsItemInBoughtPackage(int client, int itemid, int uid=-1);
+native bool Store_ShouldConfirm();
+native void Store_DisplayConfirmMenu(int client, char[] title, Function callback,int data);
+native void Store_GetItem(int itemid, any output[Store_Item]);
+native void Store_GetHandler(int index, any output[Type_Handler]);
+native void Store_GiveItem(int client, int itemid, int purchase=0, int expiration=0, int price=0);
+native void Store_RemoveItem(int client, int itemid);
+native bool Store_GetClientItem(int client, int itemid, any output[Client_Item]);
+native int Store_GetClientTarget(int client);
+native int Store_GiveClientItem(int client, int recipient, int itemid);
+native bool Store_HasClientItem(int client, int itemid);
+native int Store_IterateEquippedItems(int client,int &start, bool attributes=false);
 native int Store_GetItemIdbyUniqueId(char[] unique_id);
 
-forward Store_OnClientModelChanged(client, String:model[]);
+forward void Store_OnClientModelChanged(int client, char[] model);
 
 forward void Store_OnPreviewItem(int client, char[] type, int index);
-
+/*
 public Extension:__ext_store_sm =
 {
 	name = "Store - The Resurrection",
@@ -102,4 +102,4 @@ public Extension:__ext_store_sm =
 	autoload = 0,
 #endif
 	required = 0,
-};
+};*/

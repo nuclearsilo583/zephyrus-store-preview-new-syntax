@@ -7,7 +7,7 @@
 
 #include <sdkhooks>
 
-new bool:GAME_TF2 = false;
+bool GAME_TF2 = false;
 #endif
 
 enum GrenadeSkin
@@ -18,17 +18,17 @@ enum GrenadeSkin
 	iSlot_Grenade
 }
 
-new g_eGrenadeSkins[STORE_MAX_ITEMS][GrenadeSkin];
+int g_eGrenadeSkins[STORE_MAX_ITEMS][GrenadeSkin];
 
-new String:g_szSlots[16][64];
+char g_szSlots[16][64];
 
-new g_iGrenadeSkins = 0;
-new g_iSlot_Grenades = 0;
+int g_iGrenadeSkins = 0;
+int g_iSlot_Grenades = 0;
 
 #if defined STANDALONE_BUILD
-public OnPluginStart()
+public void OnPluginStart()
 #else
-public GrenadeSkins_OnPluginStart()
+public void GrenadeSkins_OnPluginStart()
 #endif
 {
 #if !defined STANDALONE_BUILD
@@ -40,7 +40,7 @@ public GrenadeSkins_OnPluginStart()
 	}
 #else
 	// TF2 is unsupported
-	new String:m_szGameDir[32];
+	char m_szGameDir[32];
 	GetGameFolderName(m_szGameDir, sizeof(m_szGameDir));
 	
 	if(strcmp(m_szGameDir, "tf")==0)
@@ -50,21 +50,21 @@ public GrenadeSkins_OnPluginStart()
 	Store_RegisterHandler("grenadeskin", "model", GrenadeSkins_OnMapStart, GrenadeSkins_Reset, GrenadeSkins_Config, GrenadeSkins_Equip, GrenadeSkins_Remove, true);
 }
 
-public GrenadeSkins_OnMapStart()
+public void GrenadeSkins_OnMapStart()
 {
-	for(new i=0;i<g_iGrenadeSkins;++i)
+	for(int i=0;i<g_iGrenadeSkins;++i)
 	{
 		PrecacheModel2(g_eGrenadeSkins[i][szModel_Grenade], true);
 		Downloader_AddFileToDownloadsTable(g_eGrenadeSkins[i][szModel_Grenade]);
 	}
 }
 
-public GrenadeSkins_Reset()
+public void GrenadeSkins_Reset()
 {
 	g_iGrenadeSkins = 0;
 }
 
-public GrenadeSkins_Config(&Handle:kv, itemid)
+public bool GrenadeSkins_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iGrenadeSkins);
 	KvGetString(kv, "model", g_eGrenadeSkins[g_iGrenadeSkins][szModel_Grenade], PLATFORM_MAX_PATH);
@@ -80,19 +80,19 @@ public GrenadeSkins_Config(&Handle:kv, itemid)
 	return true;
 }
 
-public GrenadeSkins_Equip(client, id)
+public int GrenadeSkins_Equip(int client,int id)
 {
 	return g_eGrenadeSkins[Store_GetDataIndex(id)][iSlot_Grenade];
 }
 
-public GrenadeSkins_Remove(client, id)
+public int GrenadeSkins_Remove(int client,int id)
 {
 	return g_eGrenadeSkins[Store_GetDataIndex(id)][iSlot_Grenade];
 }
 
-public GrenadeSkins_GetSlot(String:weapon[])
+public int GrenadeSkins_GetSlot(char[] weapon)
 {
-	for(new i=0;i<g_iSlot_Grenades;++i)
+	for(int i=0;i<g_iSlot_Grenades;++i)
 		if(strcmp(weapon, g_szSlots[i])==0)
 			return i;
 	
@@ -101,9 +101,9 @@ public GrenadeSkins_GetSlot(String:weapon[])
 }
 
 #if defined STANDALONE_BUILD
-public OnEntityCreated(entity, const String:classname[])
+public void OnEntityCreated(int entity, const char[] classname)
 #else
-public GrenadeSkins_OnEntityCreated(entity, const String:classname[])
+public void GrenadeSkins_OnEntityCreated(int entity, const char[] classname)
 #endif
 {
 	if(g_iGrenadeSkins == 0)
@@ -112,23 +112,23 @@ public GrenadeSkins_OnEntityCreated(entity, const String:classname[])
 		SDKHook(entity, SDKHook_SpawnPost, GrenadeSkins_OnEntitySpawnedPost);		
 }
 
-public GrenadeSkins_OnEntitySpawnedPost(entity)
+public void GrenadeSkins_OnEntitySpawnedPost(int entity)
 {
-	new client = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+	int client = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 	
 	if(!(0<client<=MaxClients))
 		return;
 	
-	decl String:m_szClassname[64];
+	char m_szClassname[64];
 	GetEdictClassname(entity, m_szClassname, sizeof(m_szClassname));
 	
-	decl m_iSlot_Grenade;
+	any m_iSlot_Grenade;
 	
 	if(GAME_TF2)
 		m_iSlot_Grenade = GrenadeSkins_GetSlot(m_szClassname[14]);
 	else
 	{
-		for(new i=0;i<strlen(m_szClassname);++i)
+		for(int i=0;i<strlen(m_szClassname);++i)
 			if(m_szClassname[i]=='_')
 			{
 				m_szClassname[i]=0;
@@ -137,11 +137,11 @@ public GrenadeSkins_OnEntitySpawnedPost(entity)
 		m_iSlot_Grenade = GrenadeSkins_GetSlot(m_szClassname);
 	}	
 	
-	new m_iEquipped = Store_GetEquippedItem(client, "grenadeskin", m_iSlot_Grenade);
+	int m_iEquipped = Store_GetEquippedItem(client, "grenadeskin", m_iSlot_Grenade);
 	
 	if(m_iEquipped < 0)
 		return;
 		
-	new m_iData = Store_GetDataIndex(m_iEquipped);
+	int m_iData = Store_GetDataIndex(m_iEquipped);
 	SetEntityModel(entity, g_eGrenadeSkins[m_iData][szModel_Grenade]);
 }

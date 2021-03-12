@@ -4,10 +4,10 @@
 #define _thirdperson_included_
  
 
-native bool:IsPlayerInTP(client);
-native TogglePlayerTP(client);
+native bool IsPlayerInTP(int client);
+native any TogglePlayerTP(int client);
 
-public SharedPlugin:__pl_thirdperson = {
+public SharedPlugin __pl_thirdperson = {
 
 	name = "thirdperson",
 	file = "thirdperson.smx",
@@ -19,7 +19,7 @@ public SharedPlugin:__pl_thirdperson = {
 };
 
 #if !defined REQUIRE_PLUGIN
-public __pl_thirdperson_SetNTVOptional() {
+public void __pl_thirdperson_SetNTVOptional() {
 
 	MarkNativeAsOptional("IsPlayerInTP");
 	MarkNativeAsOptional("TogglePlayerTP");

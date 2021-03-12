@@ -3,7 +3,7 @@
 #endif
 #define _donate_Included_
 
-public SharedPlugin:__pl_donate =
+public SharedPlugin __pl_donate =
 {
 		name = "donate",
 		file = "donate.smx",
@@ -14,10 +14,10 @@ public SharedPlugin:__pl_donate =
 #endif
 };
 
-native Donate_RegisterHandler(String:name[], Function:callback);
-native Donate_RemoveHandler(String:name[]);
+native any Donate_RegisterHandler(char[] name, Function callback);
+native any Donate_RemoveHandler(char[] name);
 
-public __pl_donate_SetNTVOptional()
+public void __pl_donate_SetNTVOptional()
 {
 	MarkNativeAsOptional("Donate_RegisterHandler");
 	MarkNativeAsOptional("Donate_RemoveHandler");

@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 //////////////////////////////
 //		DEFINITIONS			//
@@ -20,7 +21,7 @@
 #include <sdktools>
 #include <colors>
 //#include <smartdm>
-//#include <csgocolors_fix>
+#include <csgocolors_fix>
 
 #undef REQUIRE_EXTENSIONS
 #undef REQUIRE_PLUGIN
@@ -74,76 +75,77 @@ enum Menu_Handler
 //		GLOBAL VARIABLES		//
 //////////////////////////////////
 
-new GAME_CSS = false;
-new GAME_CSGO = false;
-new GAME_DOD = false;
-new GAME_TF2 = false;
-new GAME_L4D = false;
-new GAME_L4D2 = false;
+bool GAME_CSS = false;
+bool GAME_CSGO = false;
+bool GAME_DOD = false;
+bool GAME_TF2 = false;
+bool GAME_L4D = false;
+bool GAME_L4D2 = false;
 
-new String:g_szGameDir[64];
+char g_szGameDir[64];
 
-new Handle:g_hDatabase = INVALID_HANDLE;
-new Handle:g_hAdminMenu = INVALID_HANDLE;
-new Handle:g_hLogFile = INVALID_HANDLE;
-new Handle:g_hCustomCredits = INVALID_HANDLE;
+Handle g_hDatabase = INVALID_HANDLE;
+Handle g_hAdminMenu = INVALID_HANDLE;
+Handle g_hLogFile = INVALID_HANDLE;
+Handle g_hCustomCredits = INVALID_HANDLE;
 
-new g_cvarDatabaseEntry = -1;
-new g_cvarDatabaseRetries = -1;
-new g_cvarDatabaseTimeout = -1;
-new g_cvarItemSource = -1;
-new g_cvarItemsTable = -1;
-new g_cvarStartCredits = -1;
-new g_cvarCreditTimer = -1;
-new g_cvarCreditAmountActive = -1;
-new g_cvarCreditAmountInactive = -1;
-new g_cvarCreditAmountKill = -1;
-new g_cvarRequiredFlag = -1;
-new g_cvarVIPFlag = -1;
-new g_cvarSellEnabled = -1;
-new g_cvarGiftEnabled = -1;
-new g_cvarCreditGiftEnabled = -1;
-new g_cvarSellRatio = -1;
-new g_cvarConfirmation = -1;
-new g_cvarAdminFlag = -1;
-new g_cvarSaveOnDeath = -1;
-new g_cvarCreditMessages = -1;
-new g_cvarShowVIP = -1;
-new g_cvarLogging = -1;
-new g_cvarSilent = -1;
-new g_cvarCredits = -1;
+int g_cvarDatabaseEntry = -1;
+int g_cvarDatabaseRetries = -1;
+int g_cvarDatabaseTimeout = -1;
+int g_cvarItemSource = -1;
+int g_cvarItemsTable = -1;
+int g_cvarStartCredits = -1;
+int g_cvarCreditTimer = -1;
+int g_cvarCreditAmountActive = -1;
+int g_cvarCreditAmountInactive = -1;
+int g_cvarCreditAmountKill = -1;
+int g_cvarRequiredFlag = -1;
+int g_cvarVIPFlag = -1;
+int g_cvarSellEnabled = -1;
+int g_cvarGiftEnabled = -1;
+int g_cvarCreditGiftEnabled = -1;
+int g_cvarSellRatio = -1;
+int g_cvarConfirmation = -1;
+int g_cvarAdminFlag = -1;
+int g_cvarSaveOnDeath = -1;
+int g_cvarCreditMessages = -1;
+int g_cvarShowVIP = -1;
+int g_cvarLogging = -1;
+int g_cvarSilent = -1;
+int g_cvarCredits = -1;
 
-new g_eItems[STORE_MAX_ITEMS][Store_Item];
-new g_eClients[MAXPLAYERS+1][Client];
-new g_eClientItems[MAXPLAYERS+1][STORE_MAX_ITEMS][Client_Item];
-new g_eTypeHandlers[STORE_MAX_HANDLERS][Type_Handler];
-new g_eMenuHandlers[STORE_MAX_HANDLERS][Menu_Handler];
-new g_ePlans[STORE_MAX_ITEMS][STORE_MAX_PLANS][Item_Plan];
+any g_eItems[STORE_MAX_ITEMS][Store_Item];
+any g_eClients[MAXPLAYERS+1][Client];
+any g_eClientItems[MAXPLAYERS+1][STORE_MAX_ITEMS][Client_Item];
+any g_eTypeHandlers[STORE_MAX_HANDLERS][Type_Handler];
+any g_eMenuHandlers[STORE_MAX_HANDLERS][Menu_Handler];
+any g_ePlans[STORE_MAX_ITEMS][STORE_MAX_PLANS][Item_Plan];
 
 Handle gf_hPreviewItem;
 
-new g_iItems = 0;
-new g_iTypeHandlers = 0;
-new g_iMenuHandlers = 0;
-new g_iMenuBack[MAXPLAYERS+1];
-new g_iLastSelection[MAXPLAYERS+1];
-new g_iSelectedItem[MAXPLAYERS+1];
-new g_iSelectedPlan[MAXPLAYERS+1];
-new g_iMenuClient[MAXPLAYERS+1];
-new g_iMenuNum[MAXPLAYERS+1];
-new g_iSpam[MAXPLAYERS+1];
-new g_iPackageHandler = -1;
-new g_iDatabaseRetries = 0;
+int g_iItems = 0;
+int g_iTypeHandlers = 0;
+int g_iMenuHandlers = 0;
+int g_iMenuBack[MAXPLAYERS+1];
+int g_iLastSelection[MAXPLAYERS+1];
+int g_iSelectedItem[MAXPLAYERS+1];
+int g_iSelectedPlan[MAXPLAYERS+1];
+int g_iMenuClient[MAXPLAYERS+1];
+int g_iMenuNum[MAXPLAYERS+1];
+int g_iSpam[MAXPLAYERS+1];
+int g_iPackageHandler = -1;
+int g_iDatabaseRetries = 0;
 
-new bool:g_bInvMode[MAXPLAYERS+1];
-new bool:g_bMySQL = false;
+bool g_bInvMode[MAXPLAYERS+1];
+bool g_bMySQL = false;
 
-new String:g_szClientData[MAXPLAYERS+1][256];
+char g_szClientData[MAXPLAYERS+1][256];
 
-new TopMenuObject:g_eStoreAdmin;
+//new TopMenuObject:g_eStoreAdmin;
+any g_eStoreAdmin;
 
-new PublicChatTrigger = 0;
-new SilentChatTrigger = 0;
+int PublicChatTrigger = 0;
+int SilentChatTrigger = 0;
 
 //////////////////////////////
 //			MODULES			//
@@ -159,14 +161,14 @@ new SilentChatTrigger = 0;
 //#include "store/weaponcolors.sp"
 //#include "store/tfsupport.sp"
 #include "store/paintball.sp"
-#include "store/betting.sp"
+//#include "store/betting.sp"
 //#include "store/watergun.sp"
 #include "store/gifts.sp"
 #include "store/scpsupport.sp"
 //#include "store/weapons.sp"
-#include "store/help.sp"
+//#include "store/help.sp"
 //#include "store/jetpack.sp"
-#include "store/bunnyhop.sp"
+//#include "store/bunnyhop.sp"
 //#include "store/lasersight.sp"
 //#include "store/health.sp"
 //#include "store/speed.sp"
@@ -178,7 +180,7 @@ new SilentChatTrigger = 0;
 //#include "store/zrclass.sp"
 //#include "store/jihad.sp"
 //#include "store/godmode.sp"
-#include "store/sounds.sp"
+//#include "store/sounds.sp"
 #include "store/attributes.sp"
 //#include "store/respawn.sp"
 //#include "store/pets.sp"
@@ -191,7 +193,7 @@ new SilentChatTrigger = 0;
 //		PLUGIN DEFINITION		//
 //////////////////////////////////
 
-public Plugin:myinfo = 
+public Plugin myinfo = 
 {
 	name = PLUGIN_NAME,
 	author = PLUGIN_AUTHOR,
@@ -204,14 +206,14 @@ public Plugin:myinfo =
 //		PLUGIN FORWARDS		//
 //////////////////////////////
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	RegPluginLibrary("store_zephyrus");
 
 	if(strcmp(SERVER_LOCK_IP, "") != 0)
 	{
-		new String:m_szIP[64];
-		new m_unIP = GetConVarInt(FindConVar("hostip"));
+		char m_szIP[64];
+		any m_unIP = GetConVarInt(FindConVar("hostip"));
 		Format(STRING(m_szIP), "%d.%d.%d.%d:%d", (m_unIP >> 24) & 0x000000FF, (m_unIP >> 16) & 0x000000FF, (m_unIP >> 8) & 0x000000FF, m_unIP & 0x000000FF, GetConVarInt(FindConVar("hostport")));
 
 		if(strcmp(SERVER_LOCK_IP, m_szIP)!=0)
@@ -242,7 +244,7 @@ public OnPluginStart()
 	if(GAME_DOD || GAME_L4D || GAME_L4D2 || g_bL4D || g_bL4D2 || g_bND) {}
 
 	// Setting default values
-	for(new i=1;i<=MaxClients;++i)
+	for(int i=1;i<=MaxClients;++i)
 	{
 		g_eClients[i][iCredits] = -1;
 		g_eClients[i][iOriginalCredits] = 0;
@@ -310,11 +312,11 @@ public OnPluginStart()
 	//TFSupport_OnPluginStart();
 	Paintball_OnPluginStart();
 	//Watergun_OnPluginStart();
-	Betting_OnPluginStart();
+	//Betting_OnPluginStart();
 	Gifts_OnPluginStart();
 	SCPSupport_OnPluginStart();
 	//Weapons_OnPluginStart();
-	Help_OnPluginStart();
+	//Help_OnPluginStart();
 	//Jetpack_OnPluginStart();
 	//Bunnyhop_OnPluginStart();
 	//LaserSight_OnPluginStart();
@@ -328,7 +330,7 @@ public OnPluginStart()
 	//Jihad_OnPluginStart();
 	//Knives_OnPluginStart();
 	//Godmode_OnPluginStart();
-	Sounds_OnPluginStart();
+	//Sounds_OnPluginStart();
 	Attributes_OnPluginStart();
 	//Respawn_OnPluginStart();
 	//Pets_OnPluginStart();
@@ -337,7 +339,7 @@ public OnPluginStart()
 	AdminGroup_OnPluginStart();
 #endif
 
-	new Handle:topmenu;
+	Handle topmenu;
 	if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != INVALID_HANDLE))
 		OnAdminMenuReady(topmenu);
 
@@ -365,7 +367,7 @@ public OnPluginStart()
 
 }
 
-public OnAllPluginsLoaded()
+public void OnAllPluginsLoaded()
 {
 	CreateTimer(1.0, LoadConfig);
 
@@ -373,13 +375,13 @@ public OnAllPluginsLoaded()
 		Donate_RegisterHandler("Store", Store_OnPaymentReceived);
 }
 
-public Action:LoadConfig(Handle:timer, any:data)
+public Action LoadConfig(Handle timer, any data)
 {
 	// Load the config file
 	Store_ReloadConfig();
 }
 
-public OnPluginEnd()
+public void OnPluginEnd()
 {
 	LoopIngamePlayers(i)
 		if(g_eClients[i][bLoaded])
@@ -389,7 +391,7 @@ public OnPluginEnd()
 		Donate_RemoveHandler("Store");
 }
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 {
 	CreateNative("Store_RegisterHandler", Native_RegisterHandler);
 	CreateNative("Store_RegisterMenuHandler", Native_RegisterMenuHandler);
@@ -429,7 +431,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 } 
 
 #if !defined STANDALONE_BUILD
-public OnLibraryAdded(const String:name[])
+public void OnLibraryAdded(const char[] name)
 {
 	//PlayerSkins_OnLibraryAdded(name);
 	//ZRClass_OnLibraryAdded(name);
@@ -440,7 +442,7 @@ public OnLibraryAdded(const String:name[])
 //		 ADMIN MENUS		//
 //////////////////////////////
 
-public OnAdminMenuReady(Handle:topmenu)
+public void OnAdminMenuReady(Handle topmenu)
 {
 	if (topmenu == g_hAdminMenu)
 		return;
@@ -453,7 +455,7 @@ public OnAdminMenuReady(Handle:topmenu)
 	AddToTopMenu(g_hAdminMenu, "sm_store_viewinventory", TopMenuObject_Item, AdminMenu_ViewInventory, g_eStoreAdmin, "sm_store_viewinventory", g_eCvars[g_cvarAdminFlag][aCache]);
 }
 
-public CategoryHandler_StoreAdmin(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, param, String:buffer[], maxlength)
+public void CategoryHandler_StoreAdmin(Handle topmenu, TopMenuAction action, TopMenuObject object_id,int param, char[] buffer,int maxlength)
 {
 	if (action == TopMenuAction_DisplayTitle || action == TopMenuAction_DisplayOption)
 		Format(buffer, maxlength, "Store Admin");
@@ -463,7 +465,7 @@ public CategoryHandler_StoreAdmin(Handle:topmenu, TopMenuAction:action, TopMenuO
 //		Reset database		//
 //////////////////////////////
 
-public AdminMenu_ResetDb(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, client, String:buffer[], maxlength)
+public void AdminMenu_ResetDb(Handle topmenu, TopMenuAction action, TopMenuObject object_id,int client, char[] buffer,int maxlength)
 {
 	if (action == TopMenuAction_DisplayOption)
 	{
@@ -476,7 +478,7 @@ public AdminMenu_ResetDb(Handle:topmenu, TopMenuAction:action, TopMenuObject:obj
 	}
 }
 
-public FakeMenuHandler_ResetDatabase(Handle:menu, MenuAction:action, client, param2)
+public void FakeMenuHandler_ResetDatabase(Handle menu, MenuAction action, int client,int param2)
 {
 	SQL_TVoid(g_hDatabase, "DROP TABLE store_players");
 	SQL_TVoid(g_hDatabase, "DROP TABLE store_items");
@@ -488,7 +490,7 @@ public FakeMenuHandler_ResetDatabase(Handle:menu, MenuAction:action, client, par
 //		Reset player		//
 //////////////////////////////
 
-public AdminMenu_ResetPlayer(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, client, String:buffer[], maxlength)
+public void AdminMenu_ResetPlayer(Handle topmenu, TopMenuAction action, TopMenuObject object_id,int client, char[] buffer,int maxlength)
 {
 	if (action == TopMenuAction_DisplayOption)
 	{
@@ -497,13 +499,13 @@ public AdminMenu_ResetPlayer(Handle:topmenu, TopMenuAction:action, TopMenuObject
 	else if (action == TopMenuAction_SelectOption)
 	{
 		g_iMenuNum[client] = 4;
-		new Handle:m_hMenu = CreateMenu(MenuHandler_ResetPlayer);
+		Handle m_hMenu = CreateMenu(MenuHandler_ResetPlayer);
 		SetMenuTitle(m_hMenu, "Choose a player to reset");
 		SetMenuExitBackButton(m_hMenu, true);
 		LoopAuthorizedPlayers(i)
 		{
-			decl String:m_szName[64];
-			decl String:m_szAuthId[32];
+			char m_szName[64];
+			char m_szAuthId[32];
 			GetClientName(i, STRING(m_szName));
 			GetLegacyAuthString(i, STRING(m_szAuthId));
 			AddMenuItem(m_hMenu, m_szAuthId, m_szName);
@@ -512,7 +514,7 @@ public AdminMenu_ResetPlayer(Handle:topmenu, TopMenuAction:action, TopMenuObject
 	}
 }
 
-public MenuHandler_ResetPlayer(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_ResetPlayer(Handle menu, MenuAction action,int client,int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
@@ -522,11 +524,11 @@ public MenuHandler_ResetPlayer(Handle:menu, MenuAction:action, client, param2)
 			FakeClientCommandEx(client, "sm_resetplayer \"%s\"", g_szClientData[client]);
 		else
 		{
-			decl style;
-			decl String:m_szName[64];
+			any style;
+			char m_szName[64];
 			GetMenuItem(menu, param2, g_szClientData[client], sizeof(g_szClientData[]), style, STRING(m_szName));
 
-			decl String:m_szTitle[256];
+			char m_szTitle[256];
 			Format(STRING(m_szTitle), "Do you want to reset %s?", m_szName);
 			Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_ResetPlayer, 0);
 		}
@@ -539,7 +541,7 @@ public MenuHandler_ResetPlayer(Handle:menu, MenuAction:action, client, param2)
 //		Give credits		//
 //////////////////////////////
 
-public AdminMenu_GiveCredits(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, client, String:buffer[], maxlength)
+public void AdminMenu_GiveCredits(Handle topmenu, TopMenuAction action, TopMenuObject object_id,int client, char[] buffer,int maxlength)
 {
 	if (action == TopMenuAction_DisplayOption)
 	{
@@ -548,13 +550,13 @@ public AdminMenu_GiveCredits(Handle:topmenu, TopMenuAction:action, TopMenuObject
 	else if (action == TopMenuAction_SelectOption)
 	{
 		g_iMenuNum[client] = 5;
-		new Handle:m_hMenu = CreateMenu(MenuHandler_GiveCredits);
+		Handle m_hMenu = CreateMenu(MenuHandler_GiveCredits);
 		SetMenuTitle(m_hMenu, "Choose a player to give credits to");
 		SetMenuExitBackButton(m_hMenu, true);
 		LoopAuthorizedPlayers(i)
 		{
-			decl String:m_szName[64];
-			decl String:m_szAuthId[32];
+			char m_szName[64];
+			char m_szAuthId[32];
 			GetClientName(i, STRING(m_szName));
 			GetLegacyAuthString(i, STRING(m_szAuthId));
 			AddMenuItem(m_hMenu, m_szAuthId, m_szName);
@@ -563,7 +565,7 @@ public AdminMenu_GiveCredits(Handle:topmenu, TopMenuAction:action, TopMenuObject
 	}
 }
 
-public MenuHandler_GiveCredits(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_GiveCredits(Handle menu, MenuAction action,int client,int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
@@ -571,9 +573,9 @@ public MenuHandler_GiveCredits(Handle:menu, MenuAction:action, client, param2)
 	{
 		if(param2 != -1)
 			GetMenuItem(menu, param2, g_szClientData[client], sizeof(g_szClientData[]));
-		new Handle:m_hMenu = CreateMenu(MenuHandler_GiveCredits2);
+		Handle m_hMenu = CreateMenu(MenuHandler_GiveCredits2);
 
-		new target = GetClientBySteamID(g_szClientData[client]);
+		int target = GetClientBySteamID(g_szClientData[client]);
 		if(target == 0)
 		{
 			AdminMenu_GiveCredits(g_hAdminMenu, TopMenuAction_SelectOption, g_eStoreAdmin, client, "", 0);
@@ -594,13 +596,13 @@ public MenuHandler_GiveCredits(Handle:menu, MenuAction:action, client, param2)
 		RedisplayAdminMenu(g_hAdminMenu, client);
 }
 
-public MenuHandler_GiveCredits2(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_GiveCredits2(Handle menu, MenuAction action,int client,int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
 	else if (action == MenuAction_Select)
 	{
-		decl String:m_szData[11];
+		char m_szData[11];
 		GetMenuItem(menu, param2, STRING(m_szData));
 		FakeClientCommand(client, "sm_givecredits \"%s\" %s", g_szClientData[client], m_szData);
 		MenuHandler_GiveCredits(INVALID_HANDLE, MenuAction_Select, client, -1);
@@ -613,7 +615,7 @@ public MenuHandler_GiveCredits2(Handle:menu, MenuAction:action, client, param2)
 //		View inventory		//
 //////////////////////////////
 
-public AdminMenu_ViewInventory(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, client, String:buffer[], maxlength)
+public void AdminMenu_ViewInventory(Handle topmenu, TopMenuAction action, TopMenuObject object_id,int client, char[] buffer,int maxlength)
 {
 	if (action == TopMenuAction_DisplayOption)
 	{
@@ -622,13 +624,13 @@ public AdminMenu_ViewInventory(Handle:topmenu, TopMenuAction:action, TopMenuObje
 	else if (action == TopMenuAction_SelectOption)
 	{
 		g_iMenuNum[client] = 4;
-		new Handle:m_hMenu = CreateMenu(MenuHandler_ViewInventory);
+		Handle m_hMenu = CreateMenu(MenuHandler_ViewInventory);
 		SetMenuTitle(m_hMenu, "Choose a player");
 		SetMenuExitBackButton(m_hMenu, true);
 		LoopAuthorizedPlayers(i)
 		{
-			decl String:m_szName[64];
-			decl String:m_szAuthId[32];
+			char m_szName[64];
+			char m_szAuthId[32];
 			GetClientName(i, STRING(m_szName));
 			GetLegacyAuthString(i, STRING(m_szAuthId));
 			AddMenuItem(m_hMenu, m_szAuthId, m_szName);
@@ -637,14 +639,14 @@ public AdminMenu_ViewInventory(Handle:topmenu, TopMenuAction:action, TopMenuObje
 	}
 }
 
-public MenuHandler_ViewInventory(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_ViewInventory(Handle menu, MenuAction action,int client,int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
 	else if (action == MenuAction_Select)
 	{
 		GetMenuItem(menu, param2, g_szClientData[client], sizeof(g_szClientData[]));
-		new target = GetClientBySteamID(g_szClientData[client]);
+		int target = GetClientBySteamID(g_szClientData[client]);
 		if(target == 0)
 		{
 			AdminMenu_ViewInventory(g_hAdminMenu, TopMenuAction_SelectOption, g_eStoreAdmin, client, "", 0);
@@ -663,9 +665,9 @@ public MenuHandler_ViewInventory(Handle:menu, MenuAction:action, client, param2)
 //		REST OF PLUGIN FORWARDS		//
 //////////////////////////////////////
 
-public OnMapStart()
+public void OnMapStart()
 {
-	for(new i=0;i<g_iTypeHandlers;++i)
+	for(int i=0;i<g_iTypeHandlers;++i)
 	{
 		if(g_eTypeHandlers[i][fnMapStart] != INVALID_FUNCTION)
 		{
@@ -675,7 +677,7 @@ public OnMapStart()
 	}
 }
 
-public OnConfigsExecuted()
+public void OnConfigsExecuted()
 {
 	//Jetpack_OnConfigsExecuted();
 	//Jihad_OnConfigsExecuted();
@@ -684,19 +686,19 @@ public OnConfigsExecuted()
 	if(g_hDatabase == INVALID_HANDLE)
 		SQL_TConnect(SQLCallback_Connect, g_eCvars[g_cvarDatabaseEntry][sCache]);
 	if(g_eCvars[g_cvarDatabaseRetries][aCache] > 0)
-		CreateTimer(Float:g_eCvars[g_cvarDatabaseTimeout][aCache], Timer_DatabaseTimeout);
+		CreateTimer(view_as<float>(g_eCvars[g_cvarDatabaseTimeout][aCache]), Timer_DatabaseTimeout);
 
 	if(g_eCvars[g_cvarLogging][aCache] == 1)
 		if(g_hLogFile == INVALID_HANDLE)
 		{
-			new String:m_szPath[PLATFORM_MAX_PATH];
+			char m_szPath[PLATFORM_MAX_PATH];
 			BuildPath(Path_SM, STRING(m_szPath), "logs/store.log.txt");
 			g_hLogFile = OpenFile(m_szPath, "w+");
 		}
 }
 
 #if !defined STANDALONE_BUILD
-public OnGameFrame()
+public void OnGameFrame()
 {
 	//Trails_OnGameFrame();
 	//TFWeapon_OnGameFrame();
@@ -705,7 +707,7 @@ public OnGameFrame()
 #endif
 
 #if !defined STANDALONE_BUILD
-public OnEntityCreated(entity, const String:classname[])
+public void OnEntityCreated(int entity, const char[] classname)
 {
 	GrenadeSkins_OnEntityCreated(entity, classname);
 	//GrenadeTrails_OnEntityCreated(entity, classname);
@@ -716,15 +718,15 @@ public OnEntityCreated(entity, const String:classname[])
 //			NATIVES			//
 //////////////////////////////
 
-public Native_RegisterHandler(Handle:plugin, numParams)
+public int Native_RegisterHandler(Handle plugin,int numParams)
 {
 	if(g_iTypeHandlers == STORE_MAX_HANDLERS)
 		return -1;
 		
-	decl String:m_szType[32];
+	char m_szType[32];
 	GetNativeString(1, STRING(m_szType));
-	new m_iHandler = Store_GetTypeHandler(m_szType);	
-	new m_iId = g_iTypeHandlers;
+	int m_iHandler = Store_GetTypeHandler(m_szType);	
+	int m_iId = g_iTypeHandlers;
 	
 	if(m_iHandler != -1)
 		m_iId = m_iHandler;
@@ -745,15 +747,15 @@ public Native_RegisterHandler(Handle:plugin, numParams)
 	return m_iId;
 }
 
-public Native_RegisterMenuHandler(Handle:plugin, numParams)
+public int Native_RegisterMenuHandler(Handle plugin,int numParams)
 {
 	if(g_iMenuHandlers == STORE_MAX_HANDLERS)
 		return -1;
 		
-	decl String:m_szIdentifier[64];
+	char m_szIdentifier[64];
 	GetNativeString(1, STRING(m_szIdentifier));
-	new m_iHandler = Store_GetMenuHandler(m_szIdentifier);	
-	new m_iId = g_iMenuHandlers;
+	int m_iHandler = Store_GetMenuHandler(m_szIdentifier);	
+	int m_iId = g_iMenuHandlers;
 	
 	if(m_iHandler != -1)
 		m_iId = m_iHandler;
@@ -768,36 +770,36 @@ public Native_RegisterMenuHandler(Handle:plugin, numParams)
 	return m_iId;
 }
 
-public Native_SetDataIndex(Handle:plugin, numParams)
+public any Native_SetDataIndex(Handle plugin,int numParams)
 {
 	g_eItems[GetNativeCell(1)][iData] = GetNativeCell(2);
 }
 
-public Native_GetDataIndex(Handle:plugin, numParams)
+public any Native_GetDataIndex(Handle plugin,int numParams)
 {
 	return g_eItems[GetNativeCell(1)][iData];
 }
 
-public Native_GetEquippedItem(Handle:plugin, numParams)
+public any Native_GetEquippedItem(Handle plugin,int numParams)
 {
-	decl String:m_szType[16];
+	char m_szType[16];
 	GetNativeString(2, STRING(m_szType));
 	
-	new m_iHandler = Store_GetTypeHandler(m_szType);
+	int m_iHandler = Store_GetTypeHandler(m_szType);
 	if(m_iHandler == -1)
 		return -1;
 	
 	return Store_GetEquippedItemFromHandler(GetNativeCell(1), m_iHandler, GetNativeCell(3));
 }
 
-public Native_IsClientLoaded(Handle:plugin, numParams)
+public any Native_IsClientLoaded(Handle plugin,int numParams)
 {
 	return g_eClients[GetNativeCell(1)][bLoaded];
 }
 
-public Native_DisplayPreviousMenu(Handle:plugin, numParams)
+public any Native_DisplayPreviousMenu(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
+	int client = GetNativeCell(1);
 	if(g_iMenuNum[client] == 1)
 		DisplayStoreMenu(client, g_iMenuBack[client], g_iLastSelection[client]);
 	else if(g_iMenuNum[client] == 2)
@@ -812,37 +814,37 @@ public Native_DisplayPreviousMenu(Handle:plugin, numParams)
 		RedisplayAdminMenu(g_hAdminMenu, client);
 }
 
-public Native_SetClientMenu(Handle:plugin, numParams)
+public any Native_SetClientMenu(Handle plugin,int numParams)
 {
 	g_iMenuNum[GetNativeCell(1)] = GetNativeCell(2);
 }
 
-public Native_GetClientCredits(Handle:plugin, numParams)
+public any Native_GetClientCredits(Handle plugin,int numParams)
 {
 	return g_eClients[GetNativeCell(1)][iCredits];
 }
 
-public Native_SetClientCredits(Handle:plugin, numParams)
+public int Native_SetClientCredits(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new m_iCredits = GetNativeCell(2);
+	int client = GetNativeCell(1);
+	int m_iCredits = GetNativeCell(2);
 	Store_LogMessage(client, m_iCredits-g_eClients[client][iCredits], "Set by external plugin");
 	g_eClients[client][iCredits] = m_iCredits;
 	return 1;
 }
 
-public Native_IsClientVIP(Handle:plugin, numParams)
+public any Native_IsClientVIP(Handle plugin,int numParams)
 {
 	return (g_eCvars[g_cvarVIPFlag][aCache] != 0 && GetClientPrivilege(GetNativeCell(1), g_eCvars[g_cvarVIPFlag][aCache]));
 }
 
-public Native_IsItemInBoughtPackage(Handle:plugin, numParams)
+public int Native_IsItemInBoughtPackage(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new itemid = GetNativeCell(2);
-	new uid = GetNativeCell(3);
+	int client = GetNativeCell(1);
+	int itemid = GetNativeCell(2);
+	any uid = GetNativeCell(3);
 
-	decl m_iParent;
+	any m_iParent;
 	if(itemid<0)
 		m_iParent = g_eItems[itemid][iParent];
 	else
@@ -850,7 +852,7 @@ public Native_IsItemInBoughtPackage(Handle:plugin, numParams)
 		
 	while(m_iParent != -1)
 	{
-		for(new i=0;i<g_eClients[client][iItems];++i)
+		for(int i=0;i<g_eClients[client][iItems];++i)
 			if(((uid == -1 && g_eClientItems[client][i][iUniqueId] == m_iParent) || (uid != -1 && g_eClientItems[client][i][iUniqueId] == uid)) && !g_eClientItems[client][i][bDeleted])
 				return true;
 		m_iParent = g_eItems[m_iParent][iParent];
@@ -858,19 +860,19 @@ public Native_IsItemInBoughtPackage(Handle:plugin, numParams)
 	return false;
 }
 
-public Native_DisplayConfirmMenu(Handle:plugin, numParams)
+public int Native_DisplayConfirmMenu(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	decl String:title[255];
+	int client = GetNativeCell(1);
+	char title[255];
 	GetNativeString(2, STRING(title));
-	new callback = GetNativeCell(3);
-	new data = GetNativeCell(4);
+	any callback = GetNativeCell(3);
+	any data = GetNativeCell(4);
 
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Confirm);
+	Handle m_hMenu = CreateMenu(MenuHandler_Confirm);
 	SetMenuTitle(m_hMenu, title);
 	SetMenuExitButton(m_hMenu, false);
-	new String:m_szCallback[32];
-	new String:m_szData[11];
+	char m_szCallback[32];
+	char m_szData[11];
 	Format(STRING(m_szCallback), "%d.%d", plugin, callback);
 	IntToString(data, STRING(m_szData));
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szCallback, "%t", "Confirm_Yes");
@@ -878,14 +880,14 @@ public Native_DisplayConfirmMenu(Handle:plugin, numParams)
 	DisplayMenu(m_hMenu, client, 0);
 }
 
-public Native_ShouldConfirm(Handle:plugin, numParams)
+public int Native_ShouldConfirm(Handle plugin,int numParams)
 {
 	return g_eCvars[g_cvarConfirmation][aCache];
 }
 
-public Native_GetItem(Handle:plugin, numParams)
+public int Native_GetItem(Handle plugin,int numParams)
 {
-	SetNativeArray(2, _:g_eItems[GetNativeCell(1)][GetNativeCell(2)], sizeof(g_eItems[][])); 
+	SetNativeArray(2, view_as<int>(g_eItems[GetNativeCell(1)][GetNativeCell(2)]), sizeof(g_eItems[][])); 
 }
 
 public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
@@ -902,37 +904,37 @@ public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
 	return -1;
 }
 
-public Native_GetHandler(Handle:plugin, numParams)
+public int Native_GetHandler(Handle plugin,int numParams)
 {
-	SetNativeArray(2, _:g_eTypeHandlers[GetNativeCell(1)][GetNativeCell(2)], sizeof(g_eTypeHandlers[])); 
+	SetNativeArray(2, view_as<int>(g_eTypeHandlers[GetNativeCell(1)][GetNativeCell(2)]), sizeof(g_eTypeHandlers[])); 
 }
 
-public Native_GetClientItem(Handle:plugin, numParams)
+public int Native_GetClientItem(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new itemid = GetNativeCell(2);
+	int client = GetNativeCell(1);
+	int itemid = GetNativeCell(2);
 
-	new uid = Store_GetClientItemId(client, itemid);
+	int uid = Store_GetClientItemId(client, itemid);
 	if(uid<0)
 		return 0;
 
-	SetNativeArray(3, _:g_eClientItems[client][uid][GetNativeCell(3)], sizeof(g_eClientItems[][][])); 
+	SetNativeArray(3, view_as<int>(g_eClientItems[client][uid][GetNativeCell(3)]), sizeof(g_eClientItems[][][])); 
 
 	return 1;
 }
 
-public Native_GiveItem(Handle:plugin, numParams)
+public int Native_GiveItem(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new itemid = GetNativeCell(2);
-	new purchase = GetNativeCell(3);
-	new expiration = GetNativeCell(4);
-	new price = GetNativeCell(5);
+	int client = GetNativeCell(1);
+	int itemid = GetNativeCell(2);
+	int purchase = GetNativeCell(3);
+	int expiration = GetNativeCell(4);
+	int price = GetNativeCell(5);
 
-	new m_iDateOfPurchase = (purchase==0?GetTime():purchase);
-	new m_iDateOfExpiration = expiration;
+	int m_iDateOfPurchase = (purchase==0?GetTime():purchase);
+	int m_iDateOfExpiration = expiration;
 
-	new m_iId = g_eClients[client][iItems]++;
+	int m_iId = g_eClients[client][iItems]++;
 	g_eClientItems[client][m_iId][iId_Client_Item] = -1;
 	g_eClientItems[client][m_iId][iUniqueId] = itemid;
 	g_eClientItems[client][m_iId][iDateOfPurchase] = m_iDateOfPurchase;
@@ -942,10 +944,10 @@ public Native_GiveItem(Handle:plugin, numParams)
 	g_eClientItems[client][m_iId][bDeleted] = false;
 }
 
-public Native_RemoveItem(Handle:plugin, numParams)
+public int Native_RemoveItem(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new itemid = GetNativeCell(2);
+	int client = GetNativeCell(1);
+	int itemid = GetNativeCell(2);
 	if(itemid>0 && g_eTypeHandlers[g_eItems[itemid][iHandler]][fnRemove] != INVALID_FUNCTION)
 	{
 		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][iHandler]][hPlugin], g_eTypeHandlers[g_eItems[itemid][iHandler]][fnRemove]);
@@ -956,28 +958,28 @@ public Native_RemoveItem(Handle:plugin, numParams)
 	
 	Store_UnequipItem(client, itemid, false);
 	
-	new m_iId = Store_GetClientItemId(client, itemid);
+	int m_iId = Store_GetClientItemId(client, itemid);
 	if(m_iId != -1)
 		g_eClientItems[client][m_iId][bDeleted] = true;
 }
 
-public Native_GetClientTarget(Handle:plugin, numParams)
+public int Native_GetClientTarget(Handle plugin,int numParams)
 {
 	return g_iMenuClient[GetNativeCell(1)];
 }
 
-public Native_GiveClientItem(Handle:plugin, numParams)
+public int Native_GiveClientItem(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new receiver = GetNativeCell(2);
-	new itemid = GetNativeCell(3);
+	int client = GetNativeCell(1);
+	int receiver = GetNativeCell(2);
+	int itemid = GetNativeCell(3);
 
-	new item = Store_GetClientItemId(client, itemid);
+	int item = Store_GetClientItemId(client, itemid);
 	if(item == -1)
 		return 1;
 
-	new m_iId = g_eClientItems[client][item][iUniqueId];
-	new target = g_iMenuClient[client];
+	int m_iId = g_eClientItems[client][item][iUniqueId];
+	int target = g_iMenuClient[client];
 	g_eClientItems[client][item][bDeleted] = true;
 	Store_UnequipItem(client, m_iId);
 
@@ -994,10 +996,10 @@ public Native_GiveClientItem(Handle:plugin, numParams)
 	return 1;
 }
 
-public Native_HasClientItem(Handle:plugin, numParams)
+public int Native_HasClientItem(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new itemid = GetNativeCell(2);
+	int client = GetNativeCell(1);
+	int itemid = GetNativeCell(2);
 
 	// Can he even have it?	
 	if(!GetClientPrivilege(client, g_eItems[itemid][iFlagBits]) || !CheckSteamAuth(client, g_eItems[itemid][szSteam]))
@@ -1016,7 +1018,7 @@ public Native_HasClientItem(Handle:plugin, numParams)
 		return false;
 		
 	// Check if the client actually has the item
-	for(new i=0;i<g_eClients[client][iItems];++i)
+	for(int i=0;i<g_eClients[client][iItems];++i)
 	{
 		if(g_eClientItems[client][i][iUniqueId] == itemid && !g_eClientItems[client][i][bDeleted])
 			if(g_eClientItems[client][i][iDateOfExpiration]==0 || (g_eClientItems[client][i][iDateOfExpiration] && GetTime()<g_eClientItems[client][i][iDateOfExpiration]))
@@ -1032,13 +1034,13 @@ public Native_HasClientItem(Handle:plugin, numParams)
 	return false;
 }
 
-public Native_IterateEquippedItems(Handle:plugin, numParams)
+public int Native_IterateEquippedItems(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new start = GetNativeCellRef(2);
-	new bool:attributes = GetNativeCell(3);
+	int client = GetNativeCell(1);
+	int start = GetNativeCellRef(2);
+	bool attributes = GetNativeCell(3);
 
-	for(new i=start+1;i<STORE_MAX_HANDLERS*STORE_MAX_SLOTS;++i)
+	for(int i=start+1;i<STORE_MAX_HANDLERS*STORE_MAX_SLOTS;++i)
 	{
 		if(g_eClients[client][aEquipment][i] >= 0 && (attributes==false || (attributes && g_eItems[g_eClients[client][aEquipment][i]][hAttributes]!=INVALID_HANDLE)))
 		{
@@ -1054,7 +1056,7 @@ public Native_IterateEquippedItems(Handle:plugin, numParams)
 //		CLIENT FORWARDS		//
 //////////////////////////////
 
-public OnClientConnected(client)
+public void OnClientConnected(int client)
 {
 	g_iSpam[client] = 0;
 	g_eClients[client][iUserId] = GetClientUserId(client);
@@ -1062,9 +1064,9 @@ public OnClientConnected(client)
 	g_eClients[client][iOriginalCredits] = 0;
 	g_eClients[client][iItems] = -1;
 	g_eClients[client][bLoaded] = false;
-	for(new i=0;i<STORE_MAX_HANDLERS;++i)
+	for(int i=0;i<STORE_MAX_HANDLERS;++i)
 	{
-		for(new a=0;a<STORE_MAX_SLOTS;++a)
+		for(int a=0;a<STORE_MAX_SLOTS;++a)
 		{
 			g_eClients[client][aEquipment][i*STORE_MAX_SLOTS+a] = -2;
 			g_eClients[client][aEquipmentSynced][i*STORE_MAX_SLOTS+a] = -2;
@@ -1080,7 +1082,7 @@ public OnClientConnected(client)
 #endif
 }
 
-public OnClientPostAdminCheck(client)
+public void OnClientPostAdminCheck(int client)
 {
 	if(IsFakeClient(client))
 		return;
@@ -1088,7 +1090,7 @@ public OnClientPostAdminCheck(client)
 }
 
 #if !defined STANDALONE_BUILD
-public OnClientPutInServer(client)
+public void OnClientPutInServer(int client)
 {
 	if(IsFakeClient(client))
 		return;
@@ -1098,13 +1100,13 @@ public OnClientPutInServer(client)
 }
 #endif
 
-public OnClientDisconnect(client)
+public void OnClientDisconnect(int client)
 {
 	if(IsFakeClient(client))
 		return;
 	
 #if !defined STANDALONE_BUILD
-	Betting_OnClientDisconnect(client);
+	//Betting_OnClientDisconnect(client);
 	//Pets_OnClientDisconnect(client);
 #endif
 
@@ -1114,7 +1116,7 @@ public OnClientDisconnect(client)
 	Store_DisconnectClient(client);
 }
 
-public OnClientSettingsChanged(client)
+public void OnClientSettingsChanged(int client)
 {
 	GetClientName(client, g_eClients[client][szName_Client], 64);
 	if(g_hDatabase)
@@ -1122,20 +1124,20 @@ public OnClientSettingsChanged(client)
 }
 
 #if !defined STANDALONE_BUILD
-public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
+public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon, int& subtype, int& cmdnum, int& tickcount, int& seed, int mouse[2])
 {
 	if(!IsClientInGame(client))
 		return Plugin_Continue;
 
-	new Action:m_iRet = Plugin_Continue;
+	//new Action m_iRet = Plugin_Continue;
 
 	//Jetpack_OnPlayerRunCmd(client, buttons);
 	//LaserSight_OnPlayerRunCmd(client);
 	//Pets_OnPlayerRunCmd(client, tickcount);
 	Sprays_OnPlayerRunCmd(client, buttons);
-	m_iRet = Bunnyhop_OnPlayerRunCmd(client, buttons);
+	//m_iRet = Bunnyhop_OnPlayerRunCmd(client, buttons);
 
-	return m_iRet;
+	return Plugin_Continue;
 }
 #endif
 
@@ -1143,10 +1145,10 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 //			EVENTS			//
 //////////////////////////////
 
-public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+public Action Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 {
-	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
-	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+	int victim = GetClientOfUserId(GetEventInt(event, "userid"));
+	int attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 
 	if(g_eCvars[g_cvarSaveOnDeath][aCache])
 	{
@@ -1170,9 +1172,9 @@ public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroa
 	return Plugin_Continue;
 }
 
-public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public Action Event_PlayerSpawn(Event event, char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if(!IsClientInGame(client))
 		return Plugin_Continue;
@@ -1189,15 +1191,15 @@ public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroa
 //			COMMANDS	 		//
 //////////////////////////////////
 
-public Action:Command_Say(client, const String:command[], argc)
+public Action Command_Say(int client, const char[] command,int argc)
 {
 	if(argc > 0)
 	{
-		decl String:m_szArg[65];
+		char m_szArg[65];
 		GetCmdArg(1, STRING(m_szArg));
 		if(m_szArg[0] == PublicChatTrigger)
 		{
-			for(new i=0;i<g_iItems;++i)
+			for(int i=0;i<g_iItems;++i)
 				if(strcmp(g_eItems[i][szShortcut], m_szArg[1])==0 && g_eItems[i][szShortcut][0] != 0)
 				{
 					g_bInvMode[client]=false;
@@ -1210,7 +1212,7 @@ public Action:Command_Say(client, const String:command[], argc)
 	return Plugin_Continue;
 }
 
-public Action:Command_Store(client, params)
+public Action Command_Store(int client,int params)
 {
 	if(g_eCvars[g_cvarRequiredFlag][aCache] && !GetClientPrivilege(client, g_eCvars[g_cvarRequiredFlag][aCache]))
 	{
@@ -1231,7 +1233,7 @@ public Action:Command_Store(client, params)
 	return Plugin_Handled;
 }
 
-public Action:Command_Inventory(client, params)
+public Action Command_Inventory(int client,int params)
 {
 	if(g_eCvars[g_cvarRequiredFlag][aCache] && !GetClientPrivilege(client, g_eCvars[g_cvarRequiredFlag][aCache]))
 	{
@@ -1252,7 +1254,7 @@ public Action:Command_Inventory(client, params)
 	return Plugin_Handled;
 }
 
-public Action:Command_Gift(client, params)
+public Action Command_Gift(int client,int params)
 {
 	if(!g_eCvars[g_cvarCreditGiftEnabled][aCache])
 	{
@@ -1260,21 +1262,21 @@ public Action:Command_Gift(client, params)
 		return Plugin_Handled;
 	}
 	
-	decl String:m_szTmp[64];
+	char m_szTmp[64];
 	GetCmdArg(2, STRING(m_szTmp));
 	
-	new m_iCredits = StringToInt(m_szTmp);
+	int m_iCredits = StringToInt(m_szTmp);
 	if(g_eClients[client][iCredits]<m_iCredits || m_iCredits<=0)
 	{
 		Chat(client, "%t", "Credit Invalid Amount");
 		return Plugin_Handled;
 	}
 
-	decl bool:m_bTmp;
-	decl m_iTargets[1];
+	bool m_bTmp;
+	int m_iTargets[1];
 	GetCmdArg(1, STRING(m_szTmp));
 	
-	new m_iClients = ProcessTargetString(m_szTmp, 0, m_iTargets, 1, 0, STRING(m_szTmp), m_bTmp);
+	int m_iClients = ProcessTargetString(m_szTmp, 0, m_iTargets, 1, 0, STRING(m_szTmp), m_bTmp);
 	if(m_iClients>2)
 	{
 		Chat(client, "%t", "Credit Too Many Matches");
@@ -1287,7 +1289,7 @@ public Action:Command_Gift(client, params)
 		return Plugin_Handled;
 	}
 	
-	new m_iReceiver = m_iTargets[0];
+	int m_iReceiver = m_iTargets[0];
 	
 	g_eClients[client][iCredits] -= m_iCredits;
 	g_eClients[m_iReceiver][iCredits] += m_iCredits;
@@ -1301,7 +1303,7 @@ public Action:Command_Gift(client, params)
 	return Plugin_Handled;
 }
 
-public Action:Command_GiveCredits(client, params)
+public Action Command_GiveCredits(int client,int params)
 {
 	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarAdminFlag][aCache]))
 	{
@@ -1309,23 +1311,23 @@ public Action:Command_GiveCredits(client, params)
 		return Plugin_Handled;
 	}
 	
-	decl String:m_szTmp[64];
+	char m_szTmp[64];
 	GetCmdArg(2, STRING(m_szTmp));
 	
-	new m_iCredits = StringToInt(m_szTmp);
+	int m_iCredits = StringToInt(m_szTmp);
 
-	decl bool:m_bTmp;
-	decl m_iTargets[1];
+	bool m_bTmp;
+	int m_iTargets[1];
 	GetCmdArg(1, STRING(m_szTmp));
 
-	new m_iReceiver = -1;
+	int m_iReceiver = -1;
 	if(strncmp(m_szTmp, "STEAM_", 6)==0)
 	{
 		m_iReceiver = GetClientBySteamID(m_szTmp);
 		// SteamID is not ingame
 		if(m_iReceiver == 0)
 		{
-			decl String:m_szQuery[512];
+			char m_szQuery[512];
 			if(g_bMySQL)
 				Format(STRING(m_szQuery), "INSERT IGNORE INTO store_players (authid, credits) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE credits=credits+%d", m_szTmp[8], m_iCredits, m_iCredits);
 			else
@@ -1355,7 +1357,7 @@ public Action:Command_GiveCredits(client, params)
 	}
 	else
 	{
-		new m_iClients = ProcessTargetString(m_szTmp, 0, m_iTargets, 1, 0, STRING(m_szTmp), m_bTmp);
+		int m_iClients = ProcessTargetString(m_szTmp, 0, m_iTargets, 1, 0, STRING(m_szTmp), m_bTmp);
 		if(m_iClients>2)
 		{
 			if(client)
@@ -1395,7 +1397,7 @@ public Action:Command_GiveCredits(client, params)
 	return Plugin_Handled;
 }
 
-public Action:Command_ResetPlayer(client, params)
+public Action Command_ResetPlayer(int client,int params)
 {
 	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarAdminFlag][aCache]))
 	{
@@ -1403,26 +1405,26 @@ public Action:Command_ResetPlayer(client, params)
 		return Plugin_Handled;
 	}
 
-	decl String:m_szTmp[64];
-	decl bool:m_bTmp;
-	decl m_iTargets[1];
+	char m_szTmp[64];
+	bool m_bTmp;
+	int m_iTargets[1];
 	GetCmdArg(1, STRING(m_szTmp));
 
-	new m_iReceiver = -1;
+	int m_iReceiver = -1;
 	if(strncmp(m_szTmp, "STEAM_", 6)==0)
 	{
 		m_iReceiver = GetClientBySteamID(m_szTmp);
 		// SteamID is not ingame
 		if(m_iReceiver == 0)
 		{
-			decl String:m_szQuery[512];
+			char m_szQuery[512];
 			Format(STRING(m_szQuery), "SELECT id, authid FROM store_players WHERE authid=\"%s\"", m_szTmp[9]);
 			SQL_TQuery(g_hDatabase, SQLCallback_ResetPlayer, m_szQuery, g_eClients[client][iUserId]);
 		}
 	}
 	else
 	{	
-		new m_iClients = ProcessTargetString(m_szTmp, 0, m_iTargets, 1, 0, STRING(m_szTmp), m_bTmp);
+		int m_iClients = ProcessTargetString(m_szTmp, 0, m_iTargets, 1, 0, STRING(m_szTmp), m_bTmp);
 		if(m_iClients>2)
 		{
 			Chat(client, "%t", "Credit Too Many Matches");
@@ -1443,7 +1445,7 @@ public Action:Command_ResetPlayer(client, params)
 	{
 		Store_LogMessage(client, -g_eClients[m_iReceiver][iCredits], "Player resetted");
 		g_eClients[m_iReceiver][iCredits] = 0;
-		for(new i=0;i<g_eClients[m_iReceiver][iItems];++i)
+		for(int i=0;i<g_eClients[m_iReceiver][iItems];++i)
 			Store_RemoveItem(m_iReceiver, g_eClientItems[m_iReceiver][i][iUniqueId]);
 		ChatAll("%t", "Player Resetted", g_eClients[m_iReceiver][szName_Client]);
 	}
@@ -1451,7 +1453,7 @@ public Action:Command_ResetPlayer(client, params)
 	return Plugin_Handled;
 }
 
-public Action:Command_Credits(client, params)
+public Action Command_Credits(int client,int params)
 {	
 	if(g_eClients[client][iCredits] == -1 && g_eClients[client][iItems] == -1)
 	{
@@ -1470,7 +1472,7 @@ public Action:Command_Credits(client, params)
 	return Plugin_Handled;
 }
 
-public Action:Command_CustomCredits(params)
+public Action Command_CustomCredits(int params)
 {
 	if(params < 2)
 	{
@@ -1478,17 +1480,17 @@ public Action:Command_CustomCredits(params)
 		return Plugin_Handled;
 	}
 
-	new String:tmp[16];
+	char tmp[16];
 	GetCmdArg(1, STRING(tmp));
-	new flag = ReadFlagString(tmp);
+	char flag = ReadFlagString(tmp);
 	GetCmdArg(2, STRING(tmp));
-	new Float:mult = StringToFloat(tmp);
+	float mult = StringToFloat(tmp);
 
-	new size = GetArraySize(g_hCustomCredits);
-	new index = -1;
-	for(new i=0;i<size;++i)
+	any size = GetArraySize(g_hCustomCredits);
+	int index = -1;
+	for(int i=0;i<size;++i)
 	{
-		new sflag = GetArrayCell(g_hCustomCredits, i, 0);
+		int sflag = GetArrayCell(g_hCustomCredits, i, 0);
 		if(sflag == flag)
 		{
 			index = i;
@@ -1511,15 +1513,15 @@ public Action:Command_CustomCredits(params)
 //			MENUS	 		//
 //////////////////////////////
 
-DisplayStoreMenu(client, parent=-1, last=-1)
+void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 {
 	if(!client || !IsClientInGame(client))
 		return;
 
 	g_iMenuNum[client] = 1;
-	new target = g_iMenuClient[client];
+	int target = g_iMenuClient[client];
 
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Store);
+	Handle m_hMenu = CreateMenu(MenuHandler_Store);
 	if(parent!=-1)
 	{
 		SetMenuExitBackButton(m_hMenu, true);
@@ -1534,9 +1536,9 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 	else
 		SetMenuTitle(m_hMenu, "%N\n%t\n%t", target, "Title Store", "Title Credits", g_eClients[target][iCredits]);
 	
-	decl String:m_szId[11];
-	new m_iFlags = GetUserFlagBits(target);
-	new m_iPosition = 0;
+	char m_szId[11];
+	int m_iFlags = GetUserFlagBits(target);
+	int m_iPosition = 0;
 	
 	g_iSelectedItem[client] = parent;
 	if(parent != -1)
@@ -1547,7 +1549,7 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 			{
 				if(g_eCvars[g_cvarSellEnabled][aCache])
 				{
-					AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "sell_package", "%t", "Package Sell", RoundToFloor(g_eItems[parent][iPrice]*Float:g_eCvars[g_cvarSellRatio][aCache]));
+					AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "sell_package", "%t", "Package Sell", RoundToFloor(g_eItems[parent][iPrice]*view_as<float>(g_eCvars[g_cvarSellRatio][aCache])));
 					++m_iPosition;
 				}
 				if(g_eCvars[g_cvarGiftEnabled][aCache] == 1 || (g_eCvars[g_cvarGiftEnabled][aCache] == 2 && GetUserFlagBits(client) & g_eCvars[g_cvarAdminFlag][aCache]))
@@ -1556,7 +1558,7 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 					++m_iPosition;
 				}
 
-				for(new i=0;i<g_iMenuHandlers;++i)
+				for(int i=0;i<g_iMenuHandlers;++i)
 				{
 					if(g_eMenuHandlers[i][hPlugin_Handler] == INVALID_HANDLE)
 						continue;
@@ -1570,11 +1572,11 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 		}
 	}
 	
-	for(new i=0;i<g_iItems;++i)
+	for(int i=0;i<g_iItems;++i)
 	{
 		if(g_eItems[i][iParent]==parent && (g_eCvars[g_cvarShowVIP][aCache] == 0 && GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || g_eCvars[g_cvarShowVIP][aCache]))
 		{
-			new m_iPrice = Store_GetLowestPrice(i);
+			int m_iPrice = Store_GetLowestPrice(i);
 
 			// This is a package
 			if(g_eItems[i][iHandler] == g_iPackageHandler)
@@ -1582,7 +1584,7 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 				if(!Store_PackageHasClientItem(target, i, g_bInvMode[client]))
 					continue;
 
-				new m_iStyle = ITEMDRAW_DEFAULT;
+				int m_iStyle = ITEMDRAW_DEFAULT;
 				//if(g_eCvars[g_cvarShowVIP][aCache] && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam]))
 				//	m_iStyle = ITEMDRAW_DISABLED;
 				
@@ -1608,7 +1610,7 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 				}
 				else if(!g_bInvMode[client] && g_eItems[i][bBuyable])
 				{				
-					new m_iStyle = ITEMDRAW_DEFAULT;
+					int m_iStyle = ITEMDRAW_DEFAULT;
 					//if((g_eItems[i][iPlans]==0 && g_eClients[target][iCredits]<m_iPrice && !g_eItems[i][bPreview]) || (g_eCvars[g_cvarShowVIP][aCache] && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam])))
 					//	m_iStyle = ITEMDRAW_DISABLED;
 					
@@ -1630,20 +1632,20 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 		DisplayMenuAtItem(m_hMenu, client, (last/GetMenuPagination(m_hMenu))*GetMenuPagination(m_hMenu), 0);
 }
 
-public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
 	else if (action == MenuAction_Select)
 	{
-		new target = g_iMenuClient[client];
+		int target = g_iMenuClient[client];
 		// Confirmation was given
 		if(menu == INVALID_HANDLE)
 		{
 			if(param2 == 0)
 			{
 				g_iMenuBack[client]=1;
-				new m_iPrice = 0;
+				int m_iPrice = 0;
 				if(g_iSelectedPlan[client]==-1)
 					m_iPrice = g_eItems[g_iSelectedItem[client]][iPrice];
 				else
@@ -1665,7 +1667,7 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 		}
 		else
 		{
-			new String:m_szId[64];
+			char m_szId[64];
 			GetMenuItem(menu, param2, STRING(m_szId));
 			
 			g_iLastSelection[client]=param2;
@@ -1675,8 +1677,8 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 			{
 				if(g_eCvars[g_cvarConfirmation][aCache])
 				{
-					decl String:m_szTitle[128];
-					Format(STRING(m_szTitle), "%t", "Confirm_Sell", g_eItems[g_iSelectedItem[client]][szName], g_eTypeHandlers[g_eItems[g_iSelectedItem[client]][iHandler]][szType], RoundToFloor(g_eItems[g_iSelectedItem[client]][iPrice]*Float:g_eCvars[g_cvarSellRatio][aCache]));
+					char m_szTitle[128];
+					Format(STRING(m_szTitle), "%t", "Confirm_Sell", g_eItems[g_iSelectedItem[client]][szName], g_eTypeHandlers[g_eItems[g_iSelectedItem[client]][iHandler]][szType], RoundToFloor(g_eItems[g_iSelectedItem[client]][iPrice]*view_as<float>(g_eCvars[g_cvarSellRatio][aCache])));
 					Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Store, 1);
 					return;
 				}
@@ -1694,8 +1696,8 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 			// This is menu handler stuff
 			else if(!(48 <= m_szId[0] <= 57))
 			{
-				decl ret;
-				for(new i=0;i<g_iMenuHandlers;++i)
+				any ret;
+				for(int i=0;i<g_iMenuHandlers;++i)
 				{
 					Call_StartFunction(g_eMenuHandlers[i][hPlugin_Handler], g_eMenuHandlers[i][fnHandler]);
 					Call_PushCell(target);
@@ -1710,7 +1712,7 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 			// We are being boring
 			else
 			{
-				new m_iId = StringToInt(m_szId);
+				int m_iId = StringToInt(m_szId);
 				g_iMenuBack[client]=g_eItems[m_iId][iParent];
 				g_iSelectedItem[client] = m_iId;
 				g_iSelectedPlan[client] = -1;
@@ -1738,7 +1740,7 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 					else
 						if(g_eCvars[g_cvarConfirmation][aCache])
 						{
-							decl String:m_szTitle[128];
+							char m_szTitle[128];
 							Format(STRING(m_szTitle), "%t", "Confirm_Buy", g_eItems[m_iId][szName], g_eTypeHandlers[g_eItems[m_iId][iHandler]][szType]);
 							Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Store, 0);
 							return;
@@ -1779,29 +1781,29 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 			Store_DisplayPreviousMenu(client);
 }
 
-public DisplayItemMenu(client, itemid)
+public void DisplayItemMenu(int client,int itemid)
 {
 	g_iMenuNum[client] = 1;
 	g_iMenuBack[client] = g_eItems[itemid][iParent];
-	new target = g_iMenuClient[client];
+	int target = g_iMenuClient[client];
 
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Item);
+	Handle m_hMenu = CreateMenu(MenuHandler_Item);
 	SetMenuExitBackButton(m_hMenu, true);
 	
-	new bool:m_bEquipped = Store_IsEquipped(target, itemid);
-	new String:m_szTitle[256];
-	new idx = 0;
+	bool m_bEquipped = Store_IsEquipped(target, itemid);
+	char m_szTitle[256];
+	int idx = 0;
 	if(m_bEquipped)
 		idx = Format(STRING(m_szTitle), "%t\n%t", "Item Equipped", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
 	else
 		idx = Format(STRING(m_szTitle), "%s\n%t", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
 
-	new m_iExpiration = Store_GetExpiration(target, itemid);
+	int m_iExpiration = Store_GetExpiration(target, itemid);
 	if(m_iExpiration != 0)
 	{
 		m_iExpiration = m_iExpiration-GetTime();
-		new m_iDays = m_iExpiration/(24*60*60);
-		new m_iHours = (m_iExpiration-m_iDays*24*60*60)/(60*60);
+		int m_iDays = m_iExpiration/(24*60*60);
+		int m_iHours = (m_iExpiration-m_iDays*24*60*60)/(60*60);
 		Format(m_szTitle[idx-1], sizeof(m_szTitle)-idx-1, "\n%t", "Title Expiration", m_iDays, m_iHours);
 	}
 	
@@ -1824,14 +1826,14 @@ public DisplayItemMenu(client, itemid)
 		
 	if(!Store_IsClientVIP(target) && !Store_IsItemInBoughtPackage(target, itemid))
 	{
-		new m_iCredits = RoundToFloor(Store_GetClientItemPrice(client, itemid)*Float:g_eCvars[g_cvarSellRatio][aCache]);
+		int m_iCredits = RoundToFloor(Store_GetClientItemPrice(client, itemid)*view_as<float>(g_eCvars[g_cvarSellRatio][aCache]));
 		if(m_iCredits!=0)
 		{
-			new uid = Store_GetClientItemId(client, itemid);
+			int uid = Store_GetClientItemId(client, itemid);
 			if(g_eClientItems[client][uid][iDateOfExpiration] != 0)
 			{
-				new m_iLength = g_eClientItems[client][uid][iDateOfExpiration]-g_eClientItems[client][uid][iDateOfPurchase];
-				new m_iLeft = g_eClientItems[client][uid][iDateOfExpiration]-GetTime();
+				int m_iLength = g_eClientItems[client][uid][iDateOfExpiration]-g_eClientItems[client][uid][iDateOfPurchase];
+				int m_iLeft = g_eClientItems[client][uid][iDateOfExpiration]-GetTime();
 				if(m_iLeft < 0)
 					m_iLeft = 0;
 				m_iCredits = RoundToCeil(m_iCredits*float(m_iLeft)/float(m_iLength));
@@ -1844,7 +1846,7 @@ public DisplayItemMenu(client, itemid)
 		}
 	}
 
-	for(new i=0;i<g_iMenuHandlers;++i)
+	for(int i=0;i<g_iMenuHandlers;++i)
 	{
 		if(g_eMenuHandlers[i][hPlugin_Handler] == INVALID_HANDLE)
 			continue;
@@ -1862,12 +1864,12 @@ public void DisplayPreviewMenu(int client, int itemid)
 {
 	g_iMenuNum[client] = 1;
 	int target = g_iMenuClient[client];
-	new m_iFlags = GetUserFlagBits(target);
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Item);
+	int m_iFlags = GetUserFlagBits(target);
+	Handle m_hMenu = CreateMenu(MenuHandler_Item);
 	Menu menu = new Menu(MenuHandler_Preview);
 	menu.ExitBackButton = true;
 	
-	new bool:m_bEquipped = Store_IsEquipped(target, itemid);
+	bool m_bEquipped = Store_IsEquipped(target, itemid);
 
 	if(m_bEquipped)
 	{
@@ -1930,7 +1932,7 @@ public void DisplayPreviewMenu(int client, int itemid)
 	Format(sBuffer, sizeof(sBuffer), "%t", "Preview Item");
 	menu.AddItem("preview_item", sBuffer, ITEMDRAW_DEFAULT);
 	
-	for(new i=0;i<g_iMenuHandlers;++i)
+	for(int i=0;i<g_iMenuHandlers;++i)
 	{
 		if(g_eMenuHandlers[i][hPlugin_Handler] == INVALID_HANDLE)
 			continue;
@@ -1945,7 +1947,7 @@ public void DisplayPreviewMenu(int client, int itemid)
 
 public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int param2)
 {
-	new String:m_szId[64];
+	char m_szId[64];
 	if (action == MenuAction_End)
 	{
 		delete menu;
@@ -1979,7 +1981,7 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 		}
 		else if (strcmp(sId, "item_use") == 0)
 		{
-			new bRet = Store_UseItem(client, g_iSelectedItem[client]);
+			any bRet = Store_UseItem(client, g_iSelectedItem[client]);
 			if (GetClientMenu(client) == MenuSource_None && bRet)
 			{
 				//g_eTypeHandlers[g_eItems[itemid][iHandler]][bEquipable]
@@ -2050,8 +2052,8 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 		}*/
 		if(!(48 <= m_szId[0] <= 57))
 			{
-				decl ret;
-				for(new i=0;i<g_iMenuHandlers;++i)
+				any ret;
+				for(int i=0;i<g_iMenuHandlers;++i)
 				{
 					Call_StartFunction(g_eMenuHandlers[i][hPlugin_Handler], g_eMenuHandlers[i][fnHandler]);
 					Call_PushCell(client);
@@ -2079,7 +2081,7 @@ public DisplayPlanMenu(client, itemid)
 	g_iMenuNum[client] = 1;
 	new target = g_iMenuClient[client];
 
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Plan);
+	Handle m_hMenu = CreateMenu(MenuHandler_Plan);
 	SetMenuExitBackButton(m_hMenu, true);
 	
 	SetMenuTitle(m_hMenu, "%s\n%t", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
@@ -2088,7 +2090,7 @@ public DisplayPlanMenu(client, itemid)
 	{	
 		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "preview_item", "%t", "Preview Item");
 	}
-	for(new i=0;i<g_eItems[itemid][iPlans];++i)
+	for(int i=0;i<g_eItems[itemid][iPlans];++i)
 	{
 		AddMenuItemEx(m_hMenu, (g_eClients[target][iCredits]>=g_ePlans[itemid][i][iPrice]?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), "", "%t",  "Item Available", g_ePlans[itemid][i][szName], g_ePlans[itemid][i][iPrice]);
 	}
@@ -2101,7 +2103,7 @@ public void DisplayPlanMenu(int client, int itemid)
 {
 	g_iMenuNum[client] = 1;
 	int target = g_iMenuClient[client];
-	new m_iFlags = GetUserFlagBits(target);
+	int m_iFlags = GetUserFlagBits(target);
 	
 	Menu menu = new Menu(MenuHandler_Plan);
 	menu.ExitBackButton = true;
@@ -2134,7 +2136,7 @@ public void DisplayPlanMenu(int client, int itemid)
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 /*
-public MenuHandler_Plan(Handle:menu, MenuAction:action, client, param2)
+public MenuHandler_Plan(Handle menu, MenuAction action,int client,int param2)
 {
 	
 	
@@ -2180,7 +2182,7 @@ public MenuHandler_Plan(Handle:menu, MenuAction:action, client, param2)
 
 		if(g_eCvars[g_cvarConfirmation][aCache])
 		{
-			decl String:m_szTitle[128];
+			char m_szTitle[128];
 			Format(STRING(m_szTitle), "%t", "Confirm_Buy", g_eItems[g_iSelectedItem[client]][szName], g_eTypeHandlers[g_eItems[g_iSelectedItem[client]][iHandler]][szType]);
 			Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Store, 0);
 			return;
@@ -2263,7 +2265,7 @@ public int MenuHandler_Plan(Menu menu, MenuAction action, int client, int param2
 	}
 }
 
-public MenuHandler_Item(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_Item(Handle menu, MenuAction action,int client,int param2)
 {
 		
 	if (action == MenuAction_End)
@@ -2271,7 +2273,7 @@ public MenuHandler_Item(Handle:menu, MenuAction:action, client, param2)
 	else if (action == MenuAction_Select)
 	{
 		int itemid = g_iSelectedItem[client];
-		new target = g_iMenuClient[client];
+		int target = g_iMenuClient[client];
 		// Confirmation was sent
 		if(menu == INVALID_HANDLE)
 		{
@@ -2284,16 +2286,16 @@ public MenuHandler_Item(Handle:menu, MenuAction:action, client, param2)
 		}
 		else
 		{
-			decl String:m_szId[64];
+			char m_szId[64];
 			GetMenuItem(menu, param2, STRING(m_szId));
 			
-			new m_iId = StringToInt(m_szId);
+			int m_iId = StringToInt(m_szId);
 			
 			// Menu handlers
 			if(!(48 <= m_szId[0] <= 57))
 			{
-				decl ret;
-				for(new i=0;i<g_iMenuHandlers;++i)
+				any ret;
+				for(int i=0;i<g_iMenuHandlers;++i)
 				{
 					if(g_eMenuHandlers[i][hPlugin_Handler] == INVALID_HANDLE)
 						continue;
@@ -2310,7 +2312,7 @@ public MenuHandler_Item(Handle:menu, MenuAction:action, client, param2)
 			// Player wants to equip this item
 			else if(m_iId == 0)
 			{
-				new m_iRet = Store_UseItem(target, g_iSelectedItem[client]);
+				int m_iRet = Store_UseItem(target, g_iSelectedItem[client]);
 				if(GetClientMenu(client)==MenuSource_None && m_iRet == 0)
 					DisplayItemMenu(client, g_iSelectedItem[client]);
 			}
@@ -2319,18 +2321,18 @@ public MenuHandler_Item(Handle:menu, MenuAction:action, client, param2)
 			{
 				if(g_eCvars[g_cvarConfirmation][aCache])
 				{
-					new m_iCredits = RoundToFloor(Store_GetClientItemPrice(client, g_iSelectedItem[client])*Float:g_eCvars[g_cvarSellRatio][aCache]);
-					new uid = Store_GetClientItemId(client, g_iSelectedItem[client]);
+					int m_iCredits = RoundToFloor(Store_GetClientItemPrice(client, g_iSelectedItem[client])*view_as<float>(g_eCvars[g_cvarSellRatio][aCache]));
+					int uid = Store_GetClientItemId(client, g_iSelectedItem[client]);
 					if(g_eClientItems[client][uid][iDateOfExpiration] != 0)
 					{
-						new m_iLength = g_eClientItems[client][uid][iDateOfExpiration]-g_eClientItems[client][uid][iDateOfPurchase];
-						new m_iLeft = g_eClientItems[client][uid][iDateOfExpiration]-GetTime();
+						int m_iLength = g_eClientItems[client][uid][iDateOfExpiration]-g_eClientItems[client][uid][iDateOfPurchase];
+						int m_iLeft = g_eClientItems[client][uid][iDateOfExpiration]-GetTime();
 						if(m_iLeft < 0)
 							m_iLeft = 0;
 						m_iCredits = RoundToCeil(m_iCredits*float(m_iLeft)/float(m_iLength));
 					}
 
-					decl String:m_szTitle[128];
+					char m_szTitle[128];
 					Format(STRING(m_szTitle), "%t", "Confirm_Sell", g_eItems[g_iSelectedItem[client]][szName], g_eTypeHandlers[g_eItems[g_iSelectedItem[client]][iHandler]][szType], m_iCredits);
 					g_iMenuNum[client] = 2;
 					Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Item, 0);
@@ -2378,18 +2380,18 @@ public MenuHandler_Item(Handle:menu, MenuAction:action, client, param2)
 			Store_DisplayPreviousMenu(client);
 }
 
-public DisplayPlayerMenu(client)
+public void DisplayPlayerMenu(int client)
 {
 	g_iMenuNum[client] = 3;
-	new target = g_iMenuClient[client];
+	int target = g_iMenuClient[client];
 
-	new m_iCount = 0;
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Gift);
+	int m_iCount = 0;
+	Handle m_hMenu = CreateMenu(MenuHandler_Gift);
 	SetMenuExitBackButton(m_hMenu, true);
 	SetMenuTitle(m_hMenu, "%t\n%t", "Title Gift", "Title Credits", g_eClients[client][iCredits]);
 	
-	decl String:m_szID[11];
-	decl m_iFlags;
+	char m_szID[11];
+	int m_iFlags;
 	LoopIngamePlayers(i)
 	{
 		m_iFlags = GetUserFlagBits(i);
@@ -2414,14 +2416,14 @@ public DisplayPlayerMenu(client)
 		DisplayMenu(m_hMenu, client, 0);
 }
 
-public MenuHandler_Gift(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_Gift(Handle menu, MenuAction action,int client,int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
 	else if (action == MenuAction_Select)
 	{
-		decl m_iItem, m_iReceiver;
-		new target = g_iMenuClient[client];
+		int m_iItem, m_iReceiver;
+		int target = g_iMenuClient[client];
 	
 		// Confirmation was given
 		if(menu == INVALID_HANDLE)
@@ -2439,10 +2441,10 @@ public MenuHandler_Gift(Handle:menu, MenuAction:action, client, param2)
 		}
 		else
 		{
-			decl String:m_szId[11];
+			char m_szId[11];
 			GetMenuItem(menu, param2, STRING(m_szId));
 			
-			new m_iId = StringToInt(m_szId);
+			int m_iId = StringToInt(m_szId);
 			m_iReceiver = GetClientOfUserId(m_iId);
 			if(!m_iReceiver)
 			{
@@ -2454,7 +2456,7 @@ public MenuHandler_Gift(Handle:menu, MenuAction:action, client, param2)
 			
 			if(g_eCvars[g_cvarConfirmation][aCache])
 			{
-				decl String:m_szTitle[128];
+				char m_szTitle[128];
 				Format(STRING(m_szTitle), "%t", "Confirm_Gift", g_eItems[g_iSelectedItem[client]][szName], g_eTypeHandlers[g_eItems[g_iSelectedItem[client]][iHandler]][szType], g_eClients[m_iReceiver][szName_Client]);
 				Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Gift, m_iId);
 				return;
@@ -2469,7 +2471,7 @@ public MenuHandler_Gift(Handle:menu, MenuAction:action, client, param2)
 			DisplayItemMenu(client, g_iSelectedItem[client]);
 }
 
-public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_Confirm(Handle menu, MenuAction action,int client,int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
@@ -2477,14 +2479,14 @@ public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
 	{		
 		if(param2 == 0)
 		{
-			decl String:m_szCallback[32];
-			decl String:m_szData[11];
+			char m_szCallback[32];
+			char m_szData[11];
 			GetMenuItem(menu, 0, STRING(m_szCallback));
 			GetMenuItem(menu, 1, STRING(m_szData));
-			new m_iPos = FindCharInString(m_szCallback, '.');
+			any m_iPos = FindCharInString(m_szCallback, '.');
 			m_szCallback[m_iPos] = 0;
-			new Handle:m_hPlugin = Handle:StringToInt(m_szCallback);
-			new Function:fnMenuCallback = Function:StringToInt(m_szCallback[m_iPos+1]);
+			Handle m_hPlugin = view_as<Handle>(StringToInt(m_szCallback));
+			Function fnMenuCallback = view_as<Function>(StringToInt(m_szCallback[m_iPos+1]));
 			if(fnMenuCallback != INVALID_FUNCTION)
 			{
 				Call_StartFunction(m_hPlugin, fnMenuCallback);
@@ -2508,10 +2510,10 @@ public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
 //			CONVARS	 		//
 //////////////////////////////
 
-public ConVar_CreditTimer(index)
+public void ConVar_CreditTimer(any index)
 {
-	new m_bTimer = (FloatCompare(g_eCvars[g_cvarCreditTimer][aCache], 0.0)==0 || g_eCvars[g_cvarCreditAmountActive][aCache]==0);
-	for(new i=1;i<=MaxClients;++i)
+	any m_bTimer = (FloatCompare(g_eCvars[g_cvarCreditTimer][aCache], 0.0)==0 || g_eCvars[g_cvarCreditAmountActive][aCache]==0);
+	for(int i=1;i<=MaxClients;++i)
 	{
 		ClearTimer(g_eClients[i][hCreditTimer]);
 		if(m_bTimer && IsClientInGame(i))
@@ -2522,16 +2524,16 @@ public ConVar_CreditTimer(index)
 //////////////////////////////
 //			TIMERS	 		//
 //////////////////////////////
-public GetMultipliedCredits(client, amount)
+public int GetMultipliedCredits(int client,int amount)
 {
-	new flags = GetUserFlagBits(client);
-	new size = GetArraySize(g_hCustomCredits);
-	new Float:multiplier = 1.0;
-	for(new i=0;i<size;++i)
+	int flags = GetUserFlagBits(client);
+	int size = GetArraySize(g_hCustomCredits);
+	float multiplier = 1.0;
+	for(int i=0;i<size;++i)
 	{
 		if(GetClientPrivilege(client, GetArrayCell(g_hCustomCredits, i, 0), flags))
 		{
-			new Float:mul = GetArrayCell(g_hCustomCredits, i, 1);
+			float mul = GetArrayCell(g_hCustomCredits, i, 1);
 
 			if(multiplier < mul)
 				multiplier = mul;
@@ -2541,16 +2543,16 @@ public GetMultipliedCredits(client, amount)
 	return RoundFloat(amount * multiplier);
 }
 
-public Action:Timer_CreditTimer(Handle:timer, any:userid)
+public Action Timer_CreditTimer(Handle timer, any userid)
 {
-	new client = GetClientOfUserId(userid);
+	int client = GetClientOfUserId(userid);
 	if(!client || !IsClientInGame(client))
 		return Plugin_Continue;
 	
-	decl m_iCredits;
+	int m_iCredits;
 
 	//if(2<=GetClientTeam(client)<=3)
-	new team = GetClientTeam(client);
+	int team = GetClientTeam(client);
 	if(2<=team<=3)
 		m_iCredits = g_eCvars[g_cvarCreditAmountActive][aCache];
 	else
@@ -2569,7 +2571,7 @@ public Action:Timer_CreditTimer(Handle:timer, any:userid)
 	return Plugin_Continue;
 }
 
-public Action:Timer_DatabaseTimeout(Handle:timer, any:userid)
+public Action Timer_DatabaseTimeout(Handle timer, any userid)
 {
 	// Database is connected successfully
 	if(g_hDatabase != INVALID_HANDLE)
@@ -2578,7 +2580,7 @@ public Action:Timer_DatabaseTimeout(Handle:timer, any:userid)
 	if(g_iDatabaseRetries < g_eCvars[g_cvarDatabaseRetries][aCache])
 	{
 		SQL_TConnect(SQLCallback_Connect, g_eCvars[g_cvarDatabaseEntry][sCache]);
-		CreateTimer(Float:g_eCvars[g_cvarDatabaseTimeout][aCache], Timer_DatabaseTimeout);
+		CreateTimer(view_as<float>(g_eCvars[g_cvarDatabaseTimeout][aCache]), Timer_DatabaseTimeout);
 		++g_iDatabaseRetries;
 	}
 	else
@@ -2594,7 +2596,7 @@ public Action:Timer_DatabaseTimeout(Handle:timer, any:userid)
 //		SQL CALLBACKS		//
 //////////////////////////////
 
-public SQLCallback_Connect(Handle:owner, Handle:hndl, const String:error[], any:data)
+public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, any data)
 {
 	if(hndl==INVALID_HANDLE)
 	{
@@ -2607,7 +2609,7 @@ public SQLCallback_Connect(Handle:owner, Handle:hndl, const String:error[], any:
 			return;
 			
 		g_hDatabase = hndl;
-		decl String:m_szDriver[2];
+		char m_szDriver[2];
 		SQL_ReadDriver(g_hDatabase, STRING(m_szDriver));
 		if(m_szDriver[0] == 'm')
 		{
@@ -2647,7 +2649,7 @@ public SQLCallback_Connect(Handle:owner, Handle:hndl, const String:error[], any:
 										  PRIMARY KEY (`id`)\
 										)");
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
-			decl String:m_szQuery[512];
+			char m_szQuery[512];
 			Format(STRING(m_szQuery), "CREATE TABLE IF NOT EXISTS `%s` (\
 										  `id` int(11) NOT NULL AUTO_INCREMENT,\
 										  `parent_id` int(11) NOT NULL DEFAULT '-1',\
@@ -2695,25 +2697,25 @@ public SQLCallback_Connect(Handle:owner, Handle:hndl, const String:error[], any:
 		}
 		
 		// Do some housekeeping
-		decl String:m_szQuery[256];
+		char m_szQuery[256];
 		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `date_of_expiration` <> 0 AND `date_of_expiration` < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
 	}
 }
 
-public SQLCallback_LoadClientInventory_Credits(Handle:owner, Handle:hndl, const String:error[], any:userid)
+public void SQLCallback_LoadClientInventory_Credits(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if(hndl==INVALID_HANDLE)
 		LogError("Error happened. Error: %s", error);
 	else
 	{
-		new client = GetClientOfUserId(userid);
+		int client = GetClientOfUserId(userid);
 		if(!client)
 			return;
 		
-		decl String:m_szQuery[256];
-		decl String:m_szSteamID[32];
-		new m_iTime = GetTime();
+		char m_szQuery[256];
+		char m_szSteamID[32];
+		int m_iTime = GetTime();
 		g_eClients[client][iUserId] = userid;
 		g_eClients[client][iItems] = -1;
 		GetLegacyAuthString(client, STRING(m_szSteamID), false);
@@ -2756,17 +2758,17 @@ public SQLCallback_LoadClientInventory_Credits(Handle:owner, Handle:hndl, const 
 	}
 }
 
-public SQLCallback_LoadClientInventory_Items(Handle:owner, Handle:hndl, const String:error[], any:userid)
+public void SQLCallback_LoadClientInventory_Items(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if(hndl==INVALID_HANDLE)
 		LogError("Error happened. Error: %s", error);
 	else
 	{	
-		new client = GetClientOfUserId(userid);
+		int client = GetClientOfUserId(userid);
 		if(!client)
 			return;
 
-		decl String:m_szQuery[256];
+		char m_szQuery[256];
 		Format(STRING(m_szQuery), "SELECT * FROM store_equipment WHERE `player_id`=%d", g_eClients[client][iId_Client]);
 		SQL_TQuery(g_hDatabase, SQLCallback_LoadClientInventory_Equipment, m_szQuery, userid);
 
@@ -2777,13 +2779,13 @@ public SQLCallback_LoadClientInventory_Items(Handle:owner, Handle:hndl, const St
 			return;
 		}
 		
-		decl String:m_szUniqueId[PLATFORM_MAX_PATH];
-		decl String:m_szType[16];
-		decl m_iExpiration;
-		decl m_iUniqueId;
-		new m_iTime = GetTime();
+		char m_szUniqueId[PLATFORM_MAX_PATH];
+		char m_szType[16];
+		int m_iExpiration;
+		int m_iUniqueId;
+		int m_iTime = GetTime();
 		
-		new i = 0;
+		int i = 0;
 		while(SQL_FetchRow(hndl))
 		{
 			m_iUniqueId = -1;
@@ -2810,19 +2812,19 @@ public SQLCallback_LoadClientInventory_Items(Handle:owner, Handle:hndl, const St
 	}
 }
 
-public SQLCallback_LoadClientInventory_Equipment(Handle:owner, Handle:hndl, const String:error[], any:userid)
+public void SQLCallback_LoadClientInventory_Equipment(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if(hndl==INVALID_HANDLE)
 		LogError("Error happened. Error: %s", error);
 	else
 	{
-		new client = GetClientOfUserId(userid);
+		int client = GetClientOfUserId(userid);
 		if(!client)
 			return;
 		
-		decl String:m_szUniqueId[PLATFORM_MAX_PATH];
-		decl String:m_szType[16];
-		decl m_iUniqueId;
+		char m_szUniqueId[PLATFORM_MAX_PATH];
+		char m_szType[16];
+		int m_iUniqueId;
 		
 		while(SQL_FetchRow(hndl))
 		{
@@ -2841,13 +2843,13 @@ public SQLCallback_LoadClientInventory_Equipment(Handle:owner, Handle:hndl, cons
 	}
 }
 
-public SQLCallback_RefreshCredits(Handle:owner, Handle:hndl, const String:error[], any:userid)
+public void SQLCallback_RefreshCredits(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if(hndl==INVALID_HANDLE)
 		LogError("Error happened. Error: %s", error);
 	else
 	{
-		new client = GetClientOfUserId(userid);
+		int client = GetClientOfUserId(userid);
 		if(!client)
 			return;
 			
@@ -2859,13 +2861,13 @@ public SQLCallback_RefreshCredits(Handle:owner, Handle:hndl, const String:error[
 	}
 }
 
-public SQLCallback_InsertClient(Handle:owner, Handle:hndl, const String:error[], any:userid)
+public void SQLCallback_InsertClient(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if(hndl==INVALID_HANDLE)
 		LogError("Error happened. Error: %s", error);
 	else
 	{
-		new client = GetClientOfUserId(userid);
+		int client = GetClientOfUserId(userid);
 		if(!client)
 			return;
 			
@@ -2873,7 +2875,7 @@ public SQLCallback_InsertClient(Handle:owner, Handle:hndl, const String:error[],
 	}
 }
 
-public SQLCallback_ReloadConfig(Handle:owner, Handle:hndl, const String:error[], any:userid)
+public void SQLCallback_ReloadConfig(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if(hndl==INVALID_HANDLE)
 	{
@@ -2881,19 +2883,19 @@ public SQLCallback_ReloadConfig(Handle:owner, Handle:hndl, const String:error[],
 	}
 	else
 	{
-		decl String:m_szType[64];
-		decl String:m_szFlag[64];
-		decl String:m_szInfo[2048];
-		decl String:m_szKey[64];
-		decl String:m_szValue[256];
+		char m_szType[64];
+		char m_szFlag[64];
+		char m_szInfo[2048];
+		char m_szKey[64];
+		char m_szValue[256];
 		
-		decl Handle:m_hKV;
+		Handle m_hKV;
 		
-		decl bool:m_bSuccess;
+		bool m_bSuccess;
 		
-		decl m_iLength;
-		decl m_iHandler;
-		new m_iIndex = 0;
+		int m_iLength;
+		int m_iHandler;
+		int m_iIndex = 0;
 	
 		while(SQL_FetchRow(hndl))
 		{
@@ -2950,22 +2952,22 @@ public SQLCallback_ReloadConfig(Handle:owner, Handle:hndl, const String:error[],
 	}
 }
 
-public SQLCallback_ResetPlayer(Handle:owner, Handle:hndl, const String:error[], any:userid)
+public void SQLCallback_ResetPlayer(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if(hndl==INVALID_HANDLE)
 		LogError("Error happened. Error: %s", error);
 	else
 	{
-		new client = GetClientOfUserId(userid);
+		int client = GetClientOfUserId(userid);
 
 		if(SQL_GetRowCount(hndl))
 		{
 			SQL_FetchRow(hndl);
-			new id = SQL_FetchInt(hndl, 0);
-			decl String:m_szAuthId[32];
+			int id = SQL_FetchInt(hndl, 0);
+			char m_szAuthId[32];
 			SQL_FetchString(hndl, 1, STRING(m_szAuthId));
 
-			decl String:m_szQuery[512];
+			char m_szQuery[512];
 			Format(STRING(m_szQuery), "DELETE FROM store_players WHERE id=%d", id);
 			SQL_TVoid(g_hDatabase, m_szQuery);
 			Format(STRING(m_szQuery), "DELETE FROM store_items WHERE player_id=%d", id);
@@ -2986,7 +2988,7 @@ public SQLCallback_ResetPlayer(Handle:owner, Handle:hndl, const String:error[], 
 //			STOCKS			//
 //////////////////////////////
 
-public Store_LoadClientInventory(client)
+public void Store_LoadClientInventory(int client)
 {
 	if(g_hDatabase == INVALID_HANDLE)
 	{
@@ -2994,8 +2996,8 @@ public Store_LoadClientInventory(client)
 		return;
 	}
 	
-	decl String:m_szQuery[256];
-	decl String:m_szAuthId[32];
+	char m_szQuery[256];
+	char m_szAuthId[32];
 
 	GetLegacyAuthString(client, STRING(m_szAuthId));
 	if(m_szAuthId[0] == 0)
@@ -3006,7 +3008,7 @@ public Store_LoadClientInventory(client)
 	SQL_TQuery(g_hDatabase, SQLCallback_LoadClientInventory_Credits, m_szQuery, g_eClients[client][iUserId]);
 }
 
-public Store_SaveClientInventory(client)
+public void Store_SaveClientInventory(int client)
 {
 	if(g_hDatabase == INVALID_HANDLE)
 	{
@@ -3018,11 +3020,11 @@ public Store_SaveClientInventory(client)
 	if(g_eClients[client][iCredits]==-1 && g_eClients[client][iItems]==-1)
 		return;
 	
-	decl String:m_szQuery[256];
-	decl String:m_szType[16];
-	decl String:m_szUniqueId[PLATFORM_MAX_PATH];
+	char m_szQuery[256];
+	char m_szType[16];
+	char m_szUniqueId[PLATFORM_MAX_PATH];
 	
-	for(new i=0;i<g_eClients[client][iItems];++i)
+	for(int i=0;i<g_eClients[client][iItems];++i)
 	{
 		strcopy(STRING(m_szType), g_eTypeHandlers[g_eItems[g_eClientItems[client][i][iUniqueId]][iHandler]][szType]);
 		strcopy(STRING(m_szUniqueId), g_eItems[g_eClientItems[client][i][iUniqueId]][szUniqueId]);
@@ -3044,13 +3046,13 @@ public Store_SaveClientInventory(client)
 	}
 }
 
-public Store_SaveClientEquipment(client)
+public void Store_SaveClientEquipment(int client)
 {
-	decl String:m_szQuery[256];
-	decl m_iId;
-	for(new i=0;i<STORE_MAX_HANDLERS;++i)
+	char m_szQuery[256];
+	int m_iId;
+	for(int i=0;i<STORE_MAX_HANDLERS;++i)
 	{
-		for(new a=0;a<STORE_MAX_SLOTS;++a)
+		for(int a=0;a<STORE_MAX_SLOTS;++a)
 		{
 			m_iId = i*STORE_MAX_SLOTS+a;
 			if(g_eClients[client][aEquipmentSynced][m_iId] == g_eClients[client][aEquipment][m_iId])
@@ -3070,7 +3072,7 @@ public Store_SaveClientEquipment(client)
 	}
 }
 
-public Store_SaveClientData(client)
+public void Store_SaveClientData(int client)
 {
 	if(g_hDatabase == INVALID_HANDLE)
 	{
@@ -3081,7 +3083,7 @@ public Store_SaveClientData(client)
 	if((g_eClients[client][iCredits]==-1 && g_eClients[client][iItems]==-1) || !g_eClients[client][bLoaded])
 		return;
 	
-	decl String:m_szQuery[256];
+	char m_szQuery[256];
 	if(g_bMySQL)
 		Format(STRING(m_szQuery), "UPDATE store_players SET `credits`=GREATEST(`credits`+%d,0), `date_of_last_join`=%d, `name`='%s' WHERE `id`=%d", g_eClients[client][iCredits]-g_eClients[client][iOriginalCredits], g_eClients[client][iDateOfLastJoin], g_eClients[client][szNameEscaped], g_eClients[client][iId_Client]);
 	else
@@ -3092,7 +3094,7 @@ public Store_SaveClientData(client)
 	SQL_TVoid(g_hDatabase, m_szQuery);
 }
 
-public Store_DisconnectClient(client)
+public void Store_DisconnectClient(int client)
 {
 	Store_LogMessage(client, g_eClients[client][iCredits], "Amount of credits when the player left");
 	g_eClients[client][iCredits] = -1;
@@ -3102,20 +3104,20 @@ public Store_DisconnectClient(client)
 	ClearTimer(g_eClients[client][hCreditTimer]);
 }
 
-Store_GetItemId(String:type[], String:uid[], start=-1)
+int Store_GetItemId(char[] type, char[] uid,int start=-1)
 {
-	for(new i=start+1;i<g_iItems;++i)
+	for(int i=start+1;i<g_iItems;++i)
 		if(strcmp(g_eTypeHandlers[g_eItems[i][iHandler]][szType], type)==0 && strcmp(g_eItems[i][szUniqueId], uid)==0 && g_eItems[i][iPrice] >= 0)
 			return i;
 	return -1;
 }
 
-Store_BuyItem(client, itemid, plan=-1)
+void Store_BuyItem(int client,int itemid,int plan=-1)
 {
 	if(Store_HasClientItem(client, itemid))
 		return;
 	
-	new m_iPrice = 0;
+	int m_iPrice = 0;
 	if(plan==-1)
 		m_iPrice = g_eItems[itemid][iPrice];
 	else
@@ -3124,7 +3126,7 @@ Store_BuyItem(client, itemid, plan=-1)
 	if(g_eClients[client][iCredits]<m_iPrice)
 		return;
 		
-	new m_iId = g_eClients[client][iItems]++;
+	int m_iId = g_eClients[client][iItems]++;
 	g_eClientItems[client][m_iId][iId_Client_Item] = -1;
 	g_eClientItems[client][m_iId][iUniqueId] = itemid;
 	g_eClientItems[client][m_iId][iDateOfPurchase] = GetTime();
@@ -3140,14 +3142,14 @@ Store_BuyItem(client, itemid, plan=-1)
 	Chat(client, "%t", "Chat Bought Item", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
 }
 
-public Store_SellItem(client, itemid)
+public void Store_SellItem(int client,int itemid)
 {	
-	new m_iCredits = RoundToFloor(Store_GetClientItemPrice(client, itemid)*Float:g_eCvars[g_cvarSellRatio][aCache]);
-	new uid = Store_GetClientItemId(client, itemid);
+	int m_iCredits = RoundToFloor(Store_GetClientItemPrice(client, itemid)*view_as<float>(g_eCvars[g_cvarSellRatio][aCache]));
+	int uid = Store_GetClientItemId(client, itemid);
 	if(g_eClientItems[client][uid][iDateOfExpiration] != 0)
 	{
-		new m_iLength = g_eClientItems[client][uid][iDateOfExpiration]-g_eClientItems[client][uid][iDateOfPurchase];
-		new m_iLeft = g_eClientItems[client][uid][iDateOfExpiration]-GetTime();
+		int m_iLength = g_eClientItems[client][uid][iDateOfExpiration]-g_eClientItems[client][uid][iDateOfPurchase];
+		int m_iLeft = g_eClientItems[client][uid][iDateOfExpiration]-GetTime();
 		if(m_iLeft<0)
 			m_iLeft = 0;
 		m_iCredits = RoundToCeil(m_iCredits*float(m_iLeft)/float(m_iLength));
@@ -3161,10 +3163,10 @@ public Store_SellItem(client, itemid)
 	Store_RemoveItem(client, itemid);
 }
 
-public Store_GiftItem(client, receiver, item)
+public void Store_GiftItem(int client,int receiver,int item)
 {
-	new m_iId = g_eClientItems[client][item][iUniqueId];
-	new target = g_iMenuClient[client];
+	int m_iId = g_eClientItems[client][item][iUniqueId];
+	int target = g_iMenuClient[client];
 	g_eClientItems[client][item][bDeleted] = true;
 	Store_UnequipItem(client, m_iId);
 
@@ -3184,9 +3186,9 @@ public Store_GiftItem(client, receiver, item)
 	Store_LogMessage(client, 0, "Gifted a %s to %N", g_eItems[m_iId][szName], receiver);
 }
 
-public Store_GetClientItemId(client, itemid)
+public int Store_GetClientItemId(int client,int itemid)
 {
-	for(new i=0;i<g_eClients[client][iItems];++i)
+	for(int i=0;i<g_eClients[client][iItems];++i)
 	{
 		if(g_eClientItems[client][i][iUniqueId] == itemid && !g_eClientItems[client][i][bDeleted])
 			return i;
@@ -3195,36 +3197,36 @@ public Store_GetClientItemId(client, itemid)
 	return -1;
 }
 
-public Handle:Store_CreditTimer(client)
+public Handle Store_CreditTimer(int client)
 {
 	return CreateTimer(g_eCvars[g_cvarCreditTimer][aCache], Timer_CreditTimer, g_eClients[client][iUserId], TIMER_REPEAT);
 }
 
-public ReadCoreCFG()
+public void ReadCoreCFG()
 {
-	new String:m_szFile[PLATFORM_MAX_PATH];
+	char m_szFile[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, STRING(m_szFile), "configs/core.cfg");
 
-	new Handle:hParser = SMC_CreateParser();
-	new String:error[128];
-	new line = 0;
-	new col = 0;
+	Handle hParser = SMC_CreateParser();
+	char error[128];
+	int line = 0;
+	int col = 0;
 
 	SMC_SetReaders(hParser, Config_NewSection, Config_KeyValue, Config_EndSection);
 	SMC_SetParseEnd(hParser, Config_End);
 
-	new SMCError:result = SMC_ParseFile(hParser, m_szFile, line, col);
+	any result = SMC_ParseFile(hParser, m_szFile, line, col);
 	CloseHandle(hParser);
 
 	if (result != SMCError_Okay) 
 	{
-		SMC_GetErrorString(result, error, sizeof(error));
+		SMC_GetErrorString(view_as<SMCError>(result), error, sizeof(error));
 		LogError("%s on line %d, col %d of %s", error, line, col, m_szFile);
 	}
 
 }
 
-public SMCResult:Config_NewSection(Handle:parser, const String:section[], bool:quotes) 
+public SMCResult Config_NewSection(Handle parser, const char[] section, bool quotes) 
 {
     if (StrEqual(section, "Core"))
     {
@@ -3233,7 +3235,7 @@ public SMCResult:Config_NewSection(Handle:parser, const String:section[], bool:q
     return SMCParse_Continue;
 }
 
-public SMCResult:Config_KeyValue(Handle:parser, const String:key[], const String:value[], bool:key_quotes, bool:value_quotes)
+public SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] value, bool key_quotes, bool value_quotes)
 {
     if(StrEqual(key, "PublicChatTrigger", false))
         PublicChatTrigger = value[0];
@@ -3243,20 +3245,20 @@ public SMCResult:Config_KeyValue(Handle:parser, const String:key[], const String
     return SMCParse_Continue;
 }
 
-public SMCResult:Config_EndSection(Handle:parser) 
+public SMCResult Config_EndSection(Handle parser) 
 {
     return SMCParse_Continue;
 }
 
-public Config_End(Handle:parser, bool:halted, bool:failed) 
+public void Config_End(Handle parser, bool halted, bool failed) 
 {
 }  
 
-public Store_ReloadConfig()
+public void Store_ReloadConfig()
 {
 	g_iItems = 0;
 	
-	for(new i=0;i<g_iTypeHandlers;++i)
+	for(int i=0;i<g_iTypeHandlers;++i)
 	{
 		if(g_eTypeHandlers[i][fnReset] != INVALID_FUNCTION)
 		{
@@ -3267,15 +3269,15 @@ public Store_ReloadConfig()
 
 	if(strcmp(g_eCvars[g_cvarItemSource][sCache], "database")==0)
 	{
-		decl String:m_szQuery[64];
+		char m_szQuery[64];
 		Format(STRING(m_szQuery), "SELECT * FROM %s WHERE supported_games LIKE \"%%%s%%\" OR supported_games = \"\"", g_eCvars[g_cvarItemsTable][sCache], g_szGameDir);
 		SQL_TQuery(g_hDatabase, SQLCallback_ReloadConfig, m_szQuery);
 	}
 	else
 	{	
-		new String:m_szFile[PLATFORM_MAX_PATH];
+		char m_szFile[PLATFORM_MAX_PATH];
 		BuildPath(Path_SM, STRING(m_szFile), "configs/store/items.txt");
-		new Handle:m_hKV = CreateKeyValues("Store");
+		Handle m_hKV = CreateKeyValues("Store");
 		FileToKeyValues(m_hKV, m_szFile);
 		if (!KvGotoFirstSubKey(m_hKV))
 		{
@@ -3287,13 +3289,13 @@ public Store_ReloadConfig()
 	}
 }
 
-Store_WalkConfig(&Handle:kv, parent=-1)
+void Store_WalkConfig(Handle &kv,int parent=-1)
 {
-	decl String:m_szType[32];
-	decl String:m_szGame[64];
-	decl String:m_szFlags[64];
-	decl m_iHandler;
-	decl bool:m_bSuccess;
+	char m_szType[32];
+	char m_szGame[64];
+	char m_szFlags[64];
+	int m_iHandler;
+	bool m_bSuccess;
 	do
 	{
 		if(g_iItems == STORE_MAX_ITEMS)
@@ -3357,7 +3359,7 @@ Store_WalkConfig(&Handle:kv, parent=-1)
 			if(KvJumpToKey(kv, "Plans"))
 			{
 				KvGotoFirstSubKey(kv);
-				new index=0;
+				int index=0;
 				do
 				{
 					KvGetSectionName(kv, g_ePlans[g_iItems][index][szName_Plan], ITEM_NAME_LENGTH);
@@ -3381,8 +3383,8 @@ Store_WalkConfig(&Handle:kv, parent=-1)
 
 				KvGotoFirstSubKey(kv, false);
 
-				new String:m_szAttribute[64];
-				new String:m_szValue[64];
+				char m_szAttribute[64];
+				char m_szValue[64];
 				do
 				{
 					KvGetSectionName(kv, STRING(m_szAttribute));
@@ -3409,9 +3411,9 @@ Store_WalkConfig(&Handle:kv, parent=-1)
 	} while (KvGotoNextKey(kv));
 }
 
-public Store_GetTypeHandler(String:type[])
+public int Store_GetTypeHandler(char[] type)
 {
-	for(new i=0;i<g_iTypeHandlers;++i)
+	for(int i=0;i<g_iTypeHandlers;++i)
 	{
 		if(strcmp(g_eTypeHandlers[i][szType], type)==0)
 			return i;
@@ -3419,9 +3421,9 @@ public Store_GetTypeHandler(String:type[])
 	return -1;
 }
 
-public Store_GetMenuHandler(String:id[])
+public int Store_GetMenuHandler(char[] id)
 {
-	for(new i=0;i<g_iMenuHandlers;++i)
+	for(int i=0;i<g_iMenuHandlers;++i)
 	{
 		if(strcmp(g_eMenuHandlers[i][szIdentifier], id)==0)
 			return i;
@@ -3429,28 +3431,28 @@ public Store_GetMenuHandler(String:id[])
 	return -1;
 }
 
-public bool:Store_IsEquipped(client, itemid)
+public bool Store_IsEquipped(int client,int itemid)
 {
-	for(new i=0;i<STORE_MAX_SLOTS;++i)
+	for(int i=0;i<STORE_MAX_SLOTS;++i)
 		if(g_eClients[client][aEquipment][g_eItems[itemid][iHandler]*STORE_MAX_SLOTS+i] == itemid)
 			return true;
 	return false;
 }
 
-public Store_GetExpiration(client, itemid)
+public int Store_GetExpiration(int client,int itemid)
 {
-	new uid = Store_GetClientItemId(client, itemid);
+	int uid = Store_GetClientItemId(client, itemid);
 	if(uid<0)
 		return 0;
 	return g_eClientItems[client][uid][iDateOfExpiration];
 }
 
-Store_UseItem(client, itemid, bool:synced=false, slot=0)
+any Store_UseItem(int client,int itemid, bool synced=false,int slot=0)
 {
-	new m_iSlot = slot;
+	int m_iSlot = slot;
 	if(g_eTypeHandlers[g_eItems[itemid][iHandler]][fnUse] != INVALID_FUNCTION)
 	{
-		new m_iReturn = -1;
+		int m_iReturn = -1;
 		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][iHandler]][hPlugin], g_eTypeHandlers[g_eItems[itemid][iHandler]][fnUse]);
 		Call_PushCell(client);
 		Call_PushCell(itemid);
@@ -3474,9 +3476,9 @@ Store_UseItem(client, itemid, bool:synced=false, slot=0)
 	return 0;
 }
 
-Store_UnequipItem(client, itemid, bool:fn=true)
+any Store_UnequipItem(int client,int itemid, bool fn=true)
 {
-	new m_iSlot = 0;
+	int m_iSlot = 0;
 	if(fn && itemid > 0 && g_eTypeHandlers[g_eItems[itemid][iHandler]][fnRemove] != INVALID_FUNCTION)
 	{
 		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][iHandler]][hPlugin], g_eTypeHandlers[g_eItems[itemid][iHandler]][fnRemove]);
@@ -3485,7 +3487,7 @@ Store_UnequipItem(client, itemid, bool:fn=true)
 		Call_Finish(m_iSlot);
 	}
 
-	decl m_iId;
+	int m_iId;
 	if(g_eItems[itemid][iHandler] != g_iPackageHandler)
 	{
 		m_iId = g_eItems[itemid][iHandler]*STORE_MAX_SLOTS+m_iSlot;
@@ -3496,9 +3498,9 @@ Store_UnequipItem(client, itemid, bool:fn=true)
 	}
 	else
 	{
-		for(new i=0;i<STORE_MAX_HANDLERS;++i)
+		for(int i=0;i<STORE_MAX_HANDLERS;++i)
 		{
-			for(new a=0;i<STORE_MAX_SLOTS;++i)
+			for(int a=0;i<STORE_MAX_SLOTS;++i)
 			{
 				if(g_eClients[client][aEquipment][i+a] < 0)
 					continue;
@@ -3513,29 +3515,29 @@ Store_UnequipItem(client, itemid, bool:fn=true)
 	}
 }
 
-Store_GetEquippedItemFromHandler(client, handler, slot=0)
+int Store_GetEquippedItemFromHandler(int client,any handler,int slot=0)
 {
 	return g_eClients[client][aEquipment][handler*STORE_MAX_SLOTS+slot];
 }
 
-Store_PackageHasClientItem(client, packageid, bool:invmode=false)
+bool Store_PackageHasClientItem(int client,int packageid, bool invmode=false)
 {
-	new m_iFlags = GetUserFlagBits(client);
+	int m_iFlags = GetUserFlagBits(client);
 	if(!g_eCvars[g_cvarShowVIP][aCache] && !GetClientPrivilege(client, g_eItems[packageid][iFlagBits], m_iFlags))
 		return false;
-	for(new i=0;i<g_iItems;++i)
+	for(int i=0;i<g_iItems;++i)
 		if(g_eItems[i][iParent] == packageid && (g_eCvars[g_cvarShowVIP][aCache] || GetClientPrivilege(client, g_eItems[i][iFlagBits], m_iFlags)) && (invmode && Store_HasClientItem(client, i) || !invmode))
 			if((g_eItems[i][iHandler] == g_iPackageHandler && Store_PackageHasClientItem(client, i, invmode)) || g_eItems[i][iHandler] != g_iPackageHandler)
 				return true;
 	return false;
 }
 
-Store_LogMessage(client, credits, const String:message[], ...)
+void Store_LogMessage(int client,int credits, const char[] message,any ...)
 {
 	if(!g_eCvars[g_cvarLogging][aCache])
 		return;
 
-	decl String:m_szReason[256];
+	char m_szReason[256];
 	VFormat(STRING(m_szReason), message, 4);
 
 	if(g_eCvars[g_cvarLogging][aCache] == 1)
@@ -3543,19 +3545,19 @@ Store_LogMessage(client, credits, const String:message[], ...)
 		LogToOpenFileEx(g_hLogFile, "%N's credits have changed by %d. Reason: %s", client, credits, m_szReason);
 	} else if(g_eCvars[g_cvarLogging][aCache] == 2)
 	{
-		decl String:m_szQuery[256];
+		char m_szQuery[256];
 		Format(STRING(m_szQuery), "INSERT INTO store_logs (player_id, credits, reason, date) VALUES(%d, %d, \"%s\", %d)", g_eClients[client][iId_Client], credits, m_szReason, GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
 	}
 }
 
-Store_GetLowestPrice(itemid)
+int Store_GetLowestPrice(int itemid)
 {
 	if(g_eItems[itemid][iPlans]==0)
 		return g_eItems[itemid][iPrice];
 
-	new m_iLowest=g_ePlans[itemid][0][iPrice_Plan];
-	for(new i=1;i<g_eItems[itemid][iPlans];++i)
+	int m_iLowest=g_ePlans[itemid][0][iPrice_Plan];
+	for(int i=1;i<g_eItems[itemid][iPlans];++i)
 	{
 		if(m_iLowest>g_ePlans[itemid][i][iPrice_Plan])
 			m_iLowest = g_ePlans[itemid][i][iPrice_Plan];
@@ -3563,9 +3565,9 @@ Store_GetLowestPrice(itemid)
 	return m_iLowest;
 }
 
-Store_GetClientItemPrice(client, itemid)
+int Store_GetClientItemPrice(int client,int itemid)
 {
-	new uid = Store_GetClientItemId(client, itemid);
+	int uid = Store_GetClientItemId(client, itemid);
 	if(uid<0)
 		return 0;
 		
@@ -3575,7 +3577,7 @@ Store_GetClientItemPrice(client, itemid)
 	return g_eClientItems[client][uid][iPriceOfPurchase];
 }
 
-public Store_OnPaymentReceived(FriendID, quanity, Handle:data)
+public void Store_OnPaymentReceived(any FriendID,any quanity, Handle data)
 {
 	LoopIngamePlayers(i)
 	{
@@ -3583,10 +3585,10 @@ public Store_OnPaymentReceived(FriendID, quanity, Handle:data)
 		{
 			Store_SaveClientData(i);
 
-			new m_unMod = FriendID % 2;
-			new m_unAccountID = (FriendID-m_unMod)/2;
+			any m_unMod = FriendID % 2;
+			any m_unAccountID = (FriendID-m_unMod)/2;
 
-			decl String:m_szQuery[256];
+			char m_szQuery[256];
 			Format(STRING(m_szQuery), "SELECT * FROM store_players WHERE `authid`=\"%d:%d\"", m_unMod, m_unAccountID);
 			SQL_TQuery(g_hDatabase, SQLCallback_LoadClientInventory_Credits, m_szQuery, GetClientUserId(i));
 			break;

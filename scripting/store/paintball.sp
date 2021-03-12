@@ -5,24 +5,24 @@
 #include <store>
 #include <zephstocks>
 
-new bool:GAME_TF2 = false;
+bool GAME_TF2 = false;
 #endif
 
-new String:g_szPaintballDecals[STORE_MAX_ITEMS][32][PLATFORM_MAX_PATH];
+char g_szPaintballDecals[STORE_MAX_ITEMS][32][PLATFORM_MAX_PATH];
 
-new g_iPaintballDecalIDs[STORE_MAX_ITEMS][32];
-new g_iPaintballDecals[STORE_MAX_ITEMS] = {0, ...};
-new g_iPaintballItems = 0;
+int g_iPaintballDecalIDs[STORE_MAX_ITEMS][32];
+int g_iPaintballDecals[STORE_MAX_ITEMS] = {0, ...};
+int g_iPaintballItems = 0;
 
 #if defined STANDALONE_BUILD
-public OnPluginStart()
+public void OnPluginStart()
 #else
-public Paintball_OnPluginStart()
+public void Paintball_OnPluginStart()
 #endif
 {	
 #if defined STANDALONE_BUILD
 	// TF2 is unsupported
-	new String:m_szGameDir[32];
+	char m_szGameDir[32];
 	GetGameFolderName(m_szGameDir, sizeof(m_szGameDir));
 	if(strcmp(m_szGameDir, "tf")==0)
 		GAME_TF2 = true;
@@ -36,11 +36,11 @@ public Paintball_OnPluginStart()
 	HookEvent("bullet_impact", Paintball_BulletImpact);
 }
 
-public Paintball_OnMapStart()
+public void Paintball_OnMapStart()
 {
-	decl String:m_szFullPath[PLATFORM_MAX_PATH];
-	for(new a=0;a<g_iPaintballItems;++a)
-		for(new i=0;i<g_iPaintballDecals[a];++i)
+	char m_szFullPath[PLATFORM_MAX_PATH];
+	for(int a=0;a<g_iPaintballItems;++a)
+		for(int i=0;i<g_iPaintballDecals[a];++i)
 		{
 			g_iPaintballDecalIDs[a][i] = PrecacheDecal(g_szPaintballDecals[a][i], true);
 			Format(m_szFullPath, sizeof(m_szFullPath), "materials/%s", g_szPaintballDecals[a][i]);
@@ -48,14 +48,14 @@ public Paintball_OnMapStart()
 		}
 }
 
-public Paintball_Reset()
+public void Paintball_Reset()
 {
-	for(new i=0;i<STORE_MAX_ITEMS;++i)
+	for(int i=0;i<STORE_MAX_ITEMS;++i)
 		g_iPaintballDecals[i] = 0;
 	g_iPaintballItems = 0;
 }
 
-public Paintball_Config(&Handle:kv, itemid)
+public bool Paintball_Config(Handle kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iPaintballItems);
 
@@ -76,23 +76,23 @@ public Paintball_Config(&Handle:kv, itemid)
 	return true;
 }
 
-public Paintball_Equip(client, id)
+public int Paintball_Equip(int client,int id)
 {
 	return -1;
 }
 
-public Paintball_Remove(client, id)
+public int Paintball_Remove(int client,int id)
 {
 }
 
-public Action:Paintball_BulletImpact(Handle:event,const String:name[],bool:dontBroadcast)
+public Action Paintball_BulletImpact(Handle event,const char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	new m_iEquipped = Store_GetEquippedItem(client, "paintball");
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int m_iEquipped = Store_GetEquippedItem(client, "paintball");
 	if(m_iEquipped >= 0)
 	{
-		new m_iData = Store_GetDataIndex(m_iEquipped);
-		decl Float:m_fImpact[3];
+		int m_iData = Store_GetDataIndex(m_iEquipped);
+		float m_fImpact[3];
 		m_fImpact[0] = GetEventFloat(event, "x");
 		m_fImpact[1] = GetEventFloat(event, "y");
 		m_fImpact[2] = GetEventFloat(event, "z");

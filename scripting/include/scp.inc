@@ -64,8 +64,8 @@ $Copyright: (c) Simple Plugins 2008-2009$
  * @param 		message						The contents of the chat message (Byref)
  * @noreturn
  **********************************************************************/
-forward Action:OnChatMessage(&author, Handle:recipients, String:name[], String:message[]);
-forward Action:OnChatMessageSent(author, String:message[]);
+forward Action OnChatMessage(any author, Handle recipients, char[] name, char[] message);
+forward Action OnChatMessageSent(any author, char[] message);
 
 
 
@@ -75,14 +75,14 @@ forward Action:OnChatMessageSent(author, String:message[]);
  *
  * @return		The current type of chat message (see constants) 
  **********************************************************************/
- native GetMessageFlags();
+ native void GetMessageFlags();
 
  
  
 /**
 Shared plugin information
 **/
-public SharedPlugin:_pl_scp = 
+public SharedPlugin _pl_scp = 
 {
 	name = "scp",
 	file = "simple-chatprocessor.smx",
@@ -94,7 +94,7 @@ public SharedPlugin:_pl_scp =
 };
 
 #if !defined REQUIRE_PLUGIN
-public _pl_scp_SetNTVOptional()
+public void _pl_scp_SetNTVOptional()
 {
 	MarkNativeAsOptional("GetMessageFlags");
 }

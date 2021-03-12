@@ -10,7 +10,7 @@
 #undef REQUIRE_EXTENSIONS
 #include <store>
 
-new bool:GAME_TF2 = false;
+bool GAME_TF2 = false;
 #endif
 
 enum Hat
@@ -24,24 +24,24 @@ enum Hat
 	iSlot
 }
 
-new Handle:g_hLookupAttachment = INVALID_HANDLE;
+Handle g_hLookupAttachment = INVALID_HANDLE;
 
-new g_eHats[STORE_MAX_ITEMS][Hat];
+int g_eHats[STORE_MAX_ITEMS][Hat];
 
-new g_iClientHats[MAXPLAYERS+1][STORE_MAX_SLOTS];
-new g_iHats = 0;
+int g_iClientHats[MAXPLAYERS+1][STORE_MAX_SLOTS];
+int g_iHats = 0;
 
-new g_cvarDefaultT = -1;
-new g_cvarDefaultCT = -1;
-new g_cvarOverrideEnabled = -1;
+int g_cvarDefaultT = -1;
+int g_cvarDefaultCT = -1;
+int g_cvarOverrideEnabled = -1;
 
-new bool:g_bTOverride = false;
-new bool:g_bCTOverride = false;
+bool g_bTOverride = false;
+bool g_bCTOverride = false;
 
 #if defined STANDALONE_BUILD
-public OnPluginStart()
+public void OnPluginStart()
 #else
-public Hats_OnPluginStart()
+public void Hats_OnPluginStart()
 #endif
 {
 #if !defined STANDALONE_BUILD
@@ -53,7 +53,7 @@ public Hats_OnPluginStart()
 	}
 #else
 	// TF2 is unsupported
-	new String:m_szGameDir[32];
+	char m_szGameDir[32];
 	GetGameFolderName(m_szGameDir, sizeof(m_szGameDir));
 	if(strcmp(m_szGameDir, "tf")==0)
 		GAME_TF2 = true;
@@ -62,7 +62,7 @@ public Hats_OnPluginStart()
 	if(GAME_TF2)
 		return;
 
-	new Handle:m_hGameConf = LoadGameConfigFile("store.gamedata");
+	Handle m_hGameConf = LoadGameConfigFile("store.gamedata");
 	StartPrepSDKCall(SDKCall_Entity);
 	PrepSDKCall_SetFromConf(m_hGameConf, SDKConf_Signature, "LookupAttachment");
 	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
@@ -87,13 +87,13 @@ public Hats_OnPluginStart()
 	HookEvent("player_team", Hats_PlayerRemoveEvent);
 }
 
-public Hats_OnMapStart()
+public void Hats_OnMapStart()
 {
-	for(new a=0;a<=MaxClients;++a)
-		for(new b=0;b<STORE_MAX_SLOTS;++b)
+	for(int a=0;a<=MaxClients;++a)
+		for(int  b=0;b<STORE_MAX_SLOTS;++b)
 			g_iClientHats[a][b]=0;
 
-	for(new i=0;i<g_iHats;++i)
+	for(int i=0;i<g_iHats;++i)
 	{
 		PrecacheModel2(g_eHats[i][szModel], true);
 		Downloader_AddFileToDownloadsTable(g_eHats[i][szModel]);
@@ -119,15 +119,15 @@ public Hats_OnMapStart()
 		g_bCTOverride = false;
 }
 
-public Hats_Reset()
+public void Hats_Reset()
 {
 	g_iHats = 0;
 }
 
-public Hats_Config(&Handle:kv, itemid)
+public bool Hats_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iHats);
-	decl Float:m_fTemp[3];
+	float m_fTemp[3];
 	KvGetString(kv, "model", g_eHats[g_iHats][szModel], PLATFORM_MAX_PATH);
 	KvGetVector(kv, "position", m_fTemp);
 	g_eHats[g_iHats][fPosition] = m_fTemp;
@@ -157,26 +157,26 @@ public Hats_Config(&Handle:kv, itemid)
 	return true;
 }
 
-public Hats_Equip(client, id)
+public int Hats_Equip(int client,int id)
 {
 	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 		return -1;
-	new m_iData = Store_GetDataIndex(id);
+	int m_iData = Store_GetDataIndex(id);
 	RemoveHat(client, g_eHats[m_iData][iSlot]);
 	CreateHat(client, id);
 	return g_eHats[m_iData][iSlot];
 }
 
-public Hats_Remove(client, id)
+public int Hats_Remove(int client,int id)
 {
-	new m_iData = Store_GetDataIndex(id);
+	int m_iData = Store_GetDataIndex(id);
 	RemoveHat(client, g_eHats[m_iData][iSlot]);
 	return g_eHats[m_iData][iSlot];
 }
 
-public Action:Hats_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public Action Hats_PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 		return Plugin_Continue;
 		
@@ -186,13 +186,13 @@ public Action:Hats_PlayerSpawn(Handle:event, const String:name[], bool:dontBroad
 	return Plugin_Continue;
 }
 
-public Action:Hats_PlayerSpawn_Post(Handle:timer, any:userid)
+public Action Hats_PlayerSpawn_Post(Handle timer, any userid)
 {
-	new client = GetClientOfUserId(userid);
+	int client = GetClientOfUserId(userid);
 	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 		return Plugin_Stop;
 
-	for(new i=0;i<STORE_MAX_SLOTS;++i)
+	for(int i=0;i<STORE_MAX_SLOTS;++i)
 	{
 		RemoveHat(client, i);
 		CreateHat(client, -1, i);
@@ -200,24 +200,24 @@ public Action:Hats_PlayerSpawn_Post(Handle:timer, any:userid)
 	return Plugin_Stop;
 }
 
-public Action:Hats_PlayerRemoveEvent(Handle:event, const String:name[], bool:dontBroadcast)
+public Action Hats_PlayerRemoveEvent(Handle event, const char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if(!client || !IsClientInGame(client))
 		return Plugin_Continue;
 
-	for(new i=0;i<STORE_MAX_SLOTS;++i)
+	for(int i=0;i<STORE_MAX_SLOTS;++i)
 		RemoveHat(client, i);
 	return Plugin_Continue;
 }
 
-CreateHat(client, itemid=-1, slot=0)
+void CreateHat(int client,int itemid=-1,int slot=0)
 {
-	new m_iEquipped = (itemid==-1?Store_GetEquippedItem(client, "hat", slot):itemid);
+	int m_iEquipped = (itemid==-1?Store_GetEquippedItem(client, "hat", slot):itemid);
 	if(m_iEquipped >= 0)
 	{
-		new m_iData = Store_GetDataIndex(m_iEquipped);
-		new m_iTeam = GetClientTeam(client);
+		int m_iData = Store_GetDataIndex(m_iEquipped);
+		int m_iTeam = GetClientTeam(client);
 		
 		if(g_eHats[m_iData][iTeam] != 0 && m_iTeam!=g_eHats[m_iData][iTeam])
 			return;
@@ -239,11 +239,11 @@ CreateHat(client, itemid=-1, slot=0)
 		}
 		
 		// Calculate the final position and angles for the hat
-		decl Float:m_fHatOrigin[3];
-		decl Float:m_fHatAngles[3];
-		decl Float:m_fForward[3];
-		decl Float:m_fRight[3];
-		decl Float:m_fUp[3];
+		float m_fHatOrigin[3];
+		float m_fHatAngles[3];
+		float m_fForward[3];
+		float m_fRight[3];
+		float m_fUp[3];
 		GetClientAbsOrigin(client,m_fHatOrigin);
 		GetClientAbsAngles(client,m_fHatAngles);
 		
@@ -251,7 +251,7 @@ CreateHat(client, itemid=-1, slot=0)
 		m_fHatAngles[1] += g_eHats[m_iData][fAngles][1];
 		m_fHatAngles[2] += g_eHats[m_iData][fAngles][2];
 
-		new Float:m_fOffset[3];
+		float m_fOffset[3];
 		m_fOffset[0] = g_eHats[m_iData][fPosition][0];
 		m_fOffset[1] = g_eHats[m_iData][fPosition][1];
 		m_fOffset[2] = g_eHats[m_iData][fPosition][2];
@@ -263,7 +263,7 @@ CreateHat(client, itemid=-1, slot=0)
 		m_fHatOrigin[2] += m_fRight[2]*m_fOffset[0]+m_fForward[2]*m_fOffset[1]+m_fUp[2]*m_fOffset[2];
 		
 		// Create the hat entity
-		new m_iEnt = CreateEntityByName("prop_dynamic_override");
+		int m_iEnt = CreateEntityByName("prop_dynamic_override");
 		DispatchKeyValue(m_iEnt, "model", g_eHats[m_iData][szModel]);
 		DispatchKeyValue(m_iEnt, "spawnflags", "256");
 		DispatchKeyValue(m_iEnt, "solid", "0");
@@ -292,12 +292,12 @@ CreateHat(client, itemid=-1, slot=0)
 	}
 }
 
-public RemoveHat(client, slot)
+public void RemoveHat(int client,int slot)
 {
 	if(g_iClientHats[client][slot] != 0 && IsValidEdict(g_iClientHats[client][slot]))
 	{
 		SDKUnhook(g_iClientHats[client][slot], SDKHook_SetTransmit, Hook_SetTransmit);
-		new String:m_szClassname[64];
+		char m_szClassname[64];
 		GetEdictClassname(g_iClientHats[client][slot], STRING(m_szClassname));
 		if(strcmp("prop_dynamic", m_szClassname)==0)
 			AcceptEntityInput(g_iClientHats[client][slot], "Kill");
@@ -306,23 +306,23 @@ public RemoveHat(client, slot)
 
 }
 
-public Action:Hook_SetTransmit(ent, client)
+public Action Hook_SetTransmit(int ent,int client)
 {
 	if(GetFeatureStatus(FeatureType_Native, "IsPlayerInTP")==FeatureStatus_Available)
 		if(IsPlayerInTP(client))
 			return Plugin_Continue;
 
-	for(new i=0;i<STORE_MAX_SLOTS;++i)
+	for(int i=0;i<STORE_MAX_SLOTS;++i)
 		if(ent == g_iClientHats[client][i])
 			return Plugin_Handled;
 
 	if(client && IsClientInGame(client))
 	{
-		new m_iObserverMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
-		new m_hObserverTarget = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+		any m_iObserverMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
+		any m_hObserverTarget = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 		if(m_iObserverMode == 4 && m_hObserverTarget>=0)
 		{
-			for(new i=0;i<STORE_MAX_SLOTS;++i)
+			for(int i=0;i<STORE_MAX_SLOTS;++i)
 				if(ent == g_iClientHats[m_hObserverTarget][i])
 					return Plugin_Handled;
 		}
@@ -331,7 +331,7 @@ public Action:Hook_SetTransmit(ent, client)
 	return Plugin_Continue;
 }
 
-public LookupAttachment(client, String:point[])
+public any LookupAttachment(int client, char[] point)
 {
 	if(GAME_CSGO)
 		return true;
@@ -342,16 +342,16 @@ public LookupAttachment(client, String:point[])
 	return SDKCall(g_hLookupAttachment, client, point);
 }
 
-public Bonemerge(ent)
+public void Bonemerge(int ent)
 {
-	new m_iEntEffects = GetEntProp(ent, Prop_Send, "m_fEffects"); 
+	int m_iEntEffects = GetEntProp(ent, Prop_Send, "m_fEffects"); 
 	m_iEntEffects &= ~32;
 	m_iEntEffects |= 1;
 	m_iEntEffects |= 128;
 	SetEntProp(ent, Prop_Send, "m_fEffects", m_iEntEffects); 
 }
 
-public Store_OnClientModelChanged(client, String:model[])
+public void Store_OnClientModelChanged(int client, char[] model)
 {
 	if(!IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
@@ -361,8 +361,8 @@ public Store_OnClientModelChanged(client, String:model[])
 
 	if(!LookupAttachment(client, "forward"))
 	{
-		new bool:m_bHasHats = false;
-		for(new i=0;i<STORE_MAX_SLOTS;++i)
+		bool m_bHasHats = false;
+		for(int i=0;i<STORE_MAX_SLOTS;++i)
 		{
 			if(Store_GetEquippedItem(client, "hat", i)!=-1)
 			{

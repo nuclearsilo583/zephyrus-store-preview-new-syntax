@@ -3,7 +3,7 @@
 #endif
 #define _gifts_included
 
-public SharedPlugin:__pl_gifts = 
+public SharedPlugin __pl_gifts = 
 {
 	name = "[ANY] Gifts",
 	file = "gifts.smx",
@@ -15,7 +15,7 @@ public SharedPlugin:__pl_gifts =
 };
 
 #if !defined REQUIRE_PLUGIN
-public __pl_gifts_SetNTVOptional()
+public void __pl_gifts_SetNTVOptional()
 {
 	MarkNativeAsOptional("Gifts_RegisterPlugin");
 	MarkNativeAsOptional("Gifts_RemovePlugin");
@@ -38,10 +38,10 @@ enum GiftConditions
  * @param callback  The callback function
  * @return        True if plugin was successfully registered.
  */
-native Gifts_RegisterPlugin(Function:callback);
-native Gifts_RemovePlugin();
-native Gifts_SetClientCondition(client, GiftConditions:clientState);
-native Gifts_GetClientCondition(client);
-native Gifts_SpawnGift(Function:callback, const String:model[], Float:lifetime, Float:position[3], data, owner=0);
+native any Gifts_RegisterPlugin(Function callback);
+native any Gifts_RemovePlugin();
+native any Gifts_SetClientCondition(int client, GiftConditions clientState);
+native any Gifts_GetClientCondition(int client);
+native any Gifts_SpawnGift(Function callback, const char[] model, float lifetime, float[3] position,any data,int owner=0);
 
-forward Gifts_OnGiftSpawned(entity);
+forward void Gifts_OnGiftSpawned(any entity);
