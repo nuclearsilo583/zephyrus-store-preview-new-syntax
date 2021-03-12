@@ -8,12 +8,15 @@ Not support for SM 1.11
 
 Since this is zephyrus's store that was rewritten so any custom module that support zephyrus store can also be run without any problem. Contact me if you find any bugs or error.
 
+# NEW: NOW SUPPORT WITH NEW STYLE SYNTAX
+
 # Modules that has preview support:
 - Player Skin (by zephyrus)
 - Custom weapon Model Skin  (by bbs.93x.cn)
 - Life live pet (with idle2 animation config - Rare idle animation => Support for spawn and death animation soon) by Totenfluch
 - Custom MVP music (by kento and shanapu)
 - Zombie reloaded playerclasses (original by zephyrus)
+- *New: Hats preview (original by zephyrus)
 - More items will be supported soon (hats, aura, particle, etc...)
 # New feature added:
 - Added "preview" key value enable preview system
