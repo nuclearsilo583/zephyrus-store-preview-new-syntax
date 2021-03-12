@@ -17,7 +17,7 @@ Since this is zephyrus's store that was rewritten so any custom module that supp
 - Custom MVP music (by kento and shanapu)
 - Zombie reloaded playerclasses (original by zephyrus)
 - *New: Hats preview (original by zephyrus)
-- More items will be supported soon (hats, aura, particle, etc...)
+- aura, particle, etc.. will be supported soon
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
