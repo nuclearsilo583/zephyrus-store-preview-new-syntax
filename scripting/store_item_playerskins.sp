@@ -4,13 +4,11 @@
 #include <sdkhooks>
 #include <colors>
 #include <cstrike>
-
-// Comment next line if you dont use ZR and comment any related funtion
 #include <zombiereloaded>
 
 #include <store>
 #include <zephstocks>
-//#pragma newdecls required
+#pragma newdecls required
 //new GAME_TF2 = false;
 
 //native bool:ZR_IsClientZombie(client);
@@ -21,41 +19,33 @@ enum PlayerSkin
 	String:szModel[PLATFORM_MAX_PATH],
 	String:szArms[PLATFORM_MAX_PATH],
 	iSkin,
+	iBody,
 	//bool:bTemporary,
 	iTeam,
 	nModelIndex
 }
 
-new g_ePlayerSkins[STORE_MAX_ITEMS][PlayerSkin];
+int g_ePlayerSkins[STORE_MAX_ITEMS][PlayerSkin];
 
-new g_iPlayerSkins = 0;
+int g_iPlayerSkins = 0;
 //new g_iTempSkins[MAXPLAYERS+1];
 
-new g_cvarSkinChangeInstant = -1;
+int g_cvarSkinChangeInstant = -1;
 //new g_cvarSkinForceChange = -1;
 //new g_cvarSkinForceChangeCT = -1;
 //new g_cvarSkinForceChangeT = -1;
-new g_cvarSkinDelay = -1;
+int g_cvarSkinDelay = -1;
 
 //new bool:g_bTForcedSkin = false;
 //new bool:g_bCTForcedSkin = false;
 
 Handle g_hTimerPreview[MAXPLAYERS + 1];
 
-new bool:g_bSkinEnable;
+bool g_bSkinEnable;
 
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
-public Plugin myinfo = 
-{
-	name = "Store - Player Skin module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
-	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
-	url = ""
-}
-
-public OnPluginStart()
+public void OnPluginStart()
 {	
 	LoadTranslations("store.phrases");
 	
@@ -77,10 +67,10 @@ public OnPluginStart()
 	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
 }
 
-public PlayerSkins_OnMapStart()
+public void PlayerSkins_OnMapStart()
 {
 	
-	for(new i=0;i<g_iPlayerSkins;++i)
+	for(int i=0;i<g_iPlayerSkins;++i)
 	{
 		g_ePlayerSkins[i][nModelIndex] = PrecacheModel2(g_ePlayerSkins[i][szModel], true);
 		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][szModel]);
@@ -91,21 +81,22 @@ public PlayerSkins_OnMapStart()
 			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][szArms]);
 		}
 	}
+	
 }
 
-
-public PlayerSkins_Reset()
+public void PlayerSkins_Reset()
 {
 	g_iPlayerSkins = 0;
 }
 
-public PlayerSkins_Config(&Handle:kv, itemid)
+public bool PlayerSkins_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iPlayerSkins);
 	
 	KvGetString(kv, "model", g_ePlayerSkins[g_iPlayerSkins][szModel], PLATFORM_MAX_PATH);
 	KvGetString(kv, "arms", g_ePlayerSkins[g_iPlayerSkins][szArms], PLATFORM_MAX_PATH);
 	g_ePlayerSkins[g_iPlayerSkins][iSkin] = KvGetNum(kv, "skin");
+	g_ePlayerSkins[g_iPlayerSkins][iBody] = KvGetNum(kv, "body", -1);
 	g_ePlayerSkins[g_iPlayerSkins][iTeam] = KvGetNum(kv, "team");
 	//g_ePlayerSkins[g_iPlayerSkins][bTemporary] = (KvGetNum(kv, "temporary")?true:false);
 	
@@ -118,15 +109,15 @@ public PlayerSkins_Config(&Handle:kv, itemid)
 	return false;
 }
 
-public PlayerSkins_Equip(client, int id)
+public int PlayerSkins_Equip(int client, int id)
 {
-	new m_iData = Store_GetDataIndex(id);
+	int m_iData = Store_GetDataIndex(id);
 	//int iIndex =  Store_GetDataIndex(id);
 	if (g_eCvars[g_bSkinEnable][aCache] == 1)
 	{
 		if(IsPlayerAlive(client) && IsValidClient(client, true) && !ZR_IsClientZombie(client)) //&& GetClientTeam(client)==g_ePlayerSkins[m_iData][iTeam])
 		{
-			Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin], g_ePlayerSkins[m_iData][szArms], m_iData);
+			Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin], g_ePlayerSkins[m_iData][iBody], g_ePlayerSkins[m_iData][szArms], m_iData);
 		}
 		/*else
 		{
@@ -148,7 +139,7 @@ public PlayerSkins_Equip(client, int id)
 	return g_ePlayerSkins[Store_GetDataIndex(id)][iTeam]-2;
 }
 
-public PlayerSkins_Remove(client, id)
+public int PlayerSkins_Remove(int client,int id)
 {
 	/*if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant][aCache])
 		CPrintToChat(client, "%t", "PlayerSkins Settings Changed");*/
@@ -169,24 +160,24 @@ public PlayerSkins_Remove(client, id)
 
 public void PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (g_eCvars[g_bSkinEnable][aCache] == 1)
 	{
 		if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 			return;
 		
-		new Float:Delay = Float:g_eCvars[g_cvarSkinDelay][aCache];
+		//new Float:Delay = Float:g_eCvars[g_cvarSkinDelay][aCache];
 		
-		CreateTimer(Delay, PlayerSkins_PlayerSpawnPost, GetClientUserId(client));
+		CreateTimer(view_as<float>(g_eCvars[g_cvarSkinDelay][aCache]), PlayerSkins_PlayerSpawnPost, GetClientUserId(client));
 	}
 	else CPrintToChat(client, "{yellow}♛ J1BroS Store ♛ {default}Store Player Skin module is currently temporary disabled");
 	
 	//return Plugin_Continue;
 }
 
-public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
+public Action PlayerSkins_PlayerSpawnPost(Handle timer, any userid)
 {
-	new client = GetClientOfUserId(userid);
+	int client = GetClientOfUserId(userid);
 	//int iIndex =  Store_GetDataIndex(id);
 	if(!client || !IsClientInGame(client))
 		return Plugin_Stop;
@@ -198,13 +189,13 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 		if (!ZR_IsClientHuman(client))
 			return Plugin_Stop;
 	
-	new m_iEquipped = Store_GetEquippedItem(client, "playerskin", 2);
+	int m_iEquipped = Store_GetEquippedItem(client, "playerskin", 2);
 	if(m_iEquipped < 0)
 		return Plugin_Stop;
 	
-	decl m_iData;
+	int m_iData;
 	m_iData = Store_GetDataIndex(m_iEquipped);
-	Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin], g_ePlayerSkins[m_iData][szArms], m_iData);
+	Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin], g_ePlayerSkins[m_iData][iBody], g_ePlayerSkins[m_iData][szArms], m_iData);
 
 	/*else if(g_eCvars[g_cvarSkinForceChange][aCache])
 	{
@@ -217,7 +208,7 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 	return Plugin_Stop;
 }
 
-Store_SetClientModel(client, const String:model[], const skin=0, const String:arms[]="", int index)
+void Store_SetClientModel(int client, const char[] model, const int skin=0, const int body=0, const char[] arms="", int index)
 {
 
 	SetEntityModel(client, model);
@@ -226,6 +217,12 @@ Store_SetClientModel(client, const String:model[], const skin=0, const String:ar
 		return;
 
 	SetEntProp(client, Prop_Send, "m_nSkin", skin);
+	
+	if (body > 0)
+    {
+        // set?
+		SetEntProp(client, Prop_Send, "m_nBody", body);
+    }
 	
 	//CreateTimer(0.15, Timer_RemovePlayerWeapon, GetClientUserId(client));
 	RemoveClientGloves(client, index);
@@ -324,6 +321,10 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
 	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
 	SetEntProp(iPreview, Prop_Send, "m_nSkin", g_ePlayerSkins[index][iSkin]);
+	if (g_ePlayerSkins[index][iBody] > 0)
+	{
+		SetEntProp(iPreview, Prop_Send, "m_nBody", g_ePlayerSkins[index][iBody]);
+	}
 	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
 
@@ -401,7 +402,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 	return Plugin_Stop;
 }
 
-stock bool IsValidClient(client, bool nobots = true)
+stock bool IsValidClient(int client, bool nobots = true)
 { 
     if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
     {
