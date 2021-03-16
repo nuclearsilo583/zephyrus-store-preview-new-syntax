@@ -1,0 +1,104 @@
+"Games"
+{
+	"#default"
+	{
+		"Offsets"
+		{
+			"EntityListeners"
+			{
+				"windows"	"65572"
+				"linux"		"65572"
+				"mac"		"65572"
+			}
+		}
+	}
+
+	"cstrike"
+	{
+		"Signatures"
+		{
+			"LookupAttachment"
+			{
+				"library"	"server"
+				"linux"		"@_ZN14CBaseAnimating16LookupAttachmentEPKc"
+				"windows"		"\x55\x8B\xEC\x56\x8B\xF1\x80\xBE\x2A\x2A\x2A\x2A\x00\x75\x2A\x83\xBE\x2A\x2A\x2A\x2A\x00\x75\x2A\xE8\x2A\x2A\x2A\x2A\x85\xC0\x74\x2A\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x85\xC0\x74\x2A\x83\x2A\x2A\x74\x2A\xFF\x75\x08"
+			}
+		}
+		
+		"Offsets"
+		{
+			"Weapon_ShootPosition"
+			{
+				"windows" "263"
+				"linux" "264"
+			}
+			
+			"SetModel"
+			{
+				"windows" "24"
+				"linux" "25"
+			}
+		}
+	}
+	
+	"csgo"
+	{
+		"Signatures"
+		{
+			"LookupAttachment"
+			{
+				"library"	"server"
+				"linux"		"@_ZN14CBaseAnimating16LookupAttachmentEPKc"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x08\x53\x56\x57\x8B\xF9\x89\x55\xF8\x85\xFF\x0F\x84\x80\x00\x00\x00\xE8\x75\xA6\xE3\xFF\x84\xC0\x74\x77\x8B\xCF\x33\xDB\xE8\xA8\xAA\xE3\xFF\x85\xC0\x7E\x6A\x8B\x47\x04\x33\xF6\x89\x75\xFC"
+			}
+		}
+		"Offsets"
+		{
+			"Weapon_ShootPosition"
+			{
+				"windows" "280"
+				"linux" "281"
+			}
+			
+			"SetModel"
+			{
+				"windows" "26"
+				"linux" "27"
+			}
+			
+			"EntityListeners"
+			{
+				"windows"	"196644"
+				"linux"		"196644"
+				"mac"		"196644"
+			}
+		}
+	}
+
+	"tf"
+   {
+       "Offsets"
+       {
+           "EquipWearable"
+           {
+               "windows"    "425"
+               "linux"        "426"
+               "mac"        "426"
+           }
+
+           "RemoveWearable"
+           {
+               "windows"    "426"
+               "linux"        "427"
+               "mac"        "427"
+           }
+
+           "IsWearable"
+           {
+               "windows"    "87"
+               "linux"        "88"
+               "mac"        "88"
+           }
+       }
+   }
+}  
