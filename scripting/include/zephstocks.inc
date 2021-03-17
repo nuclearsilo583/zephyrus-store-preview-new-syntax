@@ -25,7 +25,7 @@
 
 #define STRING(%1) %1, sizeof(%1)
 
-enum CVAR_TYPE
+enum VAR_TYPE
 {
 	TYPE_INT = 0,
 	TYPE_FLOAT,
@@ -33,16 +33,16 @@ enum CVAR_TYPE
 	TYPE_FLAG
 }
 
-enum CVAR_CACHE
+enum struct CVAR_CACHE
 {
-	Handle:hCvar,
-	CVAR_TYPE:eType,
-	any:aCache,
-	String:sCache[CVAR_LENGTH],
-	Function:fnCallback
+	Handle hCvar;
+	any eType;
+	any aCache;
+	char sCache[CVAR_LENGTH];
+	Function fnCallback;
 }
 
-int g_eCvars[MAX_CVARS][CVAR_CACHE];
+CVAR_CACHE g_eCvars[MAX_CVARS];
 
 int g_iCvars = 0;
 
@@ -202,7 +202,7 @@ stock bool PrintKeyHintText(int client, const char[] format, any ...)
 	return true;
 }
 
-stock int HookConVar(char[] name, CVAR_TYPE type, Function callback=INVALID_FUNCTION)
+stock int HookConVar(char[] name, any type, Function callback=INVALID_FUNCTION)
 {
 	Handle cvar = FindConVar(name);
 	if(cvar == INVALID_HANDLE)
@@ -215,13 +215,13 @@ stock int HookConVar(char[] name, CVAR_TYPE type, Function callback=INVALID_FUNC
 	return g_iCvars++;
 }
 
-stock int RegisterConVar(char[] name, char[] value, char[] description, CVAR_TYPE type, Function callback=INVALID_FUNCTION, int flags=0, bool hasMin=false, float min=0.0, bool hasMax=false, float max=0.0)
+stock int RegisterConVar(char[] name, char[] value, char[] description, any type, Function callback=INVALID_FUNCTION, int flags=0, bool hasMin=false, float min=0.0, bool hasMax=false, float max=0.0)
 {
 	Handle cvar = CreateConVar(name, value, description, flags, hasMin, min, hasMax, max);
 	HookConVarChange(cvar, GlobalConVarChanged);
-	g_eCvars[g_iCvars][hCvar] = cvar;
-	g_eCvars[g_iCvars][eType] = type;
-	g_eCvars[g_iCvars][fnCallback] = callback;
+	g_eCvars[g_iCvars].hCvar = cvar;
+	g_eCvars[g_iCvars].eType = type;
+	g_eCvars[g_iCvars].fnCallback = callback;
 	CacheCvarValue(g_iCvars);
 	return g_iCvars++;
 }
@@ -229,13 +229,13 @@ stock int RegisterConVar(char[] name, char[] value, char[] description, CVAR_TYP
 public int GlobalConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	for(int i=0;i<g_iCvars;++i)
-		if(g_eCvars[i][hCvar]==convar)
+		if(g_eCvars[i].hCvar==convar)
 		{
 			CacheCvarValue(i);
 		
-			if(g_eCvars[i][fnCallback]!=INVALID_FUNCTION)
+			if(g_eCvars[i].fnCallback!=INVALID_FUNCTION)
 			{
-				Call_StartFunction(INVALID_HANDLE, g_eCvars[i][fnCallback]);
+				Call_StartFunction(INVALID_HANDLE, g_eCvars[i].fnCallback);
 				Call_PushCell(i);
 				Call_Finish();
 			}
@@ -246,13 +246,13 @@ public int GlobalConVarChanged(Handle convar, const char[] oldValue, const char[
 
 public void CacheCvarValue(int index)
 {
-	GetConVarString(g_eCvars[index][hCvar], g_eCvars[index][sCache], CVAR_LENGTH);
-	if(g_eCvars[index][eType]==TYPE_INT)
-		g_eCvars[index][aCache] = GetConVarInt(g_eCvars[index][hCvar]);
-	else if(g_eCvars[index][eType]==TYPE_FLOAT)
-		g_eCvars[index][aCache] = GetConVarFloat(g_eCvars[index][hCvar]);
-	else if(g_eCvars[index][eType]==TYPE_FLAG)
-		g_eCvars[index][aCache] = ReadFlagString(g_eCvars[index][sCache]);
+	GetConVarString(g_eCvars[index].hCvar, g_eCvars[index].sCache, CVAR_LENGTH);
+	if(g_eCvars[index].eType==TYPE_INT)
+		g_eCvars[index].aCache = GetConVarInt(g_eCvars[index].hCvar);
+	else if(g_eCvars[index].eType==TYPE_FLOAT)
+		g_eCvars[index].aCache = GetConVarFloat(g_eCvars[index].hCvar);
+	else if(g_eCvars[index].eType==TYPE_FLAG)
+		g_eCvars[index].aCache = ReadFlagString(g_eCvars[index].sCache);
 }
 
 public void SQLCallback_Void(Handle owner, Handle hndl, const char[] error, any suspend_errors)
@@ -481,10 +481,10 @@ stock bool InsertMenuItemEx(Handle menu,any position,any style, char[] info, cha
 
 stock void ClearTimer(Handle timer)
 {
-	if(timer != INVALID_HANDLE)
+	if(timer != null)
 	{
 		KillTimer(timer);
-		timer = INVALID_HANDLE;
+		timer = null;
 	}
 }
 
@@ -788,10 +788,6 @@ bool g_bGames = false;
 bool g_bCSS = false;
 bool g_bCSGO = false;
 bool g_bTF = false;
-bool g_bDOD = false;
-bool g_bL4D = false;
-bool g_bL4D2 = false;
-bool g_bND = false;
 
 stock void FillNormalTrie()
 {
@@ -1039,7 +1035,7 @@ stock void ReplaceColors(char[] text,int maxlen,int client = 0)
 		m_iPos += m_iEnd+2;
 
 		m_szSubstring[strlen(m_szSubstring)-1] = 0;
-		if(g_bCSS || g_bDOD || g_bTF)
+		if(g_bCSS || g_bTF)
 		{
 			m_bRet = GetTrieValue(g_hRGBTrie, m_szSubstring[1], m_iValue);
 			if(client != 0 && !m_bRet && strcmp(m_szSubstring[1], "teamcolor")==0)
@@ -1048,13 +1044,6 @@ stock void ReplaceColors(char[] text,int maxlen,int client = 0)
 				any m_iTeam = GetClientTeam(client);
 				if(m_iTeam == 1)
 						m_iValue = 0xCCCCCC;
-				else if(g_bDOD)
-				{
-					if(m_iTeam == 2)
-						m_iValue = 0x4D7942;
-					else if(m_iTeam == 3)
-						m_iValue = 0xFF4040;
-				}
 				else if(g_bCSS || g_bTF)
 				{
 					if(m_iTeam == 2)
@@ -1072,7 +1061,7 @@ stock void ReplaceColors(char[] text,int maxlen,int client = 0)
 
 		m_szSubstring[strlen(m_szSubstring)] = '}';
 
-		if(g_bCSS || g_bDOD || g_bTF)
+		if(g_bCSS|| g_bTF)
 			Format(STRING(m_szReplace), "\x07%06X", m_iValue);
 		else
 			m_szReplace[0] = m_iValue;
@@ -1093,14 +1082,6 @@ stock void IdentifyGame()
 		g_bCSGO = true;
 	else if(strcmp(m_szGameDir, "tf")==0)
 		g_bTF = true;
-	else if(strcmp(m_szGameDir, "dod")==0)
-		g_bDOD = true;
-	else if(strcmp(m_szGameDir, "l4d")==0)
-		g_bL4D = true;
-	else if(strcmp(m_szGameDir, "l4d2")==0)
-		g_bL4D2 = true;
-	else if(strcmp(m_szGameDir, "nucleardawn")==0)
-		g_bND = true;
 }
 
 stock bool IsPluginLoaded(char[] name)

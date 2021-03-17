@@ -47,7 +47,7 @@ public bool NameTags_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iNameTags);
 	KvGetString(kv, "tag", g_szNameTags[g_iNameTags], sizeof(g_szNameTags[]));
-	++g_iNameTags;
+	g_iNameTags++;
 	
 	return true;
 }
@@ -56,7 +56,7 @@ public bool NameColors_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iNameColors);
 	KvGetString(kv, "color", g_szNameColors[g_iNameColors], sizeof(g_szNameColors[]));
-	++g_iNameColors;
+	g_iNameColors++;
 	
 	return true;
 }
@@ -65,7 +65,7 @@ public bool MsgColors_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iMessageColors);
 	KvGetString(kv, "color", g_szMessageColors[g_iMessageColors], sizeof(g_szMessageColors[]));
-	++g_iMessageColors;
+	g_iMessageColors++;
 	
 	return true;
 }
@@ -81,9 +81,9 @@ public int SCPSupport_Remove(int client,int id)
 
 public Action OnChatMessage(any client, Handle recipients, char[] name, char[] message)
 {
-	int m_iEquippedNameTag = Store_GetEquippedItem(client, "nametag");
-	int m_iEquippedNameColor = Store_GetEquippedItem(client, "namecolor");
-	int m_iEquippedMsgColor = Store_GetEquippedItem(client, "msgcolor");
+	any m_iEquippedNameTag = Store_GetEquippedItem(client, "nametag");
+	any m_iEquippedNameColor = Store_GetEquippedItem(client, "namecolor");
+	any m_iEquippedMsgColor = Store_GetEquippedItem(client, "msgcolor");
 	
 	if(m_iEquippedNameTag < 0 && m_iEquippedNameColor < 0 && m_iEquippedMsgColor < 0)
 		return Plugin_Continue;

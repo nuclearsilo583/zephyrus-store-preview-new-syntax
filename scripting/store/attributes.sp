@@ -27,23 +27,23 @@ public Action Attributes_PlayerSpawn(Handle event, const char[] name, bool dontB
 
 	int idx = -1;
 	int item_idx = -1;
-	any item[Store_Item];
+	Store_Item item;
 	char m_szValue[16];
 	while((item_idx=Store_IterateEquippedItems(client, idx, true))!=-1)
 	{
 		Store_GetItem(item_idx, item);
 
-		if(GetTrieString(item[hAttributes], "health", STRING(m_szValue)))
+		if(GetTrieString(item.hAttributes, "health", STRING(m_szValue)))
 		{
 			SetEntityHealth(client, GetClientHealth(client)+StringToInt(m_szValue));
 		}
 
-		if(GetTrieString(item[hAttributes], "gravity", STRING(m_szValue)))
+		if(GetTrieString(item.hAttributes, "gravity", STRING(m_szValue)))
 		{
 			SetEntityGravity(client, StringToFloat(m_szValue));
 		}
 
-		if(GetTrieString(item[hAttributes], "armor", STRING(m_szValue)))
+		if(GetTrieString(item.hAttributes, "armor", STRING(m_szValue)))
 		{
 			SetEntProp(client, Prop_Send, "m_ArmorValue", GetEntProp(client, Prop_Send, "m_ArmorValue")+StringToInt(m_szValue));
 		}

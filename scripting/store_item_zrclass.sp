@@ -4,42 +4,48 @@
 #include <store>
 #include <zephstocks>
 #include <colors>
+#include <zombiereloaded>
+
+#pragma newdecls required
 
 
-native bool:ZR_IsClientZombie(client);
-new bool:g_bZombieMode = false;
+//native bool ZR_IsClientZombie(client);
+//bool g_bZombieMode = false;
 
 
-native bool:ZR_IsClientHuman(client);
-native ZR_GetClassByName(const String:className[], cacheType = 0);
-native ZR_SelectClientClass(client, classIndex, bool:applyIfPossible = true, bool:saveIfEnabled = true);
+//native bool ZR_IsClientHuman(client);
+//native ZR_GetClassByName(const char[] className,int cacheType = 0);
+//native ZR_SelectClientClass(int client,int classIndex, bool applyIfPossible = true, bool saveIfEnabled = true);
 
-forward ZR_OnClientInfected(client, attacker, bool:motherInfect, bool:respawnOverride, bool:respawn);
-forward ZR_OnClientHumanPost(client, bool:respawn, bool:protect);
+//forward ZR_OnClientInfected(int client,int attacker, bool motherInfect, bool respawnOverride, bool respawn);
+//forward ZR_OnClientHumanPost(int client, bool respawn, bool protect);
 
-new g_iClientClasses[MAXPLAYERS+1][2];
+static int g_iClientClasses[MAXPLAYERS+1][2];
 
-new g_cvarDefaultHumanClass = -1;
-new g_cvarDefaultZombieClass = -1;
+int g_cvarDefaultHumanClass = -1;
+int g_cvarDefaultZombieClass = -1;
 
 char g_sModel[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
-enum ZRClass
+enum struct ZRClass
 {
-	String:szClass[64],
-	bool:bZombie,
-	unIndex
+	char szClass[64];
+	bool bZombie;
+	int skin;
+	int body;
+	any unIndex;
 }
 
-new g_eZRClasses[STORE_MAX_ITEMS][ZRClass];
+ZRClass g_eZRClasses[STORE_MAX_ITEMS];
 
-new g_iZRClasses = 0;
-int g_iCount = 0;
+int g_iZRClasses = 0;
+//int g_iCount = 0;
 
-char g_sChatPrefix[128];
+//char g_sChatPrefix[128];
 
 Handle g_hTimerPreview[MAXPLAYERS + 1];
+int g_bSkinEnable;
 
 public Plugin myinfo = 
 {
@@ -56,19 +62,21 @@ public void OnPluginStart()
 		
 	g_cvarDefaultHumanClass = RegisterConVar("sm_store_zrclass_default_human", "Normal Human", "Name of the default human class.", TYPE_STRING);
 	g_cvarDefaultZombieClass = RegisterConVar("sm_store_zrclass_default_zombie", "Classic", "Name of the default zombie class.", TYPE_STRING);
+	g_bSkinEnable = RegisterConVar("sm_store_zrclass_enable", "1", "Enable the player skin module", TYPE_INT);
 	LoadTranslations("store.phrases");
 	
 	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
 }
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+/*
+public APLRes AskPluginLoad2(Handle myself, bool:late, String:error[], err_max)
 {
 	MarkNativeAsOptional("ZR_IsClientZombie");
 	MarkNativeAsOptional("ZR_IsClientHuman");
 	MarkNativeAsOptional("ZR_GetClassByName");
 	MarkNativeAsOptional("ZR_SelectClientClass");
 	return APLRes_Success;
-} 
+} */
 
 public void ZRClass_OnMapStart()
 {
@@ -81,7 +89,7 @@ public void ZRClass_OnLibraryAdded(const String:name[])
 		g_bZombieMode = true;
 }*/
 
-public void OnClientConnected(client)
+public void OnClientConnected(int client)
 {
 	g_iClientClasses[client][0] = -1;
 	g_iClientClasses[client][1] = -1;
@@ -104,10 +112,12 @@ public bool ZRClass_Config(KeyValues &kv, int itemid)
 
 	//if (!FileExists(g_sModel[g_iZRClasses], true))
 	
-	KvGetString(kv, "class", g_eZRClasses[g_iZRClasses][szClass], 64);
-	g_eZRClasses[g_iZRClasses][bZombie] = (KvGetNum(kv, "zombie")?true:false);
+	KvGetString(kv, "class", g_eZRClasses[g_iZRClasses].szClass, 64);
+	g_eZRClasses[g_iZRClasses].skin = kv.GetNum("skin");
+	g_eZRClasses[g_iZRClasses].body = kv.GetNum("body");
+	g_eZRClasses[g_iZRClasses].bZombie = (KvGetNum(kv, "zombie")?true:false);
 	
-	if((g_eZRClasses[g_iZRClasses][unIndex] = ZR_GetClassByName(g_eZRClasses[g_iZRClasses][szClass]))!=-1)
+	if((g_eZRClasses[g_iZRClasses].unIndex = ZR_GetClassByName(g_eZRClasses[g_iZRClasses].szClass))!=-1)
 	{
 		++g_iZRClasses;
 		return true;
@@ -116,30 +126,34 @@ public bool ZRClass_Config(KeyValues &kv, int itemid)
 	return false;
 }
 
-public ZRClass_Equip(int client, int id)
+public int ZRClass_Equip(int client, int id)
 {
-	new m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData][bZombie]] = g_eZRClasses[m_iData][unIndex];
-
-	ZR_SelectClientClass(client, g_eZRClasses[m_iData][unIndex], false, false);
-
-	return g_eZRClasses[m_iData][bZombie];
+	int m_iData = Store_GetDataIndex(id);
+	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = g_eZRClasses[m_iData].unIndex;
+	
+	if (g_eCvars[g_bSkinEnable].aCache == 1)
+	{
+		ZR_SelectClientClass(client, g_eZRClasses[m_iData].unIndex, false, false);
+	}
+	return g_eZRClasses[m_iData].bZombie;
 }
 
-public ZRClass_Remove(int client, int id)
+public int ZRClass_Remove(int client, int id)
 {
-	new m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData][bZombie]] = -1;
-
-	if(g_eZRClasses[m_iData][bZombie])
-		ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultZombieClass][sCache]), false, false);
-	else
-		ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultHumanClass][sCache]), false, false);
-
-	return g_eZRClasses[Store_GetDataIndex(id)][bZombie];
+	int m_iData = Store_GetDataIndex(id);
+	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = -1;
+	
+	if (g_eCvars[g_bSkinEnable].aCache == 1)
+	{
+		if(g_eZRClasses[m_iData].bZombie)
+			ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultZombieClass].sCache), false, false);
+		else
+			ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultHumanClass].sCache), false, false);
+	}
+	return g_eZRClasses[Store_GetDataIndex(id)].bZombie;
 }
 
-public int ZR_OnClientInfected(client, attacker, bool:motherInfect, bool:respawnOverride, bool:respawn)
+public int ZR_OnClientInfected(int client, int attacker, bool motherInfect, bool respawnOverride, bool respawn)
 {	
 	if(motherInfect)
 		return;
@@ -149,18 +163,21 @@ public int ZR_OnClientInfected(client, attacker, bool:motherInfect, bool:respawn
 		if(GetClientHealth(client) < 300)
 		{
 			ZR_SelectClientClass(client, g_cvarDefaultZombieClass, false, false);
+
 		}
 		return;
 	}
-
-	ZR_SelectClientClass(client, g_iClientClasses[client][1], false, false);
+	if (g_eCvars[g_bSkinEnable].aCache == 1)
+	{
+		ZR_SelectClientClass(client, g_iClientClasses[client][1], false, false);
+	}
 }
 
-public int ZR_OnClientHumanPost(client, bool:respawn, bool:protect)
+public int ZR_OnClientHumanPost(int client, bool respawn, bool protect)
 {
 	if(g_iClientClasses[client][0] == -1)
 		return;
-
+	
 	ZR_SelectClientClass(client, g_iClientClasses[client][0], false, false);
 }
 
@@ -197,7 +214,8 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
 	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
 	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
-	//SetEntProp(iPreview, Prop_Send, "m_nSkin", g_iSkin[index]);
+	SetEntProp(iPreview, Prop_Send, "m_nSkin", g_eZRClasses[index].skin);
+	SetEntProp(iPreview, Prop_Send, "m_nBody", g_eZRClasses[index].body);
 	//SetEntProp(iPreview, Prop_Send, "m_nSkin", 2);
 	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 

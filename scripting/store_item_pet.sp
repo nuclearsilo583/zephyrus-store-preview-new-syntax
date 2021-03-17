@@ -5,9 +5,10 @@
 #include <clientprefs>
 
 #include <store> 
+#include <zephstocks>
 
 #include <colors> 
-#include <smartdm>
+//#include <smartdm>
 
 #pragma semicolon 1
 #pragma newdecls required
