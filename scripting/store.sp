@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5"
+#define PLUGIN_VERSION "5.6"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -74,8 +74,12 @@ enum struct Menu_Handler
 //////////////////////////////////
 //		GLOBAL VARIABLES		//
 //////////////////////////////////
+bool GAME_CSS = false;
 bool GAME_CSGO = false;
+bool GAME_DOD = false;
 bool GAME_TF2 = false;
+bool GAME_L4D = false;
+bool GAME_L4D2 = false;
 
 char g_szGameDir[64];
 
@@ -146,7 +150,6 @@ int PublicChatTrigger = 0;
 //////////////////////////////
 //			MODULES			//
 //////////////////////////////
-
 #if !defined STANDALONE_BUILD
 //#include "store/hats.sp"
 #include "store/tracers.sp"
@@ -184,7 +187,6 @@ int PublicChatTrigger = 0;
 //#include "store/weaponskins.sp"
 #include "store/admin.sp"
 #endif
-
 //////////////////////////////////
 //		PLUGIN DEFINITION		//
 //////////////////////////////////
@@ -219,16 +221,25 @@ public void OnPluginStart()
 	// Identify the game
 	GetGameFolderName(STRING(g_szGameDir));
 	
-	if(strcmp(g_szGameDir, "csgo")==0)
+	if(strcmp(g_szGameDir, "cstrike")==0)
+		GAME_CSS = true;
+	else if(strcmp(g_szGameDir, "csgo")==0)
 		GAME_CSGO = true;
-
+	else if(strcmp(g_szGameDir, "dod")==0)
+		GAME_DOD = true;
+	else if(strcmp(g_szGameDir, "tf")==0)
+		GAME_TF2 = true;
+	else if(strcmp(g_szGameDir, "l4d")==0)
+		GAME_L4D = true;
+	else if(strcmp(g_szGameDir, "l4d2")==0)
+		GAME_L4D2 = true;
 	else
 	{
 		SetFailState("This game is not be supported. Please contact the author for support.");
 	}
 
 	// Supress warnings about unused variables.....
-	//if( GAME_L4D || GAME_L4D2 || g_bL4D2 || g_bND) {}
+	if(GAME_DOD || GAME_L4D || GAME_L4D2 || g_bL4D || g_bL4D2 || g_bND) {}
 
 	// Setting default values
 	for(int i=1;i<=MaxClients;++i)

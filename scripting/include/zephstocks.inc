@@ -788,6 +788,10 @@ bool g_bGames = false;
 bool g_bCSS = false;
 bool g_bCSGO = false;
 bool g_bTF = false;
+bool g_bDOD = false;
+bool g_bL4D = false;
+bool g_bL4D2 = false;
+bool g_bND = false;
 
 stock void FillNormalTrie()
 {
@@ -1044,6 +1048,13 @@ stock void ReplaceColors(char[] text,int maxlen,int client = 0)
 				any m_iTeam = GetClientTeam(client);
 				if(m_iTeam == 1)
 						m_iValue = 0xCCCCCC;
+				else if(g_bDOD)
+				{
+					if(m_iTeam == 2)
+						m_iValue = 0x4D7942;
+					else if(m_iTeam == 3)
+						m_iValue = 0xFF4040;
+				}
 				else if(g_bCSS || g_bTF)
 				{
 					if(m_iTeam == 2)
@@ -1082,6 +1093,14 @@ stock void IdentifyGame()
 		g_bCSGO = true;
 	else if(strcmp(m_szGameDir, "tf")==0)
 		g_bTF = true;
+	else if(strcmp(m_szGameDir, "dod")==0)
+		g_bDOD = true;
+	else if(strcmp(m_szGameDir, "l4d")==0)
+		g_bL4D = true;
+	else if(strcmp(m_szGameDir, "l4d2")==0)
+		g_bL4D2 = true;
+	else if(strcmp(m_szGameDir, "nucleardawn")==0)
+		g_bND = true;
 }
 
 stock bool IsPluginLoaded(char[] name)
