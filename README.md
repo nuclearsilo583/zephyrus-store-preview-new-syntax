@@ -8,7 +8,9 @@ Not support for SM 1.11
 
 Since this is zephyrus's store that was rewritten so any custom module that support zephyrus store can also be run without any problem. Contact me if you find any bugs or error.
 
-# Now removed Array-based enum structs error message when compile
+Update 18/3: Re-add tf2 item support (I dont know this is gonna work or not). Please fell free to create a new issue post for bug report.
+
+## Now removed Array-based enum structs error message when compile
 
 # Modules that has preview support:
 - Player Skin (by zephyrus)
