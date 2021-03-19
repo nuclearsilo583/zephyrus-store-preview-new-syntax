@@ -291,9 +291,6 @@ public void RemoveHat(int client,int slot)
 
 public Action Hook_SetTransmit(int ent,int client)
 {
-	if(GetFeatureStatus(FeatureType_Native, "IsPlayerInTP")==FeatureStatus_Available)
-		if(IsPlayerInTP(client))
-			return Plugin_Continue;
 
 	for(int i=0;i<STORE_MAX_SLOTS;++i)
 		if(ent == g_iClientHats[client][i])
