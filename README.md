@@ -1,4 +1,5 @@
-# zephyrus-store (support SM 1.10)
+# zephyrus-store (support SM 1.10).
+### Warning  current build of store.sp (version 5.6 and 5.5) has many errors and I'm fixing this. Please reverse back to the array-based enum version of store.sp (version 5.0) at the 1st commit.
 My rewritten zephyrus store
 
 Store system for CS:GO.
