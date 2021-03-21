@@ -10,15 +10,15 @@
 bool GAME_TF2 = false;
 #endif
 
-enum struct GrenadeSkin
+enum GrenadeSkin
 {
-	char szModel_Grenade[PLATFORM_MAX_PATH];
-	char szWeapon[64];
-	int iLength;
-	int iSlot_Grenade;
+	String:szModel_Grenade[PLATFORM_MAX_PATH],
+	String:szWeapon[64],
+	iLength,
+	iSlot_Grenade
 }
 
-GrenadeSkin g_eGrenadeSkins[STORE_MAX_ITEMS];
+int g_eGrenadeSkins[STORE_MAX_ITEMS][GrenadeSkin];
 
 char g_szSlots[16][64];
 
@@ -54,8 +54,8 @@ public void GrenadeSkins_OnMapStart()
 {
 	for(int i=0;i<g_iGrenadeSkins;++i)
 	{
-		PrecacheModel2(g_eGrenadeSkins[i].szModel_Grenade, true);
-		Downloader_AddFileToDownloadsTable(g_eGrenadeSkins[i].szModel_Grenade);
+		PrecacheModel2(g_eGrenadeSkins[i][szModel_Grenade], true);
+		Downloader_AddFileToDownloadsTable(g_eGrenadeSkins[i][szModel_Grenade]);
 	}
 }
 
@@ -67,13 +67,13 @@ public void GrenadeSkins_Reset()
 public bool GrenadeSkins_Config(Handle &kv,int itemid)
 {
 	Store_SetDataIndex(itemid, g_iGrenadeSkins);
-	KvGetString(kv, "model", g_eGrenadeSkins[g_iGrenadeSkins].szModel_Grenade, PLATFORM_MAX_PATH);
-	KvGetString(kv, "grenade", g_eGrenadeSkins[g_iGrenadeSkins].szWeapon, PLATFORM_MAX_PATH);
+	KvGetString(kv, "model", g_eGrenadeSkins[g_iGrenadeSkins][szModel_Grenade], PLATFORM_MAX_PATH);
+	KvGetString(kv, "grenade", g_eGrenadeSkins[g_iGrenadeSkins][szWeapon], PLATFORM_MAX_PATH);
 	
-	g_eGrenadeSkins[g_iGrenadeSkins].iSlot_Grenade = GrenadeSkins_GetSlot(g_eGrenadeSkins[g_iGrenadeSkins].szWeapon);
-	g_eGrenadeSkins[g_iGrenadeSkins].iLength = strlen(g_eGrenadeSkins[g_iGrenadeSkins].szWeapon);
+	g_eGrenadeSkins[g_iGrenadeSkins][iSlot_Grenade] = GrenadeSkins_GetSlot(g_eGrenadeSkins[g_iGrenadeSkins][szWeapon]);
+	g_eGrenadeSkins[g_iGrenadeSkins][iLength] = strlen(g_eGrenadeSkins[g_iGrenadeSkins][szWeapon]);
 	
-	if(!(FileExists(g_eGrenadeSkins[g_iGrenadeSkins].szModel_Grenade, true)))
+	if(!(FileExists(g_eGrenadeSkins[g_iGrenadeSkins][szModel_Grenade], true)))
 		return false;
 		
 	++g_iGrenadeSkins;
@@ -82,12 +82,12 @@ public bool GrenadeSkins_Config(Handle &kv,int itemid)
 
 public int GrenadeSkins_Equip(int client,int id)
 {
-	return g_eGrenadeSkins[Store_GetDataIndex(id)].iSlot_Grenade;
+	return g_eGrenadeSkins[Store_GetDataIndex(id)][iSlot_Grenade];
 }
 
 public int GrenadeSkins_Remove(int client,int id)
 {
-	return g_eGrenadeSkins[Store_GetDataIndex(id)].iSlot_Grenade;
+	return g_eGrenadeSkins[Store_GetDataIndex(id)][iSlot_Grenade];
 }
 
 public int GrenadeSkins_GetSlot(char[] weapon)
@@ -143,5 +143,5 @@ public void GrenadeSkins_OnEntitySpawnedPost(int entity)
 		return;
 		
 	int m_iData = Store_GetDataIndex(m_iEquipped);
-	SetEntityModel(entity, g_eGrenadeSkins[m_iData].szModel_Grenade);
+	SetEntityModel(entity, g_eGrenadeSkins[m_iData][szModel_Grenade]);
 }
