@@ -7,7 +7,7 @@
 
 #include <store>
 #include <zephstocks>
-//#pragma newdecls required
+#pragma newdecls required
 //new GAME_TF2 = false;
 
 enum struct PlayerSkin
@@ -41,7 +41,7 @@ int g_bSkinEnable;
 
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
-public OnPluginStart()
+public void OnPluginStart()
 {	
 	LoadTranslations("store.phrases");
 	
@@ -63,7 +63,7 @@ public OnPluginStart()
 	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
 }
 
-public PlayerSkins_OnMapStart()
+public void PlayerSkins_OnMapStart()
 {
 	/*
 	for(new i=0;i<g_iPlayerSkins;++i)
@@ -80,12 +80,12 @@ public PlayerSkins_OnMapStart()
 	*/
 }
 
-public PlayerSkins_Reset()
+public int PlayerSkins_Reset()
 {
 	g_iPlayerSkins = 0;
 }
 
-public PlayerSkins_Config(&Handle:kv, itemid)
+public bool PlayerSkins_Config(Handle &kv, int itemid)
 {
 	Store_SetDataIndex(itemid, g_iPlayerSkins);
 	
@@ -105,13 +105,13 @@ public PlayerSkins_Config(&Handle:kv, itemid)
 	return false;
 }
 
-public PlayerSkins_Equip(client, int id)
+public int PlayerSkins_Equip(int client, int id)
 {
 	int m_iData = Store_GetDataIndex(id);
 	//int iIndex =  Store_GetDataIndex(id);
 	if (g_eCvars[g_bSkinEnable].aCache == 1)
 	{
-		if(IsPlayerAlive(client) && IsValidClient(client, true)) //&& GetClientTeam(client)==g_ePlayerSkins[m_iData][iTeam])
+		if(IsPlayerAlive(client) && IsValidClient(client, true) && GetClientTeam(client)==g_ePlayerSkins[m_iData].iTeam)
 		{
 			Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 		}
@@ -129,13 +129,13 @@ public PlayerSkins_Equip(client, int id)
 		
 		else if(Store_IsClientLoaded(client))
 			CPrintToChat(client, " {yellow}♛ J1BroS Store ♛ {default}%t", "PlayerSkins Settings Changed");
-		}
+	}
 	else CPrintToChat(client, "{yellow}♛ J1BroS Store ♛ {default}Store Player Skin module is currently temporary disabled");
 	
 	return (g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2;
 }
 
-public PlayerSkins_Remove(client, id)
+public int PlayerSkins_Remove(int client,int id)
 {
 	/*if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant].aCache)
 		CPrintToChat(client, "%t", "PlayerSkins Settings Changed");*/
@@ -150,16 +150,16 @@ public PlayerSkins_Remove(client, id)
 	}
 	else CPrintToChat(client, "{yellow}♛ J1BroS Store ♛ {default}Store Player Skin module is currently temporary disabled");
 	
-	return ((g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2);
+	return view_as<int>(g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2;
 }
 
-public void PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBroadcast)
+public Action PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (g_eCvars[g_bSkinEnable].aCache == 1)
 	{
 		if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
-			return;
+			return Plugin_Continue;
 		
 		float Delay = view_as<float>(g_eCvars[g_cvarSkinDelay].aCache);
 		
@@ -167,9 +167,9 @@ public void PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBroad
 	}
 	else CPrintToChat(client, "{yellow}♛ J1BroS Store ♛ {default}Store Player Skin module is currently temporary disabled");
 	
-	//return Plugin_Continue;
+	return Plugin_Continue;
 }
-
+/*
 public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 {
 	int client = GetClientOfUserId(userid);
@@ -180,7 +180,7 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 	if (IsValidClient(client, true) && !IsPlayerAlive(client))
 		return Plugin_Stop;
 	
-	new m_iEquipped = Store_GetEquippedItem(client, "playerskin", 2);
+	new m_iEquipped = Store_GetEquippedItem(client, "playerskin", GetClientTeam(client)-2);
 	if(m_iEquipped < 0)
 		return Plugin_Stop;
 	
@@ -188,6 +188,35 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 	m_iData = Store_GetDataIndex(m_iEquipped);
 	Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 
+	else if(g_eCvars[g_cvarSkinForceChange].aCache)
+	{
+		new m_iTeam = GetClientTeam(client);
+		if(m_iTeam == 2 && g_bTForcedSkin)
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeT][sCache], m_iData);
+		else if(m_iTeam == 3 && g_bCTForcedSkin)
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeCT][sCache], m_iData);
+	}
+	return Plugin_Stop;
+}*/
+
+public Action PlayerSkins_PlayerSpawnPost(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	//int iIndex =  Store_GetDataIndex(id);
+	if(!client || !IsClientInGame(client))
+		return Plugin_Stop;
+
+	if (IsValidClient(client, true) && !IsPlayerAlive(client))
+		return Plugin_Stop;
+		
+	int m_iEquipped = Store_GetEquippedItem(client, "playerskin", 2);
+	if(m_iEquipped < 0)
+		m_iEquipped = Store_GetEquippedItem(client, "playerskin", GetClientTeam(client)-2);
+	if(m_iEquipped >= 0)
+	{
+		int m_iData = Store_GetDataIndex(m_iEquipped);
+		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
+	}
 	/*else if(g_eCvars[g_cvarSkinForceChange].aCache)
 	{
 		new m_iTeam = GetClientTeam(client);
@@ -199,7 +228,7 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 	return Plugin_Stop;
 }
 
-Store_SetClientModel(client, const String:model[], const skin=0, const body=0, const String:arms[]="", int index)
+void Store_SetClientModel(int client, const char[] model, const int skin=0, const int body=0, const char[] arms="", int index)
 {
 
 	SetEntityModel(client, model);
@@ -393,7 +422,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 	return Plugin_Stop;
 }
 
-stock bool IsValidClient(client, bool nobots = true)
+stock bool IsValidClient(int client, bool nobots = true)
 { 
     if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
     {
