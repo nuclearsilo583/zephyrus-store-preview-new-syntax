@@ -1,5 +1,6 @@
 ﻿"Phrases"
 {
+	
 	"Item hidden"
 	{
 		"#format"	"{1:t}"
@@ -294,8 +295,8 @@
 
 	"TeamBet Placed"
 	{
-		"#format"	"{1:i},{2:s}"
-		"en"		"You have successfully placed a bet of {1} {2}."
+		"#format"	"{1:i}"
+		"en"		"You have successfully placed a bet of {1} credits."
 	}
 
 	"TeamBet Already Placed"
