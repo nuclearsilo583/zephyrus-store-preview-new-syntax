@@ -90,7 +90,13 @@ native int Store_GetItemIdbyUniqueId(char[] unique_id);
 
 forward void Store_OnClientModelChanged(int client, char[] model);
 
+
 forward void Store_OnPreviewItem(int client, char[] type, int index);
+forward void Store_OnConfigExecuted(char[] prefix);
+
+native bool Store_IsInRecurringMenu(int client);
+native void Store_SetClientRecurringMenu(int client, bool active);
+
 /*
 public Extension:__ext_store_sm =
 {

@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.2"
+#define PLUGIN_VERSION "5.3.5"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -83,6 +83,7 @@ bool GAME_L4D = false;
 bool GAME_L4D2 = false;
 
 char g_szGameDir[64];
+char g_sChatPrefix[128];
 
 Handle g_hDatabase = INVALID_HANDLE;
 Handle g_hAdminMenu = INVALID_HANDLE;
@@ -123,6 +124,7 @@ any g_eMenuHandlers[STORE_MAX_HANDLERS][Menu_Handler];
 any g_ePlans[STORE_MAX_ITEMS][STORE_MAX_PLANS][Item_Plan];
 
 Handle gf_hPreviewItem;
+Handle gf_hOnConfigExecuted;
 
 int g_iItems = 0;
 int g_iTypeHandlers = 0;
@@ -138,6 +140,7 @@ int g_iPackageHandler = -1;
 int g_iDatabaseRetries = 0;
 
 bool g_bInvMode[MAXPLAYERS+1];
+bool g_bIsInRecurringMenu[MAXPLAYERS + 1] = {false, ...};
 bool g_bMySQL = false;
 
 char g_szClientData[MAXPLAYERS+1][256];
@@ -147,6 +150,8 @@ any g_eStoreAdmin;
 
 int PublicChatTrigger = 0;
 int SilentChatTrigger = 0;
+
+ConVar g_cvarChatTag2;
 
 //////////////////////////////
 //			MODULES			//
@@ -275,11 +280,16 @@ public void OnPluginStart()
 	g_cvarPreview = RegisterConVar("sm_store_preview_enable", "1", "Enable/disable confirmation windows.", TYPE_INT);
 	g_cvarSaveOnDeath = RegisterConVar("sm_store_save_on_death", "0", "Enable/disable client data saving on client death.", TYPE_INT);
 	g_cvarCreditMessages = RegisterConVar("sm_store_credit_messages", "1", "Enable/disable messages when a player earns credits.", TYPE_INT);
+	
 	g_cvarChatTag = RegisterConVar("sm_store_chat_tag", "[Store] ", "The chat tag to use for displaying messages.", TYPE_STRING);
+	g_cvarChatTag2 = CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");
+
 	g_cvarShowVIP = RegisterConVar("sm_store_show_vip_items", "0", "If you enable this VIP items will be shown in grey.", TYPE_INT);
 	g_cvarLogging = RegisterConVar("sm_store_logging", "0", "Set this to 1 for file logging and 2 to SQL logging (only MySQL). Leaving on 0 means disabled.", TYPE_INT);
 	g_cvarSilent = RegisterConVar("sm_store_silent_givecredits", "0", "Controls the give credits message visibility. 0 = public 1 = private 2 = no message", TYPE_INT);
 	g_cvarCredits = RegisterConVar("sm_store_cmd_credits_cooldown", "12", "Control of the spam cooldown time for !credits", TYPE_FLOAT);
+
+	g_cvarChatTag2.AddChangeHook(OnSettingChanged);
 
 	// Register Commands
 	RegConsoleCmd("sm_store", Command_Store);
@@ -419,8 +429,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	CreateNative("Store_GiveClientItem", Native_GiveClientItem);
 	CreateNative("Store_HasClientItem", Native_HasClientItem);
 	CreateNative("Store_IterateEquippedItems", Native_IterateEquippedItems);
+	CreateNative("Store_IsInRecurringMenu", Native_IsInRecurringMenu);
+	CreateNative("Store_SetClientRecurringMenu", Native_SetClientRecurringMenu);
 	
 	gf_hPreviewItem = CreateGlobalForward("Store_OnPreviewItem", ET_Ignore, Param_Cell, Param_String, Param_Cell);
+	gf_hOnConfigExecuted = CreateGlobalForward("Store_OnConfigExecuted", ET_Ignore, Param_String);
 
 #if !defined STANDALONE_BUILD
 	MarkNativeAsOptional("ZR_IsClientZombie");
@@ -439,6 +452,14 @@ public void OnLibraryAdded(const char[] name)
 	//ZRClass_OnLibraryAdded(name);
 }
 #endif
+
+public void OnSettingChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cvarChatTag2)
+	{
+		strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), newValue);
+	}
+}
 
 //////////////////////////////
 //		 ADMIN MENUS		//
@@ -683,6 +704,9 @@ public void OnConfigsExecuted()
 {
 	//Jetpack_OnConfigsExecuted();
 	//Jihad_OnConfigsExecuted();
+	
+	// Call foward Store_OnConfigsExecuted
+	Forward_OnConfigsExecuted();
 
 	// Connect to the database
 	if(g_hDatabase == INVALID_HANDLE)
@@ -772,6 +796,16 @@ public int Native_RegisterMenuHandler(Handle plugin,int numParams)
 	return m_iId;
 }
 
+public int Native_IsInRecurringMenu(Handle plugin, int numParams)
+{
+	return g_bIsInRecurringMenu[GetNativeCell(1)];
+}
+
+public int Native_SetClientRecurringMenu(Handle plugin, int numParams)
+{
+	g_bIsInRecurringMenu[GetNativeCell(1)] = view_as<bool>(GetNativeCell(2));
+}
+
 public any Native_SetDataIndex(Handle plugin,int numParams)
 {
 	g_eItems[GetNativeCell(1)][iData] = GetNativeCell(2);
@@ -832,6 +866,7 @@ public int Native_SetClientCredits(Handle plugin,int numParams)
 	int m_iCredits = GetNativeCell(2);
 	Store_LogMessage(client, m_iCredits-g_eClients[client][iCredits], "Set by external plugin");
 	g_eClients[client][iCredits] = m_iCredits;
+	Store_SaveClientData(client);
 	return 1;
 }
 
@@ -1116,6 +1151,7 @@ public void OnClientDisconnect(int client)
 	Store_SaveClientInventory(client);
 	Store_SaveClientEquipment(client);
 	Store_DisconnectClient(client);
+	g_bIsInRecurringMenu[client] = false;
 }
 
 public void OnClientSettingsChanged(int client)
@@ -3162,6 +3198,7 @@ void Store_BuyItem(int client,int itemid,int plan=-1)
 	Store_LogMessage(client, -g_eItems[itemid][iPrice], "Bought a %s %s", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
 	
 	Chat(client, "%t", "Chat Bought Item", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
+	Store_SaveClientInventory(client);
 }
 
 public void Store_SellItem(int client,int itemid)
@@ -3631,4 +3668,11 @@ bool CheckSteamAuth(int client, char[] steam)
 		return false;
 
 	return true;
+}
+
+void Forward_OnConfigsExecuted()
+{
+	Call_StartForward(gf_hOnConfigExecuted);
+	Call_PushString(g_sChatPrefix);
+	Call_Finish();
 }
