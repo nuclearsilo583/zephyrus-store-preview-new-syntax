@@ -1,0 +1,135 @@
+﻿"Phrases"
+{
+	"Offer item"
+	{
+		"en" "Offer this item"
+	}
+
+	"Trade item"
+	{
+		"en" "Trade this item"
+	}
+
+	"Trade Cooldown"
+	{
+		"en" "Please wait a few minutes before trading again."
+	}
+
+	"Trade Successful"
+	{
+		"en" "The trade has finished successfully."
+	}
+
+	"Trade Active"
+	{
+		"en" "You are already trading."
+	}
+
+	"Trade Not Active"
+	{
+		"en" "You are not trading."
+	}
+
+	"Trade Select Player"
+	{
+		"en" "Select a player to trade with"
+	}
+
+	"Trade Confirm"
+	{
+		"#format" "{1:N}"
+		"en" "Would you like to trade with {1}?"
+	}
+
+	"Trade Confirm Cancel"
+	{
+		"en" "Would you like to cancel the trade?"
+	}
+
+	"Trade Refused"
+	{
+		"#format" "{1:N}"
+		"en" "{1} has refused your trade request."
+	}
+
+	"Trade Cancelled"
+	{
+		"en" "Your partner has cancelled the trade."
+	}
+
+	"Trade Title"
+	{
+		"#format" "{1:N},{2:d}"
+		"en" "You are trading with {1}\n-----------------------------\nTo offer credits type !offer <amount>\nYou have offered {2} credits"
+	}
+
+	"Player Left"
+	{
+		"en" "The player you wanted to trade with has left the game."
+	}
+
+	"Waiting for confirmation"
+	{
+		"en" "Please wait for the answer of the selected player."
+	}
+
+	"Confirm_Offer_Item"
+	{
+		"#format" "{1:s},{2:s}"
+		"en" "Do you want to offer your {1} {2}?"
+	}
+
+	"Confirm_Trade_Item"
+	{
+		"#format" "{1:s},{2:s}"
+		"en" "Do you want to trade your {1} {2}?"
+	}
+
+	"Ready"
+	{
+		"#format" "{1:s}"
+		"en" "Ready [{1}]"
+	}
+
+	"Cancel"
+	{
+		"en" "Cancel trade"
+	}
+
+	"Offer"
+	{
+		"en" "Offer an item"
+	}
+
+	"Partner Ready"
+	{
+		"en" "Your partner is ready."
+	}
+
+	"Partner Not Ready"
+	{
+		"en" "Your partner is not ready yet."
+	}
+
+	"Partner Credit Offer"
+	{
+		"#format" "{1:d}"
+		"en" "Your partner offers {1} credit(s)"
+	}
+
+	"Partner Item Offer"
+	{
+		"en" "Your partner offers the following items:"
+	}
+
+	"Ready Timer"
+	{
+		"#format" "{1:d}"
+		"en" "Trade will end in {1} second(s)..."
+	}
+
+	"Trade Menu"
+	{
+		"en" "To reopen the trade menu, type !trade."
+	}
+}

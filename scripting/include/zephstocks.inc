@@ -208,9 +208,9 @@ stock int HookConVar(char[] name, any type, Function callback=INVALID_FUNCTION)
 	if(cvar == INVALID_HANDLE)
 		return -1;
 	HookConVarChange(cvar, GlobalConVarChanged);
-	g_eCvars[g_iCvars][hCvar] = cvar;
-	g_eCvars[g_iCvars][eType] = type;
-	g_eCvars[g_iCvars][fnCallback] = callback;
+	g_eCvars[g_iCvars].hCvar = cvar;
+	g_eCvars[g_iCvars].eType = type;
+	g_eCvars[g_iCvars].fnCallback = callback;
 	CacheCvarValue(g_iCvars);
 	return g_iCvars++;
 }
