@@ -107,54 +107,932 @@
 		}
 	}
 	
-	"Pets"
+	"Accessories"
 	{
-		
-		"Chicken"
+		"Pets"
 		{
-			"model"						"models/chicken/chicken.mdl"
-			"position"					"50.0 0.0 0.0"
-			"angles"					"0.0 0.0 0.0"
-			"idle"						"idle01"
-			"run"						"run01"
-			"type"						"pet"
-			"preview"					"1"
-			"trade" "4"	
-			"unique_id"					"uid_pet_chicken"
-			"price" "300"
+			
+			"Tiny Haipa"
+			{
+				"model" "models/maoling/pet/misc/haipa/haipa_v2.mdl"
+				"position" "25.0 -20.0 0.0"
+				"angles" "0.0 340.0 0.0"
+				"idle" "ACT_DOTA_IDLE"
+				"idle2" "ACT_DOTA_IDLE_RARE"
+				"run" "ACT_DOTA_RUN"
+				"preview"					"1"
+				"unique_id"					"uid_pet_tiny_haipa"
+				"trade" "4"
+				"type" "pet"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "750"
+						"time" "86400"
+					}
+					"7 days"
+					{
+
+						"price" "3500"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "12000"
+						"time"	"2592000"
+					}
+				}			
+			}
+
+		}
+	
+		"Particle Effect"
+		{
+			"Spawn Effect"
+			{
+				"Vortex (fire)"
+				{
+					"name"					"fire_vixr_final"
+					"preview"				"1"
+					"price"					"0"
+					"flag" "opqz"
+					"file"					"particles/2j.pcf"
+					"duration"				"5.500000"
+					"type"					"particle"
+					"slot"					"spawn"
+					"unique_id"				"uid_particle_spawn_vortex"
+				}
+				"Vortex (ice)"
+				{
+					"name"					"vixr_final"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"price"					"0"
+					"flag" "opqz"
+					"duration"				"5.500000"
+					"type"					"particle"
+					"slot"					"spawn"
+					"unique_id"				"uid_particle_spawn_vortex"
+				}
+			}
+				
+			"Kill Effect"
+			{
+				"Vortex (fire)"
+				{
+					"name"					"fire_vixr_final"
+					"file"					"particles/2j.pcf"
+					"duration"				"1.500000"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"kill"
+					"unique_id"				"uid_particle_kill_vortex_(fire)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Vortex (ice)"
+				{
+					"name"					"vixr_final"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"duration"				"1.500000"
+					"type"					"particle"
+					"slot"					"kill"
+					"unique_id"				"uid_particle_kill_vortex_(ice)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+			}
+			"Aura"
+			{
+				"Hell"
+				{
+					"name"					"hell_end"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_hell"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Lightning"
+				{
+					"name"					"molnii_final"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_lightning"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Geometry"
+				{
+					"name"					"new_001"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_geometry""Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Geometry2"
+				{
+					"name"					"new_002"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_geometry2"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Pink holl"
+				{
+					"name"					"new_003"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_pink_holl"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Tornado (Rainbow)"
+				{
+					"name"					"new_004"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_tornado_(rainbow)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Sphere (Color)"
+				{
+					"name"					"sphere"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_sphere_(color)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Splash"
+				{
+					"name"					"splash"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_splash"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Tornado 2 (Color)"
+				{
+					"name"					"tornado"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_tornado_2_(color)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Equalizer (diamond)"
+				{
+					"name"					"ekvalaizer_gray"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_equalizer_(diamond)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Equalizer (orange)"
+				{
+					"name"					"ekvalaizer_white"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_equalizer_(orange)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Equalizer (green)"
+				{
+					"name"					"ekvalaizer_black_blue"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_equalizer_(green)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Equalizer (pink)"
+				{
+					"name"					"ekvalaizer"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_equalizer_(pink)"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Arcane Zeus"
+				{
+					"name"					"end"
+					"file"					"particles/2j.pcf"
+					"preview"				"1"
+					"type"					"particle"
+					"slot"					"aura"
+					"unique_id"				"uid_particle_aura_arcane_zeus"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+			}
 		}
 		
-		"Tiny Haipa"
+		"Bullet impact"
 		{
-			"model" "models/maoling/pet/misc/haipa/haipa_v2.mdl"
-			"position" "25.0 -20.0 0.0"
-			"angles" "0.0 340.0 0.0"
-			"idle" "ACT_DOTA_IDLE"
-			"idle2" "ACT_DOTA_IDLE_RARE"
-			"run" "ACT_DOTA_RUN"
-			"preview"					"1"
-			"unique_id"					"uid_pet_tiny_haipa"
-			"trade" "4"
-			"type" "pet"
-			"Plans"
+			"Pink - Paintball"
 			{
-				"1 day"
+				"type"					"paintball"
+				"Decals"
 				{
-					"price" "750"
-					"time" "86400"
+					"pink"
+					{
+						"material"		"paintball/pb_pink.vmt"
+					}
 				}
-				"7 days"
+				"Plans"
 				{
-
-					"price" "3500"
-					"time" "604800"
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
 				}
-				"30 days"
+				"unique_id"				"uid_paintball_pink_-_paintball"
+			}
+			"Cyan and Green - Paintball"
+			{
+				"type"					"paintball"
+				"Decals"
 				{
-					"price" "12000"
-					"time"	"2592000"
+					"cyan"
+					{
+						"material"		"paintball/pb_cyan.vmt"
+					}
+					"green"
+					{
+						"material"		"paintball/pb_green.vmt"
+					}
 				}
-			}			
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"unique_id"				"uid_paintball_cyan_and_green_-_paintball"
+			}
+			"Orange and Yellow - Paintball"
+			{
+				"type"					"paintball"
+				"Decals"
+				{
+					"yellow"
+					{
+						"material"		"paintball/pb_yellow.vmt"
+					}
+					"orange"
+					{
+						"material"		"paintball/pb_orange.vmt"
+					}
+				}
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"unique_id"				"uid_paintball_orange_and_yellow_-_paintball"
+			}
+			"Random - Paintball"
+			{
+				"type"					"paintball"
+				"Decals"
+				{
+					"cyan"
+					{
+						"material"		"paintball/pb_cyan.vmt"
+					}
+					"green"
+					{
+						"material"		"paintball/pb_green.vmt"
+					}
+					"pink"
+					{
+						"material"		"paintball/pb_pink.vmt"
+					}
+					"orange"
+					{
+						"material"		"paintball/pb_orange.vmt"
+					}
+					"yellow"
+					{
+						"material"		"paintball/pb_yellow.vmt"
+					}
+				}
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"unique_id"				"uid_paintball_random_-_paintball"
+			}
+		}
+		
+		"Tracer"
+		{
+			"Blue"
+			{
+				"color" "0 0 125"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_blue"
+			}
+			"Blue Violet"
+			{
+				"color" "138 43 226"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_violet"
+			}
+			"Cyan"
+			{
+				"color" "0 255 125"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_cyan"
+			}
+			"Fire Brick"
+			{
+				"color" "178 34 34"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_fire_brick"
+			}
+			"Fuschia"
+			{
+				"color" "125 0 125"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_fuschia"
+			}
+			"Gray"
+			{
+				"color" "240 240 240"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_gray"
+			}
+			"Green"
+			{
+				"color" "0 125 0"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_green"
+			}
+			"Hunter Green"
+			{
+				"color" "35 142 35"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_hunger_green"
+			}
+			"Lawn Green"
+			{
+				"color" "124 122 0"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_lawn_green"
+			}
+			"Olive Brown"
+			{
+				"color" "128 125 165"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_olive_brown"
+			}
+			
+			"Orange"
+			{
+				"color" "125 77 0"
+				"Plans"
+				{
+					"1 day"
+					{
+						"price" "2500"
+						"time" "86400"
+					}
+					"1 week"
+					{
+						"price" "12000"
+						"time" "604800"
+					}
+					"30 days"
+					{
+						"price" "35000"
+						"time" "2592000"
+					}
+				}
+				"type" "tracer"
+				"unique_id" "uid_tracer_orange"
+			}
 		}
 	}
 	
