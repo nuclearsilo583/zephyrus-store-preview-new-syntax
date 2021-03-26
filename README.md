@@ -17,8 +17,14 @@ Update 18/3: Re-add tf2 item support (I dont know this is gonna work or not). Pl
 - Life live pet (with idle2 animation config - Rare idle animation => Support for spawn and death animation soon) by Totenfluch
 - Custom MVP music (by kento and shanapu)
 - Zombie reloaded playerclasses (original by zephyrus)
-- *New: Hats preview (original by zephyrus)
-- aura, particle, etc.. will be supported soon
+- Hats preview (original by zephyrus)
+- New* Trails preview (original by zephyrus)
+- New* Aura particle preview (by shanapu)
+- New* Kill Effects particle preview (by shanapu)
+- New* Spawn Effects particle preview (by shanapu)
+- New* PaintBall Effects (by shanapu)
+- New* Bullet Spark (by shanapu)
+- more will be supported
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
