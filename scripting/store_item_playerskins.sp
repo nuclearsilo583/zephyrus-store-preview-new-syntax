@@ -45,6 +45,15 @@ int g_bSkinEnable;
 
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
+public Plugin myinfo = 
+{
+	name = "Store - Player Skin Module",
+	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	description = "",
+	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	url = ""
+}
+
 public OnPluginStart()
 {	
 	LoadTranslations("store.phrases");

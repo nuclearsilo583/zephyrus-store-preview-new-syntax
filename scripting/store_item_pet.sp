@@ -61,6 +61,25 @@ public void OnPluginStart()
 	HookEvent("player_team", Event_PlayerTeam);
 
 	g_hHideCookie = RegClientCookie("Pets_Hide_Cookie", "Cookie to check if Pets are blocked", CookieAccess_Private);
+	SetCookieMenuItem(PrefMenu, 0, "");
+}
+
+public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
+{
+	if (actions == CookieMenuAction_DisplayOption)
+	{
+		switch(g_bHide[client])
+		{
+			case false: FormatEx(buffer, maxlen, "Hide Pets: Disabled");
+			case true: FormatEx(buffer, maxlen, "Hide Pets: Enabled");
+		}
+	}
+
+	if (actions == CookieMenuAction_SelectOption)
+	{
+		ClientCommand(client, "sm_hidepet");
+		ShowCookieMenu(client);
+	}
 }
 
 public void OnClientCookiesCached(int client)

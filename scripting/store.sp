@@ -159,7 +159,7 @@ ConVar g_cvarChatTag2;
 
 #if !defined STANDALONE_BUILD
 //#include "store/hats.sp"
-#include "store/tracers.sp"
+//#include "store/tracers.sp"
 //#include "store/playerskins.sp"
 //#include "store/trails.sp"
 #include "store/grenskins.sp"
@@ -315,7 +315,7 @@ public void OnPluginStart()
 	// Initialize the modules	
 #if !defined STANDALONE_BUILD
 	//Hats_OnPluginStart();
-	Tracers_OnPluginStart();
+	//Tracers_OnPluginStart();
 	//Trails_OnPluginStart();
 	//PlayerSkins_OnPluginStart();
 	GrenadeSkins_OnPluginStart();

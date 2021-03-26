@@ -10,7 +10,7 @@ int g_cvarChatTag = -1;
 #define STORE_MAX_ITEMS 2048
 #define STORE_MAX_HANDLERS 64
 #define STORE_MAX_PLANS 8
-#define STORE_MAX_SLOTS 4
+#define STORE_MAX_SLOTS 12
 
 enum Item_Plan
 {
