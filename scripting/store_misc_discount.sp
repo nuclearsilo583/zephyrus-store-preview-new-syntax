@@ -71,19 +71,13 @@ int g_iCount;
 ConVar gc_bEnable;
 ConVar gc_bAddDiscount;
 
-/*
- * Build date: 2020-01-27 03:09:26
- * Build number: 37
- * Commit: https://github.com/shanapu/Store/commit/b9fed6d
- */
-
 public Plugin myinfo = 
 {
 	name = "Store - Discount module",
-	author = "shanapu", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "0.1.37", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
-	url = "github.com/shanapu/Store"
+	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	url = ""
 };
 
 public void OnPluginStart()
