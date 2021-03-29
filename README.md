@@ -11,6 +11,8 @@ Since this is zephyrus's store that was rewritten so any custom module that supp
 
 Update 18/3: Re-add tf2 item support (I dont know this is gonna work or not). Please fell free to create a new issue post for bug report.
 
+P/S: discount item has bug that all the discount will be stack (sum) if player has all the require flag in config. I dont know how to fix this so please adjust the price for individual flags. Look at my config for more info
+
 # Modules that has preview support:
 - Player Skin (by zephyrus)
 - Custom weapon Model Skin  (by bbs.93x.net)
@@ -28,7 +30,8 @@ Update 18/3: Re-add tf2 item support (I dont know this is gonna work or not). Pl
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
-- More feature will be added soon
+- Discount (check for config/store/discount.txt
+- More will be supported
 
 # Important links
 Contact me via steam for bug report:
