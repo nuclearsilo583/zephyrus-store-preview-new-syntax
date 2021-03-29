@@ -1,3 +1,6 @@
+# Newly added
+- Discount
+
 # zephyrus-store (support SM 1.10).
 ### Reverse back from 5.6 and 5.5 to 5_2 since enum struct got error on saving client item data type
 My rewritten zephyrus store
@@ -30,14 +33,14 @@ P/S: discount item has bug that all the discount will be stack (sum) if player h
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
-- Discount (check for config/store/discount.txt
+- New* iscount (check for config/store/discount.txt)
 - More will be supported
 
 # Important links
 Contact me via steam for bug report:
 https://steamcommunity.com/id/nuclearsilo/
 
-# Special Thanks
+# Special Thank
 Original store by Zephyrus, Preview system by Kxnrl, Some code from Shanapu's MyStore (gamble)
 
 # Credits/Spezial Thanks:
