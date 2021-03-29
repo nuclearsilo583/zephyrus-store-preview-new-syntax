@@ -194,7 +194,7 @@ ConVar g_cvarChatTag2;
 //#include "store/pets.sp"
 #include "store/sprays.sp"
 //#include "store/weaponskins.sp"
-#include "store/admin.sp"
+//#include "store/admin.sp"
 #endif
 
 //////////////////////////////////
@@ -350,7 +350,7 @@ public void OnPluginStart()
 	//Pets_OnPluginStart();
 	Sprays_OnPluginStart();
 	//WeaponSkins_OnPluginStart();
-	AdminGroup_OnPluginStart();
+	//AdminGroup_OnPluginStart();
 #endif
 
 	Handle topmenu;
@@ -1672,8 +1672,8 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 					//if((g_eItems[i][iPlans]==0 && g_eClients[target][iCredits]<m_iPrice && !g_eItems[i][bPreview]) || (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam])))
 					//	m_iStyle = ITEMDRAW_DISABLED;
 					
-					//if(!g_eItems[i][bBuyable])
-					//	m_iStyle = ITEMDRAW_DISABLED;
+					if(!g_eItems[i][bBuyable] && !g_eItems[i][bPreview])
+						m_iStyle = ITEMDRAW_DISABLED;
 
 					if(g_eItems[i][iPlans]==0)
 						AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t", "Item Available", g_eItems[i][szName], g_eItems[i][iPrice]);
