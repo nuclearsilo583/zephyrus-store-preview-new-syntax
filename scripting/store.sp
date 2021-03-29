@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.3.5"
+#define PLUGIN_VERSION "5.4"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -125,6 +125,8 @@ any g_ePlans[STORE_MAX_ITEMS][STORE_MAX_PLANS][Item_Plan];
 
 Handle gf_hPreviewItem;
 Handle gf_hOnConfigExecuted;
+Handle gf_hOnGetEndPrice;
+Handle gf_hOnBuyItem;
 
 int g_iItems = 0;
 int g_iTypeHandlers = 0;
@@ -434,7 +436,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	
 	gf_hPreviewItem = CreateGlobalForward("Store_OnPreviewItem", ET_Ignore, Param_Cell, Param_String, Param_Cell);
 	gf_hOnConfigExecuted = CreateGlobalForward("Store_OnConfigExecuted", ET_Ignore, Param_String);
+	gf_hOnGetEndPrice = CreateGlobalForward("Store_OnGetEndPrice", ET_Event, Param_Cell, Param_Cell, Param_CellByRef, Param_CellByRef);
+	gf_hOnBuyItem = CreateGlobalForward("Store_OnBuyItem", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_CellByRef);
 
+	
 #if !defined STANDALONE_BUILD
 	MarkNativeAsOptional("ZR_IsClientZombie");
 	MarkNativeAsOptional("ZR_IsClientHuman");
@@ -925,7 +930,7 @@ public int Native_ShouldConfirm(Handle plugin,int numParams)
 public int Native_GetItem(Handle plugin,int numParams)
 {
 	//SetNativeArray(2, view_as<int>(g_eItems[GetNativeCell(1)]), sizeof(g_eItems[]));
-	SetNativeArray(2, _:g_eItems[GetNativeCell(1)], sizeof(g_eItems[])); 	
+	SetNativeArray(2, view_as<int>(g_eItems[GetNativeCell(1)]), sizeof(g_eItems[])); 	
 }
 
 public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
@@ -945,7 +950,7 @@ public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
 public int Native_GetHandler(Handle plugin,int numParams)
 {
 	//SetNativeArray(2, view_as<int>(g_eTypeHandlers[GetNativeCell(1)][GetNativeCell(2)]), sizeof(g_eTypeHandlers[])); 
-	SetNativeArray(2, _:g_eTypeHandlers[GetNativeCell(1)], sizeof(g_eTypeHandlers[])); 
+	SetNativeArray(2, view_as<int>(g_eTypeHandlers[GetNativeCell(1)]), sizeof(g_eTypeHandlers[])); 
 }
 
 public int Native_GetClientItem(Handle plugin,int numParams)
@@ -1045,12 +1050,19 @@ public int Native_HasClientItem(Handle plugin,int numParams)
 		return false;
 
 	// Is the item free (available for everyone)?
-	if(g_eItems[itemid][iPrice] <= 0 && g_eItems[itemid][iPlans]==0)
+	//if(g_eItems[itemid][iPrice] <= 0 && g_eItems[itemid][iPlans]==0)
+	//	return true;
+		
+	// Is the item free (available for everyone)?
+	if (Forward_OnGetEndPrice(client, itemid, g_eItems[itemid][iPrice]) <= 0 && g_eItems[itemid][iPlans]==0)
 		return true;
 		
 	// Is the client a VIP therefore has access to all the items already?
 	if(Store_IsClientVIP(client) && !g_eItems[itemid][bIgnoreVIP])
 		return true;
+		
+	//if(!g_eItems[itemid][bBuyable])
+	//	return false;
 		
 	// Can he even have it?	
 	if(!GetClientPrivilege(client, g_eItems[itemid][iFlagBits]))
@@ -1617,7 +1629,10 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 		if(g_eItems[i][iParent]==parent && (g_eCvars[g_cvarShowVIP].aCache == 0 && GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || g_eCvars[g_cvarShowVIP].aCache))
 		{
 			int m_iPrice = Store_GetLowestPrice(i);
-
+			//int costs = GetLowestPrice(i);
+			bool reduced = false;
+			m_iPrice = Forward_OnGetEndPrice(client, i, m_iPrice, reduced);
+		
 			// This is a package
 			if(g_eItems[i][iHandler] == g_iPackageHandler)
 			{
@@ -1627,14 +1642,17 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 				int m_iStyle = ITEMDRAW_DEFAULT;
 				//if(g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam]))
 				//	m_iStyle = ITEMDRAW_DISABLED;
+				//if(!g_eItems[i][bBuyable])
+				//	m_iStyle = ITEMDRAW_DISABLED;
 				
 				IntToString(i, STRING(m_szId));
 				if(g_eItems[i][iPrice] == -1 || Store_HasClientItem(target, i))
 					AddMenuItem(m_hMenu, m_szId, g_eItems[i][szName], m_iStyle);
-				else if(!g_bInvMode[client] && g_eItems[i][iPlans]==0 && g_eItems[i][bBuyable])
-					InsertMenuItemEx(m_hMenu, m_iPosition, (m_iPrice<=g_eClients[target][iCredits]?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), m_szId, "%t", "Item Available", g_eItems[i][szName], g_eItems[i][iPrice]);
+				
+				else if(!g_bInvMode[client] && g_eItems[i][iPlans]==0 /*&& g_eItems[i][bBuyable]*/)
+					InsertMenuItemEx(m_hMenu, m_iPosition, (m_iPrice<=g_eClients[target][iCredits]?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), m_szId, "%t %t", "Item Available", g_eItems[i][szName], /*g_eItems[i][iPrice]*/m_iPrice, reduced ? "discount" : "nodiscount");
 				else if(!g_bInvMode[client])
-					InsertMenuItemEx(m_hMenu, m_iPosition, (m_iPrice<=g_eClients[target][iCredits]?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), m_szId, "%t", "Item Plan Available", g_eItems[i][szName]);
+					InsertMenuItemEx(m_hMenu, m_iPosition, (m_iPrice<=g_eClients[target][iCredits]?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), m_szId, "%t %t", "Item Plan Available", g_eItems[i][szName], reduced ? "discount" : "nodiscount");
 				++m_iPosition;
 			}
 			// This is a normal item
@@ -1648,14 +1666,14 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 					else
 						InsertMenuItemEx(m_hMenu, m_iPosition, ITEMDRAW_DEFAULT, m_szId, "%t", "Item Bought", g_eItems[i][szName]);
 				}
-				else if(!g_bInvMode[client] && g_eItems[i][bBuyable])
+				else if(!g_bInvMode[client] /*&& g_eItems[i][bBuyable]*/)
 				{				
 					int m_iStyle = ITEMDRAW_DEFAULT;
 					//if((g_eItems[i][iPlans]==0 && g_eClients[target][iCredits]<m_iPrice && !g_eItems[i][bPreview]) || (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam])))
 					//	m_iStyle = ITEMDRAW_DISABLED;
 					
 					//if(!g_eItems[i][bBuyable])
-					//	continue;
+					//	m_iStyle = ITEMDRAW_DISABLED;
 
 					if(g_eItems[i][iPlans]==0)
 						AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t", "Item Available", g_eItems[i][szName], g_eItems[i][iPrice]);
@@ -1687,9 +1705,11 @@ public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param
 				g_iMenuBack[client]=1;
 				int m_iPrice = 0;
 				if(g_iSelectedPlan[client]==-1)
-					m_iPrice = g_eItems[g_iSelectedItem[client]][iPrice];
+					//m_iPrice = g_eItems[g_iSelectedItem[client]][iPrice];
+					m_iPrice = Forward_OnGetEndPrice(client, g_iSelectedItem[client], g_eItems[g_iSelectedItem[client]][iPrice]);
 				else
-					m_iPrice = g_ePlans[g_iSelectedItem[client]][g_iSelectedPlan[client]][iPrice_Plan];
+					//m_iPrice = g_ePlans[g_iSelectedItem[client]][g_iSelectedPlan[client]][iPrice_Plan];
+					m_iPrice = Forward_OnGetEndPrice(client, g_iSelectedItem[client], g_ePlans[g_iSelectedItem[client]][g_iSelectedPlan[client]][iPrice_Plan]);
 
 				if(g_eClients[target][iCredits]>=m_iPrice && !Store_HasClientItem(target, g_iSelectedItem[client]))
 					Store_BuyItem(target, g_iSelectedItem[client], g_iSelectedPlan[client]);
@@ -1764,13 +1784,17 @@ public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param
 				//&& !Store_HasClientItem(target, m_iId) && g_eItems[m_iId][iPrice] != -1)
 				
 				//if (g_eItems[m_iId][iPlans] == 0)
+				int costs = Store_GetLowestPrice(m_iId);
+				costs = Forward_OnGetEndPrice(client, m_iId, costs);
+				
 				if (g_eItems[m_iId][bPreview] && !Store_HasClientItem(target, m_iId) && g_eItems[m_iId][iPrice] != -1 && g_eItems[m_iId][iPlans] == 0)
 				{
 					DisplayPreviewMenu(client, m_iId);
 					return;
 				}
 				else 
-				if((g_eClients[target][iCredits]>=g_eItems[m_iId][iPrice] || g_eItems[m_iId][iPlans]>0 && g_eClients[target][iCredits]>=Store_GetLowestPrice(m_iId)) && !Store_HasClientItem(target, m_iId) && g_eItems[m_iId][iPrice] != -1)				
+				//if((g_eClients[target][iCredits]>=g_eItems[m_iId][iPrice] || g_eItems[m_iId][iPlans]>0 && g_eClients[target][iCredits]>=Store_GetLowestPrice(m_iId)) && !Store_HasClientItem(target, m_iId) && g_eItems[m_iId][iPrice] != -1)				
+				if((g_eClients[target][iCredits]>=costs || g_eItems[m_iId][iPlans]>0) && !Store_HasClientItem(target, m_iId) && g_eItems[m_iId][iPrice] != -1)				
 				{
 					if(g_eItems[m_iId][iPlans] > 0)
 					{
@@ -1938,28 +1962,51 @@ public void DisplayPreviewMenu(int client, int itemid)
 		//new String:m_szId[64];
 		//new m_iId = StringToInt(m_szId);
 				
-		//bool reduced = false;
-		//int price = Forward_OnGetEndPrice(client, itemid, g_aItems[itemid].iPrice, reduced);
+		bool reduced = false;
+		int price = Forward_OnGetEndPrice(client, itemid, g_eItems[itemid][iPrice], reduced);
 					
 		int iStyle = ITEMDRAW_DEFAULT;
-		if ((g_eClients[target][iCredits]<g_eItems[itemid][iPrice]) && !GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[itemid][szSteam]))
+		//if ((g_eClients[target][iCredits]<g_eItems[itemid][iPrice]) && !GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[itemid][szSteam]))
+		if (g_eClients[target][iCredits]<price)
+		{
+			iStyle = ITEMDRAW_DISABLED;
+		}
+		
+		if(!GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags))
+		{
+			iStyle = ITEMDRAW_DISABLED;
+		}
+		
+		if(!CheckSteamAuth(target, g_eItems[itemid][szSteam]))
 		{
 			iStyle = ITEMDRAW_DISABLED;
 		}
 
 		// Player can buy the item as normal trade in
+		/*
 		if (g_eItems[itemid][iPlans]==0)
 		{
 			if (!GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[itemid][szSteam]))
 			{
-				Format(sBuffer, sizeof(sBuffer), "%t", "Buy Item", g_eItems[itemid][iPrice]);
+				Format(sBuffer, sizeof(sBuffer), "%t %t", "Buy Item", price, reduced ? "discount" : "nodiscount");
 				menu.AddItem("buy_item", sBuffer, ITEMDRAW_DISABLED);
 			}
 			else
 			{
-				Format(sBuffer, sizeof(sBuffer), "%t", "Buy Item", g_eItems[itemid][iPrice]);
+				Format(sBuffer, sizeof(sBuffer), "%t %t", "Buy Item", price, reduced ? "discount" : "nodiscount");
 				menu.AddItem("buy_item", sBuffer, ITEMDRAW_DISABLED);
 			}
+		}
+		*/
+		
+		if (g_eItems[itemid][iPlans]==0)
+		{
+			if (!GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[itemid][szSteam]) || !g_eItems[itemid][bBuyable])
+			{
+				iStyle = ITEMDRAW_DISABLED;
+			}
+			Format(sBuffer, sizeof(sBuffer), "%t %t", "Buy Item", price, reduced ? "discount" : "nodiscount");
+			menu.AddItem("buy_item", sBuffer, iStyle);
 		}
 		// Player can buy the item in a plan
 		else
@@ -2165,12 +2212,17 @@ public void DisplayPlanMenu(int client, int itemid)
 
 	for (int i = 0; i < g_eItems[itemid][iPlans]; ++i)
 	{
-		//bool reduced = false;
-		//int price = Forward_OnGetEndPrice(client, itemid, g_iPlanPrice[itemid][i], reduced);
-		if (GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[itemid][szSteam]))
+		bool reduced = false;
+		int price = Forward_OnGetEndPrice(client, itemid, g_ePlans[itemid][i][iPrice_Plan], reduced);
+		if (GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || CheckSteamAuth(target, g_eItems[itemid][szSteam]))
+		{
+			Format(sBuffer, sizeof(sBuffer), "%t %t", "Item Available", g_ePlans[itemid][i][szName_Plan], price, reduced ? "discount" : "nodiscount");
+			menu.AddItem("", sBuffer, (g_eClients[target][iCredits]>=price)? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
+		}
+		else if (!g_eItems[itemid][bBuyable])
 		{
 			Format(sBuffer, sizeof(sBuffer), "%t", "Item Available", g_ePlans[itemid][i][szName_Plan], g_ePlans[itemid][i][iPrice_Plan]);
-			menu.AddItem("", sBuffer, (g_eClients[target][iCredits]>=g_ePlans[itemid][i][iPrice_Plan])? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
+			menu.AddItem("", sBuffer, ITEMDRAW_DISABLED);
 		}
 		else
 		{
@@ -3161,7 +3213,10 @@ public void Store_DisconnectClient(int client)
 	g_eClients[client][iOriginalCredits] = -1;
 	g_eClients[client][iItems] = -1;
 	g_eClients[client][bLoaded] = false;
-	ClearTimer(g_eClients[client][hCreditTimer]);
+	if (g_eClients[client][hCreditTimer] != null)
+	{
+		ClearTimer(g_eClients[client][hCreditTimer]);
+	}
 }
 
 int Store_GetItemId(char[] type, char[] uid,int start=-1)
@@ -3178,12 +3233,30 @@ void Store_BuyItem(int client,int itemid,int plan=-1)
 		return;
 	
 	int m_iPrice = 0;
+	int costs = 0;
 	if(plan==-1)
+	{
 		m_iPrice = g_eItems[itemid][iPrice];
+		costs = Forward_OnGetEndPrice(client, itemid, g_eItems[itemid][iPrice]);
+	}
 	else
-		m_iPrice = g_ePlans[itemid][plan][iPrice_Plan];	
+	{
+		m_iPrice = g_ePlans[itemid][plan][iPrice_Plan];
+		costs = Forward_OnGetEndPrice(client, itemid, g_ePlans[itemid][plan][iPrice_Plan]);
+	}
+	
+	Action aReturn = Plugin_Continue;
+	Call_StartForward(gf_hOnBuyItem);
+	Call_PushCell(client);
+	Call_PushCell(itemid);
+	Call_PushCell(m_iPrice);
+	Call_PushCellRef(costs);
+	Call_Finish(aReturn);
 
-	if(g_eClients[client][iCredits]<m_iPrice)
+	if (aReturn == Plugin_Handled)
+		return;
+
+	if(g_eClients[client][iCredits]<costs)
 		return;
 		
 	int m_iId = g_eClients[client][iItems]++;
@@ -3191,11 +3264,11 @@ void Store_BuyItem(int client,int itemid,int plan=-1)
 	g_eClientItems[client][m_iId][iUniqueId] = itemid;
 	g_eClientItems[client][m_iId][iDateOfPurchase] = GetTime();
 	g_eClientItems[client][m_iId][iDateOfExpiration] = (plan==-1?0:(g_ePlans[itemid][plan][iTime_Plan]?GetTime()+g_ePlans[itemid][plan][iTime_Plan]:0));
-	g_eClientItems[client][m_iId][iPriceOfPurchase] = m_iPrice;
+	g_eClientItems[client][m_iId][iPriceOfPurchase] = costs;
 	g_eClientItems[client][m_iId][bSynced] = false;
 	g_eClientItems[client][m_iId][bDeleted] = false;
 	
-	g_eClients[client][iCredits] -= m_iPrice;
+	g_eClients[client][iCredits] -= costs;
 
 	Store_LogMessage(client, -g_eItems[itemid][iPrice], "Bought a %s %s", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
 	
@@ -3677,4 +3750,22 @@ void Forward_OnConfigsExecuted()
 	Call_StartForward(gf_hOnConfigExecuted);
 	Call_PushString(g_sChatPrefix);
 	Call_Finish();
+}
+
+int Forward_OnGetEndPrice(int client, int itemid, int price, bool &reduced = false)
+{
+	Action aReturn;
+
+	Call_StartForward(gf_hOnGetEndPrice);
+	Call_PushCell(client);
+	Call_PushCell(itemid);
+	Call_PushCellRef(price);
+	Call_Finish(aReturn);
+
+	if (aReturn == Plugin_Changed)
+	{
+		reduced = true;
+	}
+
+	return price;
 }

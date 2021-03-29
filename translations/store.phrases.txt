@@ -31,7 +31,7 @@
 	
 	"Spawn Preview"
 	{
-		"en"		"Spawned a preview in front of you. Preview will disappear in 45 seconds"
+		"en"		"Spawned a preview. Preview will disappear in 45 seconds"
 	}
 
 	"Play Preview"
@@ -129,7 +129,7 @@
 
 	"discount"
 	{
-		"en"		"% SALE %"
+		"en"		" SALE"
 	}
 
 	"nodiscount"
@@ -1055,7 +1055,7 @@
 	"Not enough Credits"
 	{
 		"#format"	"{1:s}"
-		"en"		"You don't have enough {1}"
+		"en"		"You don't have enough credits"
 	}
 
 	"Smaller than min value"
@@ -1126,11 +1126,34 @@
 		"#format"	"{1:s},{2:s},{3:i},{4:s}"
 		"en"		"You won, but already own {1} ({2}). Item was sold for {3} {4}"
 	}
+	
+	"Already own item from box. Get Credits price back"
+	{
+		"#format"	"{1:s},{2:s},{3:i},{4:s}, {5:f}"
+		"en"		"You already own {green}{1} ({2}). {default}You are funded back {yellow}{3} {lime}{4} {default}({red}{5} {default}of the case price)"
+	}
+	
+	"Error occured, no price back. Inform admin log"
+	{
+		"en"		"Error occured on getting price back. Please contact admin"
+	}
 
 	"You won lootbox item"
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"You won a {1} ({2})!"
+	}
+	
+	"Chat won lootbox item red"
+	{
+		"#format"	"{1:s},{2:s}, {3:t}"
+		"en"		"{green}{1} {default}opened a container and found {red}{2} ({3})!"
+	}
+	
+	"Chat won lootbox item gold"
+	{
+		"#format"	"{1:s},{2:s}, {3:t}"
+		"en"		"{green}{1} {default}opened a container and found {yellow}{2} ({3})!"
 	}
 
 	"You haven't opend the box in given time"
