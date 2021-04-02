@@ -5,7 +5,7 @@
 #include <store> 
 
 #include <colors> 
-#include <smartdm>
+#include <smartdm> 
 #include <autoexecconfig>
 
 #pragma semicolon 1
@@ -32,6 +32,9 @@ char g_sEfxFile[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
 char g_sEfxName[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
 char g_sLootboxItems[MAX_LOOTBOXES][STORE_MAX_ITEMS / 4][LEVEL_AMOUNT][PLATFORM_MAX_PATH]; //assuming min 4 item on a box
 float g_fChance[MAX_LOOTBOXES][LEVEL_AMOUNT];
+int g_iTime[STORE_MAX_ITEMS];
+int g_iPriceBack[STORE_MAX_ITEMS];
+float g_iSellRatio[STORE_MAX_ITEMS];
 
 int g_iLootboxEntityRef[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 Handle g_hTimerColor[MAXPLAYERS + 1];
@@ -44,9 +47,11 @@ int g_iItemID[MAX_LOOTBOXES];
 int g_iBoxCount = 0;
 int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 
-Handle gf_hPreviewItem;
-
 bool roundend = false;
+
+int m_iOpenProp[MAXPLAYERS+1] = -1;
+
+Handle gf_hPreviewItem;
 
 public Plugin myinfo = 
 {
@@ -80,6 +85,17 @@ public void OnPluginStart()
 
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
+}
+
+public void OnClientDisconnect(int client)
+{
+	g_iClientBox[client] = -1;
+	RequestFrame(Frame_DeleteBox, client);
+}
+
+public void OnClientPostAdminCheck(int client)
+{
+	m_iOpenProp[client] = -1;
 }
 
 
@@ -152,6 +168,9 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 	kv.GetString("file", g_sEfxFile[g_iBoxCount], PLATFORM_MAX_PATH);
 	kv.GetString("name", g_sEfxName[g_iBoxCount], PLATFORM_MAX_PATH);
 	kv.GetString("sound", g_sPickUpSound[g_iBoxCount], PLATFORM_MAX_PATH, "");
+	g_iTime[g_iBoxCount] = kv.GetNum("time", 0);
+	g_iPriceBack[g_iBoxCount] = kv.GetNum("price_back", 0);
+	g_iSellRatio[g_iBoxCount] = kv.GetFloat("sell_ratio", 0.5);
 
 	float percent = 0.0;
 	g_fChance[g_iBoxCount][LEVEL_GREY] = kv.GetFloat("grey", 60.0);
@@ -227,18 +246,23 @@ public int Lootbox_Equip(int client, int itemid)
 		CPrintToChat(client, "%sYou cant open in warm up", g_sChatPrefix);
 		return 1;
 	}
-	
 	if (roundend == true) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
 		CPrintToChat(client, "%sThe round has ended. Please wait for new round", g_sChatPrefix);
 		return 1;
 	}
-	
 	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be Alive");
 		return 1;
 	}
+
+	if (g_iLootboxEntityRef[client] != INVALID_ENT_REFERENCE) // Prevent spam. The previous case wont be killed.
+	{
+		CPrintToChat(client, "%sPlease wait until your previous case has been opened", g_sChatPrefix);
+		return 1;
+	}
+	
 
 	if (DropLootbox(client, Store_GetDataIndex(itemid)))
 		return 0;
@@ -278,9 +302,10 @@ bool DropLootbox(int client, int index)
 
 	DispatchKeyValue(iLootbox, "model", g_sModel[index]);
 	DispatchSpawn(iLootbox);
-
 	AcceptEntityInput(iLootbox, "Enable");
 	ActivateEntity(iLootbox);
+	
+	EmitAmbientSound("ui/panorama/case_drop_01.wav", fPos, _, _, _, _, _, _);
 
 	TeleportEntity(iLootbox, fPos, fAng, NULL_VECTOR);
 	
@@ -362,6 +387,9 @@ public Action Timer_Open(Handle timer, int client)
 	strcopy(sUId, sizeof(sUId), g_sLootboxItems[g_iClientBox[client]][GetRandomInt(0, g_iItemLevelCount[g_iClientBox[client]][g_iClientLevel[client]] - 1)][g_iClientLevel[client]]); // sry
 
 	int itemid = Store_GetItemIdbyUniqueId(sUId);
+	
+	char name[64];
+	GetClientName(client, name, sizeof(name));
 
 	if (itemid == -1)
 	{
@@ -380,18 +408,39 @@ public Action Timer_Open(Handle timer, int client)
 
 	if (Store_HasClientItem(client, itemid))
 	{
-
-		Store_SetClientCredits(client, Store_GetClientCredits(client) + item[iPrice]);
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits back", item[szName], handler[szType], item[iPrice], g_sCreditsName);
+		if (g_iPriceBack[g_iClientBox[client]] <= 0)
+		{
+			Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
+			CPrintToChat(client, "%s%s", g_sChatPrefix, "Error occured, no price back. Inform admin log");
+		}
+		else
+		{
+			Store_SetClientCredits(client, Store_GetClientCredits(client) + RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])));
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits price back", item[szName], handler[szType], RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])), g_sCreditsName);
+			
+			if (g_iClientLevel[client] == LEVEL_RED)
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+			if (g_iClientLevel[client] == LEVEL_GOLD)
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+		}
 	}
 	else
 	{
-		Store_GiveItem(client, itemid, _, _, item[iPrice]);
+		if(g_iTime[g_iClientBox[client]]>0)
+		{
+			Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
+		}
+		else Store_GiveItem(client, itemid, _, _, item[iPrice]);
 		char sBuffer[128];
 		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item[szName], handler[szType]);
 
 		CPrintToChat(client, "%s%s", g_sChatPrefix, sBuffer);
-	
+		
+		if (g_iClientLevel[client] == LEVEL_RED)
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+		if (g_iClientLevel[client] == LEVEL_GOLD)
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+			
 		CRemoveTags(sBuffer, sizeof(sBuffer));
 		PrintHintText(client, sBuffer);
 	}
@@ -642,7 +691,6 @@ public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
 
 		RequestFrame(Frame_DeleteBox, i);
 	}
-	
 	roundend = true;
 }
 
