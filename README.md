@@ -1,5 +1,6 @@
 # Newly added
 - Discount
+- Case opening system (lootbox)
 
 # zephyrus-store (support SM 1.10).
 ### Reverse back from 5.6 and 5.5 to 5_2 since enum struct got error on saving client item data type
@@ -33,7 +34,8 @@ P/S: discount item has bug that all the discount will be stack (sum) if player h
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
-- New* iscount (check for config/store/discount.txt)
+- New* Discount (check for config/store/discount.txt)
+- New* Case opening
 - More will be supported
 
 # Important links
