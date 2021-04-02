@@ -1129,8 +1129,8 @@
 	
 	"Already own item from box. Get Credits price back"
 	{
-		"#format"	"{1:s},{2:s},{3:i},{4:s}, {5:f}"
-		"en"		"You already own {green}{1} ({2}). {default}You are funded back {yellow}{3} {lime}{4} {default}({red}{5} {default}of the case price)"
+		"#format"	"{1:s},{2:s},{3:i},{4:s}"
+		"en"		"You already own {green}{1} ({2}). {default}You are funded back {yellow}{3} {lime}{4}"
 	}
 	
 	"Error occured, no price back. Inform admin log"
@@ -1146,13 +1146,13 @@
 	
 	"Chat won lootbox item red"
 	{
-		"#format"	"{1:s},{2:s}, {3:t}"
+		"#format"	"{1:s},{2:s},{3:t}"
 		"en"		"{green}{1} {default}opened a container and found {red}{2} ({3})!"
 	}
 	
 	"Chat won lootbox item gold"
 	{
-		"#format"	"{1:s},{2:s}, {3:t}"
+		"#format"	"{1:s},{2:s},{3:t}"
 		"en"		"{green}{1} {default}opened a container and found {yellow}{2} ({3})!"
 	}
 
