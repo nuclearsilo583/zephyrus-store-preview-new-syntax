@@ -1084,7 +1084,10 @@
 			{
 				"type"						"lootbox"
 				"price"						"15000"
+				"price_back"				"15000" // Must be same as price
+				"sell_ratio"				"0.35" // sell ratio = price_back * sell_ratio ( this fix for items has plan since they have no sell price )
 				"unique_id"					"uid_Lootbox_wibu_14day"
+				"time" 						"2592000" // Time for items of case
 				"model"						"models/props/crates/csgo_drop_crate_clutch.mdl" // check any models in pak_01.vpk
 				"sound"						"ui/item_drop4_mythical.wav" // none is also usable
 				"file"						"particles/2j.pcf" // none is usable
