@@ -1077,6 +1077,52 @@
 				"unique_id"					"uid_rps_rps"
 			}
 		}
+		
+		"Lootboxes"
+		{
+			"Clutch Wibu 30 Days Case"
+			{
+				"type"						"lootbox"
+				"price"						"15000"
+				"unique_id"					"uid_Lootbox_wibu_14day"
+				"model"						"models/props/crates/csgo_drop_crate_clutch.mdl" // check any models in pak_01.vpk
+				"sound"						"ui/item_drop4_mythical.wav" // none is also usable
+				"file"						"particles/2j.pcf" // none is usable
+				"name"						"vixr_final" // depend on "file"
+				"grey"						"57.000000" // percentage on gery
+				"blue"						"25.000000" //
+				"purple"					"10.000000" //
+				"red"						"6.000000" //
+				"gold"						"2.000000" // Note grey, blue, purple, red, gold must have sum value at 100%
+				"Items" // define items by "unique_id"
+				{
+					"grey"					"uid_model_banana_joe"
+					"grey"					"uid_model_kim_jong_un"
+					"grey"					"uid_model_banana_joe"
+					"grey"					"uid_model_banana_joe"
+					"grey"					"uid_model_kim_jong_un"
+					"grey"					"uid_model_dead_pool"
+					"grey"					"uid_model_patrick"
+					"grey"					"uid_model_kim_jong_un"
+					"grey"					"uid_model_shark"
+					"grey"					"uid_model_shark"
+					"grey"					"uid_model_banana_joe"
+					"grey"					"uid_model_shark"
+					"grey"					"uid_model_shark"
+					"blue"					"uid_model_ram_neptune"
+					"blue"					"uid_model_rom_neptune"
+					"blue"					"uid_model_uni_neptunia"
+					"purple"				"uid_model_fox_miku_skin3"
+					"purple"				"uid_model_klee_genshin"
+					"red"					"mini_touhou_skin9"
+					"red"					"uid_model_kagura_nana_skin1"
+					"red"					"uid_model_kagura_nana_skin2"
+					"red"					"uid_model_kagura_nana_skin3"
+					"gold"					"uid_model_padoru_skin1"
+					"gold"					"uid_model_padoru_skin2"
+				}
+			}
+		}
 	}
 	
 }
