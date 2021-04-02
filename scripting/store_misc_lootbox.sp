@@ -46,6 +46,8 @@ int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 
 Handle gf_hPreviewItem;
 
+bool roundend = false;
+
 public Plugin myinfo = 
 {
 	name = "Store - Lootbox module",
@@ -220,6 +222,18 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 public int Lootbox_Equip(int client, int itemid)
 {
+	if (GameRules_GetProp("m_bWarmupPeriod") == 1) // Check if client open in warm up ? This will cause massive error log when they are open at the same time warm up end.
+	{
+		CPrintToChat(client, "%sYou cant open in warm up", g_sChatPrefix);
+		return 1;
+	}
+	
+	if (roundend == true) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
+	{
+		CPrintToChat(client, "%sThe round has ended. Please wait for new round", g_sChatPrefix);
+		return 1;
+	}
+	
 	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be Alive");
@@ -628,11 +642,13 @@ public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
 
 		RequestFrame(Frame_DeleteBox, i);
 	}
+	
+	roundend = true;
 }
 
 public void Event_RoundStart(Event event, char[] name, bool dontBroadcast)
 {
-	
+	roundend = false;
 }
 
 public void Frame_DeleteBox(int client)
