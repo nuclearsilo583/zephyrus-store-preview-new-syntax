@@ -1,5 +1,4 @@
 # Newly added
-- Discount
 - Case opening system (lootbox)
 
 # zephyrus-store (support SM 1.10).
@@ -34,7 +33,6 @@ P/S: discount item has bug that all the discount will be stack (sum) if player h
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
-- New* Discount (check for config/store/discount.txt)
 - New* Case opening
 - More will be supported
 
