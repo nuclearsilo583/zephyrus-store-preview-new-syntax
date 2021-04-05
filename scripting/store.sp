@@ -1057,8 +1057,11 @@ public int Native_HasClientItem(Handle plugin,int numParams)
 	if (Forward_OnGetEndPrice(client, itemid, g_eItems[itemid][iPrice]) <= 0 && g_eItems[itemid][iPlans]==0)
 		return true;
 		
+	//if (g_eItems[itemid][bIgnoreFree])
+	//	return false;
+		
 	// Is the client a VIP therefore has access to all the items already?
-	if(Store_IsClientVIP(client) && !g_eItems[itemid][bIgnoreVIP])
+	if(Store_IsClientVIP(client) && !g_eItems[itemid][bIgnoreVIP] && !g_eItems[itemid][bIgnoreFree])
 		return true;
 		
 	//if(!g_eItems[itemid][bBuyable])
@@ -1888,7 +1891,7 @@ public void DisplayItemMenu(int client,int itemid)
 	if (g_eItems[itemid][bPreview])
 		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "4", "%t", "Preview Item");
 		
-	if(!Store_IsClientVIP(target) && !Store_IsItemInBoughtPackage(target, itemid))
+	if(/*!Store_IsClientVIP(target) && */!Store_IsItemInBoughtPackage(target, itemid))
 	{
 		int m_iCredits = RoundToFloor(Store_GetClientItemPrice(client, itemid)*view_as<float>(g_eCvars[g_cvarSellRatio].aCache));
 		if(m_iCredits!=0)
@@ -3473,6 +3476,7 @@ void Store_WalkConfig(Handle &kv,int parent=-1)
 			g_eItems[g_iItems][bBuyable] = KvGetNum(kv, "buyable", 1)?true:false;
 			g_eItems[g_iItems][bIgnoreVIP] = (KvGetNum(kv, "ignore_vip", 0)?true:false);
 			g_eItems[g_iItems][bPreview] = KvGetNum(kv, "preview", 0) ? true : false;
+			g_eItems[g_iItems][bIgnoreFree] = KvGetNum(kv, "ignore_free", 0) ? true : false;
 			KvGetString(kv, "steam", g_eItems[g_iItems][szSteam], 256, "\0");
 
 			

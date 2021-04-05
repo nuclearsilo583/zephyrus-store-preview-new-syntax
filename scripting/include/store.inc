@@ -33,6 +33,7 @@ enum Store_Item
 	iData,
 	iPlans,
 	bool:bBuyable,
+	bool:bIgnoreFree,
 	bool:bIgnoreVIP,
 	bool:bPreview,
 	Handle:hAttributes,
