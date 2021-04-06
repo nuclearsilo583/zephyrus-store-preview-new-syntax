@@ -115,6 +115,7 @@ int g_cvarShowVIP = -1;
 int g_cvarLogging = -1;
 int g_cvarSilent = -1;
 int g_cvarCredits = -1;
+int gc_iDescription = -1;
 
 any g_eItems[STORE_MAX_ITEMS][Store_Item];
 any g_eClients[MAXPLAYERS+1][Client];
@@ -290,7 +291,10 @@ public void OnPluginStart()
 	g_cvarLogging = RegisterConVar("sm_store_logging", "0", "Set this to 1 for file logging and 2 to SQL logging (only MySQL). Leaving on 0 means disabled.", TYPE_INT);
 	g_cvarSilent = RegisterConVar("sm_store_silent_givecredits", "0", "Controls the give credits message visibility. 0 = public 1 = private 2 = no message", TYPE_INT);
 	g_cvarCredits = RegisterConVar("sm_store_cmd_credits_cooldown", "12", "Control of the spam cooldown time for !credits", TYPE_FLOAT);
+	
+	gc_iDescription = RegisterConVar("sm_store_description", "2", "Show item description 1 - only in menu page under item name / 2 - both menu and item page / 3 - only in item page in title", TYPE_INT);
 
+	
 	g_cvarChatTag2.AddChangeHook(OnSettingChanged);
 
 	// Register Commands
@@ -1581,7 +1585,13 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 	{
 		SetMenuExitBackButton(m_hMenu, true);
 		if(client == target)
-			SetMenuTitle(m_hMenu, "%s\n%t", g_eItems[parent][szName], "Title Credits", g_eClients[target][iCredits]);
+		{
+			if (g_eCvars[gc_iDescription].aCache > 1)
+			{
+				SetMenuTitle(m_hMenu, "%s\n%s\n%t", g_eItems[parent][szName], g_eItems[parent][szDescription], "Title Credits", g_eClients[target][iCredits]);
+			}
+			else SetMenuTitle(m_hMenu, "%s\n%t", g_eItems[parent][szName], "Title Credits", g_eClients[target][iCredits]);
+		}
 		else
 			SetMenuTitle(m_hMenu, "%N\n%s\n%t", target, g_eItems[parent][szName], "Title Credits", g_eClients[target][iCredits]);
 		g_iMenuBack[client] = g_eItems[parent][iParent];
@@ -1647,11 +1657,20 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 				//	m_iStyle = ITEMDRAW_DISABLED;
 				//if(!g_eItems[i][bBuyable])
 				//	m_iStyle = ITEMDRAW_DISABLED;
-				
+				char sBuffer[256];
 				IntToString(i, STRING(m_szId));
 				if(g_eItems[i][iPrice] == -1 || Store_HasClientItem(target, i))
-					AddMenuItem(m_hMenu, m_szId, g_eItems[i][szName], m_iStyle);
-				
+				{
+					if (g_eCvars[gc_iDescription].aCache < 3)
+					{
+						Format(sBuffer, sizeof(sBuffer), "%s\n%s", g_eItems[i][szName], g_eItems[i][szDescription]);
+					}
+					else Format(sBuffer, sizeof(sBuffer), "%s", g_eItems[i][szName]);
+					
+					AddMenuItem(m_hMenu, m_szId, sBuffer, m_iStyle);
+					
+					//AddMenuItem(m_hMenu, m_szId, g_eItems[i][szName], m_iStyle);
+				}
 				else if(!g_bInvMode[client] && g_eItems[i][iPlans]==0 /*&& g_eItems[i][bBuyable]*/)
 					InsertMenuItemEx(m_hMenu, m_iPosition, (m_iPrice<=g_eClients[target][iCredits]?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), m_szId, "%t %t", "Item Available", g_eItems[i][szName], /*g_eItems[i][iPrice]*/m_iPrice, reduced ? "discount" : "nodiscount");
 				else if(!g_bInvMode[client])
@@ -1679,9 +1698,21 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 						m_iStyle = ITEMDRAW_DISABLED;
 
 					if(g_eItems[i][iPlans]==0)
-						AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t", "Item Available", g_eItems[i][szName], g_eItems[i][iPrice]);
+					{
+						if (g_eCvars[gc_iDescription].aCache < 3)
+						{
+							AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t\n%s", "Item Available", g_eItems[i][szName], g_eItems[i][iPrice], g_eItems[i][szDescription]);
+						}
+						else AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t", "Item Available", g_eItems[i][szName], g_eItems[i][iPrice]);
+					}
 					else
-						AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t", "Item Plan Available", g_eItems[i][szName]);
+					{
+						if (g_eCvars[gc_iDescription].aCache < 3)
+						{
+							AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t\n%s", "Item Plan Available", g_eItems[i][szName], g_eItems[i][szDescription]);
+						}
+						else AddMenuItemEx(m_hMenu, m_iStyle, m_szId, "%t", "Item Plan Available", g_eItems[i][szName]);
+					}
 				}
 			}
 		}
@@ -1861,10 +1892,22 @@ public void DisplayItemMenu(int client,int itemid)
 	char m_szTitle[256];
 	int idx = 0;
 	if(m_bEquipped)
-		idx = Format(STRING(m_szTitle), "%t\n%t", "Item Equipped", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
+	{
+		if (g_eCvars[gc_iDescription].aCache > 1)
+		{
+			idx = Format(STRING(m_szTitle), "%t\n%s\n%t", "Item Equipped", g_eItems[itemid][szName], g_eItems[itemid][szDescription], "Title Credits", g_eClients[target][iCredits]);
+		}
+		else idx = Format(STRING(m_szTitle), "%t\n%t", "Item Equipped", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
+	}
 	else
-		idx = Format(STRING(m_szTitle), "%s\n%t", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
-
+	{
+		if (g_eCvars[gc_iDescription].aCache > 1)
+		{
+			idx = Format(STRING(m_szTitle), "%s\n%s\n%t", g_eItems[itemid][szName], g_eItems[itemid][szDescription], "Title Credits", g_eClients[target][iCredits]);
+		}
+		else idx = Format(STRING(m_szTitle), "%s\n%t", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
+	}
+	
 	int m_iExpiration = Store_GetExpiration(target, itemid);
 	if(m_iExpiration != 0)
 	{
@@ -1938,9 +1981,9 @@ public void DisplayPreviewMenu(int client, int itemid)
 	
 	bool m_bEquipped = Store_IsEquipped(target, itemid);
 
-	if(m_bEquipped)
+	if(g_eCvars[gc_iDescription].aCache > 1)
 	{
-		menu.SetTitle("%s\n%t", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
+		menu.SetTitle("%s\n%s\n%t", g_eItems[itemid][szName], g_eItems[itemid][szDescription], "Title Credits", g_eClients[target][iCredits]);
 	}
 	else
 	{
@@ -2204,7 +2247,11 @@ public void DisplayPlanMenu(int client, int itemid)
 	Menu menu = new Menu(MenuHandler_Plan);
 	menu.ExitBackButton = true;
 
-	menu.SetTitle("%s\n%t", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
+	if (g_eCvars[gc_iDescription].aCache > 1)
+	{
+		menu.SetTitle("%s\n%s\n%t", g_eItems[itemid][szName], g_eItems[itemid][szDescription], "Title Credits", g_eClients[target][iCredits]);
+	}
+	else menu.SetTitle("%s\n%t", g_eItems[itemid][szName], "Title Credits", g_eClients[target][iCredits]);
 
 	char sBuffer[64];
 	if (g_eItems[itemid][bPreview])
@@ -3446,6 +3493,7 @@ void Store_WalkConfig(Handle &kv,int parent=-1)
 			KvGetString(kv, "shortcut", g_eItems[g_iItems][szShortcut], 64);
 			KvGetString(kv, "flag", STRING(m_szFlags));
 			KvGetString(kv, "steam", g_eItems[g_iItems][szSteam], 256, "\0");
+			KvGetString(kv, "description", g_eItems[g_iItems][szDescription], 256, "\0");
 			KvGetString(kv, "games", STRING(m_szGame));
 			if(m_szGame[0] != 0 && StrContains(m_szGame, g_szGameDir)==-1)
 				continue;
@@ -3477,6 +3525,7 @@ void Store_WalkConfig(Handle &kv,int parent=-1)
 			g_eItems[g_iItems][bIgnoreVIP] = (KvGetNum(kv, "ignore_vip", 0)?true:false);
 			g_eItems[g_iItems][bPreview] = KvGetNum(kv, "preview", 0) ? true : false;
 			g_eItems[g_iItems][bIgnoreFree] = KvGetNum(kv, "ignore_free", 0) ? true : false;
+			KvGetString(kv, "description", g_eItems[g_iItems][szDescription], 256, "\0");
 			KvGetString(kv, "steam", g_eItems[g_iItems][szSteam], 256, "\0");
 
 			

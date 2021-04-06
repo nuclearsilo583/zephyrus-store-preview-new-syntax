@@ -1,12 +1,42 @@
+/*
+ * Store - Lootbox module
+ * by: shanapu
+ * https://github.com/shanapu/
+ * 
+ * Copyright (C) 2018-2019 Thomas Schmidt (shanapu)
+ * Credits:
+ * Contributer:
+ *
+ * Original development by Zephyrus - https://github.com/dvarnai/store-plugin
+ *
+ * Love goes out to the sourcemod team and all other plugin developers!
+ * THANKS FOR MAKING FREE SOFTWARE!
+ *
+ * This file is part of the Store SourceMod Plugin.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, version 3.0, as published by the
+ * Free Software Foundation.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 
 #include <store> 
 
-#include <colors> 
-#include <smartdm> 
-#include <autoexecconfig>
+#include <colors> //https://raw.githubusercontent.com/shanapu/Store/master/scripting/include/colors.inc
+#include <smartdm> //https://forums.alliedmods.net/attachment.php?attachmentid=136152&d=1406298576
+#include <autoexecconfig> //https://raw.githubusercontent.com/Impact123/AutoExecConfig/development/autoexecconfig.inc
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -56,7 +86,7 @@ Handle gf_hPreviewItem;
 public Plugin myinfo = 
 {
 	name = "Store - Lootbox module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
 	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
@@ -302,6 +332,8 @@ bool DropLootbox(int client, int index)
 
 	DispatchKeyValue(iLootbox, "model", g_sModel[index]);
 	DispatchSpawn(iLootbox);
+	SetVariantString("fall");
+	AcceptEntityInput(iLootbox, "SetAnimation");
 	AcceptEntityInput(iLootbox, "Enable");
 	ActivateEntity(iLootbox);
 	
@@ -328,9 +360,20 @@ bool DropLootbox(int client, int index)
 		SDKHook(iLight, SDKHook_SetTransmit, Hook_SetTransmit);
 	}
 	
+	HookSingleEntityOutput(iLootbox, "OnAnimationDone", Case_OnAnimationDone, true);
+
 	g_iLootboxEntityRef[client] = EntIndexToEntRef(iLootbox);
 
 	return true;
+}
+
+public void Case_OnAnimationDone(const char[] output, int caller, int activator, float delay) 
+{
+	if(IsValidEntity(caller))
+	{
+		SetVariantString("open");
+		AcceptEntityInput(caller, "SetAnimation");
+	}
 }
 
 void CreateGlow(int ent)
