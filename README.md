@@ -1,5 +1,5 @@
 # Newly added
-- Case opening system (lootbox)
+- Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
 
 # zephyrus-store (support SM 1.10).
 ### Reverse back from 5.6 and 5.5 to 5_2 since enum struct got error on saving client item data type
@@ -17,11 +17,11 @@ Update 18/3: Re-add tf2 item support (I dont know this is gonna work or not). Pl
 P/S: discount item has bug that all the discount will be stack (sum) if player has all the require flag in config. I dont know how to fix this so please adjust the price for individual flags. Look at my config for more info
 
 # Modules that has preview support:
-- Player Skin (by zephyrus)
-- Custom weapon Model Skin  (by bbs.93x.net)
-- Life live pet (with idle2 animation config - Rare idle animation => Support for spawn and death animation soon) by Totenfluch
+- Player Skin (by zephyrus) [youtube](https://www.youtube.com/watch?v=pzkwoiB-jlo)
+- Custom weapon Model Skin  (by bbs.93x.net) [youtube](https://www.youtube.com/watch?v=TT7CwhIIPEc)
+- Life live pet (with idle2 animation config - Rare idle animation => Support for spawn and death animation soon) by Totenfluch [youtube](https://www.youtube.com/watch?v=Fn-_MbWzL_Q)
 - Custom MVP music (by kento and shanapu)
-- Zombie reloaded playerclasses (original by zephyrus)
+- Zombie reloaded playerclasses (original by zephyrus) [youtube](https://www.youtube.com/watch?v=NUZu5MEvvXk)
 - Hats preview (original by zephyrus)
 - New* Trails preview (original by zephyrus)
 - New* Aura particle preview (by shanapu)
@@ -33,7 +33,8 @@ P/S: discount item has bug that all the discount will be stack (sum) if player h
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
-- New* Case opening
+- New* Key "description" for any description on menus
+- New* Case opening [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
 - More will be supported
 
 # Important links
