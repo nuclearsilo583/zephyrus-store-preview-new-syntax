@@ -1,5 +1,6 @@
 # Newly added
 - Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
+- "description" key value
 
 # zephyrus-store (support SM 1.10).
 ### Reverse back from 5.6 and 5.5 to 5_2 since enum struct got error on saving client item data type
