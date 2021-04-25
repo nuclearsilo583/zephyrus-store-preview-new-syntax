@@ -45,7 +45,7 @@ char g_sSound[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
 float g_fVolume[STORE_MAX_ITEMS];
 int g_iEquipt[MAXPLAYERS + 1] = -1;
 
-char g_sChatPrefix[64] = " {yellow}♛ J1BroS Store ♛ {default}";
+char g_sChatPrefix[128];
 
 int g_iCount = 0;
 
@@ -66,6 +66,11 @@ public void OnPluginStart()
 	LoadTranslations("store.phrases");
 
 	HookEvent("round_mvp", Event_RoundMVP);
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public void MVPSounds_OnMapStart()

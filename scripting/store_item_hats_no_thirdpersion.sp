@@ -43,6 +43,8 @@ Handle g_hTimerPreview[MAXPLAYERS + 1];
 
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
+char g_sChatPrefix[128];
+
 public void OnPluginStart()
 {
 	Handle m_hGameConf = LoadGameConfigFile("store.gamedata");
@@ -68,6 +70,11 @@ public void OnPluginStart()
 	GetGameFolderName(STRING(g_szGameDir));
 	if(strcmp(g_szGameDir, "csgo")==0)
 		GAME_CSGO = true;
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public void Hats_OnMapStart()
@@ -437,7 +444,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	g_hTimerPreview[client] = CreateTimer(45.0, Timer_KillPreview, client);
 
-	CPrintToChat(client, " {yellow}♛ J1BroS Store ♛ {default}%t", "Spawn Preview", client);
+	CPrintToChat(client, " %s%t", g_sChatPrefix, "Spawn Preview", client);
 }
 
 public Action Hook_SetTransmit_Preview(int ent, int client)

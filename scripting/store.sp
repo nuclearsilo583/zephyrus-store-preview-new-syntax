@@ -2154,7 +2154,7 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 
 			if (!IsPlayerAlive(client))
 			{
-				CPrintToChat(client, "%s%t", " {yellow}♛ J1BroS Store ♛ {default}", "Must be Alive");
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be Alive");
 				DisplayPreviewMenu(client, itemid);
 				return;
 			}
@@ -2170,7 +2170,7 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 			}
 			else
 			{
-				CPrintToChat(client, "%s", " {yellow}♛ J1BroS Store ♛ {default} Preview disabled");
+				CPrintToChat(client, "%s%s", g_sChatPrefix, " Preview disabled");
 				DisplayPreviewMenu(client, itemid);
 			}
 		}
@@ -2385,7 +2385,7 @@ public int MenuHandler_Plan(Menu menu, MenuAction action, int client, int param2
 			//}
 			else 
 			{
-				CPrintToChat(client, "%s", " {yellow}♛ J1BroS Store ♛ {default} Preview disabled");
+				CPrintToChat(client, "%s%s", g_sChatPrefix, " Preview disabled");
 				DisplayPlanMenu(client, itemid);
 			}
 			return;
@@ -2531,7 +2531,7 @@ public int MenuHandler_Item(Handle menu, MenuAction action,int client,int param2
 				//}
 				else
 				{
-					CPrintToChat(client, "%s", " {yellow}♛ J1BroS Store ♛ {default} Preview disabled");
+					CPrintToChat(client, "%s%s", g_sChatPrefix, " Preview disabled");
 					DisplayItemMenu(client, g_iSelectedItem[client]);
 				}
 			}

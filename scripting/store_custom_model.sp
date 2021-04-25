@@ -25,6 +25,8 @@ int g_iCustomModels = 0;
 Handle g_hTimerPreview[MAXPLAYERS + 1];
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
+char g_sChatPrefix[128];
+
 public Plugin myinfo =
 {
 	name = "Store Custom Weapon Models",
@@ -39,6 +41,11 @@ public void OnPluginStart()
 	Store_RegisterHandler("CustomModel", "model", CustomModelOnMapStart, CustomModelReset, CustomModelConfig, CustomModelEquip, CustomModelRemove, true); 
 	LoadTranslations("store.phrases");
 
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 
@@ -261,7 +268,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	g_hTimerPreview[client] = CreateTimer(8.0, Timer_KillPreview, client);
 
-	CPrintToChat(client, "%s%t", " {yellow}♛ J1BroS Store ♛ {default}", "Spawn Preview", client);
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Spawn Preview", client);
 }
 
 public Action Hook_SetTransmit_Preview(int ent, int client)

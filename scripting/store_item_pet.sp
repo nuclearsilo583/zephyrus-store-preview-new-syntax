@@ -20,7 +20,7 @@ char g_sIdle2[STORE_MAX_ITEMS][64];
 float g_fPosition[STORE_MAX_ITEMS][3];
 float g_fAngles[STORE_MAX_ITEMS][3];
 
-char g_sChatPrefix[128] = "{yellow}♛ J1BroS Store ♛ {default}";
+char g_sChatPrefix[128];
 
 //ConVar gc_bEnable;
 
@@ -62,6 +62,11 @@ public void OnPluginStart()
 
 	g_hHideCookie = RegClientCookie("Pets_Hide_Cookie", "Cookie to check if Pets are blocked", CookieAccess_Private);
 	SetCookieMenuItem(PrefMenu, 0, "");
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)

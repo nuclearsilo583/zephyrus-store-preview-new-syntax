@@ -41,6 +41,8 @@ int g_bSkinEnable;
 
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
+char g_sChatPrefix[128];
+
 public Plugin myinfo = 
 {
 	name = "Store - Player Skin Module (No ZR version)",
@@ -72,12 +74,16 @@ public void OnPluginStart()
 	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
 }
 
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+}
+
 public void PlayerSkins_OnMapStart()
 {
-	/*
-	for(new i=0;i<g_iPlayerSkins;++i)
+	for(int i=0;i<g_iPlayerSkins;++i)
 	{
-		g_ePlayerSkins[i][nModelIndex] = PrecacheModel2(g_ePlayerSkins[i].szModel, true);
+		g_ePlayerSkins[i].nModelIndex = PrecacheModel2(g_ePlayerSkins[i].szModel, true);
 		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i].szModel);
 
 		if(g_ePlayerSkins[i].szArms[0]!=0)
@@ -86,7 +92,6 @@ public void PlayerSkins_OnMapStart()
 			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i].szArms);
 		}
 	}
-	*/
 }
 
 public int PlayerSkins_Reset()
@@ -137,9 +142,9 @@ public int PlayerSkins_Equip(int client, int id)
 		}*/
 		
 		else if(Store_IsClientLoaded(client))
-			CPrintToChat(client, " {yellow}♛ J1BroS Store ♛ {default}%t", "PlayerSkins Settings Changed");
+			CPrintToChat(client, " %s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
 	}
-	else CPrintToChat(client, "{yellow}♛ J1BroS Store ♛ {default}Store Player Skin module is currently temporary disabled");
+	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled", g_sChatPrefix);
 	
 	return (g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2;
 }
@@ -155,9 +160,9 @@ public int PlayerSkins_Remove(int client,int id)
 		{
 			CS_UpdateClientModel(client);
 		}
-		else CPrintToChat(client, " {yellow}♛ J1BroS Store ♛ {default}%t", "PlayerSkins Settings Changed");
+		else CPrintToChat(client, " %s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
 	}
-	else CPrintToChat(client, "{yellow}♛ J1BroS Store ♛ {default}Store Player Skin module is currently temporary disabled");
+	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled", g_sChatPrefix);
 	
 	return view_as<int>(g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2;
 }
@@ -174,7 +179,7 @@ public Action PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBro
 		
 		CreateTimer(Delay, PlayerSkins_PlayerSpawnPost, GetClientUserId(client));
 	}
-	else CPrintToChat(client, "{yellow}♛ J1BroS Store ♛ {default}Store Player Skin module is currently temporary disabled");
+	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled");
 	
 	return Plugin_Continue;
 }
@@ -398,7 +403,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	g_hTimerPreview[client] = CreateTimer(45.0, Timer_KillPreview, client);
 
-	CPrintToChat(client, "%s%t", " {yellow}♛ J1BroS Store ♛ {default}", "Spawn Preview", client);
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Spawn Preview", client);
 }
 
 public Action Hook_SetTransmit_Preview(int ent, int client)

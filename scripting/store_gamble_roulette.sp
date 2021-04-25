@@ -49,7 +49,7 @@ ConVar gc_fSpeed;
 ConVar gc_bAlive;
 
 char g_sCreditsName[64] = "Credits";
-char g_sChatPrefix[128] = " {yellow}♛ J1BroS Store ♛ {default}";
+char g_sChatPrefix[128];
 
 char g_sMenuItem[64];
 char g_sMenuExit[64];
@@ -89,6 +89,11 @@ public void OnPluginStart()
 
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public void OnClientAuthorized(int client, const char[] auth)
