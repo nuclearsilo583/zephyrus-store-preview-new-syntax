@@ -26,7 +26,7 @@ PlayerSkin g_ePlayerSkins[STORE_MAX_ITEMS];
 int g_iPlayerSkins = 0;
 //new g_iTempSkins[MAXPLAYERS+1];
 
-//int g_cvarSkinChangeInstant = -1;
+int g_cvarSkinChangeInstant = -1;
 //new g_cvarSkinForceChange = -1;
 //new g_cvarSkinForceChangeCT = -1;
 //new g_cvarSkinForceChangeT = -1;
@@ -65,7 +65,7 @@ public void OnPluginStart()
 	//g_cvarSkinForceChangeT = RegisterConVar("sm_store_playerskin_default_t", "", "Path of the default T skin.", TYPE_STRING);
 	g_cvarSkinDelay = RegisterConVar("sm_store_playerskin_delay", "2", "Delay after spawn before applying the skin. -1 means no delay", TYPE_FLOAT);
 	g_bSkinEnable = RegisterConVar("sm_store_playerskin_enable", "1", "Enable the player skin module", TYPE_INT);
-	//g_cvarSkinChangeInstant = RegisterConVar("sm_store_playerskin_instant", "1", "Defines whether the skin should be changed instantly or on next spawn.", TYPE_INT);
+	g_cvarSkinChangeInstant = RegisterConVar("sm_store_playerskin_instant", "1", "Defines whether the skin should be changed instantly or on next spawn.", TYPE_INT);
 	
 	
 	HookEvent("player_spawn", PlayerSkins_PlayerSpawn);
@@ -125,7 +125,12 @@ public int PlayerSkins_Equip(int client, int id)
 	//int iIndex =  Store_GetDataIndex(id);
 	if (g_eCvars[g_bSkinEnable].aCache == 1)
 	{
-		if(IsPlayerAlive(client) && IsValidClient(client, true) && GetClientTeam(client)==g_ePlayerSkins[m_iData].iTeam)
+		if (g_eCvars[g_cvarSkinChangeInstant].aCache && g_ePlayerSkins[m_iData].iTeam == 4)
+		{
+			Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
+		
+		}
+		else if(IsPlayerAlive(client) && IsValidClient(client, true) && GetClientTeam(client)==g_ePlayerSkins[m_iData].iTeam)
 		{
 			Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 		}

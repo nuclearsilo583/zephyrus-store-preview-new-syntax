@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.4"
+#define PLUGIN_VERSION "5.4.5"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -3341,6 +3341,8 @@ public void Store_SellItem(int client,int itemid)
 
 	g_eClients[client][iCredits] += m_iCredits;
 	Chat(client, "%t", "Chat Sold Item", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
+	
+	Store_UnequipItem(client, itemid);
 	
 	Store_LogMessage(client, m_iCredits, "Sold a %s %s", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
 
