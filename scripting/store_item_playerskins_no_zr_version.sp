@@ -43,6 +43,10 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
 char g_sChatPrefix[128];
 
+char g_szGameDir[64];
+
+bool GAME_CSGO = false;
+
 public Plugin myinfo = 
 {
 	name = "Store - Player Skin Module (No ZR version)",
@@ -55,6 +59,12 @@ public Plugin myinfo =
 public void OnPluginStart()
 {	
 	LoadTranslations("store.phrases");
+	
+	GetGameFolderName(STRING(g_szGameDir));
+	
+
+	if(strcmp(g_szGameDir, "csgo")==0)
+		GAME_CSGO = true;
 	
 	Store_RegisterHandler("playerskin", "model", PlayerSkins_OnMapStart, PlayerSkins_Reset, PlayerSkins_Config, PlayerSkins_Equip, PlayerSkins_Remove, true);
 	//Store_RegisterHandler("playerskin_temp", "model", PlayerSkins_OnMapStart, PlayerSkins_Reset, PlayerSkins_Config, PlayerSkins_Equip, PlayerSkins_Remove, false);
@@ -251,9 +261,9 @@ void Store_SetClientModel(int client, const char[] model, const int skin=0, cons
 {
 
 	SetEntityModel(client, model);
-	SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
-	if (arms[0] == 0)
-		return;
+	//SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
+	//if (arms[0] == 0)
+	//	return;
 
 	SetEntProp(client, Prop_Send, "m_nSkin", skin);
 	
@@ -265,10 +275,10 @@ void Store_SetClientModel(int client, const char[] model, const int skin=0, cons
 	
 	//CreateTimer(0.15, Timer_RemovePlayerWeapon, GetClientUserId(client));
 	RemoveClientGloves(client, index);
-	/*if(GAME_CSGO & arms[0]!=0)
+	if(GAME_CSGO & arms[0]!=0)
 	{
 		SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
-	}*/
+	}
 }
 
 public Action Timer_RemovePlayerWeapon(Handle timer, int userid)
