@@ -53,7 +53,7 @@ public void OnPluginStart()
 {
 	Store_RegisterHandler("info","text", _, Info_Reset, Info_Config, Info_Equip, _, false, true);
 
-	LoadTranslations("Store.phrases");
+	LoadTranslations("store.phrases");
 }
 
 public void Info_Reset()
