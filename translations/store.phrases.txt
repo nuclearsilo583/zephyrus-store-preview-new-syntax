@@ -1,5 +1,32 @@
 ﻿"Phrases"
 {
+	"Search Info Title"
+	{
+		"#format"	"{1:s}"
+		"en"		"-------------- Store Search Menu Suggestion --------------\n -All related items will be listed here\n - Your current search string: '{1}'"
+	}
+	
+	"Price"
+	{
+		"#format"	"{1:i}"
+		"en"		"Price: {1}"
+	}
+	
+	"Cant be bought"
+	{
+		"en" "This item can not be bought"
+	}
+	
+	"Owned"
+	{
+		"en" "[Owned]"
+	}
+	
+	"Item not found"
+	{
+		"en" "Item not found"
+	}
+	
 	
 	"Item hidden"
 	{
