@@ -241,7 +241,7 @@ public void OnPluginStart()
 		GAME_TF2 = true;
 	else if(strcmp(g_szGameDir, "l4d")==0)
 		GAME_L4D = true;
-	else if(strcmp(g_szGameDir, "l4d2")==0)
+	else if(strcmp(g_szGameDir, "left4dead2")==0)
 		GAME_L4D2 = true;
 	else
 	{
