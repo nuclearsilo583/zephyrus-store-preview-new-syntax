@@ -2,7 +2,6 @@
 - Store's search for item function [youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM)
 
 # zephyrus-store (support SM 1.10).
-### Reverse back from 5.6 and 5.5 to 5_2 since enum struct got error on saving client item data type
 My rewritten zephyrus store
 
 Store system for CS:GO.
@@ -14,7 +13,7 @@ Since this is zephyrus's store that was rewritten so any custom module that supp
 
 Update 18/3: Re-add tf2 item support (I dont know this is gonna work or not). Please fell free to create a new issue post for bug report.
 
-P/S: discount item has bug that all the discount will be stack (sum) if player has all the require flag in config. I dont know how to fix this so please adjust the price for individual flags. Look at my config for more info
+P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have some module that need to rework to be able to use. I will rework any that needed and will store in `<game_name>_modules` folders. Check for it (if you see no item that store in that folder, which mean any module on the main scripting folder are all available to use)
 
 # Modules that has preview support:
 - Player Skin (by zephyrus) [youtube](https://www.youtube.com/watch?v=pzkwoiB-jlo)
