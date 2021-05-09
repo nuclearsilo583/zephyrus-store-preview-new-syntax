@@ -302,8 +302,8 @@ stock int GetClientBySteamID(char[] steamid)
 
 stock void GetClientSightEnd(int client, float[3] out)
 {
-	float[3] m_fEyes;
-	float[3] m_fAngles;
+	float m_fEyes[3];
+	float m_fAngles[3];
 	GetClientEyePosition(client, m_fEyes);
 	GetClientEyeAngles(client, m_fAngles);
 	TR_TraceRayFilter(m_fEyes, m_fAngles, MASK_PLAYERSOLID, RayType_Infinite, TraceRayDontHitPlayers);

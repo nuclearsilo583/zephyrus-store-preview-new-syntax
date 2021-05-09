@@ -495,10 +495,10 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
 	//Miku Green
-	SetEntData(iPreview, offset, 57, _, true);
-	SetEntData(iPreview, offset + 1, 197, _, true);
-	SetEntData(iPreview, offset + 2, 187, _, true);
-	SetEntData(iPreview, offset + 3, 155, _, true);
+	//SetEntData(iPreview, offset, 57, _, true);
+	//SetEntData(iPreview, offset + 1, 197, _, true);
+	//SetEntData(iPreview, offset + 2, 187, _, true);
+	//SetEntData(iPreview, offset + 3, 155, _, true);
 
 	float fOri[3];
 	float fAng[3];
@@ -539,7 +539,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	g_hTimerPreview[client] = CreateTimer(45.0, Timer_KillPreview, client);
 
-	CPrintToChat(client, " {yellow}♛ J1BroS Store ♛ {default}%t", "Spawn Preview", client);
+	CPrintToChat(client, " %s%t", g_sChatPrefix, "Spawn Preview", client);
 }
 
 public Action Hook_SetTransmit_Preview(int ent, int client)
