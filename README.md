@@ -1,6 +1,5 @@
 # Newly added
-- Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
-- "description" key value
+- Store's search for item function [youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM)
 
 # zephyrus-store (support SM 1.10).
 ### Reverse back from 5.6 and 5.5 to 5_2 since enum struct got error on saving client item data type
@@ -24,18 +23,20 @@ P/S: discount item has bug that all the discount will be stack (sum) if player h
 - Custom MVP music (by kento and shanapu)
 - Zombie reloaded playerclasses (original by zephyrus) [youtube](https://www.youtube.com/watch?v=NUZu5MEvvXk)
 - Hats preview (original by zephyrus)
-- New* Trails preview (original by zephyrus)
-- New* Aura particle preview (by shanapu)
-- New* Kill Effects particle preview (by shanapu)
-- New* Spawn Effects particle preview (by shanapu)
-- New* PaintBall Effects (by shanapu)
-- New* Bullet Spark (by shanapu)
+- Trails preview (original by zephyrus)
+- Aura particle preview (by shanapu)
+- Kill Effects particle preview (by shanapu)
+- Spawn Effects particle preview (by shanapu)
 - more will be supported
+# Modules has no preview support:
+- PaintBall Effects (by shanapu)
+- Bullet Spark (by shanapu)
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
-- New* Key "description" for any description on menus
-- New* Case opening [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
+- Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
+- "description" key value
+- New* Store's search for item function
 - More will be supported
 
 # Important links
