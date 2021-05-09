@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.4.7"
+#define PLUGIN_VERSION "5.4.8"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -164,7 +164,7 @@ ConVar g_cvarChatTag2;
 //#include "store/tracers.sp"
 //#include "store/playerskins.sp"
 //#include "store/trails.sp"
-#include "store/grenskins.sp"
+//#include "store/grenskins.sp"
 //#include "store/grentrails.sp"
 //#include "store/weaponcolors.sp"
 //#include "store/tfsupport.sp"
@@ -323,7 +323,7 @@ public void OnPluginStart()
 	//Tracers_OnPluginStart();
 	//Trails_OnPluginStart();
 	//PlayerSkins_OnPluginStart();
-	GrenadeSkins_OnPluginStart();
+	//GrenadeSkins_OnPluginStart();
 	//GrenadeTrails_OnPluginStart();
 	//WeaponColors_OnPluginStart();
 	//TFSupport_OnPluginStart();
@@ -742,7 +742,7 @@ public void OnGameFrame()
 #if !defined STANDALONE_BUILD
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	GrenadeSkins_OnEntityCreated(entity, classname);
+	//GrenadeSkins_OnEntityCreated(entity, classname);
 	//GrenadeTrails_OnEntityCreated(entity, classname);
 }
 #endif
@@ -1206,8 +1206,32 @@ public Action Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 
 	if(!attacker || victim == attacker || !IsClientInGame(attacker) || IsFakeClient(attacker))
 		return Plugin_Continue;
-
-	if(g_eCvars[g_cvarCreditAmountKill].aCache)
+	if (GAME_L4D2 && g_eCvars[g_cvarCreditAmountKill].aCache)
+	{
+		if( victim ) // still give credits on killing Specials Infected
+		{
+			char buffer[32];
+			GetEventString(event, "victimname", buffer, sizeof(buffer));
+			if( strlen(buffer) != 0 && !StrEqual(buffer, "infected") )
+			{
+				//PrintToChatAll("\x03Special infected '\x01%s\x03' death", buffer);  // debug
+				//do some function - SPECIAL INFECTED DEATH
+				g_eClients[attacker][iCredits] += GetMultipliedCredits(attacker, g_eCvars[g_cvarCreditAmountKill].aCache);
+				Chat(attacker, "%t", "Credits Earned For Killing", g_eCvars[g_cvarCreditAmountKill].aCache, g_eClients[victim][szName_Client]);
+			}
+		}
+		else // prevent farming credits by killing Commin Infected
+		{
+			int victimentityid = GetEventInt(event, "entityid");
+			if( IsCommonInfected(victimentityid) )
+			{
+				//PrintToChatAll("\x01Common infected death"); // debug
+				return Plugin_Continue;
+				//do some function - COMMNON INFECTED DEATH
+			}
+		}
+	}
+	else if(g_eCvars[g_cvarCreditAmountKill].aCache)
 	{
 		//g_eClients[attacker][iCredits] += g_eCvars[g_cvarCreditAmountKill].aCache;
 		g_eClients[attacker][iCredits] += GetMultipliedCredits(attacker, g_eCvars[g_cvarCreditAmountKill].aCache);
@@ -3897,3 +3921,14 @@ void Forward_OnConfigsExecuted()
 	Call_PushString(g_sChatPrefix);
 	Call_Finish();
 }
+
+stock bool IsCommonInfected(int iEntity)
+{
+    if(iEntity > 0 && IsValidEntity(iEntity) && IsValidEdict(iEntity))
+    {
+        char strClassName[64];
+        GetEdictClassname(iEntity, strClassName, sizeof(strClassName));
+        return StrEqual(strClassName, "infected");
+    }
+    return false;
+} 
