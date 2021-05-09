@@ -539,7 +539,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	g_hTimerPreview[client] = CreateTimer(45.0, Timer_KillPreview, client);
 
-	CPrintToChat(client, " {yellow}♛ J1BroS Store ♛ {default}%t", "Spawn Preview", client);
+	CPrintToChat(client, " %s%t", g_sChatPrefix, "Spawn Preview", client);
 }
 
 public Action Hook_SetTransmit_Preview(int ent, int client)
