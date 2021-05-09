@@ -1,3 +1,9 @@
+# Current development
+- CSGO: grenade trail, laser sight
+- CSS: Rework some module (from CSGO's modules)
+- L4D2: add more supported modules (need to rework)
+
+
 # Newly added
 - Store's search for item function [youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM)
 
