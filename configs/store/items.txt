@@ -16,7 +16,7 @@
 		{
 			"model" "models/player/custom_player/thas/my_model/tofu_v3/tofu.mdl"
 			"arms" "models/player/custom_player/thas/my_model/tofu_v3/tofu_arms.mdl"
-			"team" "4" // Ts = 2 , CT = 3, both = 4
+			"team" "4" // (For CSGO and CSS: Ts = 2 , CT = 3, both = 4) (For L4D2: Survivor = 2; Infected = 3; Both = 4)
 			"type" "playerskin"
 			"preview" "1" // Enable the preview for this item, only item that support preview can use this feature
 			"unique_id" "uid_model_tofu" // You must have "unique_id" 
@@ -1088,7 +1088,7 @@
 				"sell_ratio"				"0.35" // sell ratio = price_back * sell_ratio ( this fix for items has plan since they have no sell price )
 				"unique_id"					"uid_Lootbox_wibu_14day"
 				"time" 						"2592000" // Time for items of case
-				"model"						"models/props/crates/csgo_drop_crate_clutch.mdl" // check any models in pak_01.vpk
+				"model"						"models/props/crates/csgo_drop_crate_clutch.mdl" // check any models in pak_01.vpk // For l4d2 model: "models/items/l4d_gift.mdl"
 				"sound"						"ui/item_drop4_mythical.wav" // none is also usable
 				"file"						"particles/2j.pcf" // none is usable
 				"name"						"vixr_final" // depend on "file"
