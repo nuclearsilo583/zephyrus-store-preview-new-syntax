@@ -1,14 +1,15 @@
 # Current development
-- CSGO: grenade trail, laser sight
-- CSS: Rework some module (from CSGO's modules)
-- L4D2: add more supported modules (need to rework)
+- CSGO: emote
+- CSS: done (if you want more module contact me)
+- L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
 
 
 # Newly added
-- Store's search for item function [youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM)
+- Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
 - Grenade trail (no preview support)
 - Grenade skin (preview support)
 - Laser sight (no preview support)
+- Sprays (no preview support because cant get the right materials)
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -42,6 +43,7 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Bullet Spark (by shanapu)
 - Grenade trail (by zephyrus)
 - Laser sight (by zephyrus)
+- Sprays
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
