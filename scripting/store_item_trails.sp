@@ -109,8 +109,32 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 
 	if (actions == CookieMenuAction_SelectOption)
 	{
-		ClientCommand(client, "sm_hidetrail");
+		//ClientCommand(client, "sm_hidetrail");
+		CMD_Hide(client);
 		ShowCookieMenu(client);
+	}
+}
+
+void CMD_Hide(int client)
+{
+	char sCookieValue[8];
+
+	switch(g_bHide[client])
+	{
+		case false:
+		{
+			g_bHide[client] = true;
+			IntToString(1, sCookieValue, sizeof(sCookieValue));
+			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "trail");
+		}
+		case true:
+		{
+			g_bHide[client] = false;
+			IntToString(0, sCookieValue, sizeof(sCookieValue));
+			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "trail");
+		}
 	}
 }
 

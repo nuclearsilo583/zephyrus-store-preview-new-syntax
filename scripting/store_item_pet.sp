@@ -82,7 +82,8 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 
 	if (actions == CookieMenuAction_SelectOption)
 	{
-		ClientCommand(client, "sm_hidepet");
+		//ClientCommand(client, "sm_hidepet");
+		CMD_Hide(client);
 		ShowCookieMenu(client);
 	}
 }
@@ -94,6 +95,29 @@ public void OnClientCookiesCached(int client)
 	
 
 	g_bHide[client] = (sValue[0] != '\0' && StringToInt(sValue));
+}
+
+void CMD_Hide(int client)
+{
+	char sCookieValue[8];
+
+	switch(g_bHide[client])
+	{
+		case false:
+		{
+			g_bHide[client] = true;
+			IntToString(1, sCookieValue, sizeof(sCookieValue));
+			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "pet");
+		}
+		case true:
+		{
+			g_bHide[client] = false;
+			IntToString(0, sCookieValue, sizeof(sCookieValue));
+			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "pet");
+		}
+	}
 }
 
 public Action Command_Hide(int client, int args)
