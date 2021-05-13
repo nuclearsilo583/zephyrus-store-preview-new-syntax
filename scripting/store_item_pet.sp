@@ -108,14 +108,15 @@ void CMD_Hide(int client)
 			g_bHide[client] = true;
 			IntToString(1, sCookieValue, sizeof(sCookieValue));
 			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "pet");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "pet");
+
 		}
 		case true:
 		{
 			g_bHide[client] = false;
 			IntToString(0, sCookieValue, sizeof(sCookieValue));
 			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "pet");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "pet");
 		}
 	}
 }
