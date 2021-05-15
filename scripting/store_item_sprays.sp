@@ -18,6 +18,10 @@ int g_cvarSprayDistance = -1;
 
 bool GAME_CSGO = false;
 
+Handle g_hTimerPreview[MAXPLAYERS + 1];
+int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
+char g_sChatPrefix[128];
+
 public void OnPluginStart()
 {
 	g_cvarSprayLimit = RegisterConVar("sm_store_spray_limit", "30", "Number of seconds between two sprays", TYPE_INT);
@@ -34,6 +38,11 @@ public void OnPluginStart()
 	
 	if(GAME_CSGO)
 		Store_RegisterHandler("spray", "material", Sprays_OnMapStart, Sprays_Reset, Sprays_Config, Sprays_Equip, Sprays_Remove, true);
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public void Sprays_OnMapStart()
@@ -135,4 +144,76 @@ stock void GetPlayerEyeViewPoint(int client, float m_fPosition[3])
 
 	TR_TraceRayFilter(m_flPosition, m_flRotation, MASK_ALL, RayType_Infinite, TraceRayDontHitSelf, client);
 	TR_GetEndPosition(m_fPosition);
+}
+
+public void Store_OnPreviewItem(int client, char[] type, int index)
+{
+	if (g_hTimerPreview[client] != null)
+	{
+		TriggerTimer(g_hTimerPreview[client], false);
+	}
+
+	if (!StrEqual(type, "spray"))
+		return;
+
+	int iPreview = CreateEntityByName("env_sprite_oriented");
+
+	DispatchKeyValue(iPreview, "model", g_szSprays[index]);
+	DispatchSpawn(iPreview);
+
+	AcceptEntityInput(iPreview, "Enable");
+
+	float fOrigin[3], fAngles[3], fRad[2], fPosition[3];
+
+	GetClientAbsOrigin(client, fOrigin);
+	GetClientAbsAngles(client, fAngles);
+
+	fRad[0] = DegToRad(fAngles[0]);
+	fRad[1] = DegToRad(fAngles[1]);
+
+	fPosition[0] = fOrigin[0] + 64 * Cosine(fRad[0]) * Cosine(fRad[1]);
+	fPosition[1] = fOrigin[1] + 64 * Cosine(fRad[0]) * Sine(fRad[1]);
+	fPosition[2] = fOrigin[2] + 4 * Sine(fRad[0]);
+
+	fPosition[2] += 35;
+
+	TeleportEntity(iPreview, fPosition, NULL_VECTOR, NULL_VECTOR);
+
+	g_iPreviewEntity[client] = EntIndexToEntRef(iPreview);
+
+	SDKHook(iPreview, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
+
+	g_hTimerPreview[client] = CreateTimer(45.0, Timer_KillPreview, client);
+
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Spawn Preview", client);
+}
+
+public Action Hook_SetTransmit_Preview(int ent, int client)
+{
+	if (g_iPreviewEntity[client] == INVALID_ENT_REFERENCE)
+		return Plugin_Handled;
+	
+	if (ent == EntRefToEntIndex(g_iPreviewEntity[client]))
+		return Plugin_Continue;
+
+	return Plugin_Handled;
+}
+
+public Action Timer_KillPreview(Handle timer, int client)
+{
+	g_hTimerPreview[client] = null;
+
+	if (g_iPreviewEntity[client] != INVALID_ENT_REFERENCE)
+	{
+		int entity = EntRefToEntIndex(g_iPreviewEntity[client]);
+
+		if (entity > 0 && IsValidEdict(entity))
+		{
+			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
+			AcceptEntityInput(entity, "Kill");
+		}
+	}
+	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
+
+	return Plugin_Stop;
 }

@@ -192,7 +192,7 @@ ConVar g_cvarChatTag2;
 #include "store/attributes.sp"
 //#include "store/respawn.sp"
 //#include "store/pets.sp"
-#include "store/sprays.sp"
+//#include "store/sprays.sp"
 //#include "store/weaponskins.sp"
 //#include "store/admin.sp"
 #endif
@@ -351,7 +351,7 @@ public void OnPluginStart()
 	Attributes_OnPluginStart();
 	//Respawn_OnPluginStart();
 	//Pets_OnPluginStart();
-	Sprays_OnPluginStart();
+	//Sprays_OnPluginStart();
 	//WeaponSkins_OnPluginStart();
 	//AdminGroup_OnPluginStart();
 #endif
@@ -1124,7 +1124,7 @@ public void OnClientConnected(int client)
 	//Jetpack_OnClientConnected(client);
 	//ZRClass_OnClientConnected(client);
 	//Pets_OnClientConnected(client);
-	Sprays_OnClientConnected(client);
+	//Sprays_OnClientConnected(client);
 #endif
 }
 
@@ -1181,7 +1181,7 @@ public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3
 	//Jetpack_OnPlayerRunCmd(client, buttons);
 	//LaserSight_OnPlayerRunCmd(client);
 	//Pets_OnPlayerRunCmd(client, tickcount);
-	Sprays_OnPlayerRunCmd(client, buttons);
+	//Sprays_OnPlayerRunCmd(client, buttons);
 	//m_iRet = Bunnyhop_OnPlayerRunCmd(client, buttons);
 
 	return Plugin_Continue;
@@ -1303,8 +1303,13 @@ public Action Command_Store(int client,int params)
 	//if(itemname[0] == '$')
 	//{
 		//strcopy(itemname, sizeof(itemname), itemname);
-	Store_ItemName(client, itemname);
+	//Store_ItemName(client, itemname);
 	//}
+	
+	if(params > 0)
+	{
+		Store_ItemName(client, itemname);
+	}
 	
 	if(params == 0)
 	{
@@ -1381,10 +1386,16 @@ void Store_ItemName(int client, char[] sItemName)
 																			"Cant be bought", client);
 					iStyle = ITEMDRAW_DISABLED;
 				}
+				else if (g_eClients[client][iCredits]<g_eItems[i][iPrice])
+				{
+					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) || %t", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
+																					"Price", g_eItems[i][iPrice], client);
+					iStyle = ITEMDRAW_DISABLED;
+				}
 				else 
 				{
-				FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) || %t", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
-																				"Price", g_eItems[i][iPrice], client);
+					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) || %t", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
+																					"Price", g_eItems[i][iPrice], client);
 				}
 				
 				hEdictMenu.AddItem(sIndexTemp, sMenuTemp, iStyle);
@@ -1839,6 +1850,9 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 					//	m_iStyle = ITEMDRAW_DISABLED;
 					
 					if(!g_eItems[i][bBuyable] && !g_eItems[i][bPreview])
+						m_iStyle = ITEMDRAW_DISABLED;
+						
+					if(!g_eItems[i][bPreview] && g_eClients[target][iCredits]<m_iPrice)
 						m_iStyle = ITEMDRAW_DISABLED;
 
 					if(g_eItems[i][iPlans]==0)
