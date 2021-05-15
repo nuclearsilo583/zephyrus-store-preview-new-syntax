@@ -146,7 +146,7 @@ public PlayerSkins_Equip(client, int id)
 		}*/
 		
 		else if(Store_IsClientLoaded(client))
-			CPrintToChat(client, " %s%t", "PlayerSkins Settings Changed", g_sChatPrefix);
+			CPrintToChat(client, " %s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
 		}
 	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled", g_sChatPrefix);
 	
@@ -165,7 +165,7 @@ public PlayerSkins_Remove(client, id)
 			if (!ZR_IsClientZombie(client))
 				CS_UpdateClientModel(client);
 		}
-		else CPrintToChat(client, " %s%t", "PlayerSkins Settings Changed", g_sChatPrefix);
+		else CPrintToChat(client, " %s%t", g_sChatPrefix , "PlayerSkins Settings Changed");
 	}
 	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled", g_sChatPrefix);
 	
