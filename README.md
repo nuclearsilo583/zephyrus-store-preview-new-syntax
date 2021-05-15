@@ -9,7 +9,7 @@
 - Grenade trail (no preview support)
 - Grenade skin (preview support)
 - Laser sight (no preview support)
-- Sprays (no preview support because cant get the right materials)
+- Sprays (now with preview support)
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -37,13 +37,13 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Kill Effects particle preview (by shanapu)
 - Spawn Effects particle preview (by shanapu)
 - Grenade skin (by zephyrus)
+- Sprays
 - more will be supported
 # Modules has no preview support:
 - PaintBall Effects (by shanapu)
 - Bullet Spark (by shanapu)
 - Grenade trail (by zephyrus)
 - Laser sight (by zephyrus)
-- Sprays
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
