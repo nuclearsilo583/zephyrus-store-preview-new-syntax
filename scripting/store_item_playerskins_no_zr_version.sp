@@ -24,16 +24,18 @@ enum struct PlayerSkin
 PlayerSkin g_ePlayerSkins[STORE_MAX_ITEMS];
 
 int g_iPlayerSkins = 0;
-//new g_iTempSkins[MAXPLAYERS+1];
+//int g_iTempSkins[MAXPLAYERS+1];
 
 int g_cvarSkinChangeInstant = -1;
-//new g_cvarSkinForceChange = -1;
-//new g_cvarSkinForceChangeCT = -1;
-//new g_cvarSkinForceChangeT = -1;
+int g_cvarSkinForceChange = -1;
+int g_cvarSkinForceChangeCT = -1;
+int g_cvarSkinForceChangeCTArms = -1;
+int g_cvarSkinForceChangeT = -1;
+int g_cvarSkinForceChangeTArms = -1;
 int g_cvarSkinDelay = -1;
 
-//new bool:g_bTForcedSkin = false;
-//new bool:g_bCTForcedSkin = false;
+bool g_bTForcedSkin = false;
+bool g_bCTForcedSkin = false;
 
 Handle g_hTimerPreview[MAXPLAYERS + 1];
 
@@ -70,11 +72,17 @@ public void OnPluginStart()
 	//Store_RegisterHandler("playerskin_temp", "model", PlayerSkins_OnMapStart, PlayerSkins_Reset, PlayerSkins_Config, PlayerSkins_Equip, PlayerSkins_Remove, false);
 
 	//g_cvarSkinChangeInstant = RegisterConVar("sm_store_playerskin_instant", "1", "Defines whether the skin should be changed instantly or on next spawn.", TYPE_INT);
-	//g_cvarSkinForceChange = RegisterConVar("sm_store_playerskin_force_default", "0", "If it's set to 1, default skins will be enforced.", TYPE_INT);
-	//g_cvarSkinForceChangeCT = RegisterConVar("sm_store_playerskin_default_ct", "", "Path of the default CT skin.", TYPE_STRING);
-	//g_cvarSkinForceChangeT = RegisterConVar("sm_store_playerskin_default_t", "", "Path of the default T skin.", TYPE_STRING);
+	g_cvarSkinForceChange = RegisterConVar("sm_store_playerskin_force_default", "0", "If it's set to 1, default skins will be enforced.", TYPE_INT);
+	
+	g_cvarSkinForceChangeCT = RegisterConVar("sm_store_playerskin_default_ct", "models/player/custom_player/legacy/ctm_sas_variant_classic.mdl", "Path of the default CT skin.", TYPE_STRING);
+	g_cvarSkinForceChangeCTArms = RegisterConVar("sm_store_playerskin_default_ct_arms", "models/weapons/ct_arms_sas.mdl", "Path of the default CT skin.", TYPE_STRING);
+	
+	g_cvarSkinForceChangeT = RegisterConVar("sm_store_playerskin_default_t", "models/player/custom_player/legacy/tm_leet_variant_classic.mdl", "Path of the default T skin.", TYPE_STRING);
+	g_cvarSkinForceChangeTArms = RegisterConVar("sm_store_playerskin_default_t_arms", "models/weapons/t_arms_leet.mdl", "Path of the default T skin.", TYPE_STRING);
+	
 	g_cvarSkinDelay = RegisterConVar("sm_store_playerskin_delay", "2", "Delay after spawn before applying the skin. -1 means no delay", TYPE_FLOAT);
 	g_bSkinEnable = RegisterConVar("sm_store_playerskin_enable", "1", "Enable the player skin module", TYPE_INT);
+	
 	g_cvarSkinChangeInstant = RegisterConVar("sm_store_playerskin_instant", "1", "Defines whether the skin should be changed instantly or on next spawn.", TYPE_INT);
 	
 	
@@ -102,6 +110,34 @@ public void PlayerSkins_OnMapStart()
 			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i].szArms);
 		}
 	}
+	
+	if(g_eCvars[g_cvarSkinForceChangeT].sCache[0] != 0 && g_eCvars[g_cvarSkinForceChangeTArms].sCache[0] != 0 && 
+		(FileExists(g_eCvars[g_cvarSkinForceChangeT].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeT].sCache, true)) &&
+		(FileExists(g_eCvars[g_cvarSkinForceChangeTArms].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeTArms].sCache, true)))
+	{
+		g_bTForcedSkin = true;
+		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeT].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeT].sCache);
+		
+		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeTArms].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeTArms].sCache);
+	}
+	else
+		g_bTForcedSkin = false;
+		
+	if(g_eCvars[g_cvarSkinForceChangeCT].sCache[0] != 0 && g_eCvars[g_cvarSkinForceChangeCTArms].sCache[0] != 0 &&
+			(FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache, true)) &&
+			(FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache, true)))
+	{
+		g_bCTForcedSkin = true;
+		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeCT].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeCT].sCache);
+		
+		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeCTArms].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeCTArms].sCache);
+	}
+	else
+		g_bCTForcedSkin = false;
 }
 
 public int PlayerSkins_Reset()
@@ -221,9 +257,9 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 	{
 		new m_iTeam = GetClientTeam(client);
 		if(m_iTeam == 2 && g_bTForcedSkin)
-			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeT][sCache], m_iData);
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeT].sCache, m_iData);
 		else if(m_iTeam == 3 && g_bCTForcedSkin)
-			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeCT][sCache], m_iData);
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeCT].sCache, m_iData);
 	}
 	return Plugin_Stop;
 }*/
@@ -246,14 +282,14 @@ public Action PlayerSkins_PlayerSpawnPost(Handle timer, any userid)
 		int m_iData = Store_GetDataIndex(m_iEquipped);
 		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 	}
-	/*else if(g_eCvars[g_cvarSkinForceChange].aCache)
+	else if(g_eCvars[g_cvarSkinForceChange].aCache)
 	{
-		new m_iTeam = GetClientTeam(client);
+		int m_iTeam = GetClientTeam(client);
 		if(m_iTeam == 2 && g_bTForcedSkin)
-			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeT][sCache], m_iData);
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeT].sCache, _, _, g_eCvars[g_cvarSkinForceChangeTArms].sCache, -1);
 		else if(m_iTeam == 3 && g_bCTForcedSkin)
-			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeCT][sCache], m_iData);
-	}*/
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeCT].sCache, _, _, g_eCvars[g_cvarSkinForceChangeCTArms].sCache, -1);
+	}
 	return Plugin_Stop;
 }
 
