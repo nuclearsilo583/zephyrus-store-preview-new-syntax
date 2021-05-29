@@ -41,13 +41,13 @@ public void Gifts_OnPluginStart()
 
 public Action Command_Drop(int client,int args)
 {
-	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag][aCache]))
+	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag].aCache))
 	{
 		Chat(client, "%t", "You dont have permission");
 		return Plugin_Handled;
 	}
 
-	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
 	{
 		Chat(client, "%t", "Credit Gift Disabled");
 		return Plugin_Handled;
@@ -85,9 +85,9 @@ public Action Command_Drop(int client,int args)
 
 public void Gifts_OnMenu(Handle menu, int client,int itemid)
 {
-	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
 		return;
-	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag][aCache]))
+	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag].aCache))
 		return;
 
 	int target = Store_GetClientTarget(client);
@@ -97,7 +97,7 @@ public void Gifts_OnMenu(Handle menu, int client,int itemid)
 
 public bool Gifts_OnHandler(int client, char[] info, int itemid)
 {
-	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
 		return false;
 
 	if(strcmp(info, "drop_gift")==0)
@@ -149,7 +149,7 @@ public void Gifts_MenuHandler(Handle menu, MenuAction action, int client, int pa
 
 public void Gifts_OnPickUp(int client)
 {
-	int m_iCredits = GetRandomInt(g_eCvars[g_cvarGiftsMinimum][aCache], g_eCvars[g_cvarGiftsMaximum][aCache]);
+	int m_iCredits = GetRandomInt(g_eCvars[g_cvarGiftsMinimum].aCache, g_eCvars[g_cvarGiftsMaximum].aCache);
 	Store_SetClientCredits(client, Store_GetClientCredits(client)+m_iCredits);
 	Chat(client, "%t", "Gift Credit Picked", m_iCredits);
 }

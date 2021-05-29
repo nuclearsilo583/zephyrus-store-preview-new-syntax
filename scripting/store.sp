@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.4.8"
+#define PLUGIN_VERSION "5.4.9"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -171,7 +171,7 @@ ConVar g_cvarChatTag2;
 //#include "store/paintball.sp"
 //#include "store/betting.sp"
 //#include "store/watergun.sp"
-//#include "store/gifts.sp"
+#include "store/gifts.sp"
 //#include "store/scpsupport.sp"
 //#include "store/weapons.sp"
 //#include "store/help.sp"
@@ -330,7 +330,7 @@ public void OnPluginStart()
 	//Paintball_OnPluginStart();
 	//Watergun_OnPluginStart();
 	//Betting_OnPluginStart();
-	//Gifts_OnPluginStart();
+	Gifts_OnPluginStart();
 	//SCPSupport_OnPluginStart();
 	//Weapons_OnPluginStart();
 	//Help_OnPluginStart();
