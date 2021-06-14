@@ -109,6 +109,213 @@
 	
 	"Accessories"
 	{
+		"Say Sounds"
+		{
+			"description"					"    Say it loud"
+			"shortcut"						"saysound"
+			"Cheers"
+			{
+				"description"				"    Pay one time use forever"
+				"Cheer #1"
+				{
+					"sound"					"cheer/cheer_1.mp3"
+					"trigger"				"lol"
+					"unique_id"				"uid_saysound_cheer1"
+					"cooldown"				"30"
+					"volume"				"0.400000" // Volume in float (0.1 = 10%, 1 = 100%)
+					"origin"				"1" // 1 = Sound From global world, 2 = Sound From local player, 3 = Sound From player voice (recommend to use value 2)
+					"price"					"10"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #2"
+				{
+					"sound"					"cheer/cheer_2.mp3"
+					"trigger"				"haha"
+					"unique_id"				"uid_saysound_cheer2"
+					"volume"				"0.500000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+					"Plans"
+					{
+						"1 day"
+						{
+							"price" "4000"
+							"time" "86400"
+						}
+						"1 week"
+						{
+							"price" "25000"
+							"time" "604800"
+						}
+						"30 days"
+						{
+							"price" "70000"
+							"time" "2592000"
+						}
+					}
+				}
+				"Cheer #3"
+				{
+					"sound"					"cheer/cheer_3.mp3"
+					"trigger"				"cheer3"
+					"unique_id"				"uid_saysound_cheer3"
+					"price"					"10"
+					"volume"				"0.700000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #4"
+				{
+					"sound"					"cheer/cheer_4.mp3"
+					"trigger"				"cheer4"
+					"unique_id"				"uid_saysound_cheer4"
+					"price"					"10"
+					"volume"				"0.900000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #5"
+				{
+					"sound"					"cheer/cheer_5.mp3"
+					"trigger"				"cheer5"
+					"unique_id"				"uid_saysound_cheer5"
+					"cooldown"				"30"
+					"volume"				"0.400000"
+					"origin"				"1"
+					"price"					"1000"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #6"
+				{
+					"sound"					"cheer/cheer_6.mp3"
+					"trigger"				"cheer6"
+					"unique_id"				"uid_saysound_cheer6"
+					"price"					"10"
+					"volume"				"0.500000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #7"
+				{
+					"sound"					"cheer/cheer_7.mp3"
+					"trigger"				"cheer7"
+					"unique_id"				"uid_saysound_cheer7"
+					"price"					"10"
+					"volume"				"0.700000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #8"
+				{
+					"sound"					"cheer/cheer_8.mp3"
+					"trigger"				"cheer8"
+					"unique_id"				"uid_saysound_cheer8"
+					"price"					"10"
+					"volume"				"0.900000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #9"
+				{
+					"sound"					"cheer/cheer_9.mp3"
+					"trigger"				"cheer9"
+					"unique_id"				"uid_saysound_cheer9"
+					"cooldown"				"30"
+					"volume"				"0.400000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #10"
+				{
+					"sound"					"cheer/cheer_10.mp3"
+					"trigger"				"cheer10"
+					"unique_id"				"uid_saysound_cheer10"
+					"price"					"10"
+					"volume"				"0.500000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #11"
+				{
+					"sound"					"cheer/cheer_11.mp3"
+					"trigger"				"cheer11"
+					"unique_id"				"uid_saysound_cheer11"
+					"price"					"10"
+					"volume"				"0.700000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #12"
+				{
+					"sound"					"cheer/cheer_12.mp3"
+					"trigger"				"cheer12"
+					"unique_id"				"uid_saysound_cheer12"
+					"price"					"10"
+					"volume"				"0.900000"
+					"origin"				"1"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #13"
+				{
+					"sound"					"cheer/cheer_13.mp3"
+					"trigger"				"cheer13"
+					"unique_id"				"uid_saysound_cheer13"
+					"cooldown"				"30"
+					"volume"				"0.400000"
+					"origin"				"1"
+					"price"					"10"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #14"
+				{
+					"sound"					"cheer/cheer_14.mp3"
+					"trigger"				"cheer14"
+					"unique_id"				"uid_saysound_cheer14"
+					"price"					"10"
+					"volume"				"0.500000"
+					"origin"				"3"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+				}
+				"Cheer #15"
+				{
+					"sound"					"cheer/cheer_15.mp3"
+					"trigger"				"cheer15"
+					"unique_id"				"uid_saysound_cheer15"
+					"volume"				"0.700000"
+					"origin"				"2"
+					"cooldown"				"30"
+					"type"					"saysound"
+					"preview"				"1"
+					"price" 				"100"
+				}
+			}
+		}
+		
 		"Pets"
 		{
 			

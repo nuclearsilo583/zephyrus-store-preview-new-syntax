@@ -1711,6 +1711,12 @@
 		"chi" "人物皮肤"
 	}
 	
+	"saysound"
+	{
+		"en" "say sound"
+
+	}
+	
 	"zrclass"
 	{
 		"en" "player class"
