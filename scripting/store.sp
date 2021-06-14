@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.0"
+#define PLUGIN_VERSION "5.5.2"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -1060,8 +1060,8 @@ public int Native_HasClientItem(Handle plugin,int numParams)
 		return true;
 		
 	// Can he even have it?	
-	if(!GetClientPrivilege(client, g_eItems[itemid][iFlagBits]))
-		return false;
+	//if(!GetClientPrivilege(client, g_eItems[itemid][iFlagBits]))
+	//	return false;
 		
 	// Check if the client actually has the item
 	for(int i=0;i<g_eClients[client][iItems];++i)
@@ -1361,10 +1361,13 @@ void Store_ItemName(int client, char[] sItemName)
 	else
 	{
 		//More 1 weapon
+		int m_iFlags = GetUserFlagBits(client);
+		
 		Menu hEdictMenu = CreateMenu(Store_ItemNameMenu_Handler);
 		char sMenuTemp[1024], sIndexTemp[128];
 		FormatEx(sMenuTemp, sizeof(sMenuTemp), "%t", "Search Info Title", sItemName);
 		hEdictMenu.SetTitle(sMenuTemp);
+
 		for(int i = 0; i<g_iItems; i++)
 		{
 			if((StrContains(g_eItems[i][szName], sItemName, false) != -1 || StrContains(g_eItems[i][szUniqueId], sItemName, false) != -1))
@@ -1372,9 +1375,35 @@ void Store_ItemName(int client, char[] sItemName)
 				FormatEx(sIndexTemp, sizeof(sIndexTemp), "%i", i);
 				int iStyle = ITEMDRAW_DEFAULT;
 				//FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s)", g_eItems[i][szName], g_eItems[i][szType], client);
-				if (g_eItems[i][iPlans] != 0)
+				/*
+				if(!CheckSteamAuth(target, g_eItems[itemid][szSteam]))
+				{
+					Format(sBuffer, sizeof(sBuffer), "%t", "Item Available", g_ePlans[itemid][i][szName_Plan], g_ePlans[itemid][i][iPrice_Plan]);
+					menu.AddItem("", sBuffer, ITEMDRAW_DISABLED);
+				}
+				else if (GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || g_eItems[itemid][szSteam][0])
+				{
+					Format(sBuffer, sizeof(sBuffer), "%t", "Item Available", g_ePlans[itemid][i][szName_Plan], g_ePlans[itemid][i][iPrice_Plan]);
+					menu.AddItem("", sBuffer, (g_eClients[target][iCredits]>=g_ePlans[itemid][i][iPrice_Plan])? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
+				}
+				*/
+				
+				if (g_eItems[i][iPlans] != 0 /*&& g_eItems[i][bPreview]*/)
 				{
 					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s)", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], client);
+				}
+				
+				else if(!CheckSteamAuth(client, g_eItems[i][szSteam]) && !g_eItems[i][bPreview])
+				{
+					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) (%t)", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
+																			"Cant be bought", client);
+					iStyle = ITEMDRAW_DISABLED;
+				}
+				else if (!GetClientPrivilege(client, g_eItems[i][iFlagBits], m_iFlags) && !g_eItems[i][bPreview])
+				{
+					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) (%t)", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
+																			"Cant be bought", client);
+					iStyle = ITEMDRAW_DISABLED;
 				}
 				else if(Store_HasClientItem(client, i))
 				{
@@ -1388,13 +1417,13 @@ void Store_ItemName(int client, char[] sItemName)
 				}
 				else if (g_eClients[client][iCredits]<g_eItems[i][iPrice])
 				{
-					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) || %t", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
+					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) - %t", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
 																					"Price", g_eItems[i][iPrice], client);
 					iStyle = ITEMDRAW_DISABLED;
 				}
 				else 
 				{
-					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) || %t", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
+					FormatEx(sMenuTemp, sizeof(sMenuTemp), "%s (%s) - %t", g_eItems[i][szName], g_eTypeHandlers[g_eItems[i][iHandler]][szType], 
 																					"Price", g_eItems[i][iPrice], client);
 				}
 				
@@ -1431,6 +1460,8 @@ public int Store_ItemNameMenu_Handler(Menu hEdictMenu, MenuAction hAction, int c
 				if (g_eItems[StringToInt(sSelected)][bPreview] && g_eItems[StringToInt(sSelected)][iPlans] == 0 && !Store_HasClientItem(client, StringToInt(sSelected)))
 					DisplayPreviewMenu(client, g_iSelectedItem[client]);
 				else if (g_eItems[StringToInt(sSelected)][bPreview] && g_eItems[StringToInt(sSelected)][iPlans] != 0 && !Store_HasClientItem(client, StringToInt(sSelected)))
+					DisplayPlanMenu(client, StringToInt(sSelected));
+				else if (!g_eItems[StringToInt(sSelected)][bPreview] && g_eItems[StringToInt(sSelected)][iPlans] != 0 && !Store_HasClientItem(client, StringToInt(sSelected)))
 					DisplayPlanMenu(client, StringToInt(sSelected));
 				else if (Store_HasClientItem(client, StringToInt(sSelected)))
 					DisplayItemMenu(client, StringToInt(sSelected));
@@ -1849,7 +1880,7 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 					//if((g_eItems[i][iPlans]==0 && g_eClients[target][iCredits]<m_iPrice && !g_eItems[i][bPreview]) || (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam])))
 					//	m_iStyle = ITEMDRAW_DISABLED;
 					
-					if(!g_eItems[i][bPreview] || (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam])))
+					if((!g_eItems[i][bPreview]) && (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam])))
 						m_iStyle = ITEMDRAW_DISABLED;
 					
 					if(!g_eItems[i][bBuyable] && !g_eItems[i][bPreview])
@@ -2410,7 +2441,12 @@ public void DisplayPlanMenu(int client, int itemid)
 
 	for (int i = 0; i < g_eItems[itemid][iPlans]; ++i)
 	{
-		if (GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || CheckSteamAuth(target, g_eItems[itemid][szSteam]))
+		if(!CheckSteamAuth(target, g_eItems[itemid][szSteam]))
+		{
+			Format(sBuffer, sizeof(sBuffer), "%t", "Item Available", g_ePlans[itemid][i][szName_Plan], g_ePlans[itemid][i][iPrice_Plan]);
+			menu.AddItem("", sBuffer, ITEMDRAW_DISABLED);
+		}
+		else if (GetClientPrivilege(target, g_eItems[itemid][iFlagBits], m_iFlags) || g_eItems[itemid][szSteam][0])
 		{
 			Format(sBuffer, sizeof(sBuffer), "%t", "Item Available", g_ePlans[itemid][i][szName_Plan], g_ePlans[itemid][i][iPrice_Plan]);
 			menu.AddItem("", sBuffer, (g_eClients[target][iCredits]>=g_ePlans[itemid][i][iPrice_Plan])? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
