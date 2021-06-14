@@ -70,7 +70,7 @@ public void Sprays_OnClientConnected(int client)
 	g_iSprayCache[client]=-1;
 }
 
-public void Sprays_OnPlayerRunCmd(int client,any buttons)
+public Action OnPlayerRunCmd(int client,int &buttons)
 {
 	if(buttons & IN_USE && g_iSprayCache[client] != -1 && g_iSprayLimit[client]<=GetTime())
 	{
@@ -120,7 +120,7 @@ public void Sprays_Create(int client)
 	float m_flView[3];
 	GetPlayerEyeViewPoint(client, m_flView);
 
-	if(GetVectorDistance(m_flEye, m_flView) > view_as<float>(g_eCvars[g_cvarSprayDistance].aCache))
+	if(GetVectorDistance(m_flEye, m_flView) > g_eCvars[g_cvarSprayDistance].aCache)
 		return;
 
 	TE_Start("World Decal");
