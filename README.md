@@ -6,10 +6,7 @@
 
 # Newly added
 - Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
-- Grenade trail (no preview support)
-- Grenade skin (preview support)
-- Laser sight (no preview support)
-- Sprays (now with preview support)
+- Say sound (preview support)
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -38,6 +35,7 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Spawn Effects particle preview (by shanapu)
 - Grenade skin (by zephyrus)
 - Sprays
+- Say sound
 - more will be supported
 # Modules has no preview support:
 - PaintBall Effects (by shanapu)
