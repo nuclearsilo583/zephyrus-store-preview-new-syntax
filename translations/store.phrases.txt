@@ -1,5 +1,17 @@
 ﻿"Phrases"
 {
+	"say sound map max uses"
+	{
+		"#format"	"{1:i}"
+		"en"		"You have reach the max uses of say sound. {1} max use(s) per map"
+	}
+	
+	"say sound round max uses"
+	{
+		"#format"	"{1:i}"
+		"en"		"You have reach the max uses of say sound. {1} Max use(s) per round"
+	}
+	
 	"Search Info Title"
 	{
 		"#format"	"{1:s}"

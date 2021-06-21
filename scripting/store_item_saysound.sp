@@ -31,9 +31,10 @@
 #include <sdktools>
 
 #include <colors> 
-#include <store> 
+#include <store>
+#include <zephstocks>
 
-#include <smartdm>
+//#include <smartdm>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -54,6 +55,11 @@ char g_sSteam[256];
 int g_iCount = 0;
 int g_iSpam[MAXPLAYERS + 1] = {0,...};
 
+int g_iType;
+int g_iMaxUses;
+
+int g_iUses[MAXPLAYERS + 1] = {0,...};
+
 /*
  * Build date: <DATE>
  * Build number: <BUILD>
@@ -65,18 +71,44 @@ public Plugin myinfo =
 	name = "Store - Sound item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
 public void OnPluginStart()
 {
 	Store_RegisterHandler("saysound", "sound", Sounds_OnMapStart, Sounds_Reset, Sounds_Config, Sounds_Equip, Sounds_Remove, true);
-
+	
+	g_iType = RegisterConVar("sm_store_saysound_type", "1", "Type of the max uses limit (0 = Map limit, 1 = Round limit)", TYPE_INT);
+	g_iMaxUses = RegisterConVar("sm_store_saysound_max_uses", "1", "Max uses", TYPE_INT);
 
 	LoadTranslations("store.phrases");
 
 	HookEvent("player_say", Event_PlayerSay);
+	//HookEvent("round_end", Reset_Count ,EventHookMode_Pre);
+	HookEvent("round_start", Reset_Count);
+}
+
+public void Reset_Count(Handle event , const char[] name , bool dontBroadcast)
+{
+	for(int i=1; i<=MaxClients; i++)
+	{
+		if(g_eCvars[g_iType].aCache == 1)
+		{
+			g_iUses[i] = 0;
+		}
+	}
+}
+
+public void OnMapStart()
+{
+	for(int i=1; i<=MaxClients; i++)
+	{
+		//if(g_eCvars[g_iType].aCache == 0)
+		//{
+		g_iUses[i] = 0;
+		//}
+	}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
@@ -151,9 +183,9 @@ public bool Sounds_Config(KeyValues &kv, int itemid)
 
 public int Sounds_Equip(int client, int itemid)
 {
-	int iIndex = Store_GetDataIndex(itemid);
+	//int iIndex = Store_GetDataIndex(itemid);
 
-	if (g_iSpam[client] > GetTime())
+	/*if (g_iSpam[client] > GetTime())
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Spam Cooldown", g_iSpam[client] - GetTime());
 		return 0;
@@ -194,9 +226,9 @@ public int Sounds_Equip(int client, int itemid)
 	}
 
 	g_iSpam[client] = GetTime() + g_iCooldown[iIndex];
-
+	*/
 	//Store_SetClientPreviousMenu(client, MENU_PARENT);
-	Store_DisplayPreviousMenu(client);
+	//Store_DisplayPreviousMenu(client);
 
 	return 1; // 1 ITEM_EQUIP_KEEP / 0 ITEM_EQUIP_REMOVE
 }
@@ -289,47 +321,57 @@ public void Event_PlayerSay(Event event, char[] name, bool dontBroadcast)
 	{
 		if (strcmp(sBuffer, g_sTrigger[i]) == 0)
 		{
-			if (g_iSpam[client] > GetTime())
+			if (g_iUses[client] < g_eCvars[g_iMaxUses].aCache)
 			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Spam Cooldown", g_iSpam[client] - GetTime());
-				return;
-			}
-
-			if (!CheckFlagBits(client, g_iFlagBits[i]) /*|| !Store_HasClientAccess(client) */|| !CheckSteamAuth(client, g_sSteam[i]))
-				return;
-
-			if (Store_HasClientItem(client, g_iItemId[i]))
-			{
-				switch (g_iOrigin[i])
+				if (g_iSpam[client] > GetTime())
 				{
-					// Sound From global world
-					case 1:
-					{
-						EmitSoundToAll(g_sSound[i], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
-					}
-					// Sound From local player
-					case 2:
-					{
-						float fVec[3];
-						GetClientAbsOrigin(client, fVec);
-						EmitAmbientSound(g_sSound[i], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
-					}
-					// Sound From player voice
-					case 3:
-					{
-						float fPos[3], fAgl[3];
-						GetClientEyePosition(client, fPos);
-						GetClientEyeAngles(client, fAgl);
-
-						// player`s mouth
-						fPos[2] -= 3.0;
-
-						EmitSoundToAll(g_sSound[i], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
-					}
+					CPrintToChat(client, "%s%t", g_sChatPrefix, "Spam Cooldown", g_iSpam[client] - GetTime());
+					return;
 				}
 
+				if (!CheckFlagBits(client, g_iFlagBits[i]) /*|| !Store_HasClientAccess(client) */|| !CheckSteamAuth(client, g_sSteam[i]))
+					return;
 
-				g_iSpam[client] = GetTime() + g_iCooldown[i];
+				if (Store_HasClientItem(client, g_iItemId[i]))
+				{
+					switch (g_iOrigin[i])
+					{
+						// Sound From global world
+						case 1:
+						{
+							EmitSoundToAll(g_sSound[i], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
+						}
+						// Sound From local player
+						case 2:
+						{
+							float fVec[3];
+							GetClientAbsOrigin(client, fVec);
+							EmitAmbientSound(g_sSound[i], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
+						}
+						// Sound From player voice
+						case 3:
+						{
+							float fPos[3], fAgl[3];
+							GetClientEyePosition(client, fPos);
+							GetClientEyeAngles(client, fAgl);
+
+							// player`s mouth
+							fPos[2] -= 3.0;
+
+							EmitSoundToAll(g_sSound[i], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
+						}
+					}
+
+
+					g_iSpam[client] = GetTime() + g_iCooldown[i];
+					g_iUses[client]+=1;
+				}
+			}
+			else
+			{
+				if (g_eCvars[g_iType].aCache == 0)
+					CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound map max uses", g_iUses[client]);
+				else CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound round max uses", g_iUses[client]);
 			}
 			break;
 		}
