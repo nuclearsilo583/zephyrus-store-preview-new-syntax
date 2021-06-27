@@ -77,7 +77,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	Store_RegisterHandler("saysound", "sound", Sounds_OnMapStart, Sounds_Reset, Sounds_Config, Sounds_Equip, Sounds_Remove, true);
+	Store_RegisterHandler("saysound", "sound", Sounds_OnMapStart, Sounds_Reset, Sounds_Config, Sounds_Equip, Sounds_Remove, false);
 	
 	g_iType = RegisterConVar("sm_store_saysound_type", "1", "Type of the max uses limit (0 = Map limit, 1 = Round limit)", TYPE_INT);
 	g_iMaxUses = RegisterConVar("sm_store_saysound_max_uses", "1", "Max uses", TYPE_INT);
@@ -183,18 +183,19 @@ public bool Sounds_Config(KeyValues &kv, int itemid)
 
 public int Sounds_Equip(int client, int itemid)
 {
-	//int iIndex = Store_GetDataIndex(itemid);
+	int iIndex = Store_GetDataIndex(itemid);
 
-	/*if (g_iSpam[client] > GetTime())
+	if (g_iSpam[client] > GetTime())
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Spam Cooldown", g_iSpam[client] - GetTime());
-		return 0;
+		Store_DisplayPreviousMenu(client);
+		return 1;
 	}
 
 	if (!IsPlayerAlive(client) && g_iOrigin[iIndex] > 1)
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be Alive");
-		return 0;
+		return 1;
 	}
 
 	switch (g_iOrigin[iIndex])
@@ -226,9 +227,9 @@ public int Sounds_Equip(int client, int itemid)
 	}
 
 	g_iSpam[client] = GetTime() + g_iCooldown[iIndex];
-	*/
+	
 	//Store_SetClientPreviousMenu(client, MENU_PARENT);
-	//Store_DisplayPreviousMenu(client);
+	Store_DisplayPreviousMenu(client);
 
 	return 1; // 1 ITEM_EQUIP_KEEP / 0 ITEM_EQUIP_REMOVE
 }
