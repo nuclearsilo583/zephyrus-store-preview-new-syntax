@@ -155,7 +155,7 @@ public void Event_RoundMVP(Event event, char[] name, bool dontBroadcast)
 
 		ClientCommand(i, "playgamesound Music.StopAllMusic");
 
-		EmitSoundToAll(g_sSound[g_iEquipt[client]], client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[g_iEquipt[client]]);
+		EmitSoundToClient(i, g_sSound[g_iEquipt[client]], SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NONE, _, g_fVolume[g_iEquipt[client]]);
 	}
 }
 
