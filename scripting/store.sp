@@ -1007,6 +1007,10 @@ public int Native_RemoveItem(Handle plugin,int numParams)
 	int m_iId = Store_GetClientItemId(client, itemid);
 	if(m_iId != -1)
 		g_eClientItems[client][m_iId][bDeleted] = true;
+		
+	Store_SaveClientData(client);
+	Store_SaveClientInventory(client);
+	Store_SaveClientEquipment(client);
 }
 
 public int Native_GetClientTarget(Handle plugin,int numParams)
@@ -3491,7 +3495,9 @@ void Store_BuyItem(int client,int itemid,int plan=-1)
 	Store_LogMessage(client, -g_eItems[itemid][iPrice], "Bought a %s %s", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
 	
 	Chat(client, "%t", "Chat Bought Item", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
+	Store_SaveClientData(client);
 	Store_SaveClientInventory(client);
+	Store_SaveClientEquipment(client);
 }
 
 public void Store_SellItem(int client,int itemid)
