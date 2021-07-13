@@ -2,12 +2,12 @@
 {
 	"Client valid voucher"
 	{
-		"en" "Your generated and valid voucher are:\n"
+		"en" "Your generated and valid voucher are:\n "
 	}
 	
 	"All valid voucher"
 	{
-		"en" "All generated and valid voucher are:\n"
+		"en" "All generated and valid voucher are:\n "
 	}
 	
 	"Check All Voucher"

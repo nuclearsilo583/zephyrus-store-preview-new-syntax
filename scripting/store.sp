@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.2"
+#define PLUGIN_VERSION "5.5.4_vouncher"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -113,7 +113,7 @@ int g_cvarSaveOnDeath = -1;
 int g_cvarCreditMessages = -1;
 int g_cvarShowVIP = -1;
 int g_cvarLogging = -1;
-int g_cvarPluginsLogging = -1;
+int g_cvarPluginsLogging = -1;							  
 int g_cvarSilent = -1;
 //int g_cvarCredits = -1;
 int gc_iDescription = -1;
@@ -196,6 +196,7 @@ ConVar g_cvarChatTag2;
 //#include "store/sprays.sp"
 //#include "store/weaponskins.sp"
 //#include "store/admin.sp"
+#include "store_misc_voucher.sp"
 #endif
 
 //////////////////////////////////
@@ -289,7 +290,7 @@ public void OnPluginStart()
 
 	g_cvarShowVIP = RegisterConVar("sm_store_show_vip_items", "0", "If you enable this VIP items will be shown in grey.", TYPE_INT);
 	g_cvarLogging = RegisterConVar("sm_store_logging", "0", "Set this to 1 for file logging and 2 to SQL logging (only MySQL). Leaving on 0 means disabled.", TYPE_INT);
-	g_cvarPluginsLogging = RegisterConVar("sm_store_plugins_logging", "2", "Enable Logging for module . 0 = disable, 1 = file log, 2 = SQL log (MySQL only)", TYPE_INT);
+	g_cvarPluginsLogging = RegisterConVar("sm_store_plugins_logging", "2", "Enable Logging for module . 0 = disable, 1 = file log, 2 = SQL log (MySQL only)", TYPE_INT);																																								 
 	g_cvarSilent = RegisterConVar("sm_store_silent_givecredits", "0", "Controls the give credits message visibility. 0 = public 1 = private 2 = no message", TYPE_INT);
 	//g_cvarCredits = RegisterConVar("sm_store_cmd_credits_cooldown", "12", "Control of the spam cooldown time for !credits", TYPE_FLOAT);
 	
@@ -356,6 +357,7 @@ public void OnPluginStart()
 	//Sprays_OnPluginStart();
 	//WeaponSkins_OnPluginStart();
 	//AdminGroup_OnPluginStart();
+	Vounchers_OnPluginStart();
 #endif
 
 	Handle topmenu;
@@ -392,6 +394,11 @@ public void OnAllPluginsLoaded()
 
 	if(GetFeatureStatus(FeatureType_Native, "Donate_RegisterHandler")==FeatureStatus_Available)
 		Donate_RegisterHandler("Store", Store_OnPaymentReceived);
+		
+	//if (g_eCvars[gc_bItemVoucherEnabled].aCache)
+	//{
+	Store_RegisterMenuHandler("Voucher", Voucher_OnMenu, Voucher_OnHandler);
+	//}
 }
 
 public Action LoadConfig(Handle timer, any data)
@@ -440,8 +447,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	CreateNative("Store_SetClientRecurringMenu", Native_SetClientRecurringMenu);
 	
 	CreateNative("Store_SQLEscape", Native_SQLEscape);
-	CreateNative("Store_SQLQuery", Native_SQLQuery);											   
-	CreateNative("Store_SQLLogMessage", Native_LogMessage);	
+	CreateNative("Store_SQLQuery", Native_SQLQuery);
+	CreateNative("Store_SQLLogMessage", Native_LogMessage);											 
 	
 	gf_hPreviewItem = CreateGlobalForward("Store_OnPreviewItem", ET_Ignore, Param_Cell, Param_String, Param_Cell);
 	gf_hOnConfigExecuted = CreateGlobalForward("Store_OnConfigExecuted", ET_Ignore, Param_String);
@@ -994,9 +1001,10 @@ public int Native_GiveItem(Handle plugin,int numParams)
 	g_eClientItems[client][m_iId][iPriceOfPurchase] = price;
 	g_eClientItems[client][m_iId][bSynced] = false;
 	g_eClientItems[client][m_iId][bDeleted] = false;
+	
 	Store_SaveClientData(client);
 	Store_SaveClientInventory(client);
-	Store_SaveClientEquipment(client);						  						   
+	Store_SaveClientEquipment(client);
 }
 
 public int Native_RemoveItem(Handle plugin,int numParams)
@@ -1016,7 +1024,7 @@ public int Native_RemoveItem(Handle plugin,int numParams)
 	int m_iId = Store_GetClientItemId(client, itemid);
 	if(m_iId != -1)
 		g_eClientItems[client][m_iId][bDeleted] = true;
-		
+	
 	Store_SaveClientData(client);
 	Store_SaveClientInventory(client);
 	Store_SaveClientEquipment(client);
@@ -1217,7 +1225,6 @@ void StoreLogMessage(int client = 0, int level, char[] message, any ...)
 		LogToOpenFileEx(g_hLogFile, "%s - %L - %s", sLevel, client, sReason); //WriteFileLine(g_hLogFile, "%s - %L - %s", sLevel, client, sReason); //todo dont work
 	}
 }
-
 //////////////////////////////
 //		CLIENT FORWARDS		//
 //////////////////////////////
@@ -1400,7 +1407,133 @@ public Action Command_Say(int client, const char[] command,int argc)
 				}
 		}
 	}
-	return Plugin_Continue;
+	
+	
+	//Vouncher
+	if (g_iChatType[client] == -1)
+		return Plugin_Continue;
+
+	char sMessage[64];
+	GetCmdArgString(sMessage, sizeof(sMessage));
+	StripQuotes(sMessage);
+
+	delete g_hTimerInput[client];
+
+	switch(g_iChatType[client])
+	{
+		case PURCHASE:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			if (amount > g_eClients[client][iCredits])
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Credit Voucher Not Enough");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iTempAmount[client] = amount;
+			g_iChatType[client] = -1;
+
+			char sBuffer[32];
+			GenerateVoucherCode(sBuffer, sizeof(sBuffer));
+			//SQL_WriteVoucher(client, sBuffer, g_iTempAmount[client], false);
+			SQL_WriteVoucherCredits(client, sBuffer, g_iTempAmount[client], false);
+			g_iLastQuery[client] = GetTime();
+		}
+		case NUM:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iCreateNum[client] = amount;
+			g_iChatType[client] = MIN;
+
+			Panel_Multi(client, 5);
+			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+		}
+		case MIN:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iCreateMin[client] = amount;
+			g_iChatType[client] = MAX;
+
+			Panel_Multi(client, 6);
+			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+		}
+		case MAX:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			if (amount < g_iCreateMin[client])
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Smaller than min value", g_iCreateMin[client]);
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iCreateMax[client] = amount;
+			g_iChatType[client] = -1;
+
+			Menu_CreateVoucherLimit(client);
+		}
+		case REDEEM:
+		{
+			if (strlen(sMessage) != 17)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Wrong voucher code format");
+				Menu_Voucher(client);
+				return Plugin_Continue;
+			}
+
+			g_iChatType[client] = -1;
+
+			SQL_FetchVoucher(client, sMessage);
+		}
+		case CHECK:
+		{
+			if (strlen(sMessage) != 17)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Wrong voucher code format");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iChatType[client] = -1;
+
+			SQL_CheckVoucher(client, sMessage);
+		}
+	}
+	
+	return Plugin_Handled;
 }
 
 public Action Command_Store(int client,int params)
@@ -1759,10 +1892,12 @@ public Action Command_GiveCredits(int client,int params)
 		else if(g_eCvars[g_cvarSilent].aCache == 0)
 			ChatAll("%t", "Credits Given", g_eClients[m_iReceiver][szName_Client], m_iCredits);
 		Store_LogMessage(m_iReceiver, m_iCredits, "Given by Admin");
+		
 		Store_SaveClientData(m_iReceiver);
 		Store_SaveClientInventory(m_iReceiver);
-		Store_SaveClientEquipment(m_iReceiver);						
+		Store_SaveClientEquipment(m_iReceiver);
 	}
+	
 	
 	return Plugin_Handled;
 }
@@ -3115,7 +3250,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `date` int(11) NOT NULL,\
 										  PRIMARY KEY (`id`)\
 										)");
-										
+
 			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_plugin_logs` (\
 										  `id` int(11) NOT NULL AUTO_INCREMENT,\
 										  `level` varchar(8) NOT NULL,\
@@ -3127,6 +3262,21 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  PRIMARY KEY (`id`),\
 										  UNIQUE KEY `id` (`id`)\
 										)");
+
+			SQL_TVoid(g_hDatabase, "CREATE TABLE if NOT EXISTS store_voucher (\
+										  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
+										  name_of_create varchar(64) NOT NULL default '',\
+										  steam_of_create varchar(64) NOT NULL default '',\
+										  credits INT NOT NULL default 0,\
+										  item varchar(64) NOT NULL default '',\
+										  date_of_create INT NOT NULL default 0,\
+										  date_of_redeem INT NOT NULL default 0,\
+										  name_of_redeem varchar(64) NOT NULL default '',\
+										  steam_of_redeem TEXT NOT NULL,\
+										  unlimited TINYINT NOT NULL default 0,\
+										  date_of_expiration INT NOT NULL default 0,\
+										  item_expiration INT default NULL);"
+										  );
 
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
 			char m_szQuery[512];
@@ -3177,9 +3327,17 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 		}
 		
 		// Do some housekeeping
-		char m_szQuery[256];
+		char m_szQuery[256], m_szVoucherQuery[2048];
 		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `date_of_expiration` <> 0 AND `date_of_expiration` < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
+		
+		Format(STRING(m_szVoucherQuery), "UPDATE store_voucher SET"
+									... " name_of_redeem = \"voucher's item expired\","
+									... " date_of_redeem = %d,"
+									... " steam_of_redeem = \"voucher's item expired\","
+									... " item_expiration = 0 "
+									... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
+		SQL_TVoid(g_hDatabase, m_szVoucherQuery);
 	}
 }
 
@@ -3724,17 +3882,28 @@ public SMCResult Config_NewSection(Handle parser, const char[] section, bool quo
     {
         return SMCParse_Continue;
     }
+	
+	
     return SMCParse_Continue;
 }
 
 public SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] value, bool key_quotes, bool value_quotes)
 {
-    if(StrEqual(key, "PublicChatTrigger", false))
-        PublicChatTrigger = value[0];
-    else if(StrEqual(key, "SilentChatTrigger", false))
-        SilentChatTrigger = value[0];
-    
-    return SMCParse_Continue;
+	if(StrEqual(key, "PublicChatTrigger", false))
+		PublicChatTrigger = value[0];
+	else if(StrEqual(key, "SilentChatTrigger", false))
+		SilentChatTrigger = value[0];
+	
+	if (StrEqual(key, "MenuItemSound", false))
+	{
+		strcopy(g_sMenuItem, sizeof(g_sMenuItem), value);
+	}
+	else if (StrEqual(key, "MenuExitBackSound", false))
+	{
+		strcopy(g_sMenuExit, sizeof(g_sMenuExit), value);
+	}
+	
+	return SMCParse_Continue;
 }
 
 public SMCResult Config_EndSection(Handle parser) 
@@ -4122,12 +4291,11 @@ stock bool IsCommonInfected(int iEntity)
         return StrEqual(strClassName, "infected");
     }
     return false;
-}
-
+} 
 public void SQLCallback_Void_Error(Handle owner, Handle hndl, const char[] error, any data)
 {
 	if (owner == null)
 	{
 		StoreLogMessage(0, LOG_ERROR, "SQLCallback_Void_Error: %s", error);
 	}
-}
+}	
