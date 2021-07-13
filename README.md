@@ -2,11 +2,10 @@
 - CSGO: emote
 - CSS: done (if you want more module contact me)
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
-
-
+- 
 # Newly added
 - Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
-- Say sound (preview support)
+- New Store Logging for module (Support for MySql and file log, no sqlite)
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -14,7 +13,7 @@ My rewritten zephyrus store
 Store system for CS:GO.
 Zephyrus store system rewritten with preview support (compilable with SM 1.10) 
 
-Not support for SM 1.11
+Not support for compile in SM 1.11
 
 Since this is zephyrus's store that was rewritten so any custom module that support zephyrus store can also be run without any problem. Contact me if you find any bugs or error.
 
@@ -47,8 +46,8 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
 - Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
 - "description" key value
-- New* Store's search for item function
-- More will be supported
+- Store's search for item function
+- Store Logging Message for module plugin (to find out errors).
 
 # Important links
 Contact me via steam for bug report:
