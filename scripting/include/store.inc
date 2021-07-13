@@ -6,6 +6,11 @@
 int g_cvarChatTag = -1;
 #define CHAT_TAG g_eCvars[g_cvarChatTag].sCache
 
+#define LOG_ERROR 0
+#define LOG_CREDITS 1
+#define LOG_ADMIN 2
+#define LOG_EVENT 3
+
 #define ITEM_NAME_LENGTH 64
 #define STORE_MAX_ITEMS 2048
 #define STORE_MAX_HANDLERS 64
@@ -89,6 +94,24 @@ native int Store_GiveClientItem(int client, int recipient, int itemid);
 native bool Store_HasClientItem(int client, int itemid);
 native int Store_IterateEquippedItems(int client,int &start, bool attributes=false);
 native int Store_GetItemIdbyUniqueId(char[] unique_id);
+
+native int Store_SQLEscape(char[] escapeString);
+native int Store_SQLQuery(char[] query, SQLQueryCallback callback, any data);
+
+/**
+ * Set an mystore Log Message
+ *
+ * @param client		Client triggered logging event
+ * @param callback		Message to log
+ * @param data			Log Level
+ * 						LOG_ERROR
+ * 						LOG_CREDITS
+ * 						LOG_ADMIN
+ * 						LOG_EVENT
+ *
+ * @noreturn
+ */
+native void Store_SQLLogMessage(int client = 0, int level, char[] message, any ...);
 
 forward void Store_OnClientModelChanged(int client, char[] model);
 

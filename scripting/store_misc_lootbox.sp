@@ -191,7 +191,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 	if (!FileExists(g_sModel[g_iBoxCount], true))
 	{
-		//Store_LogMessage(0, LOG_ERROR, "Can't find model %s.", g_sModel[g_iBoxCount]);
+		Store_SQLLogMessage(0, LOG_ERROR, "Can't find model %s.", g_sModel[g_iBoxCount]);
 		return false;
 	}
 
@@ -215,7 +215,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 	}
 	if (percent != 100.0)
 	{
-		//Store_LogMessage(0, LOG_ERROR, "Lootbox #%i - Sum of levels is not 100%", g_iBoxCount + 1);
+		Store_SQLLogMessage(0, LOG_ERROR, "Lootbox #%i - Sum of levels is not 100%", g_iBoxCount + 1);
 		return false;
 	}
 
@@ -252,7 +252,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 		if (lvlindex == -1)
 		{
-			//Store_LogMessage(0, LOG_ERROR, "Lootbox #%i - unknown level color: %s", sBuffer);
+			Store_SQLLogMessage(0, LOG_ERROR, "Lootbox #%i - unknown level color: %s", sBuffer);
 			return false;
 		}
 
@@ -440,7 +440,7 @@ public Action Timer_Open(Handle timer, int client)
 		Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
 		CPrintToChat(client, "%s%s", g_sChatPrefix, "Error occured, item back. Inform admin log");
 
-		//Store_LogMessage(0, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
+		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
 		return Plugin_Stop;
 	}
 

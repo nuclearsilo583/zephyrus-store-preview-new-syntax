@@ -1,5 +1,67 @@
 ﻿"Phrases"
 {
+	"Client valid voucher"
+	{
+		"en" "Your generated and valid voucher are:\n"
+	}
+	
+	"All valid voucher"
+	{
+		"en" "All generated and valid voucher are:\n"
+	}
+	
+	"Check All Voucher"
+	{
+		"en" "Check All valid and available voucher (Admin Only)"
+	}
+	
+	"Check Your valid Voucher"
+	{
+		"en" "Check your generated and valid available voucher"
+	}
+	
+	"Voucher admin min max generated"
+	{
+		"#format" "{1:i},{2:s},{3:s},{4:i},{5:i},{6:s}"
+		"en" "You are generating {1} {2}limited voucher{3} with values {4}-{5} {6}"
+	}
+	
+	"Voucher admin generated"
+	{
+		"#format" "{1:i},{2:s},{3:s},{4:i},{5:s}"
+		"en" "You are generating {1} {2}limited voucher{3} with value {4} {5}"
+	}
+	
+	"Voucher Code 17 chars"
+	{
+		"en" "For now voucher code should be excatly 17 chars"
+	}
+	
+	"Item Voucher disabled"
+	{
+		"en" "Voucher creation for item is currently disabled."
+	}
+	
+	"Command is in-game only"
+	{
+		"en" "You need to be alive to use this command."
+	}
+	
+	"Credit Voucher Not Enough"
+	{
+		"en" "You don't have enough credits to create voucher."
+	}
+	
+	"Buy"
+	{
+		"en"		"Buy Item"
+	}
+	
+	"Inventory"
+	{
+		"en"		"Inventory"
+	}
+	
 	"say sound map max uses"
 	{
 		"#format"	"{1:i}"
@@ -916,7 +978,7 @@
 	"Confirm_Voucher"
 	{
 		"#format"	"{1:s},{2:t}"
-		"en"		"Are you sure you want convert {1} ({2}) to coupon?\nWARNING: Items converted only valid for 1 day"
+		"en"		"Are you sure you want convert {1} ({2}) to coupon?\nWARNING: If item in voucher expires before redeemed.\nThis voucher will be expired."
 	}
 
 	"Vouchers"

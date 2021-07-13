@@ -113,6 +113,7 @@ int g_cvarSaveOnDeath = -1;
 int g_cvarCreditMessages = -1;
 int g_cvarShowVIP = -1;
 int g_cvarLogging = -1;
+int g_cvarPluginsLogging = -1;
 int g_cvarSilent = -1;
 //int g_cvarCredits = -1;
 int gc_iDescription = -1;
@@ -288,6 +289,7 @@ public void OnPluginStart()
 
 	g_cvarShowVIP = RegisterConVar("sm_store_show_vip_items", "0", "If you enable this VIP items will be shown in grey.", TYPE_INT);
 	g_cvarLogging = RegisterConVar("sm_store_logging", "0", "Set this to 1 for file logging and 2 to SQL logging (only MySQL). Leaving on 0 means disabled.", TYPE_INT);
+	g_cvarPluginsLogging = RegisterConVar("sm_store_plugins_logging", "2", "Enable Logging for module . 0 = disable, 1 = file log, 2 = SQL log (MySQL only)", TYPE_INT);
 	g_cvarSilent = RegisterConVar("sm_store_silent_givecredits", "0", "Controls the give credits message visibility. 0 = public 1 = private 2 = no message", TYPE_INT);
 	//g_cvarCredits = RegisterConVar("sm_store_cmd_credits_cooldown", "12", "Control of the spam cooldown time for !credits", TYPE_FLOAT);
 	
@@ -436,6 +438,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	CreateNative("Store_IterateEquippedItems", Native_IterateEquippedItems);
 	CreateNative("Store_IsInRecurringMenu", Native_IsInRecurringMenu);
 	CreateNative("Store_SetClientRecurringMenu", Native_SetClientRecurringMenu);
+	
+	CreateNative("Store_SQLEscape", Native_SQLEscape);
+	CreateNative("Store_SQLQuery", Native_SQLQuery);											   
+	CreateNative("Store_SQLLogMessage", Native_LogMessage);	
 	
 	gf_hPreviewItem = CreateGlobalForward("Store_OnPreviewItem", ET_Ignore, Param_Cell, Param_String, Param_Cell);
 	gf_hOnConfigExecuted = CreateGlobalForward("Store_OnConfigExecuted", ET_Ignore, Param_String);
@@ -721,7 +727,7 @@ public void OnConfigsExecuted()
 	if(g_eCvars[g_cvarDatabaseRetries].aCache > 0)
 		CreateTimer(view_as<float>(g_eCvars[g_cvarDatabaseTimeout].aCache), Timer_DatabaseTimeout);
 
-	if(g_eCvars[g_cvarLogging].aCache == 1)
+	if(g_eCvars[g_cvarLogging].aCache == 1 || g_eCvars[g_cvarPluginsLogging].aCache == 1)
 		if(g_hLogFile == INVALID_HANDLE)
 		{
 			char m_szPath[PLATFORM_MAX_PATH];
@@ -988,6 +994,9 @@ public int Native_GiveItem(Handle plugin,int numParams)
 	g_eClientItems[client][m_iId][iPriceOfPurchase] = price;
 	g_eClientItems[client][m_iId][bSynced] = false;
 	g_eClientItems[client][m_iId][bDeleted] = false;
+	Store_SaveClientData(client);
+	Store_SaveClientInventory(client);
+	Store_SaveClientEquipment(client);						  						   
 }
 
 public int Native_RemoveItem(Handle plugin,int numParams)
@@ -1100,6 +1109,113 @@ public int Native_IterateEquippedItems(Handle plugin,int numParams)
 	}
 		
 	return -1;
+}
+
+public int Native_SQLEscape(Handle plugin, int numParams)
+{
+	if (g_hDatabase == null)
+		return -1;
+
+	char sBuffer[512];
+	GetNativeString(1, sBuffer, sizeof(sBuffer));
+
+	SQL_EscapeString(g_hDatabase, sBuffer, sBuffer, sizeof(sBuffer));
+
+	SetNativeString(1, sBuffer, sizeof(sBuffer));
+
+	return 1;
+}
+
+public int Native_SQLQuery(Handle plugin, int numParams)
+{
+	if (g_hDatabase == null)
+		return -1;
+
+	char sQuery[512];
+	GetNativeString(1, sQuery, sizeof(sQuery));
+	DataPack pack = new DataPack();
+	pack.WriteCell(plugin);
+	pack.WriteFunction(GetNativeFunction(2));
+	pack.WriteCell(GetNativeCell(3));
+
+	SQL_TQuery(g_hDatabase, Natives_SQLCallback, sQuery, pack);
+	return 1;
+}
+
+public void Natives_SQLCallback(Handle owner, Handle results, const char[] error, DataPack pack)
+{
+	pack.Reset();
+	Handle plugin = pack.ReadCell();
+	Function callback = pack.ReadFunction();
+	any data = pack.ReadCell();
+	delete pack;
+
+	Call_StartFunction(plugin, callback);
+	Call_PushCell(owner);
+	Call_PushCell(results);
+	Call_PushString(error);
+	Call_PushCell(data);
+	Call_Finish();
+}
+
+public int Native_LogMessage(Handle plugin, int numParams)
+{
+	char sBuffer[256];
+	char sPlugin[256];
+	int client = GetNativeCell(1);
+	int level = GetNativeCell(2);
+	GetNativeString(3, sBuffer, sizeof(sBuffer));
+	FormatNativeString(0, 3, 4, sizeof(sBuffer), _, sBuffer);
+
+	GetPluginFilename(plugin, sPlugin, sizeof(sPlugin));
+	Format(sBuffer, sizeof(sBuffer), "Plugin: %s - %s", sPlugin, sBuffer);
+
+	StoreLogMessage(client, level, sBuffer);
+}
+
+void StoreLogMessage(int client = 0, int level, char[] message, any ...)
+{
+	if (g_eCvars[g_cvarPluginsLogging].aCache < 1)
+		return;
+
+	char sLevel[8];
+	char sReason[256];
+	VFormat(sReason, sizeof(sReason), message, 4);
+	
+	char steamid[64], name[64];
+	if(client)
+	{
+		// steam id, name
+		GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+		GetClientName(client, name, sizeof(name));
+	}
+	
+	switch(level)
+	{
+		case LOG_ADMIN: strcopy(sLevel, sizeof(sLevel), "[Admin]");
+		case LOG_EVENT: strcopy(sLevel, sizeof(sLevel), "[Event]");
+		case LOG_CREDITS: strcopy(sLevel, sizeof(sLevel), "[Credits]");
+		case LOG_ERROR:
+		{
+			strcopy(sLevel, sizeof(sLevel), "[ERROR]");
+			LogError("%s - %L - %s", sLevel, client, sReason);
+		}
+	}
+
+	if(g_eCvars[g_cvarPluginsLogging].aCache == 2)
+	{
+		char sQuery[1024];
+		SQL_EscapeString(g_hDatabase, sQuery, sQuery, sizeof(sQuery));
+		if (client)
+			Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", %i, \"%s\", CURRENT_TIMESTAMP, \"%s\", \"%s\")", sLevel, g_eClients[client][iId_Client], sReason, name, steamid);
+		else
+			Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", \"0\", \"%s\", CURRENT_TIMESTAMP, \"Console\", \"0\")", sLevel, sReason);
+		SQL_TQuery(g_hDatabase, SQLCallback_Void_Error, sQuery);
+	}
+	else if(g_eCvars[g_cvarPluginsLogging].aCache == 1)
+	{
+		LogToOpenFileEx(g_hLogFile, "%s - %L - %s", sLevel, client, sReason); //WriteFileLine(g_hLogFile, "%s - %L - %s", sLevel, client, sReason); //todo dont work
+	}
 }
 
 //////////////////////////////
@@ -1643,6 +1759,9 @@ public Action Command_GiveCredits(int client,int params)
 		else if(g_eCvars[g_cvarSilent].aCache == 0)
 			ChatAll("%t", "Credits Given", g_eClients[m_iReceiver][szName_Client], m_iCredits);
 		Store_LogMessage(m_iReceiver, m_iCredits, "Given by Admin");
+		Store_SaveClientData(m_iReceiver);
+		Store_SaveClientInventory(m_iReceiver);
+		Store_SaveClientEquipment(m_iReceiver);						
 	}
 	
 	return Plugin_Handled;
@@ -2996,6 +3115,19 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `date` int(11) NOT NULL,\
 										  PRIMARY KEY (`id`)\
 										)");
+										
+			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_plugin_logs` (\
+										  `id` int(11) NOT NULL AUTO_INCREMENT,\
+										  `level` varchar(8) NOT NULL,\
+										   name varchar(64) NOT NULL default '',\
+										   steam varchar(64) NOT NULL default '',\
+										  `player_id` int(11) NOT NULL,\
+										  `reason` varchar(256) NOT NULL,\
+										  `date` timestamp NOT NULL,\
+										  PRIMARY KEY (`id`),\
+										  UNIQUE KEY `id` (`id`)\
+										)");
+
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
 			char m_szQuery[512];
 			Format(STRING(m_szQuery), "CREATE TABLE IF NOT EXISTS `%s` (\
@@ -3990,4 +4122,12 @@ stock bool IsCommonInfected(int iEntity)
         return StrEqual(strClassName, "infected");
     }
     return false;
-} 
+}
+
+public void SQLCallback_Void_Error(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if (owner == null)
+	{
+		StoreLogMessage(0, LOG_ERROR, "SQLCallback_Void_Error: %s", error);
+	}
+}
