@@ -2,10 +2,11 @@
 - CSGO: emote
 - CSS: done (if you want more module contact me)
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
-- 
+
 # Newly added
 - Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
 - New Store Logging for module (Support for MySql and file log, no sqlite)
+![log](https://user-images.githubusercontent.com/58926275/125444645-8c83105f-cc83-411d-bab9-a9e5689af9d9.png)
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
