@@ -477,7 +477,7 @@ public int Handler_Createunlimited(Menu menu, MenuAction action, int client, int
 		{
 			GenerateVoucherCode(sBuffer, sizeof(sBuffer));
 
-			SQL_WriteVoucherCredits(client, sBuffer, GetRandomInt(g_iCreateMin[client], g_iCreateMax[client]), bUnlimited);
+			SQL_WriteVoucherCreditsAdmin(client, sBuffer, GetRandomInt(g_iCreateMin[client], g_iCreateMax[client]), bUnlimited);
 		}
 	}
 	else if (action == MenuAction_Cancel)
@@ -578,6 +578,21 @@ void Panel_Multi(int client, int num)
 			delete g_hTimerInput[client];
 			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
 		}
+		case 6:
+		{
+			Format(sBuffer, sizeof(sBuffer), "%t", "Enter maximum value");
+			panel.DrawText(sBuffer);
+			panel.DrawText(sBuffer);
+			panel.DrawText(" ");
+
+			Format(sBuffer, sizeof(sBuffer), "%t", "Cancel");
+			panel.DrawItem(sBuffer);
+
+			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_fInputTime)); // open info Panel
+
+			delete g_hTimerInput[client];
+			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+		}
 	}
 
 	delete panel;
@@ -643,7 +658,7 @@ void Panel_VoucherAccept(int client, int credits, char[] voucher, char[] uniqueI
 	panel.SetTitle(sBuffer);
 
 	panel.DrawText(" ");
-	Format(sBuffer, sizeof(sBuffer), "%t", "Voucher accepted");
+	Format(sBuffer, sizeof(sBuffer), "%t", "Voucher accepted Panel");
 	panel.DrawText(sBuffer);
 
 	if (!credits)
@@ -657,11 +672,11 @@ void Panel_VoucherAccept(int client, int credits, char[] voucher, char[] uniqueI
 
 		Store_GetHandler(item[iHandler], handler);
 
-		Format(sBuffer, sizeof(sBuffer), "%t", "You get x item", item[szName], handler[szType]);
+		Format(sBuffer, sizeof(sBuffer), "%t", "You get x item Panel", item[szName], handler[szType]);
 	}
 	else
 	{
-		Format(sBuffer, sizeof(sBuffer), "%t", "You get x Credits", credits, g_sCreditsName);
+		Format(sBuffer, sizeof(sBuffer), "%t", "You get x Credits Panel", credits, g_sCreditsName);
 	}
 
 	panel.DrawText(sBuffer);
@@ -685,7 +700,7 @@ public int Handler_NullCancelInput(Handle menu, MenuAction action, int client, i
 	{
 		delete g_hTimerInput[client];
 		g_iChatType[client] = -1;
-		FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+		ClientCommand(client, "play %s", g_sMenuExit);
 		return;
 	}
 
@@ -701,6 +716,7 @@ public int Handler_NullCancel(Handle menu, MenuAction action, int param1, int pa
 		{
 			default: // cancel
 			{
+				delete g_hTimerInput[client];
 				return;
 			}
 		}
@@ -722,7 +738,7 @@ public int Handler_NullCancelVoucher(Handle menu, MenuAction action, int client,
 				delete g_hTimerInput[client];
 				Menu_Voucher(client);
 				
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuExit);
 				return;
 			}
 		}
@@ -741,7 +757,7 @@ public Action Timer_Input2Late(Handle tmr, int userid)
 
 	Panel_Multi(client, 1);
 
-	FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+	ClientCommand(client, "play %s", g_sMenuExit);
 
 	g_hTimerInput[client] = null;
 	return Plugin_Stop;
@@ -754,7 +770,7 @@ void cmdCheckValidVoucher(int client)
 {
 	char showOffVoucherQuery[1024], player_authid[255];
 	GetClientAuthId(client, AuthId_Steam2, player_authid, sizeof(player_authid));
-	Format(showOffVoucherQuery, sizeof(showOffVoucherQuery), "SELECT `voucher` FROM `store_voucher` WHERE steam_of_create = '%s' AND date_of_redeem = '0';", player_authid);
+	Format(showOffVoucherQuery, sizeof(showOffVoucherQuery), "SELECT `voucher`, `date_of_expiration` FROM `store_voucher` WHERE steam_of_create = '%s' AND date_of_redeem = '0';", player_authid);
 	//SQL_TQuery(g_hDatabase, SQLshowOffVoucherQuery, showOffVoucherQuery, client);
 	Store_SQLQuery(showOffVoucherQuery, SQLshowOffVoucherQuery, client);
 }
@@ -766,11 +782,15 @@ public void SQLshowOffVoucherQuery(Database db, DBResultSet results, const char[
 
 	while (SQL_FetchRow(results))
 	{
-		char sVoucher[17];
+		char sVoucher[30], sBuffer[1024];
 		SQL_FetchString(results, 0, sVoucher, sizeof(sVoucher));
-		AddMenuItem(showOffMenu, "", sVoucher, ITEMDRAW_DISABLED);
+		//SQL_FetchString(results, 1, date_of_expiration, sizeof(date_of_expiration));
+		int date_of_expiration = SQL_FetchInt(results, 1);
+		FormatTime(sBuffer, sizeof(sBuffer), NULL_STRING, date_of_expiration);
+		Format(sBuffer, sizeof(sBuffer), "%s (%s)", sVoucher, sBuffer);
+		AddMenuItem(showOffMenu, "", sBuffer, ITEMDRAW_DISABLED);
 	}
-
+	SetMenuExitBackButton(showOffMenu, true);
 	DisplayMenu(showOffMenu, client, 60);
 }
 
@@ -780,7 +800,7 @@ public void SQLshowOffVoucherQuery(Database db, DBResultSet results, const char[
 void cmdCheckAllValidVoucher(int client) 
 {
 	char showOffVoucherQuery[1024];
-	Format(showOffVoucherQuery, sizeof(showOffVoucherQuery), "SELECT `voucher`, `name_of_create` FROM `store_voucher` WHERE date_of_redeem = '0';");
+	Format(showOffVoucherQuery, sizeof(showOffVoucherQuery), "SELECT `voucher`, `name_of_create`, `date_of_expiration` FROM `store_voucher` WHERE date_of_redeem = '0';");
 	//SQL_TQuery(g_hDatabase, SQLshowOffVoucherQuery, showOffVoucherQuery, client);
 	Store_SQLQuery(showOffVoucherQuery, SQLshowOffAllVoucherQuery, client);
 }
@@ -792,18 +812,25 @@ public void SQLshowOffAllVoucherQuery(Database db, DBResultSet results, const ch
 
 	while (SQL_FetchRow(results))
 	{
-		char sVoucher[17], name[64], sBuffer[1024];
+		char sVoucher[30], name[64], sBuffer[1024];
 		SQL_FetchString(results, 0, sVoucher, sizeof(sVoucher));
 		SQL_FetchString(results, 1, name, sizeof(name));
-		Format(sBuffer, sizeof(sBuffer), "%s (%s)", sVoucher, name);
+		int date_of_expiration = SQL_FetchInt(results, 2);
+		FormatTime(sBuffer, sizeof(sBuffer), NULL_STRING, date_of_expiration);
+		Format(sBuffer, sizeof(sBuffer), "%s (%s) (%s)", sVoucher, name, sBuffer);
 		AddMenuItem(showOffMenu, "", sBuffer, ITEMDRAW_DISABLED);
 	}
-
+	SetMenuExitBackButton(showOffMenu, true);
 	DisplayMenu(showOffMenu, client, 60);
 }
 
-public int noMenuHandler(Handle menu, MenuAction action, int client, int item) 
+public int noMenuHandler(Handle menu, MenuAction action, int client, int param2) 
 {  
+	if (action == MenuAction_End)
+		CloseHandle(menu);
+	else if(action==MenuAction_Cancel)
+		if (param2 == MenuCancel_ExitBack)
+			Menu_Voucher(client);
 }
 /******************************************************************************
                   End
@@ -852,7 +879,7 @@ void SQL_WriteVoucher(int client, char[] voucher, int credits = 0, bool unlimite
 		//GetTime()<g_eClientItems[client][i][iDateOfExpiration]
 		
 		// Query
-		Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO Store_voucher "
+		Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
 		... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration, item_expiration)"
 		... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i', '%i')", 
 			voucher, name, steamid, credits, uniqueID, time, 
@@ -861,7 +888,7 @@ void SQL_WriteVoucher(int client, char[] voucher, int credits = 0, bool unlimite
 	}
 	else
 	{
-		Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO Store_voucher "
+		Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
 		... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration)"
 		... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i')", 
 			voucher, name, steamid, credits, uniqueID, time, 
@@ -893,7 +920,7 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
-		FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+		ClientCommand(client, "play %s", g_sMenuExit);
 		delete pack;
 		return;
 	}
@@ -911,7 +938,7 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 	if (itemid == -1)
 	{
 		Menu_Voucher(client);
-		FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+		ClientCommand(client, "play %s", g_sMenuExit);
 		return;
 	}
 
@@ -948,7 +975,7 @@ void SQL_WriteVoucherCredits(int client, char[] voucher, int credits = 0, bool u
 
 	char sQuery[1024];
 
-	Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO Store_voucher "
+	Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
 	... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration)"
 	... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i')", 
 		voucher, name, steamid, credits, uniqueID, time, 
@@ -978,7 +1005,7 @@ public void SQLCallback_WriteCredits(Database db, DBResultSet results, const cha
 		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
-		FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+		ClientCommand(client, "play %s", g_sMenuExit);
 		delete pack;
 		return;
 	}
@@ -987,7 +1014,7 @@ public void SQLCallback_WriteCredits(Database db, DBResultSet results, const cha
 	int client = GetClientOfUserId(pack.ReadCell());
 	int credits = pack.ReadCell();
 	pack.ReadString(sVoucher, sizeof(sVoucher));
-	char sUniqueID[64];
+	char sUniqueID[1024];
 	pack.ReadString(sUniqueID, sizeof(sUniqueID));
 	delete pack;
 
@@ -1017,7 +1044,7 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 		LogMessage("SQLCallback_Write: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
-		FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+		ClientCommand(client, "play %s", g_sMenuExit);
 		delete pack;
 		return;
 	}
@@ -1035,7 +1062,7 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 	if (itemid == -1)
 	{
 		Menu_Voucher(client);
-		FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+		ClientCommand(client, "play %s", g_sMenuExit);
 		return;
 	}
 
@@ -1067,6 +1094,79 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 	}
 }
 */
+void SQL_WriteVoucherCreditsAdmin(int client, char[] voucher, int credits = 0, bool unlimited = false, char[] uniqueID = "")
+{
+	// steam id
+	char steamid[24];
+	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+
+	// player name
+	char name[64];
+	GetClientName(client, name, sizeof(name));
+	Store_SQLEscape(name);
+	Store_SQLEscape(voucher);
+
+	int time = GetTime();
+
+	char sQuery[1024];
+
+	Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
+	... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration)"
+	... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i')", 
+		voucher, name, steamid, credits, uniqueID, time, 
+		view_as<int>(unlimited), 
+		g_eCvars[gc_iExpireTime].aCache == 0 ? 0 : GetTime() + g_eCvars[gc_iExpireTime].aCache*60*60);
+	
+	
+	DataPack pack = new DataPack();
+	pack.WriteCell(time);
+	pack.WriteCell(GetClientUserId(client));
+	pack.WriteCell(credits);
+	pack.WriteString(voucher);
+	pack.WriteString(uniqueID);
+
+	Store_SQLQuery(sQuery, SQLCallback_WriteCreditsAdmin, pack);
+
+}
+
+public void SQLCallback_WriteCreditsAdmin(Database db, DBResultSet results, const char[] error, DataPack pack)
+{
+	pack.Reset();
+	int time = pack.ReadCell();
+
+	if (!StrEqual("", error))
+	{
+		int client = GetClientOfUserId(pack.ReadCell());
+		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
+
+		ClientCommand(client, "play %s", g_sMenuExit);
+		delete pack;
+		return;
+	}
+
+	char sVoucher[64];
+	int client = GetClientOfUserId(pack.ReadCell());
+	int credits = pack.ReadCell();
+	pack.ReadString(sVoucher, sizeof(sVoucher));
+	char sUniqueID[1024];
+	pack.ReadString(sUniqueID, sizeof(sUniqueID));
+	delete pack;
+
+	
+	Panel_VoucherPurchaseSuccess(client, credits, sVoucher);
+	LogMessage("Purchase Voucher: %s", sVoucher);
+
+	CPrintToChat(client, "%s %t", g_sChatPrefix, "Voucher in chat", sVoucher, credits, g_sCreditsName);
+
+	PrintToConsole(client, "%t", "Voucher in console", sVoucher);
+	
+	Store_SaveClientData(client);
+	Store_SaveClientInventory(client);
+	Store_SaveClientEquipment(client);
+}
+
+
 void SQL_FetchVoucher(int client, char[] voucher)
 {
 	Store_SQLEscape(voucher);
@@ -1074,7 +1174,7 @@ void SQL_FetchVoucher(int client, char[] voucher)
 
 	char sQuery[1024];
 	Format(sQuery, sizeof(sQuery), 
-		"SELECT credits, item, date_of_expiration, date_of_redeem, unlimited, steam_of_redeem, item_expiration FROM Store_voucher WHERE voucher = '%s'", voucher);
+		"SELECT credits, item, date_of_expiration, date_of_redeem, unlimited, steam_of_redeem, item_expiration FROM store_voucher WHERE voucher = '%s'", voucher);
 
 	DataPack pack = new DataPack();
 	pack.WriteCell(GetClientUserId(client));
@@ -1125,7 +1225,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 			{
 				Menu_Voucher(client);
 
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 
 				FormatTime(sBuffer, sizeof(sBuffer), NULL_STRING, date_of_expiration);
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher expired", sBuffer);
@@ -1134,7 +1234,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 			{
 				Menu_Voucher(client);
 
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 
 				FormatTime(sBuffer, sizeof(sBuffer), NULL_STRING, date_of_redeem);
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher already redeemed", sBuffer );
@@ -1143,7 +1243,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 			{
 				Menu_Voucher(client);
 
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "You already redeemed Voucher");
 			}
@@ -1163,7 +1263,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 					if (itemid == -1)
 					{
 						Menu_Voucher(client);
-						FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+						ClientCommand(client, "play %s", g_sMenuExit);
 						return;
 					}
 
@@ -1174,7 +1274,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 					{
 						Menu_Voucher(client);
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "You already own Voucher item");
-						FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+						ClientCommand(client, "play %s", g_sMenuExit);
 						return;
 					}
 					else
@@ -1186,11 +1286,10 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 						}
 						else Store_GiveItem(client, itemid, _, _, item[iPrice]);
 						any handler[Type_Handler];
-
+						Store_GetHandler(item[iHandler], handler);
+						
 						if (item[bPreview])
 						{
-							Store_GetHandler(item[iHandler], handler);
-
 							Call_StartForward(gf_hPreviewItem);
 							Call_PushCell(client);
 							Call_PushString(handler[szType]);
@@ -1228,7 +1327,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 				}
 
 				char sQuery[1024];
-				Format(sQuery, sizeof(sQuery), "UPDATE Store_voucher SET name_of_redeem = '%s', steam_of_redeem = '%s', date_of_redeem = '%i' WHERE voucher = '%s'", name, sRedeems, GetTime(), voucher);
+				Format(sQuery, sizeof(sQuery), "UPDATE store_voucher SET name_of_redeem = '%s', steam_of_redeem = '%s', date_of_redeem = '%i' WHERE voucher = '%s'", name, sRedeems, GetTime(), voucher);
 
 				Store_SQLQuery(sQuery, SQLCallback_Void, 0);
 
@@ -1242,7 +1341,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 		{
 			Menu_Voucher(client);
 
-			FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			ClientCommand(client, "play %s", g_sMenuExit);
 
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher invalid", voucher);
 		}
@@ -1256,7 +1355,7 @@ void SQL_CheckVoucher(int client, char[] voucher)
 
 	char sQuery[1024];
 	Format(sQuery, sizeof(sQuery),
-		"SELECT credits, item, date_of_expiration, date_of_redeem, unlimited, steam_of_redeem FROM Store_voucher WHERE voucher = '%s'", voucher);
+		"SELECT credits, item, date_of_expiration, date_of_redeem, unlimited, steam_of_redeem FROM store_voucher WHERE voucher = '%s'", voucher);
 
 	DataPack pack = new DataPack();
 	pack.WriteCell(GetClientUserId(client));
@@ -1317,7 +1416,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 
 			if (GetTime() > date_of_expiration && date_of_expiration != 0)
 			{
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 
 				expire = true;
 
@@ -1326,7 +1425,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 			}
 			else if (StrContains(sRedeems, steamid[8], true) != -1)
 			{
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 
 				redeemedme = true;
 
@@ -1334,7 +1433,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 			}
 			else if (date_of_redeem > 0 && !unlimited)
 			{
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 
 				redeemenotunlimited = true;
 
@@ -1356,7 +1455,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 				if (itemid == -1)
 				{
 					Menu_Voucher(client);
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuExit);
 					return;
 				}
 
@@ -1391,7 +1490,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 		{
 			Menu_Voucher(client);
 
-			FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			ClientCommand(client, "play %s", g_sMenuExit);
 
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher invalid", voucher);
 		}
@@ -1507,7 +1606,7 @@ void VoucherItem(int client, int itemid)
 	any item[Store_Item];
 	Store_GetItem(itemid, item);
 
-	char sBuffer[32];
+	char sBuffer[1024];
 	GenerateVoucherCode(sBuffer, sizeof(sBuffer));
 	SQL_WriteVoucher(client, sBuffer, 0, false, item[szUniqueId]);
 	g_iLastQuery[client] = GetTime();

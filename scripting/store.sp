@@ -950,7 +950,7 @@ public int Native_GetItem(Handle plugin,int numParams)
 
 public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
 {
-	char sUId[32];
+	char sUId[1024];
 	GetNativeString(1, sUId, sizeof(sUId));
 
 	for (int i = 0; i < g_iItems; i++)
@@ -977,7 +977,8 @@ public int Native_GetClientItem(Handle plugin,int numParams)
 	if(uid<0)
 		return 0;
 
-	SetNativeArray(3, view_as<int>(g_eClientItems[client][uid][GetNativeCell(3)]), sizeof(g_eClientItems[][][])); 
+	//SetNativeArray(3, view_as<int>(g_eClientItems[client][uid][GetNativeCell(3)]), sizeof(g_eClientItems[][][])); 
+	SetNativeArray(3, view_as<int>(g_eClientItems[client][uid]), sizeof(g_eClientItems[][][])); 
 
 	return 1;
 }

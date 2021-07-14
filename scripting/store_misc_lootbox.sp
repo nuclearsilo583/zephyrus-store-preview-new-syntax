@@ -88,7 +88,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -273,12 +273,12 @@ public int Lootbox_Equip(int client, int itemid)
 {
 	if (GameRules_GetProp("m_bWarmupPeriod") == 1) // Check if client open in warm up ? This will cause massive error log when they are open at the same time warm up end.
 	{
-		CPrintToChat(client, "%sYou cant open in warm up", g_sChatPrefix);
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox warm up");
 		return 1;
 	}
 	if (roundend == true) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
-		CPrintToChat(client, "%sThe round has ended. Please wait for new round", g_sChatPrefix);
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox round ended");
 		return 1;
 	}
 	if (!IsPlayerAlive(client))
@@ -289,7 +289,7 @@ public int Lootbox_Equip(int client, int itemid)
 
 	if (g_iLootboxEntityRef[client] != INVALID_ENT_REFERENCE) // Prevent spam. The previous case wont be killed.
 	{
-		CPrintToChat(client, "%sPlease wait until your previous case has been opened", g_sChatPrefix);
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox case is opening");
 		return 1;
 	}
 	

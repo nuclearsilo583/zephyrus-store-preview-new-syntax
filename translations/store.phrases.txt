@@ -1,5 +1,20 @@
 ﻿"Phrases"
 {
+	"Lootbox round ended"
+	{
+		"en" "The round has ended. Please wait for new round"
+	}
+	
+	"Lootbox warm up"
+	{
+		"en" "You cant open in warm up"
+	}
+	
+	"Lootbox case is opening"
+	{
+		"en" "Please wait until your previous case has been opened"
+	}
+	
 	"Client valid voucher"
 	{
 		"en" "Your generated and valid voucher are:\n "
@@ -23,13 +38,13 @@
 	"Voucher admin min max generated"
 	{
 		"#format" "{1:i},{2:s},{3:s},{4:i},{5:i},{6:s}"
-		"en" "You are generating {1} {2}limited voucher{3} with values {4}-{5} {6}"
+		"en" "You are generating {green}{1} {default}{2}limited voucher{3} with values {purple}{4}-{5} {green}{6}"
 	}
 	
 	"Voucher admin generated"
 	{
 		"#format" "{1:i},{2:s},{3:s},{4:i},{5:s}"
-		"en" "You are generating {1} {2}limited voucher{3} with value {4} {5}"
+		"en" "You are generating {green}{1} {default}{2}limited voucher{3} with value {purple}{4} {green}{5}"
 	}
 	
 	"Voucher Code 17 chars"
@@ -241,7 +256,13 @@
 	"You get x Credits"
 	{
 		"#format"	"{1:i},{2:s}"
-		"en"		"You recieve {1} {2}."
+		"en"		"You received {1} {green}{2}."
+	}
+	
+	"You get x Credits Panel"
+	{
+		"#format"	"{1:i},{2:s}"
+		"en"		"You received {1} {2}."
 	}
 
 	"Place x Credits"
@@ -276,7 +297,7 @@
 
 	"start daily challange"
 	{
-		"en"		"start the 'daily challange'. Play next 6 days to recieve full bonus"
+		"en"		"start the 'daily challange'. Play next 6 days to received full bonus"
 	}
 
 	"You mastered the daily challange"
@@ -705,10 +726,10 @@
 		"en"		"{1} jihad bomb has failed to explode."
 	}
 
-	"Recieve Spawn"
+	"received Spawn"
 	{
 		"#format"	"{1:s}"
-		"en"		"You'll recieve {1} on next spawn"
+		"en"		"You'll received {1} on next spawn"
 	}
 
 
@@ -961,7 +982,7 @@
 	"Voucher in chat"
 	{
 		"#format"	"{1:s},{2:i},{3:s}"
-		"en"		"Created new voucher {purple}{1} with value {2} {3}"
+		"en"		"Created new voucher {purple}{1} {default}with value {yellow}{2} {default}{3}"
 	}
 
 	"Voucher in console"
@@ -1033,6 +1054,11 @@
 
 	"Voucher accepted"
 	{
+		"en"		"The Voucher was {green}accepted"
+	}
+	
+	"Voucher accepted Panel"
+	{
 		"en"		"The Voucher was accepted"
 	}
 
@@ -1068,7 +1094,7 @@
 
 	"Succesfully purchased voucher"
 	{
-		"en"		"You succesfully purchased a voucher"
+		"en"		"You successfully purchased a voucher"
 	}
 
 	"Voucher Value"
@@ -1168,7 +1194,13 @@
 	"You get x item"
 	{
 		"#format"	"{1:s},{2:t}"
-		"en"		"You recieve a {1} ({2})."
+		"en"		"You received a {green}{1} {yellow}({2})."
+	}
+	
+	"You get x item Panel"
+	{
+		"#format"	"{1:s},{2:t}"
+		"en"		"You received a {1} ({2})."
 	}
 
 	"Top Credits"
