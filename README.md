@@ -4,9 +4,11 @@
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
 
 # Newly added
-- Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
 - New Store Logging for module (Support for MySql and file log, no sqlite)
 ![log](https://user-images.githubusercontent.com/58926275/125444645-8c83105f-cc83-411d-bab9-a9e5689af9d9.png)
+- New Store Voucher system module (Current build only support MySQL, no sqlite and on developing)
+![voucher](https://user-images.githubusercontent.com/58926275/125775715-a282139a-7b71-4b76-9dc6-b3c686459a07.png)
+
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -47,8 +49,9 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
 - Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
 - "description" key value
-- Store's search for item function
-- Store Logging Message for module plugin (to find out errors).
+- Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
+- New* Store Logging Message for module plugin (to find out errors).
+- New* Store Voucher system module (generating code, redeem, check, and buy)
 
 # Important links
 Contact me via steam for bug report:
