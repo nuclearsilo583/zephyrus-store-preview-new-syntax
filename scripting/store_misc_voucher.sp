@@ -716,7 +716,7 @@ public int Handler_NullCancel(Handle menu, MenuAction action, int param1, int pa
 		{
 			default: // cancel
 			{
-				delete g_hTimerInput[client];
+				delete g_hTimerInput[param1];
 				return;
 			}
 		}
