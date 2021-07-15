@@ -73,7 +73,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	LoadTranslations("Store.phrases");
+	LoadTranslations("store.phrases");
 
 	AutoExecConfig_SetFile("gamble", "sourcemod/store");
 	AutoExecConfig_SetCreateFile(true);

@@ -1,15 +1,13 @@
-#if defined STANDALONE_BUILD
 #include <sourcemod>
 #include <sdktools>
 
 #include <store>
 #include <zephstocks>
 
-#include <colors> 
-#endif
+#include <colors>
+
 #pragma semicolon 1
 #pragma newdecls required
-
 
 #define REDEEM 1
 #define CHECK 2
@@ -17,28 +15,22 @@
 #define MIN 4
 #define MAX 5
 #define PURCHASE 6
-/*
-ConVar gc_iMySQLCooldown;
-ConVar gc_iExpireTime;
-ConVar gc_bItemVoucherEnabled;
-ConVar gc_bCreditVoucherEnabled;
-ConVar gc_bCheckAdmin;
-*/
+
 int gc_iMySQLCooldown;
 int gc_iExpireTime;
 int gc_bItemVoucherEnabled;
 int gc_bCreditVoucherEnabled;
 int gc_bCheckAdmin;
+int g_fInputTime;
 int g_iChatType[MAXPLAYERS + 1] = {-1, ...};
 
-//char g_sChatPrefix[32];
+char g_sChatPrefix[128];
 char g_sCreditsName[32] = "credits";
 
 char g_sMenuItem[64];
 char g_sMenuExit[64];
 
-float g_fInputTime = 15.0;
-
+Handle gf_hPreviewItem;
 Handle g_hTimerInput[MAXPLAYERS+1] = null;
 
 int g_iTempAmount[MAXPLAYERS + 1] = {0, ...};
@@ -46,12 +38,25 @@ int g_iCreateNum[MAXPLAYERS + 1] = {0, ...};
 int g_iCreateMin[MAXPLAYERS + 1] = {0, ...};
 int g_iCreateMax[MAXPLAYERS + 1] = {0, ...};
 int g_iLastQuery[MAXPLAYERS + 1] = {0, ...};
+int g_iSelectedItem[MAXPLAYERS + 1];
 
-#if defined STANDALONE_BUILD
+public Plugin myinfo = 
+{
+	name = "Store - Voucher module",
+	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	description = "",
+	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	url = ""
+};
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	gf_hPreviewItem = CreateGlobalForward("Store_OnPreviewItem", ET_Ignore, Param_Cell, Param_String, Param_Cell);
+
+	return APLRes_Success;
+}
+
 public void OnPluginStart()
-#else
-public void Vounchers_OnPluginStart()
-#endif
 {
 	LoadTranslations("store.phrases");
 	LoadTranslations("common.phrases");
@@ -60,101 +65,203 @@ public void Vounchers_OnPluginStart()
 	RegAdminCmd("sm_createvoucher", Command_CreateVoucherCode, ADMFLAG_ROOT);
 
 	AutoExecConfig(true, "vouchers", "sourcemod/store");
-	//AutoExecConfig_SetCreateFile(true);
 
 	gc_bCreditVoucherEnabled = RegisterConVar("sm_store_voucher_credits", "1", "0 - disabled, 1 - enable credits to voucher", TYPE_INT);
 	gc_bItemVoucherEnabled = RegisterConVar("sm_store_voucher_item", "1", "0 - disabled, 1 - enable item to voucher", TYPE_INT);
 	gc_bCheckAdmin = RegisterConVar("sm_store_voucher_check", "1", "0 - admins only, 1 - all player can check vouchers", TYPE_INT);
 	gc_iMySQLCooldown = RegisterConVar("sm_store_mysql_cooldown", "20", "Seconds cooldown between client start database querys (redeem, check & purchase vouchers)", TYPE_INT);
 	gc_iExpireTime = RegisterConVar("sm_store_voucher_expire", "336", "0 - disabled, hours until a voucher expire after creation. 168 = one week", TYPE_INT);
+	g_fInputTime = RegisterConVar("sm_store_voucher_input_time", "15.0", "Time in second player have to put value in the purchase, create panel", TYPE_FLOAT);
 
-	//AutoExecConfig_ExecuteFile();
-	//AutoExecConfig_CleanFile();
-
-	//AddCommandListener(Command_Say, "say"); 
-	//AddCommandListener(Command_Say, "say_team");
-	
-	//db = FindConVar("g_cvarDatabaseEntry");
+	AddCommandListener(Command_Say, "say"); 
+	AddCommandListener(Command_Say, "say_team");
 
 }
-/*
+
 public void OnAllPluginsLoaded()
 {
-	if (gc_bItemVoucherEnabled.BoolValue)
+	if (g_eCvars[gc_bItemVoucherEnabled].aCache)
 	{
-		Store_RegisterMenuHandler("Voucher", Store_OnMenu, Store_OnHandler);
-	}
-}*/
-
-//public void Store_OnConfigExecuted(char[] prefix)
-//{
-	//strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
-
-	//g_fInputTime = 12.0; //todo? = time.FloatValue;
-
-	//db2 = FindConVar("g_cvarDatabaseEntry");
-	//SQL_TConnect(SQLCallback_Connect, g_eCvars[db2].sCache);
-	//SQL_TConnect(SQLCallback_Connect, "shop");
-
-	//ReadCoreCFG();
-
-	/*SQL_TVoid(g_DB, "CREATE TABLE if NOT EXISTS store_voucher (\
-					  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
-					  name_of_create varchar(64) NOT NULL default '',\
-					  steam_of_create varchar(64) NOT NULL default '',\
-					  credits INT NOT NULL default 0,\
-					  item varchar(64) NOT NULL default '',\
-					  date_of_create INT NOT NULL default 0,\
-					  date_of_redeem INT NOT NULL default 0,\
-					  name_of_redeem varchar(64) NOT NULL default '',\
-					  steam_of_redeem TEXT NOT NULL,\
-					  unlimited TINYINT NOT NULL default 0,\
-					  date_of_expiration INT NOT NULL default 0);"
-					  );
-	*/
-//}
-/*
-public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, any data)
-{
-	if(hndl==INVALID_HANDLE)
-	{
-		SetFailState("Failed to connect to SQL database. Error: %s", error);
-	}
-	else
-	{
-		// If it's already connected we are good to go
-		if(g_hDatabase != INVALID_HANDLE)
-			return;
-			
-		g_hDatabase = hndl;
-		char m_szDriver[2];
-		SQL_ReadDriver(g_hDatabase, STRING(m_szDriver));
-		if(m_szDriver[0] == 'm')
-		{
-			SQL_TVoid(g_hDatabase, "CREATE TABLE if NOT EXISTS store_voucher (\
-					  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
-					  name_of_create varchar(64) NOT NULL default '',\
-					  steam_of_create varchar(64) NOT NULL default '',\
-					  credits INT NOT NULL default 0,\
-					  item varchar(64) NOT NULL default '',\
-					  date_of_create INT NOT NULL default 0,\
-					  date_of_redeem INT NOT NULL default 0,\
-					  name_of_redeem varchar(64) NOT NULL default '',\
-					  steam_of_redeem TEXT NOT NULL,\
-					  unlimited TINYINT NOT NULL default 0,\
-					  date_of_expiration INT NOT NULL default 0);"
-					  );
-			
-			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
-		}
-		
-		// Do some housekeeping
-		char m_szQuery[256];
-		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `date_of_expiration` <> 0 AND `date_of_expiration` < %d", GetTime());
-		SQL_TVoid(g_hDatabase, m_szQuery);
+		Store_RegisterMenuHandler("Voucher", Voucher_OnMenu, Voucher_OnHandler);
 	}
 }
-*/
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+
+	ReadCoreCFG();
+	char m_szVoucherCreateTableQuery[2048];
+	/*Store_SQLQuery("CREATE TABLE if NOT EXISTS `store_voucher` (\
+										  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
+										  name_of_create varchar(64) NOT NULL default '',\
+										  steam_of_create varchar(64) NOT NULL default '',\
+										  credits INT NOT NULL default 0,\
+										  item varchar(64) NOT NULL default '',\
+										  date_of_create INT NOT NULL default 0,\
+										  date_of_redeem INT NOT NULL default 0,\
+										  name_of_redeem varchar(64) NOT NULL default '',\
+										  steam_of_redeem TEXT NOT NULL,\
+										  unlimited TINYINT NOT NULL default 0,\
+										  date_of_expiration INT NOT NULL default 0,\
+										  item_expiration INT default NULL);",
+										SQLCallback_VoidVoucher, 0);*/
+										
+	Format(m_szVoucherCreateTableQuery, sizeof(m_szVoucherCreateTableQuery), "CREATE TABLE if NOT EXISTS `store_voucher` (\
+										  `voucher` varchar(64) NOT NULL PRIMARY KEY,\
+										  `name_of_create` varchar(64) NOT NULL,\
+										  `steam_of_create` varchar(64) NOT NULL,\
+										  `credits` INT NOT NULL default '0',\
+										  `item` varchar(64) NOT NULL,\
+										  `date_of_create` INT NOT NULL default '0',\
+										  `date_of_redeem` INT NOT NULL default '0',\
+										  `name_of_redeem` varchar(64) NOT NULL,\
+										  `steam_of_redeem` TEXT NOT NULL,\
+										  `unlimited` TINYINT NOT NULL default '0',\
+										  `date_of_expiration` INT NOT NULL default '0',\
+										  `item_expiration` INT default NULL);");							
+	Store_SQLQuery(m_szVoucherCreateTableQuery ,SQLCallback_VoidVoucher, 0);
+	
+	//Do some housekeeping
+	char m_szVoucherQuery[2048];
+	Format(m_szVoucherQuery, sizeof(m_szVoucherQuery), "UPDATE store_voucher SET"
+									... " name_of_redeem = \"voucher's item expired\","
+									... " date_of_redeem = %d,"
+									... " steam_of_redeem = \"voucher's item expired\","
+									... " item_expiration = 0 "
+									... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
+	Store_SQLQuery(m_szVoucherQuery, SQLCallback_VoidVoucher, 0);
+}
+
+public Action Command_Say(int client, const char[] command,int argc)
+{
+	//Vouncher
+	if (g_iChatType[client] == -1)
+		return Plugin_Continue;
+
+	char sMessage[64];
+	GetCmdArgString(sMessage, sizeof(sMessage));
+	StripQuotes(sMessage);
+
+	delete g_hTimerInput[client];
+
+	switch(g_iChatType[client])
+	{
+		case PURCHASE:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			if (amount > Store_GetClientCredits(client))
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Credit Voucher Not Enough");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iTempAmount[client] = amount;
+			g_iChatType[client] = -1;
+
+			char sBuffer[32];
+			GenerateVoucherCode(sBuffer, sizeof(sBuffer));
+			//SQL_WriteVoucher(client, sBuffer, g_iTempAmount[client], false);
+			SQL_WriteVoucherCredits(client, sBuffer, g_iTempAmount[client], false);
+			g_iLastQuery[client] = GetTime();
+		}
+		case NUM:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iCreateNum[client] = amount;
+			g_iChatType[client] = MIN;
+
+			Panel_Multi(client, 5);
+			g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
+		}
+		case MIN:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iCreateMin[client] = amount;
+			g_iChatType[client] = MAX;
+
+			Panel_Multi(client, 6);
+			g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
+		}
+		case MAX:
+		{
+			int amount = StringToInt(sMessage);
+
+			if (amount < 1)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			if (amount < g_iCreateMin[client])
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Smaller than min value", g_iCreateMin[client]);
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iCreateMax[client] = amount;
+			g_iChatType[client] = -1;
+
+			Menu_CreateVoucherLimit(client);
+		}
+		case REDEEM:
+		{
+			if (strlen(sMessage) != 17)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Wrong voucher code format");
+				Menu_Voucher(client);
+				return Plugin_Continue;
+			}
+
+			g_iChatType[client] = -1;
+
+			SQL_FetchVoucher(client, sMessage);
+		}
+		case CHECK:
+		{
+			if (strlen(sMessage) != 17)
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Wrong voucher code format");
+				Menu_Voucher(client);
+				return Plugin_Handled;
+			}
+
+			g_iChatType[client] = -1;
+
+			SQL_CheckVoucher(client, sMessage);
+		}
+	}
+	
+	return Plugin_Handled;
+}
+
 public Action Command_Voucher(int client, int args)
 {
 	if (client == 0)
@@ -180,7 +287,7 @@ public Action Command_CreateVoucherCode(int client, int args)
 
 	if (args < 2)
 	{
-		CPrintToChat(client, "%s%s", g_sChatPrefix, "Usage: sm_createvoucher <quantity> <min_amount> <max_amount> [0/1] [VoucherCode17char]");
+		CPrintToChat(client, "%s%s", g_sChatPrefix, "Usage: sm_createvoucher <quantity> \"<min_amount>/<max_amount>\" [0/1] [VoucherCode17char]");
 
 		return Plugin_Handled;
 	}
@@ -239,7 +346,8 @@ public Action Command_CreateVoucherCode(int client, int args)
 			GenerateVoucherCode(sBuffer, sizeof(sBuffer));
 		}
 
-		SQL_WriteVoucher(client, sBuffer, GetRandomInt(iNum1, iNum2), bUnlimited);
+		//SQL_WriteVoucher(client, sBuffer, GetRandomInt(iNum1, iNum2), bUnlimited);
+		SQL_WriteVoucherCreditsAdmin(client, sBuffer, GetRandomInt(iNum1, iNum2), bUnlimited);
 		PrintToConsole(client, "%t", "Voucher in console", sBuffer);
 	}
 
@@ -269,18 +377,11 @@ bool GenerateVoucherCode(char[] sBuffer, int maxlen)
 
 	return true;
 }
-/*
-public Action Command_Say(int client, const char[] command, int args)
-{
-	
-
-	return Plugin_Handled;
-}*/
 
 void Menu_Voucher(int client)
 {
 	char sBuffer[96];
-	int i_Credits = g_eClients[client][iCredits]; // Get credits
+	int i_Credits = Store_GetClientCredits(client); // Get credits
 	Menu menu = CreateMenu(Handler_Voucher);
 	g_iChatType[client] = -1;
 
@@ -368,7 +469,7 @@ public int Handler_Voucher(Menu menu, MenuAction action, int client, int itemNum
 				}
 				
 				delete g_hTimerInput[client];
-				g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+				g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 			}
 			case CHECK: //Check
 			{
@@ -386,7 +487,7 @@ public int Handler_Voucher(Menu menu, MenuAction action, int client, int itemNum
 				}
 				
 				delete g_hTimerInput[client];
-				g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+				g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 			}
 			case PURCHASE: // Purchase
 			{
@@ -404,7 +505,7 @@ public int Handler_Voucher(Menu menu, MenuAction action, int client, int itemNum
 				}
 				
 				delete g_hTimerInput[client];
-				g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+				g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 			}
 			case 4: //Generate
 			{
@@ -413,7 +514,7 @@ public int Handler_Voucher(Menu menu, MenuAction action, int client, int itemNum
 				Panel_Multi(client, 2);
 				
 				delete g_hTimerInput[client];
-				g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+				g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 			}
 			
 			case 5: //Check client valid voucher
@@ -443,7 +544,7 @@ public int Handler_Voucher(Menu menu, MenuAction action, int client, int itemNum
 void Menu_CreateVoucherLimit(int client)
 {
 	char sBuffer[128];
-	int i_Credits = g_eClients[client][iCredits]; // Get credits
+	int i_Credits = Store_GetClientCredits(client); // Get credits
 	Menu menu = CreateMenu(Handler_Createunlimited);
 
 	Format(sBuffer, sizeof(sBuffer), "%t\n%t", "Title Store", "Title Credits", i_Credits);
@@ -500,7 +601,7 @@ public int Handler_Createunlimited(Menu menu, MenuAction action, int client, int
 void Panel_Multi(int client, int num)
 {
 	char sBuffer[255];
-	int i_Credits = g_eClients[client][iCredits];
+	int i_Credits = Store_GetClientCredits(client);
 	Panel panel = new Panel();
 
 	Format(sBuffer, sizeof(sBuffer), "%t\n%t", "Title Store", "Title Credits", i_Credits);
@@ -530,10 +631,10 @@ void Panel_Multi(int client, int num)
 
 			Format(sBuffer, sizeof(sBuffer), "%t", "Cancel");
 			panel.DrawItem(sBuffer);
-			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_fInputTime));
+			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_eCvars[g_fInputTime].aCache));
 
 			delete g_hTimerInput[client];
-			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+			g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 		}
 		case 3:
 		{
@@ -544,10 +645,10 @@ void Panel_Multi(int client, int num)
 
 			Format(sBuffer, sizeof(sBuffer), "%t", "Cancel");
 			panel.DrawItem(sBuffer);
-			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_fInputTime));
+			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_eCvars[g_fInputTime].aCache));
 
 			delete g_hTimerInput[client];
-			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+			g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 		}
 		case 4:
 		{
@@ -561,7 +662,7 @@ void Panel_Multi(int client, int num)
 			panel.Send(client, Handler_NullCancel, 14);
 
 			delete g_hTimerInput[client];
-			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+			g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 		}
 		case 5:
 		{
@@ -573,10 +674,10 @@ void Panel_Multi(int client, int num)
 			Format(sBuffer, sizeof(sBuffer), "%t", "Cancel");
 			panel.DrawItem(sBuffer);
 
-			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_fInputTime)); // open info Panel
+			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_eCvars[g_fInputTime].aCache)); // open info Panel
 
 			delete g_hTimerInput[client];
-			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+			g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 		}
 		case 6:
 		{
@@ -588,10 +689,10 @@ void Panel_Multi(int client, int num)
 			Format(sBuffer, sizeof(sBuffer), "%t", "Cancel");
 			panel.DrawItem(sBuffer);
 
-			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_fInputTime)); // open info Panel
+			panel.Send(client, Handler_NullCancelInput, view_as<int>(g_eCvars[g_fInputTime].aCache)); // open info Panel
 
 			delete g_hTimerInput[client];
-			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
+			g_hTimerInput[client] = CreateTimer(g_eCvars[g_fInputTime].aCache, Timer_Input2Late, GetClientUserId(client));
 		}
 	}
 
@@ -602,7 +703,7 @@ void Panel_Multi(int client, int num)
 void Panel_VoucherPurchaseSuccess(int client, int credits = 0, char[] voucher, char[] uniqueID = "")
 {
 	char sBuffer[255];
-	int i_Credits = g_eClients[client][iCredits]; // Get credits
+	int i_Credits = Store_GetClientCredits(client); // Get credits
 	Panel panel = new Panel();
 
 	Format(sBuffer, sizeof(sBuffer), "%t\n%t", "Title Store", "Title Credits", i_Credits);
@@ -651,7 +752,7 @@ void Panel_VoucherPurchaseSuccess(int client, int credits = 0, char[] voucher, c
 void Panel_VoucherAccept(int client, int credits, char[] voucher, char[] uniqueID)
 {
 	char sBuffer[255];
-	int i_Credits = g_eClients[client][iCredits]; // Get credits
+	int i_Credits = Store_GetClientCredits(client); // Get credits
 	Panel panel = new Panel();
 
 	Format(sBuffer, sizeof(sBuffer), "%t\n%t", "Title Store", "Title Credits", i_Credits);
@@ -716,7 +817,7 @@ public int Handler_NullCancel(Handle menu, MenuAction action, int param1, int pa
 		{
 			default: // cancel
 			{
-				delete g_hTimerInput[client];
+				delete g_hTimerInput[param1];
 				return;
 			}
 		}
@@ -870,14 +971,19 @@ void SQL_WriteVoucher(int client, char[] voucher, int credits = 0, bool unlimite
 	int time = GetTime();
 
 	char sQuery[1024];
+	int expire_date;
 	if (!StrEqual(uniqueID[0], ""))
 	{
+		any item[Client_Item];
+		//any handler[Type_Handler];
+
 		int itemidtemp = Store_GetItemIdbyUniqueId(uniqueID);
-		//int itemid = Store_GetDataIndex(itemidtemp);
-		int uids = Store_GetClientItemId(client, itemidtemp);
-		int expire_date = g_eClientItems[client][uids][iDateOfExpiration];
-		//GetTime()<g_eClientItems[client][i][iDateOfExpiration]
-		
+
+		Store_GetClientItem(client, itemidtemp, item);
+		//int uids = Store_GetClientItemId(client, itemidtemp);
+		//int expire_date = g_eClientItems[client][uids][iDateOfExpiration];
+		expire_date = item[iDateOfExpiration];
+
 		// Query
 		Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
 		... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration, item_expiration)"
@@ -953,10 +1059,7 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 	Panel_VoucherPurchaseSuccess(client, credits, sVoucher, item[szUniqueId]);
 	LogMessage("Purchase Voucher: %s", sVoucher);
 
-	CPrintToChat(client, "%s%t", g_sChatPrefix, "Item Voucher in chat", item[szName], handler[szType], sVoucher);
-
-	PrintToConsole(client, "%t", "Voucher in console", sVoucher);
-	
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Item Voucher in chat", item[szName], handler[szType], sVoucher);	
 }
 
 void SQL_WriteVoucherCredits(int client, char[] voucher, int credits = 0, bool unlimited = false, char[] uniqueID = "")
@@ -1022,78 +1125,14 @@ public void SQLCallback_WriteCredits(Database db, DBResultSet results, const cha
 	Panel_VoucherPurchaseSuccess(client, credits, sVoucher);
 	LogMessage("Purchase Voucher: %s", sVoucher);
 
-	g_eClients[client][iCredits] -= credits;
+	//g_eClients[client][iCredits] -= credits;
+	Store_SetClientCredits(client, Store_GetClientCredits(client) - credits);
 	CPrintToChat(client, "%s %t", g_sChatPrefix, "Voucher in chat", sVoucher, credits, g_sCreditsName);
 
 	PrintToConsole(client, "%t", "Voucher in console", sVoucher);
 	
-	Store_SaveClientData(client);
-	Store_SaveClientInventory(client);
-	Store_SaveClientEquipment(client);
 }
 
-/*
-public void SQLCallback_Write(Database db, DBResultSet results, const char[] error, DataPack pack)
-{
-	pack.Reset();
-	int time = pack.ReadCell();
-
-	if (!StrEqual("", error))
-	{
-		int client = GetClientOfUserId(pack.ReadCell());
-		LogMessage("SQLCallback_Write: Error: %s", error);
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
-
-		ClientCommand(client, "play %s", g_sMenuExit);
-		delete pack;
-		return;
-	}
-
-	char sVoucher[64];
-	int client = GetClientOfUserId(pack.ReadCell());
-	int credits = pack.ReadCell();
-	pack.ReadString(sVoucher, sizeof(sVoucher));
-	char sUniqueID[64];
-	pack.ReadString(sUniqueID, sizeof(sUniqueID));
-	delete pack;
-
-	int itemid = Store_GetItemIdbyUniqueId(sUniqueID);
-
-	if (itemid == -1)
-	{
-		Menu_Voucher(client);
-		ClientCommand(client, "play %s", g_sMenuExit);
-		return;
-	}
-
-	any item[Store_Item];
-	any handler[Type_Handler];
-
-	Store_GetItem(itemid, item);
-
-	Store_GetHandler(item[iHandler], handler);
-
-	Store_RemoveItem(client, itemid);
-	Panel_VoucherPurchaseSuccess(client, credits, sVoucher, item[szUniqueId]);
-	Store_SQLLogMessage(client, LOG_EVENT, "Purchase Voucher: %s", sVoucher);
-	if (!credits)
-	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item Voucher in chat", item[szName], handler[szType], sVoucher);
-	}
-	else
-	{
-		//Store_SetClientCredits(client, Store_GetClientCredits(client) - credits, sVoucher);
-		//Store_SetClientCredits(client, Store_GetClientCredits(client) - credits);
-		g_eClients[client][iCredits] -= credits;
-		CPrintToChat(client, "%t", "Voucher in chat", sVoucher, credits, g_sCreditsName);
-	}
-
-	for (int i = 0; i < 6; i++)
-	{
-		PrintToConsole(client, "%t", "Voucher in console", sVoucher);
-	}
-}
-*/
 void SQL_WriteVoucherCreditsAdmin(int client, char[] voucher, int credits = 0, bool unlimited = false, char[] uniqueID = "")
 {
 	// steam id
@@ -1161,9 +1200,6 @@ public void SQLCallback_WriteCreditsAdmin(Database db, DBResultSet results, cons
 
 	PrintToConsole(client, "%t", "Voucher in console", sVoucher);
 	
-	Store_SaveClientData(client);
-	Store_SaveClientInventory(client);
-	Store_SaveClientEquipment(client);
 }
 
 
@@ -1174,7 +1210,7 @@ void SQL_FetchVoucher(int client, char[] voucher)
 
 	char sQuery[1024];
 	Format(sQuery, sizeof(sQuery), 
-		"SELECT credits, item, date_of_expiration, date_of_redeem, unlimited, steam_of_redeem, item_expiration FROM store_voucher WHERE voucher = '%s'", voucher);
+		"SELECT `credits`, `item`, `date_of_expiration`, `date_of_redeem`, `unlimited`, `steam_of_redeem`, `item_expiration` FROM `store_voucher` WHERE `voucher` = '%s'", voucher);
 
 	DataPack pack = new DataPack();
 	pack.WriteCell(GetClientUserId(client));
@@ -1306,8 +1342,8 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 				{
 					Format(szBuffer, sizeof(szBuffer), "Voucher: %s", voucher);
 					//Store_SetClientCredits(client, Store_GetClientCredits(client) + credits, szBuffer);
-					//Store_SetClientCredits(client, Store_GetClientCredits(client) + credits);
-					g_eClients[client][iCredits] += credits;
+					Store_SetClientCredits(client, Store_GetClientCredits(client) + credits);
+					//g_eClients[client][iCredits] += credits;
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher accepted");
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "You get x Credits", credits, g_sCreditsName);
 				}
@@ -1401,7 +1437,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 
 			Panel panel = new Panel();
 
-			int i_Credits = g_eClients[client][iCredits]; // Get credits
+			int i_Credits = Store_GetClientCredits(client); // Get credits
 
 			Format(sBuffer, sizeof(sBuffer), "%t\n%t", "Title Store", "Title Credits", i_Credits);
 			panel.SetTitle(sBuffer);
@@ -1497,6 +1533,14 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 	}
 }
 
+public void SQLCallback_VoidVoucher(Database db, DBResultSet results, const char[] error, any data)
+{
+	if (!StrEqual("", error))
+	{
+		Store_SQLLogMessage(0, LOG_ERROR, "SQLCallback_VoidVoucher: Error: %s", error);
+	}
+}
+
 void StringToUpper(char [] sz)
 {
 	int len = strlen(sz);
@@ -1509,6 +1553,30 @@ void StringToUpper(char [] sz)
 		}
 	}
 }
+
+void ReadCoreCFG()
+{
+	char sFile[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/core.cfg");
+
+	Handle hParser = SMC_CreateParser();
+	char error[128];
+	int line = 0;
+	int col = 0;
+
+	SMC_SetReaders(hParser, INVALID_FUNCTION, Callback_CoreConfig, INVALID_FUNCTION);
+	SMC_SetParseEnd(hParser, INVALID_FUNCTION);
+
+	SMCError result = SMC_ParseFile(hParser, sFile, line, col);
+	delete hParser;
+
+	if (result != SMCError_Okay)
+	{
+		SMC_GetErrorString(result, error, sizeof(error));
+		Store_SQLLogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
+	}
+}
+
 
 public SMCResult Callback_CoreConfig(Handle parser, char[] key, char[] value, bool key_quotes, bool value_quotes)
 {
@@ -1530,6 +1598,11 @@ public void Voucher_OnMenu(Menu &menu, int client, int itemid)
 		return;
 
 	if (Store_IsClientVIP(client))
+		return;
+		
+	any itemclient[Client_Item];
+	Store_GetClientItem(client, itemid, itemclient);
+	if (itemclient[iPriceOfPurchase]<=0)
 		return;
 
 	any item[Store_Item];
@@ -1556,13 +1629,12 @@ public void Voucher_OnMenu(Menu &menu, int client, int itemid)
 
 public bool Voucher_OnHandler(int client, char[] selection, int itemid)
 {
-	
 		
 	if (strcmp(selection, "voucher_package") == 0 || strcmp(selection, "voucher_item") == 0)
 	{
 		if(!g_eCvars[gc_bItemVoucherEnabled].aCache)
 		{
-			DisplayItemMenu(client, itemid);
+			//DisplayItemMenu(client, itemid);
 			CPrintToChat(client, "%s%t" , g_sChatPrefix, "Item Voucher disabled");
 			return false;
 		}

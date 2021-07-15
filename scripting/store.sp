@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.4_vouncher"
+#define PLUGIN_VERSION "5.5.4_vouncher_v2"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -196,7 +196,7 @@ ConVar g_cvarChatTag2;
 //#include "store/sprays.sp"
 //#include "store/weaponskins.sp"
 //#include "store/admin.sp"
-#include "store_misc_voucher.sp"
+//#include "store_misc_voucher.sp"
 #endif
 
 //////////////////////////////////
@@ -357,7 +357,7 @@ public void OnPluginStart()
 	//Sprays_OnPluginStart();
 	//WeaponSkins_OnPluginStart();
 	//AdminGroup_OnPluginStart();
-	Vounchers_OnPluginStart();
+	//Vounchers_OnPluginStart();
 #endif
 
 	Handle topmenu;
@@ -378,6 +378,7 @@ public void OnPluginStart()
 
 	// Add a say command listener for shortcuts
 	AddCommandListener(Command_Say, "say");
+	AddCommandListener(Command_Say, "say_team");
 
 	LoopIngamePlayers(client)
 	{
@@ -397,7 +398,7 @@ public void OnAllPluginsLoaded()
 		
 	//if (g_eCvars[gc_bItemVoucherEnabled].aCache)
 	//{
-	Store_RegisterMenuHandler("Voucher", Voucher_OnMenu, Voucher_OnHandler);
+	//Store_RegisterMenuHandler("Voucher", Voucher_OnMenu, Voucher_OnHandler);
 	//}
 }
 
@@ -978,7 +979,7 @@ public int Native_GetClientItem(Handle plugin,int numParams)
 		return 0;
 
 	//SetNativeArray(3, view_as<int>(g_eClientItems[client][uid][GetNativeCell(3)]), sizeof(g_eClientItems[][][])); 
-	SetNativeArray(3, view_as<int>(g_eClientItems[client][uid]), sizeof(g_eClientItems[][][])); 
+	SetNativeArray(3, view_as<int>(g_eClientItems[client][uid]), sizeof(g_eClientItems[][])); 
 
 	return 1;
 }
@@ -1408,132 +1409,7 @@ public Action Command_Say(int client, const char[] command,int argc)
 				}
 		}
 	}
-	
-	
-	//Vouncher
-	if (g_iChatType[client] == -1)
-		return Plugin_Continue;
 
-	char sMessage[64];
-	GetCmdArgString(sMessage, sizeof(sMessage));
-	StripQuotes(sMessage);
-
-	delete g_hTimerInput[client];
-
-	switch(g_iChatType[client])
-	{
-		case PURCHASE:
-		{
-			int amount = StringToInt(sMessage);
-
-			if (amount < 1)
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
-				Menu_Voucher(client);
-				return Plugin_Handled;
-			}
-
-			if (amount > g_eClients[client][iCredits])
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Credit Voucher Not Enough");
-				Menu_Voucher(client);
-				return Plugin_Handled;
-			}
-
-			g_iTempAmount[client] = amount;
-			g_iChatType[client] = -1;
-
-			char sBuffer[32];
-			GenerateVoucherCode(sBuffer, sizeof(sBuffer));
-			//SQL_WriteVoucher(client, sBuffer, g_iTempAmount[client], false);
-			SQL_WriteVoucherCredits(client, sBuffer, g_iTempAmount[client], false);
-			g_iLastQuery[client] = GetTime();
-		}
-		case NUM:
-		{
-			int amount = StringToInt(sMessage);
-
-			if (amount < 1)
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
-				Menu_Voucher(client);
-				return Plugin_Handled;
-			}
-
-			g_iCreateNum[client] = amount;
-			g_iChatType[client] = MIN;
-
-			Panel_Multi(client, 5);
-			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
-		}
-		case MIN:
-		{
-			int amount = StringToInt(sMessage);
-
-			if (amount < 1)
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
-				Menu_Voucher(client);
-				return Plugin_Handled;
-			}
-
-			g_iCreateMin[client] = amount;
-			g_iChatType[client] = MAX;
-
-			Panel_Multi(client, 6);
-			g_hTimerInput[client] = CreateTimer(g_fInputTime, Timer_Input2Late, GetClientUserId(client));
-		}
-		case MAX:
-		{
-			int amount = StringToInt(sMessage);
-
-			if (amount < 1)
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Value less than 1");
-				Menu_Voucher(client);
-				return Plugin_Handled;
-			}
-
-			if (amount < g_iCreateMin[client])
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Smaller than min value", g_iCreateMin[client]);
-				Menu_Voucher(client);
-				return Plugin_Handled;
-			}
-
-			g_iCreateMax[client] = amount;
-			g_iChatType[client] = -1;
-
-			Menu_CreateVoucherLimit(client);
-		}
-		case REDEEM:
-		{
-			if (strlen(sMessage) != 17)
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Wrong voucher code format");
-				Menu_Voucher(client);
-				return Plugin_Continue;
-			}
-
-			g_iChatType[client] = -1;
-
-			SQL_FetchVoucher(client, sMessage);
-		}
-		case CHECK:
-		{
-			if (strlen(sMessage) != 17)
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Wrong voucher code format");
-				Menu_Voucher(client);
-				return Plugin_Handled;
-			}
-
-			g_iChatType[client] = -1;
-
-			SQL_CheckVoucher(client, sMessage);
-		}
-	}
-	
 	return Plugin_Handled;
 }
 
@@ -3264,7 +3140,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  UNIQUE KEY `id` (`id`)\
 										)");
 
-			SQL_TVoid(g_hDatabase, "CREATE TABLE if NOT EXISTS store_voucher (\
+			/*SQL_TVoid(g_hDatabase, "CREATE TABLE if NOT EXISTS store_voucher (\
 										  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
 										  name_of_create varchar(64) NOT NULL default '',\
 										  steam_of_create varchar(64) NOT NULL default '',\
@@ -3277,7 +3153,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  unlimited TINYINT NOT NULL default 0,\
 										  date_of_expiration INT NOT NULL default 0,\
 										  item_expiration INT default NULL);"
-										  );
+										  );*/
 
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
 			char m_szQuery[512];
@@ -3332,13 +3208,13 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `date_of_expiration` <> 0 AND `date_of_expiration` < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
 		
-		Format(STRING(m_szVoucherQuery), "UPDATE store_voucher SET"
+		/*Format(STRING(m_szVoucherQuery), "UPDATE store_voucher SET"
 									... " name_of_redeem = \"voucher's item expired\","
 									... " date_of_redeem = %d,"
 									... " steam_of_redeem = \"voucher's item expired\","
 									... " item_expiration = 0 "
 									... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
-		SQL_TVoid(g_hDatabase, m_szVoucherQuery);
+		SQL_TVoid(g_hDatabase, m_szVoucherQuery);*/
 	}
 }
 
@@ -3894,15 +3770,6 @@ public SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] v
 		PublicChatTrigger = value[0];
 	else if(StrEqual(key, "SilentChatTrigger", false))
 		SilentChatTrigger = value[0];
-	
-	if (StrEqual(key, "MenuItemSound", false))
-	{
-		strcopy(g_sMenuItem, sizeof(g_sMenuItem), value);
-	}
-	else if (StrEqual(key, "MenuExitBackSound", false))
-	{
-		strcopy(g_sMenuExit, sizeof(g_sMenuExit), value);
-	}
 	
 	return SMCParse_Continue;
 }
