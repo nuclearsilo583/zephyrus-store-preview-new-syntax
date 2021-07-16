@@ -88,7 +88,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -426,13 +426,19 @@ int CreateLight(int ent, float pos[3])
 
 public Action Timer_Open(Handle timer, int client)
 {
-	char sUId[64];
-	strcopy(sUId, sizeof(sUId), g_sLootboxItems[g_iClientBox[client]][GetRandomInt(0, g_iItemLevelCount[g_iClientBox[client]][g_iClientLevel[client]] - 1)][g_iClientLevel[client]]); // sry
-
+	char temp[64], sUId[64], sParts[2][64];
+	strcopy(temp, sizeof(temp), g_sLootboxItems[g_iClientBox[client]][GetRandomInt(0, g_iItemLevelCount[g_iClientBox[client]][g_iClientLevel[client]] - 1)][g_iClientLevel[client]]); // sry
+	
+	int iCount = ExplodeString(temp, "-", sParts, 2, 64);
+	sUId = sParts[0];
+	int time = StringToInt(sParts[1]);
 	int itemid = Store_GetItemIdbyUniqueId(sUId);
 	
 	char name[64];
 	GetClientName(client, name, sizeof(name));
+	
+	if (time == 0)
+		iCount = 1;
 
 	if (itemid == -1)
 	{
@@ -440,7 +446,7 @@ public Action Timer_Open(Handle timer, int client)
 		Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
 		CPrintToChat(client, "%s%s", g_sChatPrefix, "Error occured, item back. Inform admin log");
 
-		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
+		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientLevel[client]);
 		return Plugin_Stop;
 	}
 
@@ -469,16 +475,20 @@ public Action Timer_Open(Handle timer, int client)
 	}
 	else
 	{
-		if(g_iTime[g_iClientBox[client]]>0)
+		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
 			Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
+		}
+		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
+		{
+			Store_GiveItem(client, itemid, _, GetTime() + time, item[iPrice]);
 		}
 		else Store_GiveItem(client, itemid, _, _, item[iPrice]);
 		char sBuffer[128];
 		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item[szName], handler[szType]);
 
 		CPrintToChat(client, "%s%s", g_sChatPrefix, sBuffer);
-		
+		Store_SQLLogMessage(client, LOG_EVENT, "Opened a lootbox #%i. Item: %s.", g_iClientBox[client], sUId);
 		if (g_iClientLevel[client] == LEVEL_RED)
 			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
 		if (g_iClientLevel[client] == LEVEL_GOLD)
