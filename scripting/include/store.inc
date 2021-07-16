@@ -84,7 +84,7 @@ native bool Store_IsClientVIP(int client);
 native bool Store_IsItemInBoughtPackage(int client, int itemid, int uid=-1);
 native bool Store_ShouldConfirm();
 native void Store_DisplayConfirmMenu(int client, char[] title, Function callback,int data);
-native void Store_GetItem(int itemid, any output[Store_Item]);
+native int Store_GetItem(int itemid, any output[Store_Item]);
 native void Store_GetHandler(int index, any output[Type_Handler]);
 native void Store_GiveItem(int client, int itemid, int purchase=0, int expiration=0, int price=0);
 native void Store_RemoveItem(int client, int itemid);
