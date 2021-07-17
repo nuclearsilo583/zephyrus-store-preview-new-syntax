@@ -1,0 +1,14 @@
+"Hats"
+{
+	"Tippy"
+	{	
+		"model" "models/player/custom_player/uuz/newbone/icemega5/chino/tippy.mdl"
+		"position" "0.0 -1.0 12.1" // I can't help much at this config. You need to identify the config by yourself
+		"angles" "0.0 0.0 0.0" // I can't help much at this config. You need to identify the config by yourself
+		"type" "hat"
+		"unique_id" "uid_model_pet_hat_tippy"
+		"preview" "1"
+		"slot" "0" // Same as custom_model module. Only 5 slot available at the same time (0->5). You can only equip 5 types at the same times (wings, hats, facemarks, ... etc)
+		"price" "100"
+	}
+}

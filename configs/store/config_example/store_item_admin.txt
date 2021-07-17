@@ -1,0 +1,18 @@
+"Vips"
+{
+	"Vip 10 days"
+	{	
+		"flags" "o" // Dont misunderstanding "flag". This will give player the specified flag when they buy this item.
+		"type" "admin"
+		"group" "Vips" //Group of admin. Check or create new group at configs/admin_groups.cfg
+		"immunity" "99" // Type of immunity 99 is highest.
+		"unique_id"					"uid_vip_case_10days" // If you want to add item in lootbox module please give item a unique_id
+		"Plans"
+		{
+			"10 day"
+			{
+				"price" "350"
+				"time" "864000"
+		}
+	}
+}

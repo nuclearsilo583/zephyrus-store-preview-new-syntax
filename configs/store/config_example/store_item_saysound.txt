@@ -1,0 +1,44 @@
+"Sounds"
+{
+	"Cheers - perm"
+	{
+		"description"				"    Pay one time use forever"
+		"Cheer #1"
+		{
+			"sound"					"cheer/cheer_1.mp3"
+			"trigger"				"lol"
+			"unique_id"				"uid_saysound_cheer1"
+			"cooldown"               "10" // minimum is 10
+			"volume"                "0.800000" // Volume in float (0.1 = 10%, 1 = 100%)
+			"origin"                "1" // 1 = Sound From global world, 2 = Sound From local player, 3 = Sound From player voice (recommend to use value 2)
+			"price"                    "100"
+			"type"                    "saysound"
+			"preview"                "1"
+		}
+
+		"Cheer #2"
+		{
+			"sound"					"cheer/cheer_2.mp3"
+			"trigger"				"haha"
+			"unique_id"				"uid_saysound_cheer2"
+			"price"					"10"
+			"volume"				"0.500000"
+			"origin"				"2"
+			"cooldown"				"10"
+			"type"					"saysound"
+			"preview"				"1"
+		}
+		"Cheer #3"
+		{
+			"sound"					"cheer/cheer_3.mp3"
+			"trigger"				"cheer3"
+			"unique_id"				"uid_saysound_cheer3"
+			"price"					"10"
+			"volume"				"0.700000"
+			"origin"				"3"
+			"cooldown"				"30"
+			"type"					"saysound"
+			"preview"				"1"
+		}
+	}
+}

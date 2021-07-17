@@ -446,7 +446,7 @@ public Action Timer_Open(Handle timer, int client)
 		Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
 		CPrintToChat(client, "%s%s", g_sChatPrefix, "Error occured, item back. Inform admin log");
 
-		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientLevel[client]);
+		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
 		return Plugin_Stop;
 	}
 

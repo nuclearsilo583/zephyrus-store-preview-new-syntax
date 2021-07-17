@@ -1,0 +1,54 @@
+// What is this item. Well this item run a command (RegConsoleCmd) (sm_*) directly in store. Uses for opening gambling panel. Or display a panel text
+
+"Main Info Panel"
+{
+	"Rules"
+	{
+		"description"					"    Please read first"
+		"Communication"
+		{
+			"text"						"Don't scream /nCAPSLOCK = scream /nDon't be a dick! /nBe cool!"
+			"type"						"info"
+			"unique_id"					"uid_info_communication"
+		}
+		"Gameplay"
+		{
+			"text"						"Don't fuck up others! /nDon't be a dick! /nDon't fuck up others! Have fun!"
+			"type"						"info"
+			"unique_id"					"uid_info_gameplay"
+		}
+		
+		"Information"
+		{
+			"text"						"nuclear silo. Vietnameses ZE player love to coding stuff."
+			"type"						"info"
+			"unique_id"					"uid_info_info"
+		}
+	}
+	"Weblinks"
+	{
+		"text"							"www.j1bros.com /nwww.j1bros.com/server /nHave fun! ( ͡° ͜ʖ ͡°)"
+		"type"							"info"
+		"unique_id"						"uid_info_weblinks"
+	}
+	
+	"Shop Toplists"
+	{
+		"type"							"link"
+		"command"						"sm_storetop"
+		"unique_id"						"uid_toplists_toplists"
+	}
+	"Toogle Hide Items"
+	{
+		"type"							"link"
+		"command"						"sm_settings"
+		"unique_id"						"uid_cmd_hideitems"
+	}
+	
+	"Trade Items or Credits with others player"
+	{
+		"type"							"link"
+		"command"						"sm_trade"
+		"unique_id"						"uid_cmd_trade"
+	}
+}

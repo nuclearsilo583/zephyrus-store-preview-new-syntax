@@ -1,0 +1,30 @@
+"Bullet impact"
+{
+	"Tracer"
+	{
+		"Blue"
+		{
+			"color" "0 0 125"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "2500"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "12000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "35000"
+					"time" "2592000"
+				}
+			}
+			"type" "tracer"
+			"unique_id" "uid_tracer_blue"
+		}
+	}
+}

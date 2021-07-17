@@ -1,0 +1,6 @@
+"Bulletsparks"
+{
+	"price"					"1000"
+	"type"					"bulletsparks"
+	"unique_id"				"uid_bulletsparks_bulletsparks"
+}

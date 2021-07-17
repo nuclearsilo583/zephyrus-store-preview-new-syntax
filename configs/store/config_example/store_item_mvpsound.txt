@@ -1,0 +1,9 @@
+"MVP Anthem"
+{
+	"sound"                         "j1/mvp/goi_ten_cua_anh_la_nang.mp3" // uses root folder sound/*
+	"volume"                        "0.500000"
+	"type"                          "mvp_sound"
+	"price"                         "1000"
+	"preview"                       "1"
+	"unique_id"                     "uid_mvp_sound_mvp_anthem"
+}

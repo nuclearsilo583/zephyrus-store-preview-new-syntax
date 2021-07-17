@@ -1,0 +1,34 @@
+"Pedobear"
+{
+	"model" "models/player/custom_player/eminem/pedobear/pedobear.mdl"
+	"arms" "models/player/custom_player/eminem/pedobear/pedobear_arms.mdl" // no arms files? use "models/weapons/ct_arms_gign.mdl"
+	"team" "4"
+	"type" "playerskin"
+	"preview" "1"
+	"skin" "0" // Integer. Choose the model family skins
+	"body" "25" // Integer. Choose the model bodygroup
+	"unique_id"			"uid_model_pedobear"
+	"Plans"
+	{
+		"1 day"
+		{
+			"price" "500"
+			"time" "86400"
+			
+		
+		}
+		"7 days"
+		{
+			"price" "3000"
+			"time" "604800"
+			
+		}
+		"30 days"
+		{
+			"price" "9000"
+			"time" "2592000"
+			
+		
+		}
+	}
+}

@@ -1,0 +1,6 @@
+"Bunnyhop"
+{
+	"price"					"1000"
+	"type"					"bunnyhop"
+	"unique_id"				"uid_bunnyhop"
+}
