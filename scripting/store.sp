@@ -1410,7 +1410,7 @@ public Action Command_Say(int client, const char[] command,int argc)
 		}
 	}
 
-	return Plugin_Handled;
+	return Plugin_Continue;
 }
 
 public Action Command_Store(int client,int params)
