@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.4_vouncher_v2"
+#define PLUGIN_VERSION "5.5.6"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -113,6 +113,7 @@ int g_cvarSaveOnDeath = -1;
 int g_cvarCreditMessages = -1;
 int g_cvarShowVIP = -1;
 int g_cvarLogging = -1;
+int g_cvarLogLast = -1;
 int g_cvarPluginsLogging = -1;							  
 int g_cvarSilent = -1;
 //int g_cvarCredits = -1;
@@ -290,6 +291,8 @@ public void OnPluginStart()
 
 	g_cvarShowVIP = RegisterConVar("sm_store_show_vip_items", "0", "If you enable this VIP items will be shown in grey.", TYPE_INT);
 	g_cvarLogging = RegisterConVar("sm_store_logging", "0", "Set this to 1 for file logging and 2 to SQL logging (only MySQL). Leaving on 0 means disabled.", TYPE_INT);
+	g_cvarLogLast = RegisterConVar("sm_store_log_last", "7", "How many day to delete data log since the log created in database. Leaving on 0 means no delete.", TYPE_INT);
+	
 	g_cvarPluginsLogging = RegisterConVar("sm_store_plugins_logging", "2", "Enable Logging for module . 0 = disable, 1 = file log, 2 = SQL log (MySQL only)", TYPE_INT);																																								 
 	g_cvarSilent = RegisterConVar("sm_store_silent_givecredits", "0", "Controls the give credits message visibility. 0 = public 1 = private 2 = no message", TYPE_INT);
 	//g_cvarCredits = RegisterConVar("sm_store_cmd_credits_cooldown", "12", "Control of the spam cooldown time for !credits", TYPE_FLOAT);
@@ -1217,9 +1220,19 @@ void StoreLogMessage(int client = 0, int level, char[] message, any ...)
 		char sQuery[1024];
 		SQL_EscapeString(g_hDatabase, sQuery, sQuery, sizeof(sQuery));
 		if (client)
-			Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", %i, \"%s\", CURRENT_TIMESTAMP, \"%s\", \"%s\")", sLevel, g_eClients[client][iId_Client], sReason, name, steamid);
+		{
+			if(g_bMySQL)
+				Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", %i, \"%s\", CURRENT_TIMESTAMP, \"%s\", \"%s\")", sLevel, g_eClients[client][iId_Client], sReason, name, steamid);
+			else
+				Format(sQuery, sizeof(sQuery), "INSERT INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", %i, \"%s\", CURRENT_TIMESTAMP, \"%s\", \"%s\")", sLevel, g_eClients[client][iId_Client], sReason, name, steamid);
+		}
 		else
-			Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", \"0\", \"%s\", CURRENT_TIMESTAMP, \"Console\", \"0\")", sLevel, sReason);
+		{
+			if(g_bMySQL)
+				Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", \"0\", \"%s\", CURRENT_TIMESTAMP, \"Console\", \"0\")", sLevel, sReason);
+			else
+				Format(sQuery, sizeof(sQuery), "INSERT INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", \"0\", \"%s\", CURRENT_TIMESTAMP, \"Console\", \"0\")", sLevel, sReason);
+		}
 		SQL_TQuery(g_hDatabase, SQLCallback_Void_Error, sQuery);
 	}
 	else if(g_eCvars[g_cvarPluginsLogging].aCache == 1)
@@ -3194,7 +3207,21 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `type` varchar(16) NOT NULL,\
 										  `unique_id` varchar(256) NOT NULL,\
 										  `slot` int(11) NOT NULL\
+										)");SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_equipment` (\
+										  `player_id` int(11) NOT NULL,\
+										  `type` varchar(16) NOT NULL,\
+										  `unique_id` varchar(256) NOT NULL,\
+										  `slot` int(11) NOT NULL\
 										)");
+			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_plugin_logs` (\
+										  `id` INTEGER PRIMARY KEY AUTOINCREMENT,\
+										  `level` varchar(8) NOT NULL,\
+										   name varchar(64) NOT NULL default '',\
+										   steam varchar(64) NOT NULL default '',\
+										  `player_id` int(11) NOT NULL,\
+										  `reason` varchar(256) NOT NULL,\
+										  `date` timestamp NOT NULL\
+										)");	
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
 			if(strcmp(g_eCvars[g_cvarItemSource].sCache, "database")==0)
 			{
@@ -3204,7 +3231,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 		}
 		
 		// Do some housekeeping
-		char m_szQuery[256], m_szVoucherQuery[2048];
+		char m_szQuery[256], m_szVoucherQuery[2048], m_szLogCleaningQuery[256];
 		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `date_of_expiration` <> 0 AND `date_of_expiration` < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
 		
@@ -3215,6 +3242,19 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 									... " item_expiration = 0 "
 									... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
 		SQL_TVoid(g_hDatabase, m_szVoucherQuery);*/
+		if (g_eCvars[g_cvarLogLast].aCache>0)
+		{
+			if(m_szDriver[0] == 'm')
+			{
+				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < CURDATE()-%i", g_eCvars[g_cvarLogLast].aCache);
+				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+			}
+			else
+			{
+				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
+				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+			}
+		}
 	}
 }
 

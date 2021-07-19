@@ -40,12 +40,15 @@ int g_iCreateMax[MAXPLAYERS + 1] = {0, ...};
 int g_iLastQuery[MAXPLAYERS + 1] = {0, ...};
 int g_iSelectedItem[MAXPLAYERS + 1];
 
+ConVar g_cvDatabaseEntry;
+Handle g_hDatabase = INVALID_HANDLE;
+
 public Plugin myinfo = 
 {
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -75,7 +78,8 @@ public void OnPluginStart()
 
 	AddCommandListener(Command_Say, "say"); 
 	AddCommandListener(Command_Say, "say_team");
-
+	
+	g_cvDatabaseEntry = FindConVar("sm_store_database");
 }
 
 public void OnAllPluginsLoaded()
@@ -91,8 +95,14 @@ public void Store_OnConfigExecuted(char[] prefix)
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 
 	ReadCoreCFG();
-	char m_szVoucherCreateTableQuery[2048];
-	/*Store_SQLQuery("CREATE TABLE if NOT EXISTS `store_voucher` (\
+	char buffer[128];
+	g_cvDatabaseEntry.GetString(buffer, 128);
+	SQL_TConnect(SQLCallback_Connect, buffer);
+
+}
+/*
+char m_szVoucherCreateTableQuery[2048];
+	Store_SQLQuery("CREATE TABLE if NOT EXISTS `store_voucher` (\
 										  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
 										  name_of_create varchar(64) NOT NULL default '',\
 										  steam_of_create varchar(64) NOT NULL default '',\
@@ -105,18 +115,18 @@ public void Store_OnConfigExecuted(char[] prefix)
 										  unlimited TINYINT NOT NULL default 0,\
 										  date_of_expiration INT NOT NULL default 0,\
 										  item_expiration INT default NULL);",
-										SQLCallback_VoidVoucher, 0);*/
+										SQLCallback_VoidVoucher, 0);
 										
 	Format(m_szVoucherCreateTableQuery, sizeof(m_szVoucherCreateTableQuery), "CREATE TABLE if NOT EXISTS `store_voucher` (\
-										  `voucher` varchar(64) NOT NULL PRIMARY KEY,\
+										  `voucher` varchar(64) NOT NULL,\
 										  `name_of_create` varchar(64) NOT NULL,\
 										  `steam_of_create` varchar(64) NOT NULL,\
 										  `credits` INT NOT NULL default '0',\
-										  `item` varchar(64) NOT NULL,\
+										  `item` varchar(64),\
 										  `date_of_create` INT NOT NULL default '0',\
 										  `date_of_redeem` INT NOT NULL default '0',\
-										  `name_of_redeem` varchar(64) NOT NULL,\
-										  `steam_of_redeem` TEXT NOT NULL,\
+										  `name_of_redeem` varchar(64),\
+										  `steam_of_redeem` TEXT,\
 										  `unlimited` TINYINT NOT NULL default '0',\
 										  `date_of_expiration` INT NOT NULL default '0',\
 										  `item_expiration` INT default NULL);");							
@@ -131,6 +141,71 @@ public void Store_OnConfigExecuted(char[] prefix)
 									... " item_expiration = 0 "
 									... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
 	Store_SQLQuery(m_szVoucherQuery, SQLCallback_VoidVoucher, 0);
+*/
+public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if(hndl==INVALID_HANDLE)
+	{
+		SetFailState("Failed to connect to SQL database. Error: %s", error);
+	}
+	else
+	{
+		// If it's already connected we are good to go
+		if(g_hDatabase != INVALID_HANDLE)
+			return;
+			
+		g_hDatabase = hndl;
+		char m_szDriver[2];
+		SQL_ReadDriver(g_hDatabase, STRING(m_szDriver));
+		char m_szVoucherCreateTableQuery[2048];
+		if(m_szDriver[0] == 'm')
+		{
+			Format(m_szVoucherCreateTableQuery, sizeof(m_szVoucherCreateTableQuery), "CREATE TABLE if NOT EXISTS `store_voucher` (\
+										  `voucher` varchar(64) NOT NULL PRIMARY KEY,\
+										  `name_of_create` varchar(64) NOT NULL,\
+										  `steam_of_create` varchar(64) NOT NULL,\
+										  `credits` INT NOT NULL default '0',\
+										  `item` varchar(64) NOT NULL,\
+										  `date_of_create` INT NOT NULL default '0',\
+										  `date_of_redeem` INT NOT NULL default '0',\
+										  `name_of_redeem` varchar(64) NOT NULL,\
+										  `steam_of_redeem` TEXT NOT NULL,\
+										  `unlimited` TINYINT NOT NULL default '0',\
+										  `date_of_expiration` INT NOT NULL default '0',\
+										  `item_expiration` INT default NULL);");							
+			//Store_SQLQuery(m_szVoucherCreateTableQuery ,SQLCallback_VoidVoucher, 0);
+			SQL_TVoid(g_hDatabase, m_szVoucherCreateTableQuery);
+		}
+		else
+		{
+			Format(m_szVoucherCreateTableQuery, sizeof(m_szVoucherCreateTableQuery), "CREATE TABLE if NOT EXISTS `store_voucher` (\
+										  `voucher` varchar(64) NOT NULL,\
+										  `name_of_create` varchar(64) NOT NULL,\
+										  `steam_of_create` varchar(64) NOT NULL,\
+										  `credits` INT NOT NULL default '0',\
+										  `item` varchar(64),\
+										  `date_of_create` INT NOT NULL default '0',\
+										  `date_of_redeem` INT NOT NULL default '0',\
+										  `name_of_redeem` varchar(64),\
+										  `steam_of_redeem` TEXT,\
+										  `unlimited` TINYINT NOT NULL default '0',\
+										  `date_of_expiration` INT NOT NULL default '0',\
+										  `item_expiration` INT default NULL);");							
+			//Store_SQLQuery(m_szVoucherCreateTableQuery ,SQLCallback_VoidVoucher, 0);
+			SQL_TVoid(g_hDatabase, m_szVoucherCreateTableQuery);
+		}
+		
+		//Do some housekeeping
+		char m_szVoucherQuery[2048];
+		Format(m_szVoucherQuery, sizeof(m_szVoucherQuery), "UPDATE store_voucher SET"
+										... " name_of_redeem = \"voucher's item expired\","
+										... " date_of_redeem = %d,"
+										... " steam_of_redeem = \"voucher's item expired\","
+										... " item_expiration = 0 "
+										... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
+		//Store_SQLQuery(m_szVoucherQuery, SQLCallback_VoidVoucher, 0);
+		SQL_TVoid(g_hDatabase, m_szVoucherQuery);
+	}
 }
 
 public Action Command_Say(int client, const char[] command,int argc)
@@ -985,8 +1060,8 @@ void SQL_WriteVoucher(int client, char[] voucher, int credits = 0, bool unlimite
 		expire_date = item[iDateOfExpiration];
 
 		// Query
-		Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
-		... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration, item_expiration)"
+		Format(sQuery, sizeof(sQuery), "INSERT INTO `store_voucher` "
+		... "(`voucher`, `name_of_create`, `steam_of_create`, `credits`, `item`, `date_of_create`, `unlimited`, `date_of_expiration`, `item_expiration`)"
 		... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i', '%i')", 
 			voucher, name, steamid, credits, uniqueID, time, 
 			view_as<int>(unlimited), 
@@ -994,8 +1069,8 @@ void SQL_WriteVoucher(int client, char[] voucher, int credits = 0, bool unlimite
 	}
 	else
 	{
-		Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
-		... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration)"
+		Format(sQuery, sizeof(sQuery), "INSERT INTO `store_voucher` "
+		... "(`voucher`, `name_of_create`, `steam_of_create`, `credits`, `item`, `date_of_create`, `unlimited`, `date_of_expiration`)"
 		... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i')", 
 			voucher, name, steamid, credits, uniqueID, time, 
 			view_as<int>(unlimited), 
@@ -1078,8 +1153,8 @@ void SQL_WriteVoucherCredits(int client, char[] voucher, int credits = 0, bool u
 
 	char sQuery[1024];
 
-	Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
-	... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration)"
+	Format(sQuery, sizeof(sQuery), "INSERT INTO `store_voucher` "
+	... "(`voucher`, `name_of_create`, `steam_of_create`, `credits`, `item`, `date_of_create`, `unlimited`, `date_of_expiration`)"
 	... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i')", 
 		voucher, name, steamid, credits, uniqueID, time, 
 		view_as<int>(unlimited), 
@@ -1149,8 +1224,8 @@ void SQL_WriteVoucherCreditsAdmin(int client, char[] voucher, int credits = 0, b
 
 	char sQuery[1024];
 
-	Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_voucher "
-	... "(voucher, name_of_create, steam_of_create, credits, item, date_of_create, unlimited, date_of_expiration)"
+	Format(sQuery, sizeof(sQuery), "INSERT INTO `store_voucher` "
+	... "(`voucher`, `name_of_create`, `steam_of_create`, `credits`, `item`, `date_of_create`, `unlimited`, `date_of_expiration`)"
 	... "VALUES ('%s', '%s', '%s', '%i', '%s', '%i', '%i', '%i')", 
 		voucher, name, steamid, credits, uniqueID, time, 
 		view_as<int>(unlimited), 
