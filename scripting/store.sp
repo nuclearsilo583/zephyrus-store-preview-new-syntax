@@ -3207,11 +3207,6 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `type` varchar(16) NOT NULL,\
 										  `unique_id` varchar(256) NOT NULL,\
 										  `slot` int(11) NOT NULL\
-										)");SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_equipment` (\
-										  `player_id` int(11) NOT NULL,\
-										  `type` varchar(16) NOT NULL,\
-										  `unique_id` varchar(256) NOT NULL,\
-										  `slot` int(11) NOT NULL\
 										)");
 			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_plugin_logs` (\
 										  `id` INTEGER PRIMARY KEY AUTOINCREMENT,\

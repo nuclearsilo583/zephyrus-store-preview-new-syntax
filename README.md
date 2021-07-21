@@ -4,9 +4,9 @@
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
 
 # Newly added
-- New Store Logging for module (Support for MySql and file log, no sqlite)
+- New Store Logging for module (Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
 ![log](https://user-images.githubusercontent.com/58926275/125444645-8c83105f-cc83-411d-bab9-a9e5689af9d9.png)
-- New Store Voucher system module (Current build only support MySQL, no sqlite and on developing)
+- New Store Voucher system module (Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
 ![voucher](https://user-images.githubusercontent.com/58926275/125775715-a282139a-7b71-4b76-9dc6-b3c686459a07.png)
 
 
