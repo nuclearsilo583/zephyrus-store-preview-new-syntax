@@ -1135,6 +1135,8 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 	LogMessage("Purchase Voucher: %s", sVoucher);
 
 	CPrintToChat(client, "%s%t", g_sChatPrefix, "Item Voucher in chat", item[szName], handler[szType], sVoucher);	
+	
+	PrintToConsole(client, "%t", "Voucher in console", sVoucher);
 }
 
 void SQL_WriteVoucherCredits(int client, char[] voucher, int credits = 0, bool unlimited = false, char[] uniqueID = "")
