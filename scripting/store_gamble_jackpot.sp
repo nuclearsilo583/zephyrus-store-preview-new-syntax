@@ -67,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Jackpot gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -96,6 +96,7 @@ public void OnPluginStart()
 public void Store_OnConfigExecuted(char[] prefix)
 {
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+	ReadCoreCFG();
 }
 
 public void OnMapStart()
@@ -210,7 +211,7 @@ void SetBet(int client, int bet)
 	g_iBet[client] = bet;
 	g_iPlayer++;
 
-	FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+	ClientCommand(client, "play %s", g_sMenuItem);
 	Store_SetClientCredits(client, Store_GetClientCredits(client) - bet);
 
 	int iAccountID = GetSteamAccountID(client, true);
@@ -261,10 +262,10 @@ public int PanelHandler_Info(Handle menu, MenuAction action, int client, int par
 			case 5: SetBet(client, GetRandomInt(gc_iMin.IntValue, credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits));
 			case 7:
 			{
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 				Store_DisplayPreviousMenu(client);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuExit);
 		}
 	}
 
@@ -284,7 +285,7 @@ public Action Command_JackPot(int client, int args)
 	{
 		char sBuffer[64];
 		SecToTime(g_iPause - GetTime(), sBuffer, sizeof(sBuffer));
-		CPrintToChatAll("%s%t %t", g_sChatPrefix, "Jackpot paused", "You can start a new Jackpot in", sBuffer);
+		CPrintToChat(client, "%s%t %t", g_sChatPrefix, "Jackpot paused", "You can start a new Jackpot in", sBuffer);
 
 		return Plugin_Handled;
 	}
@@ -553,6 +554,29 @@ bool IsValidClient(int client, bool bots = true, bool dead = true)
 		return false;
 
 	return true;
+}
+
+void ReadCoreCFG()
+{
+	char sFile[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/core.cfg");
+
+	Handle hParser = SMC_CreateParser();
+	char error[128];
+	int line = 0;
+	int col = 0;
+
+	SMC_SetReaders(hParser, INVALID_FUNCTION, Callback_CoreConfig, INVALID_FUNCTION);
+	SMC_SetParseEnd(hParser, INVALID_FUNCTION);
+
+	SMCError result = SMC_ParseFile(hParser, sFile, line, col);
+	delete hParser;
+
+	if (result == SMCError_Okay)
+		return;
+
+	SMC_GetErrorString(result, error, sizeof(error));
+	Store_SQLLogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
 }
 
 public SMCResult Callback_CoreConfig(Handle parser, char[] key, char[] value, bool key_quotes, bool value_quotes)

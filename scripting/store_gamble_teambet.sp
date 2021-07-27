@@ -383,7 +383,7 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 				// show place color panel
 				else
@@ -403,7 +403,7 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 			}
 			case 7:
 			{
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuItem);
 				Store_DisplayPreviousMenu(client);
 			}
 			case 8:
@@ -411,7 +411,7 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 				Panel_GameInfo(client);
 				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuItem);
 		}
 	}
 
@@ -495,7 +495,7 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 				{
 					Panel_TeamBet(client);
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 				}
@@ -527,7 +527,7 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 					// when player has yet had not enough Credits (double check)
 					else
 					{
-						FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+						ClientCommand(client, "play %s", g_sMenuItem);
 						Panel_TeamBet(client);
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
@@ -537,14 +537,14 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 			case 7:
 			{
 				Panel_TeamBet(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
 				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuItem);
 		}
 	}
 

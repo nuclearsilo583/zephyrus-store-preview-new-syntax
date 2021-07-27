@@ -67,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Roulette gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -94,6 +94,7 @@ public void OnPluginStart()
 public void Store_OnConfigExecuted(char[] prefix)
 {
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+	ReadCoreCFG();
 }
 
 public void OnClientAuthorized(int client, const char[] auth)
@@ -125,9 +126,18 @@ public Action Command_Roulette(int client, int args)
 
 	if (args < 1 || args > 2)
 	{
-		Panel_PreRoulette(client);
-		CReplyToCommand(client, "%s%t", g_sChatPrefix, "Type in chat !roulette");
-
+		if(g_hTimerRun[client] != INVALID_HANDLE || g_hTimerBowlStop[client] != INVALID_HANDLE)
+		{
+			//delete g_hTimerRun[client];
+			//delete g_hTimerStopFlip[client];
+			//CReplyToCommand(client, "%sDebugged", g_sChatPrefix);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Game in progress");
+		}
+		else
+		{
+			Panel_PreRoulette(client);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Type in chat !roulette");
+		}
 		return Plugin_Handled;
 	}
 
@@ -189,32 +199,52 @@ public Action Command_Roulette(int client, int args)
 
 	if (args == 1)
 	{
-		Panel_PlaceColor(client);
-	}
-	else if (args == 2)
-	{
-		GetCmdArg(2, sBuffer, 32);
-		if (StrEqual(sBuffer, "r") || StrEqual(sBuffer, "red"))
+		if(g_hTimerRun[client] != INVALID_HANDLE || g_hTimerBowlStop[client] != INVALID_HANDLE)
 		{
-			g_iSide[client] = 1;
-		}
-		else if (StrEqual(sBuffer, "g") || StrEqual(sBuffer, "green"))
-		{
-			g_iSide[client] = 3;
-		}
-		else if (StrEqual(sBuffer, "b") || StrEqual(sBuffer, "black"))
-		{
-			g_iSide[client] = 2;
+			//delete g_hTimerRun[client];
+			//delete g_hTimerStopFlip[client];
+			//CReplyToCommand(client, "%sDebugged", g_sChatPrefix);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Game in progress");
 		}
 		else
 		{
-			CReplyToCommand(client, "%s%t", g_sChatPrefix, "No matching color");
-
-			return Plugin_Handled;
+			Panel_PlaceColor(client);
 		}
+	}
+	else if (args == 2)
+	{
+		if(g_hTimerRun[client] != INVALID_HANDLE || g_hTimerBowlStop[client] != INVALID_HANDLE)
+		{
+			//delete g_hTimerRun[client];
+			//delete g_hTimerStopFlip[client];
+			//CReplyToCommand(client, "%sDebugged", g_sChatPrefix);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Game in progress");
+		}
+		else
+		{
+			GetCmdArg(2, sBuffer, 32);
+			if (StrEqual(sBuffer, "r") || StrEqual(sBuffer, "red"))
+			{
+				g_iSide[client] = 1;
+			}
+			else if (StrEqual(sBuffer, "g") || StrEqual(sBuffer, "green"))
+			{
+				g_iSide[client] = 3;
+			}
+			else if (StrEqual(sBuffer, "b") || StrEqual(sBuffer, "black"))
+			{
+				g_iSide[client] = 2;
+			}
+			else
+			{
+				CReplyToCommand(client, "%s%t", g_sChatPrefix, "No matching color");
 
-		Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
-		Start_Roulette(client);
+				return Plugin_Handled;
+			}
+
+			Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
+			Start_Roulette(client);
+		}
 	}
 
 	return Plugin_Handled;
@@ -309,7 +339,7 @@ public int Handler_Roulette(Menu panel, MenuAction action, int client, int itemN
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 				// show place color panel
 				else
@@ -324,7 +354,7 @@ public int Handler_Roulette(Menu panel, MenuAction action, int client, int itemN
 
 					Panel_PlaceColor(client);
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 			}
 			case 6:
@@ -335,26 +365,26 @@ public int Handler_Roulette(Menu panel, MenuAction action, int client, int itemN
 					Panel_Roulette(client);
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 				// show place color panel
 				else
 				{
 					Panel_PlaceColor(client);
-					FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 			}
 			case 7:
 			{
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 				Store_DisplayPreviousMenu(client);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuExit);
 		}
 	}
 
@@ -427,7 +457,7 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 				{
 					Panel_Roulette(client);
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 				}
@@ -449,7 +479,7 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 					// when player has yet had not enough Credits (double check)
 					else
 					{
-						FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+						ClientCommand(client, "play %s", g_sMenuItem);
 						Panel_Roulette(client);
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
@@ -459,14 +489,14 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 			case 7:
 			{
 				Panel_Roulette(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuExit);
 		}
 	}
 
@@ -483,7 +513,7 @@ void Start_Roulette(int client)
 	//Store_SetClientRecurringMenu(client, true);
 
 	//play a start sound
-	FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+	ClientCommand(client, "play %s", g_sMenuItem);
 
 	g_hTimerRun[client] = CreateTimer(gc_fSpeed.FloatValue, Timer_Run, GetClientUserId(client), TIMER_REPEAT); // run speed for all rolls
 	TriggerTimer(g_hTimerRun[client]);
@@ -637,13 +667,13 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 					Panel_Roulette(client);
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 				// show place color panel
 				else
 				{
 					Panel_PlaceColor(client);
-					FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 			}
 			// Item 6 - go back to casino
@@ -651,12 +681,12 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 			{
 				Panel_Roulette(client);
 
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
 			// Item 9 - exit cancel
 			case 9:
@@ -671,7 +701,7 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 				}
 
 				g_iBowlSlowStop[client] = -1;
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 			}
 		}
 	}
@@ -759,7 +789,7 @@ void ProcessWin(int client, int bet, int multiply)
 	// Play sound and notify other player abot this win
 	CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, iProfit, g_sCreditsName, "roulette");
 
-	FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+	ClientCommand(client, "play %s", g_sMenuItem);
 }
 
 /******************************************************************************
@@ -906,6 +936,29 @@ public Action Timer_StopBowl(Handle tmr, int userid)
 	}
 
 	return Plugin_Handled;
+}
+
+void ReadCoreCFG()
+{
+	char sFile[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/core.cfg");
+
+	Handle hParser = SMC_CreateParser();
+	char error[128];
+	int line = 0;
+	int col = 0;
+
+	SMC_SetReaders(hParser, INVALID_FUNCTION, Callback_CoreConfig, INVALID_FUNCTION);
+	SMC_SetParseEnd(hParser, INVALID_FUNCTION);
+
+	SMCError result = SMC_ParseFile(hParser, sFile, line, col);
+	delete hParser;
+
+	if (result == SMCError_Okay)
+		return;
+
+	SMC_GetErrorString(result, error, sizeof(error));
+	Store_SQLLogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
 }
 
 public SMCResult Callback_CoreConfig(Handle parser, char[] key, char[] value, bool key_quotes, bool value_quotes)

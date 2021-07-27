@@ -65,7 +65,7 @@ public Plugin myinfo =
 	name = "Store - Dice gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -92,7 +92,7 @@ public void OnPluginStart()
 public void Store_OnConfigExecuted(char[] prefix)
 {
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
-
+	ReadCoreCFG();
 }
 
 public void OnClientAuthorized(int client, const char[] auth)
@@ -123,9 +123,18 @@ public Action Command_Dice(int client, int args)
 
 	if (args < 1 || args > 2)
 	{
-		Panel_PreDice(client);
-		CReplyToCommand(client, "%s%t", g_sChatPrefix, "Type in chat !dice");
-
+		if(g_hTimerRun[client] != INVALID_HANDLE || g_hTimerStopFlip[client] != INVALID_HANDLE)
+		{
+			//delete g_hTimerRun[client];
+			//delete g_hTimerStopFlip[client];
+			//CReplyToCommand(client, "%sDebugged", g_sChatPrefix);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Game in progress");
+		}
+		else
+		{
+			Panel_PreDice(client);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Type in chat !dice");
+		}
 		return Plugin_Handled;
 	}
 
@@ -175,42 +184,62 @@ public Action Command_Dice(int client, int args)
 		return Plugin_Handled;
 	}
 
-	g_bFlipping[client] = false;
+	//g_bFlipping[client] = false;
 
 	g_iBet[client] = iBet;
 
 	if (args == 1)
 	{
-		Panel_ChooseNum(client);
+		if(g_hTimerRun[client] != INVALID_HANDLE || g_hTimerStopFlip[client] != INVALID_HANDLE)
+		{
+			//delete g_hTimerRun[client];
+			//delete g_hTimerStopFlip[client];
+			//CReplyToCommand(client, "%sDebugged", g_sChatPrefix);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Game in progress");
+		}
+		else
+		{
+			Panel_ChooseNum(client);
+		}
 	}
 	else if (args == 2)
 	{
-		GetCmdArg(2, sBuffer, 32);
-		int iNum = StringToInt(sBuffer);
-		switch(iNum)
+		if(g_hTimerRun[client] != INVALID_HANDLE || g_hTimerStopFlip[client] != INVALID_HANDLE)
 		{
-			case 1, 2, 3, 4, 5, 6: g_iDiceBet[client] = iNum;
-			default:
+			//delete g_hTimerRun[client];
+			//delete g_hTimerStopFlip[client];
+			//CReplyToCommand(client, "%sDebugged", g_sChatPrefix);
+			CReplyToCommand(client, "%s%t", g_sChatPrefix, "Game in progress");
+		}
+		else
+		{
+			GetCmdArg(2, sBuffer, 32);
+			int iNum = StringToInt(sBuffer);
+			switch(iNum)
 			{
-				if (sBuffer[0] == 'l')
+				case 1, 2, 3, 4, 5, 6: g_iDiceBet[client] = iNum;
+				default:
 				{
-					g_iDiceBet[client] = 0;
-				}
-				else if (sBuffer[0] == 'h')
-				{
-					g_iDiceBet[client] = 7;
-				}
-				else
-				{
-					CReplyToCommand(client, "%s%t", g_sChatPrefix, "Type in chat !dice");
+					if (sBuffer[0] == 'l')
+					{
+						g_iDiceBet[client] = 0;
+					}
+					else if (sBuffer[0] == 'h')
+					{
+						g_iDiceBet[client] = 7;
+					}
+					else
+					{
+						CReplyToCommand(client, "%s%t", g_sChatPrefix, "Type in chat !dice");
 
-					return Plugin_Handled;
+						return Plugin_Handled;
+					}
 				}
 			}
-		}
 
-		Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
-		Start_Dice(client);
+			Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
+			Start_Dice(client);
+		}
 	}
 
 	return Plugin_Handled;
@@ -301,7 +330,7 @@ public int Handler_Dice(Menu panel, MenuAction action, int client, int itemNum)
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 				else
 				{
@@ -314,7 +343,7 @@ public int Handler_Dice(Menu panel, MenuAction action, int client, int itemNum)
 
 					Panel_ChooseNum(client);
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 			}
 			case 6:
@@ -325,26 +354,26 @@ public int Handler_Dice(Menu panel, MenuAction action, int client, int itemNum)
 					Panel_Dice(client);
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 				// show place color panel
 				else
 				{
 					Panel_ChooseNum(client);
-					FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 			}
 			case 7:
 			{
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 				Store_DisplayPreviousMenu(client);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuItem);
 		}
 	}
 
@@ -418,7 +447,7 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 				{
 					Panel_Dice(client);
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 				}
@@ -440,7 +469,7 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 					// when player has yet had not enough Credits (double check)
 					else
 					{
-						FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+						ClientCommand(client, "play %s", g_sMenuItem);
 						Panel_Dice(client);
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
@@ -450,19 +479,19 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 			case 5:
 			{
 				Panel_ChooseNumber(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
 			case 7:
 			{
 				Panel_Dice(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuItem);
 		}
 	}
 
@@ -545,7 +574,7 @@ public int Handler_Num(Menu panel, MenuAction action, int client, int itemNum)
 				{
 					Panel_Dice(client);
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 				}
@@ -562,7 +591,7 @@ public int Handler_Num(Menu panel, MenuAction action, int client, int itemNum)
 					// when player has yet had not enough Credits (double check)
 					else
 					{
-						FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+						ClientCommand(client, "play %s", g_sMenuItem);
 						Panel_Dice(client);
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
@@ -572,14 +601,14 @@ public int Handler_Num(Menu panel, MenuAction action, int client, int itemNum)
 			case 7:
 			{
 				Panel_Dice(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
-			case 9: FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+			case 9: ClientCommand(client, "play %s", g_sMenuItem);
 		}
 	}
 
@@ -596,7 +625,7 @@ void Start_Dice(int client)
 	Store_SetClientRecurringMenu(client, true);
 
 	//play a start sound
-	FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+	ClientCommand(client, "play %s", g_sMenuItem);
 
 	g_hTimerRun[client] = CreateTimer(gc_fSpeed.FloatValue, Timer_Run, GetClientUserId(client), TIMER_REPEAT); // run speed for all rolls
 	TriggerTimer(g_hTimerRun[client]);
@@ -728,13 +757,13 @@ public int Handler_RunWin(Menu panel, MenuAction action, int client, int itemNum
 					Panel_Dice(client);
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 				// show place color panel
 				else
 				{
 					Panel_ChooseNum(client);
-					FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+					ClientCommand(client, "play %s", g_sMenuItem);
 				}
 			}
 			// Item 6 - go back to casino
@@ -742,12 +771,12 @@ public int Handler_RunWin(Menu panel, MenuAction action, int client, int itemNum
 			{
 				Panel_Dice(client);
 
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
 			// Item 9 - exit cancel
 			case 9:
@@ -763,7 +792,7 @@ public int Handler_RunWin(Menu panel, MenuAction action, int client, int itemNum
 
 				g_bFlipping[client] = false;
 
-				FakeClientCommand(client, "play sound/%s", g_sMenuExit);
+				ClientCommand(client, "play %s", g_sMenuItem);
 			}
 		}
 	}
@@ -805,7 +834,7 @@ void ProcessWin(int client, int bet, int multiply)
 	// Play sound and notify other player abot this win
 	CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, iProfit, g_sCreditsName, "dice");
 
-	FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+	ClientCommand(client, "play %s", g_sMenuItem);
 }
 
 /******************************************************************************
@@ -923,7 +952,7 @@ public Action Timer_StopDice(Handle tmr, int userid)
 
 	return Plugin_Handled;
 }
-/*
+
 void ReadCoreCFG()
 {
 	char sFile[PLATFORM_MAX_PATH];
@@ -944,9 +973,9 @@ void ReadCoreCFG()
 		return;
 
 	SMC_GetErrorString(result, error, sizeof(error));
-	Store_LogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
+	Store_SQLLogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
 }
-*/
+
 public SMCResult Callback_CoreConfig(Handle parser, char[] key, char[] value, bool key_quotes, bool value_quotes)
 {
 	if (StrEqual(key, "MenuItemSound", false))

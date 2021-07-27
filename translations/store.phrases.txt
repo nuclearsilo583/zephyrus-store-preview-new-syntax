@@ -1,5 +1,16 @@
 ﻿"Phrases"
 {
+	"Game in progress"
+	{
+		"en"		"Your current bet game is in progress. Please wait until it finished"
+	}
+	
+	"Giveaway Minimum Players"
+	{
+		"#format"	"{1:s},{2:i}"
+		"en"		"{yellow}{1}{purple} To do a giveaway the server must contain at least {green}{2} {purple}players."
+	}
+	
 	"Lootbox round ended"
 	{
 		"en" "The round has ended. Please wait for new round"
@@ -450,7 +461,7 @@
 	"the prize will be drawn in"
 	{
 		"#format"	"{1:s}"
-		"en"		"the prize will be drawn in"
+		"en"		"the prize will be drawn in {1}s"
 	}
 
 	"Bet Minium"
