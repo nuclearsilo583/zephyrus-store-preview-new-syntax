@@ -198,34 +198,45 @@ public int Sounds_Equip(int client, int itemid)
 		return 1;
 	}
 
-	switch (g_iOrigin[iIndex])
+	if(g_iUses[client]<view_as<int>(g_eCvars[g_iMaxUses].aCache))
 	{
-		// Sound From global world
-		case 1:
+		g_iUses[client]++;
+		switch (g_iOrigin[iIndex])
 		{
-			EmitSoundToAll(g_sSound[iIndex], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[iIndex]);
-		}
-		// Sound From local player
-		case 2:
-		{
-			float fVec[3];
-			GetClientAbsOrigin(client, fVec);
-			EmitAmbientSound(g_sSound[iIndex], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[iIndex]);
-		}
-		// Sound From player voice
-		case 3:
-		{
-			float fPos[3], fAgl[3];
-			GetClientEyePosition(client, fPos);
-			GetClientEyeAngles(client, fAgl);
+			// Sound From global world
+			case 1:
+			{
+				EmitSoundToAll(g_sSound[iIndex], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[iIndex]);
+				//g_iUses[client]++;
+			}
+			// Sound From local player
+			case 2:
+			{
+				float fVec[3];
+				GetClientAbsOrigin(client, fVec);
+				EmitAmbientSound(g_sSound[iIndex], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[iIndex]);
+				//g_iUses[client]++;
+			}
+			// Sound From player voice
+			case 3:
+			{
+				float fPos[3], fAgl[3];
+				GetClientEyePosition(client, fPos);
+				GetClientEyeAngles(client, fAgl);
 
-			// player`s mouth
-			fPos[2] -= 3.0;
-
-			EmitSoundToAll(g_sSound[iIndex], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[iIndex], SNDPITCH_NORMAL, client, fPos, fAgl, true);
+				// player`s mouth
+				fPos[2] -= 3.0;
+				//g_iUses[client]++;
+				EmitSoundToAll(g_sSound[iIndex], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[iIndex], SNDPITCH_NORMAL, client, fPos, fAgl, true);
+			}
 		}
 	}
-
+	else
+	{
+		if (g_eCvars[g_iType].aCache == 0)
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound map max uses", view_as<int>(g_eCvars[g_iMaxUses].aCache));
+		else CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound round max uses", view_as<int>(g_eCvars[g_iMaxUses].aCache));
+	}
 	g_iSpam[client] = GetTime() + g_iCooldown[iIndex];
 	
 	//Store_SetClientPreviousMenu(client, MENU_PARENT);
@@ -365,14 +376,14 @@ public void Event_PlayerSay(Event event, char[] name, bool dontBroadcast)
 
 
 					g_iSpam[client] = GetTime() + g_iCooldown[i];
-					g_iUses[client]+=1;
+					g_iUses[client]++;
 				}
 			}
 			else
 			{
 				if (g_eCvars[g_iType].aCache == 0)
-					CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound map max uses", g_iUses[client]);
-				else CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound round max uses", g_iUses[client]);
+					CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound map max uses", view_as<int>(g_eCvars[g_iMaxUses].aCache));
+				else CPrintToChat(client, "%s%t", g_sChatPrefix, "say sound round max uses", view_as<int>(g_eCvars[g_iMaxUses].aCache));
 			}
 			break;
 		}

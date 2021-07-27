@@ -90,13 +90,13 @@
 	
 	"say sound map max uses"
 	{
-		"#format"	"{1:i}"
+		"#format"	"{1:d}"
 		"en"		"You have reach the max uses of say sound. {1} max use(s) per map"
 	}
 	
 	"say sound round max uses"
 	{
-		"#format"	"{1:i}"
+		"#format"	"{1:d}"
 		"en"		"You have reach the max uses of say sound. {1} Max use(s) per round"
 	}
 	
