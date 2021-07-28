@@ -876,7 +876,7 @@ public int Handler_NullCancelInput(Handle menu, MenuAction action, int client, i
 	{
 		delete g_hTimerInput[client];
 		g_iChatType[client] = -1;
-		EmitSoundToClient(client,, g_sMenuExit);
+		EmitSoundToClient(client, g_sMenuExit);
 		return;
 	}
 
