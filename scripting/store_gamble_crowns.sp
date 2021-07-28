@@ -71,7 +71,7 @@ public Plugin myinfo =
 	name = "Store - Crowns gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -242,7 +242,8 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 				// show place color panel
 				else
@@ -258,7 +259,8 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 					Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
 					Start_Crowns(client);
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 			}
 			case 6:
@@ -269,7 +271,8 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 					Panel_Crowns(client);
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 				// show place color panel
 				else
@@ -277,20 +280,27 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 					Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
 					Start_Crowns(client);
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 			}
 			case 7:
 			{
-				ClientCommand(client, "play %s", g_sMenuExit);
+				//FakeClientCommandEx(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 				Store_DisplayPreviousMenu(client);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
-			case 9: ClientCommand(client, "play %s", g_sMenuItem);
+			case 9: 
+			{
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuExit);
+			}
 		}
 	}
 
@@ -308,7 +318,8 @@ void Start_Crowns(int client)
 	//Store_SetClientRecurringMenu(client, true);
 
 	//play a start sound
-	ClientCommand(client, "play %s", g_sMenuItem);
+	//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+	EmitSoundToClient(client, g_sMenuItem);
 
 	g_hTimerRun[client] = CreateTimer(gc_fSpeed.FloatValue, Timer_Run, GetClientUserId(client), TIMER_REPEAT); // run speed for all rolls
 	TriggerTimer(g_hTimerRun[client]);
@@ -434,7 +445,7 @@ void Panel_RunAndWin(int client)
 		}
 		else if (StrEqual(sSymbolsRoll1[g_iRoll[client][0]], "☠", true))
 		{
-			ClientCommand(client, "play %s", g_sMenuItem);
+			FakeClientCommandEx(client, "play %s", g_sMenuItem);
 
 			panel.DrawText("    !!  ☠  ☠  ☠  !! ");
 			panel.DrawText(" ");
@@ -482,7 +493,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 					{
 						g_iRollStopped[client] = 1; // stop first roll
 
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 
 						delete g_hTimerRollStop[client];
 						g_hTimerRollStop[client] = CreateTimer(GetAutoStopTime(), Timer_StopRoll, GetClientUserId(client)); // stop second roll
@@ -491,7 +503,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 					{
 						g_iRollStopped[client] = 2; // stop second roll
 
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 
 						delete g_hTimerRollStop[client];
 						g_hTimerRollStop[client] = CreateTimer(GetAutoStopTime(), Timer_StopRoll, GetClientUserId(client)); // stop third roll
@@ -500,7 +513,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 					{
 						g_iRollStopped[client] = 3; // stop third roll
 
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 
 						delete g_hTimerRun[client];
 						delete g_hTimerRollStop[client];
@@ -516,14 +530,16 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 						Panel_Crowns(client);
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 					}
 					// rerun
 					else
 					{
 						Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
 						Start_Crowns(client);
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 					}
 				}
 			}
@@ -532,12 +548,14 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 			{
 				Panel_Crowns(client);
 
-				ClientCommand(client, "play %s", g_sMenuExit);
+				//FakeClientCommandEx(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
 			// Item 9 - exit cancel
 			case 9:
@@ -552,7 +570,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 				}
 
 				g_iRollStopped[client] = -1;
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
 		}
 	}
@@ -580,7 +599,8 @@ void ProcessWin(int client, int bet, int multiply)
 	// Play sound and notify other player abot this win
 	CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, iProfit, g_sCreditsName, "crowns");
 
-	ClientCommand(client, "play %s", g_sMenuItem);
+	//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+	EmitSoundToClient(client, g_sMenuItem);
 }
 
 /******************************************************************************

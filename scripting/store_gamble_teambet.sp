@@ -45,7 +45,7 @@ ConVar gc_iBetPeriod;
 ConVar gc_iMinPlayer;
 
 char g_sChatPrefix[128];
-char g_sCreditsName[64];
+char g_sCreditsName[64] = "credits";
 
 char g_sMenuItem[64];
 char g_sMenuExit[64];
@@ -67,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Teambet gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -96,6 +96,7 @@ public void OnPluginStart()
 public void Store_OnConfigExecuted(char[] prefix)
 {
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+	ReadCoreCFG();
 }
 
 public void OnClientPutInServer(int client)
@@ -383,7 +384,8 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//ClientCommand(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 				// show place color panel
 				else
@@ -398,20 +400,27 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 
 					Panel_ChooseTeam(client);
 
-					FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+					//ClientCommand(client, "play sound/%s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 			}
 			case 7:
 			{
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//ClientCommand(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 				Store_DisplayPreviousMenu(client);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				//ClientCommand(client, "play sound/%s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
-			case 9: ClientCommand(client, "play %s", g_sMenuItem);
+			case 9: 
+			{
+				//ClientCommand(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
+			}
 		}
 	}
 
@@ -495,7 +504,8 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 				{
 					Panel_TeamBet(client);
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//ClientCommand(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 				}
@@ -521,13 +531,15 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 
 						Store_SetClientCredits(client, iCredits - g_iBet[client]);
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Placed", iCredits);
-						FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+						//ClientCommand(client, "play sound/%s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 						Panel_TeamBet(client);
 					}
 					// when player has yet had not enough Credits (double check)
 					else
 					{
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//ClientCommand(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 						Panel_TeamBet(client);
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
@@ -537,14 +549,20 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 			case 7:
 			{
 				Panel_TeamBet(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//ClientCommand(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				FakeClientCommand(client, "play sound/%s", g_sMenuItem);
+				//ClientCommand(client, "play sound/%s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
-			case 9: ClientCommand(client, "play %s", g_sMenuItem);
+			case 9: 
+			{
+				//ClientCommand(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
+			}
 		}
 	}
 
@@ -691,7 +709,7 @@ void ReadCoreCFG()
 		return;
 
 	SMC_GetErrorString(result, error, sizeof(error));
-	Store_LogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
+	Store_SQLLogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
 }
 
 public SMCResult Callback_CoreConfig(Handle parser, char[] key, char[] value, bool key_quotes, bool value_quotes)

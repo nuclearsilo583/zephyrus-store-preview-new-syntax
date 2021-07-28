@@ -46,7 +46,7 @@ ConVar gc_fAutoStop;
 ConVar gc_fSpeed;
 ConVar gc_bAlive;
 
-char g_sCreditsName[64];
+char g_sCreditsName[64] = "credits";
 char g_sChatPrefix[128];
 
 char g_sMenuItem[64];
@@ -65,7 +65,7 @@ public Plugin myinfo =
 	name = "Store - Dice gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -266,7 +266,7 @@ void Panel_Dice(int client)
 	int iCredits = Store_GetClientCredits(client);
 	Panel panel = new Panel();
 
-	Format(sBuffer, sizeof(sBuffer), "%t\nCredits:%i", "dice", iCredits);
+	Format(sBuffer, sizeof(sBuffer), "%t\n%s:%i", "dice", g_sCreditsName, iCredits);
 	panel.SetTitle(sBuffer);
 
 	PanelInject_Dice(panel, client);
@@ -330,7 +330,8 @@ public int Handler_Dice(Menu panel, MenuAction action, int client, int itemNum)
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 				else
 				{
@@ -343,7 +344,8 @@ public int Handler_Dice(Menu panel, MenuAction action, int client, int itemNum)
 
 					Panel_ChooseNum(client);
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 			}
 			case 6:
@@ -354,26 +356,34 @@ public int Handler_Dice(Menu panel, MenuAction action, int client, int itemNum)
 					Panel_Dice(client);
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 				// show place color panel
 				else
 				{
 					Panel_ChooseNum(client);
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 			}
 			case 7:
 			{
-				ClientCommand(client, "play %s", g_sMenuExit);
+				//FakeClientCommandEx(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 				Store_DisplayPreviousMenu(client);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
-			case 9: ClientCommand(client, "play %s", g_sMenuItem);
+			case 9: 
+			{
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuExit);
+			}
 		}
 	}
 
@@ -405,15 +415,15 @@ void Panel_ChooseNum(int client)
 	panel.DrawText(" ");
 
 	panel.CurrentKey = 3;
-	Format(sBuffer, sizeof(sBuffer), "%t Low - #1-3 (1:2)", "Bet on");
+	Format(sBuffer, sizeof(sBuffer), "%t %t", "Bet on", "Low - #1-3 (1:2)");
 	panel.DrawItem(sBuffer, !gc_bAlive.BoolValue && IsPlayerAlive(client) ? ITEMDRAW_SPACER : ITEMDRAW_DEFAULT);
 
 	panel.CurrentKey = 4;
-	Format(sBuffer, sizeof(sBuffer), "%t High - #4-6 (1:2)", "Bet on");
+	Format(sBuffer, sizeof(sBuffer), "%t %t", "Bet on", "High - #4-6 (1:2)");
 	panel.DrawItem(sBuffer, !gc_bAlive.BoolValue && IsPlayerAlive(client) ? ITEMDRAW_SPACER : ITEMDRAW_DEFAULT); //translate
 
 	panel.CurrentKey = 5;
-	Format(sBuffer, sizeof(sBuffer), "Choose Number (1:6)");
+	Format(sBuffer, sizeof(sBuffer), "%t", "Choose Number (1:6)");
 	panel.DrawItem(sBuffer, !gc_bAlive.BoolValue && IsPlayerAlive(client) ? ITEMDRAW_SPACER : ITEMDRAW_DEFAULT);
 
 	panel.DrawText(" ");
@@ -447,7 +457,8 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 				{
 					Panel_Dice(client);
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 				}
@@ -469,7 +480,8 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 					// when player has yet had not enough Credits (double check)
 					else
 					{
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 						Panel_Dice(client);
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
@@ -479,19 +491,26 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 			case 5:
 			{
 				Panel_ChooseNumber(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
 			case 7:
 			{
 				Panel_Dice(client);
-				ClientCommand(client, "play %s", g_sMenuExit);
+				//FakeClientCommandEx(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
-			case 9: ClientCommand(client, "play %s", g_sMenuItem);
+			case 9: 
+			{
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuExit);
+			}
 		}
 	}
 
@@ -574,7 +593,8 @@ public int Handler_Num(Menu panel, MenuAction action, int client, int itemNum)
 				{
 					Panel_Dice(client);
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 				}
@@ -591,7 +611,8 @@ public int Handler_Num(Menu panel, MenuAction action, int client, int itemNum)
 					// when player has yet had not enough Credits (double check)
 					else
 					{
-						ClientCommand(client, "play %s", g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 						Panel_Dice(client);
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
@@ -601,14 +622,20 @@ public int Handler_Num(Menu panel, MenuAction action, int client, int itemNum)
 			case 7:
 			{
 				Panel_Dice(client);
-				ClientCommand(client, "play %s", g_sMenuExit);
+				//FakeClientCommandEx(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
-			case 9: ClientCommand(client, "play %s", g_sMenuItem);
+			case 9:
+			{
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuExit);
+			}
 		}
 	}
 
@@ -625,7 +652,8 @@ void Start_Dice(int client)
 	Store_SetClientRecurringMenu(client, true);
 
 	//play a start sound
-	ClientCommand(client, "play %s", g_sMenuItem);
+	//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+	EmitSoundToClient(client, g_sMenuItem);
 
 	g_hTimerRun[client] = CreateTimer(gc_fSpeed.FloatValue, Timer_Run, GetClientUserId(client), TIMER_REPEAT); // run speed for all rolls
 	TriggerTimer(g_hTimerRun[client]);
@@ -715,10 +743,31 @@ void Panel_RunAndWin(int client)
 		// Player has not won -> Show start panel
 		else
 		{
-			Panel_Dice(client);
+			//Panel_Dice(client);
 
-			delete panel;
-			return;
+			//delete panel;
+			//return;
+			panel.DrawText(" ");
+			switch(g_iDiceBet[client])
+			{
+				case 0: Format(sBuffer, sizeof(sBuffer), "    %t %t", "You lost with", "Low #1-3");
+				case 1, 2, 3, 4, 5, 6: Format(sBuffer, sizeof(sBuffer), "    %t #%i", "You lost with", g_iDiceBet[client]);
+				case 7: Format(sBuffer, sizeof(sBuffer), "    %t %t", "You lost with", "High #4-6");
+			}
+			panel.DrawText(sBuffer);
+			
+			panel.DrawText(" ");
+			Format(sBuffer, sizeof(sBuffer), "    %t", "You lost x Credits", g_iBet[client], g_sCreditsName);
+			panel.DrawText(sBuffer);
+			panel.DrawText(" ");
+			panel.DrawText(" ");
+
+			// Process the won token & remaining notfiction
+			//ProcessWin(client, g_iBet[client], 6);
+
+			panel.DrawItem(sBuffer, ITEMDRAW_SPACER);
+			
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iBet[client], g_sCreditsName, "dice");
 		}
 	}
 
@@ -729,10 +778,10 @@ void Panel_RunAndWin(int client)
 
 	panel.CurrentKey = 7;
 	Format(sBuffer, sizeof(sBuffer), "%t", "Back");
-	panel.DrawItem(sBuffer, g_bFlipping[client] ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
+	panel.DrawItem(sBuffer, g_bFlipping[client] ? ITEMDRAW_SPACER : ITEMDRAW_DEFAULT);
 	panel.CurrentKey = 8;
 	Format(sBuffer, sizeof(sBuffer), "%t", "Game Info");
-	panel.DrawItem(sBuffer, g_bFlipping[client] ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
+	panel.DrawItem(sBuffer, g_bFlipping[client] ? ITEMDRAW_SPACER : ITEMDRAW_DEFAULT);
 	panel.CurrentKey = 9;
 	Format(sBuffer, sizeof(sBuffer), "%t", g_bFlipping[client] ? "Cancel" : "Exit");
 	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT); // ITEMDRAW_DISABLED ???
@@ -757,13 +806,15 @@ public int Handler_RunWin(Menu panel, MenuAction action, int client, int itemNum
 					Panel_Dice(client);
 					CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be dead");
 
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 				// show place color panel
 				else
 				{
 					Panel_ChooseNum(client);
-					ClientCommand(client, "play %s", g_sMenuItem);
+					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+					EmitSoundToClient(client, g_sMenuItem);
 				}
 			}
 			// Item 6 - go back to casino
@@ -771,12 +822,14 @@ public int Handler_RunWin(Menu panel, MenuAction action, int client, int itemNum
 			{
 				Panel_Dice(client);
 
-				ClientCommand(client, "play %s", g_sMenuExit);
+				//FakeClientCommandEx(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 			}
 			case 8:
 			{
 				Panel_GameInfo(client);
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuItem);
 			}
 			// Item 9 - exit cancel
 			case 9:
@@ -792,7 +845,8 @@ public int Handler_RunWin(Menu panel, MenuAction action, int client, int itemNum
 
 				g_bFlipping[client] = false;
 
-				ClientCommand(client, "play %s", g_sMenuItem);
+				//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuExit);
 			}
 		}
 	}
@@ -834,7 +888,8 @@ void ProcessWin(int client, int bet, int multiply)
 	// Play sound and notify other player abot this win
 	CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, iProfit, g_sCreditsName, "dice");
 
-	ClientCommand(client, "play %s", g_sMenuItem);
+	//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+	EmitSoundToClient(client, g_sMenuItem);
 }
 
 /******************************************************************************

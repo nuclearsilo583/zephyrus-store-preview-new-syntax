@@ -1,5 +1,20 @@
 ﻿"Phrases"
 {
+	"Low - #1-3 (1:2)"
+	{
+		"en"		"Low - #1-3 (1:2)"
+	}
+	
+	"High - #4-6 (1:2)"
+	{
+		"en"		"High - #4-6 (1:2)"
+	}
+	
+	"Choose Number (1:6)"
+	{
+		"en"		"Choose Number (1:6)"
+	}
+	
 	"Game in progress"
 	{
 		"en"		"Your current bet game is in progress. Please wait until it finished"
@@ -293,6 +308,12 @@
 		"#format"	"{1:i},{2:s}"
 		"en"		"You win {1} {2}"
 	}
+	
+	"You lost x Credits"
+	{
+		"#format"	"{1:i},{2:s}"
+		"en"		"You lost {1} {2}"
+	}
 
 	"You'll earn x Credits tomorrow"
 	{
@@ -402,6 +423,12 @@
 	{
 		"#format"	"{1:N},{2:i},{3:s},{4:t}"
 		"en"		"{1} has won {2} {3} at {4}"
+	}
+	
+	"Player lost x Credits"
+	{
+		"#format"	"{1:N},{2:i},{3:s},{4:t}"
+		"en"		"{1} has lost {2} {3} at {4}"
 	}
 
 	"Game Info"
@@ -539,6 +566,11 @@
 	"You won with"
 	{
 		"en"		"You won with"
+	}
+	
+	"You lost with"
+	{
+		"en"		"You lost with"
 	}
 
 	"Bet * Multi = Your Win"

@@ -67,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Jackpot gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -211,7 +211,8 @@ void SetBet(int client, int bet)
 	g_iBet[client] = bet;
 	g_iPlayer++;
 
-	ClientCommand(client, "play %s", g_sMenuItem);
+	//ClientCommand(client, "play %s", g_sMenuItem);
+	EmitSoundToClient(client, g_sMenuItem);
 	Store_SetClientCredits(client, Store_GetClientCredits(client) - bet);
 
 	int iAccountID = GetSteamAccountID(client, true);
@@ -262,10 +263,15 @@ public int PanelHandler_Info(Handle menu, MenuAction action, int client, int par
 			case 5: SetBet(client, GetRandomInt(gc_iMin.IntValue, credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits));
 			case 7:
 			{
-				ClientCommand(client, "play %s", g_sMenuExit);
+				//ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 				Store_DisplayPreviousMenu(client);
 			}
-			case 9: ClientCommand(client, "play %s", g_sMenuExit);
+			case 9: 
+			{
+				//ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
+			}
 		}
 	}
 
