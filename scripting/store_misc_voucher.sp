@@ -876,7 +876,7 @@ public int Handler_NullCancelInput(Handle menu, MenuAction action, int client, i
 	{
 		delete g_hTimerInput[client];
 		g_iChatType[client] = -1;
-		ClientCommand(client, "play %s", g_sMenuExit);
+		EmitSoundToClient(client,, g_sMenuExit);
 		return;
 	}
 
@@ -914,7 +914,7 @@ public int Handler_NullCancelVoucher(Handle menu, MenuAction action, int client,
 				delete g_hTimerInput[client];
 				Menu_Voucher(client);
 				
-				ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 				return;
 			}
 		}
@@ -933,7 +933,7 @@ public Action Timer_Input2Late(Handle tmr, int userid)
 
 	Panel_Multi(client, 1);
 
-	ClientCommand(client, "play %s", g_sMenuExit);
+	EmitSoundToClient(client, g_sMenuExit);
 
 	g_hTimerInput[client] = null;
 	return Plugin_Stop;
@@ -1101,7 +1101,7 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
-		ClientCommand(client, "play %s", g_sMenuExit);
+		EmitSoundToClient(client, g_sMenuExit);
 		delete pack;
 		return;
 	}
@@ -1119,7 +1119,7 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 	if (itemid == -1)
 	{
 		Menu_Voucher(client);
-		ClientCommand(client, "play %s", g_sMenuExit);
+		EmitSoundToClient(client, g_sMenuExit);
 		return;
 	}
 
@@ -1185,7 +1185,7 @@ public void SQLCallback_WriteCredits(Database db, DBResultSet results, const cha
 		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
-		ClientCommand(client, "play %s", g_sMenuExit);
+		EmitSoundToClient(client, g_sMenuExit);
 		delete pack;
 		return;
 	}
@@ -1256,7 +1256,7 @@ public void SQLCallback_WriteCreditsAdmin(Database db, DBResultSet results, cons
 		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
-		ClientCommand(client, "play %s", g_sMenuExit);
+		EmitSoundToClient(client, g_sMenuExit);
 		delete pack;
 		return;
 	}
@@ -1338,7 +1338,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 			{
 				Menu_Voucher(client);
 
-				ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 
 				FormatTime(sBuffer, sizeof(sBuffer), NULL_STRING, date_of_expiration);
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher expired", sBuffer);
@@ -1347,7 +1347,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 			{
 				Menu_Voucher(client);
 
-				ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 
 				FormatTime(sBuffer, sizeof(sBuffer), NULL_STRING, date_of_redeem);
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher already redeemed", sBuffer );
@@ -1356,7 +1356,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 			{
 				Menu_Voucher(client);
 
-				ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "You already redeemed Voucher");
 			}
@@ -1376,7 +1376,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 					if (itemid == -1)
 					{
 						Menu_Voucher(client);
-						ClientCommand(client, "play %s", g_sMenuExit);
+						EmitSoundToClient(client, g_sMenuExit);
 						return;
 					}
 
@@ -1387,7 +1387,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 					{
 						Menu_Voucher(client);
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "You already own Voucher item");
-						ClientCommand(client, "play %s", g_sMenuExit);
+						EmitSoundToClient(client, g_sMenuExit);
 						return;
 					}
 					else
@@ -1454,7 +1454,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 		{
 			Menu_Voucher(client);
 
-			ClientCommand(client, "play %s", g_sMenuExit);
+			EmitSoundToClient(client, g_sMenuExit);
 
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher invalid", voucher);
 		}
@@ -1529,7 +1529,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 
 			if (GetTime() > date_of_expiration && date_of_expiration != 0)
 			{
-				ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 
 				expire = true;
 
@@ -1538,7 +1538,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 			}
 			else if (StrContains(sRedeems, steamid[8], true) != -1)
 			{
-				ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 
 				redeemedme = true;
 
@@ -1546,7 +1546,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 			}
 			else if (date_of_redeem > 0 && !unlimited)
 			{
-				ClientCommand(client, "play %s", g_sMenuExit);
+				EmitSoundToClient(client, g_sMenuExit);
 
 				redeemenotunlimited = true;
 
@@ -1568,7 +1568,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 				if (itemid == -1)
 				{
 					Menu_Voucher(client);
-					ClientCommand(client, "play %s", g_sMenuExit);
+					EmitSoundToClient(client, g_sMenuExit);
 					return;
 				}
 
@@ -1603,7 +1603,7 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 		{
 			Menu_Voucher(client);
 
-			ClientCommand(client, "play %s", g_sMenuExit);
+			EmitSoundToClient(client, g_sMenuExit);
 
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher invalid", voucher);
 		}
