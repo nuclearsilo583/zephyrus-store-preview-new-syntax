@@ -114,7 +114,7 @@ public Action TimerGiveaway(Handle timer, any client)
 		
 		Store_SetClientCredits(randomNumber, Store_GetClientCredits(randomNumber) + credits);
 		
-		LogToFile("addons/sourcemod/logs/zgiveaway/zgiveawayfile.log", "The admin %s did a giveaway and %s won", admins, name);
+		//LogToFile("addons/sourcemod/logs/zgiveaway/zgiveawayfile.log", "The admin %s did a giveaway and %s won", admins, name);
 		
 		return Plugin_Stop;
 	}
