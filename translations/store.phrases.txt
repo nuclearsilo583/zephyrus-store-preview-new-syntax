@@ -1,5 +1,35 @@
 ﻿"Phrases"
 {
+	"Giveaway announcement"
+	{
+		"#format" 	"{1:s},{2:i}"
+		"en"		"<font color='#00CCFF'>Admin <font color='#ff0000'>{1}<font color='#00CCFF'> opened a giveaway with <font color='#15fb00'>{2} <font color='#00CCFF'>credits"
+	}
+	
+	"Giveaway remaining time"
+	{
+		"#format" 	"{1:i}"
+		"en"		"<font color='#15fb00'>|| Giveaway starts in <font color='#ffff00'>{1}<font color='#15fb00'> seconds ||"
+	}
+	
+	"Giveaway winner hint text"
+	{
+		"#format" 	"{1:s},{2:s}"
+		"en"		"<font color='#dd2f2f'>{1}\n<font color='#00CCFF'>|| <font color='#15fb00'>Winner: <font color='#ff0000'>{2}<font color='#00CCFF'> ||"
+	}
+	
+	"Giveaway winner chat"
+	{
+		"#format" 	"{1:s},{2:s},{3:i}"
+		"en"		"{yellow}{1} {purple}{2} {default}won a giveaway with {green}{3} {yellow}credits"
+	}
+	
+	"Giveaway winner in progress"
+	{
+		"#format" 	"{1:s}"
+		"en"		"<font color='#00CCFF'>|| <font color='#15fb00'>{1} <font color='#00CCFF'>||"
+	}
+	
 	"Low - #1-3 (1:2)"
 	{
 		"en"		"Low - #1-3 (1:2)"
