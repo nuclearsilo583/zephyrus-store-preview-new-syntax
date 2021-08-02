@@ -1,682 +1,979 @@
 #pragma semicolon 1
-
-#define PLUGIN_NAME         "CS:S Blackjack"
-#define PLUGIN_AUTHOR       "Dunder"
-#define PLUGIN_DESCRIPTION  "Play Blackjack using Zeph's Store" 
-#define PLUGIN_VERSION      "1.6.1"
-#define PLUGIN_URL          "https://github.com/ashort96/sp-blackjack"
-
-#define NO_ONE      0
-#define DEALER      1
-#define HAND_ONE    2
-#define HAND_TWO    3
-
-#define NUMBEROFCARDS   52
-
-#define PREFIX      "\x07B41F1F[Blackjack]\x07F8F8FF"
-
 #include <sourcemod>
+
+#undef REQUIRE_PLUGIN
+#undef REQUIRE_EXTENSIONS
+#include <clientprefs>
+#include <colors>
+#include <cstrike>
 #include <store>
 
-#pragma newdecls required
+#define PLUGIN_VERSION "2.0"
 
-static const char g_cSuit[][] = {"♥", "◆", "♠", "♣"};
-static const char g_sRank[][] = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+#define SUIT_SPADES "♠"
+#define SUIT_DIAMONDS "♦"
+#define SUIT_HEARTS "♥"
+#define SUIT_CLUBS "♣"
 
-ConVar g_Cvar_Minimum_Bid;
-ConVar g_Cvar_Maximum_Bid;
-
-int g_iDecks[MAXPLAYERS + 1][NUMBEROFCARDS];
-int g_iCurrentHand[MAXPLAYERS + 1] = {HAND_ONE, ...};
-int g_iBids[MAXPLAYERS + 1];
-
-bool g_bPlayerSplit[MAXPLAYERS + 1] = {false, ...};
-bool g_bInActiveGame[MAXPLAYERS + 1] = {false, ...};
-
-public Plugin myinfo =
-{
-    name = PLUGIN_NAME,
-    author = PLUGIN_AUTHOR,
-    description = PLUGIN_DESCRIPTION,
-    version = PLUGIN_VERSION,
-    url = PLUGIN_URL
+enum GameStatus {
+	Status_None = 0,
+	Status_BlackJack,
+	Status_Win,
+	Status_Lose,
+	Status_Draw
 }
 
-public void OnPluginStart()
+Handle g_hCVMaxBet;
+Handle g_hCVAdvertOnDeath;
+
+Handle g_hAutoShowCookie = INVALID_HANDLE;
+Handle g_hAutoHideCookie = INVALID_HANDLE;
+bool g_bAutoShow[MAXPLAYERS+1] = {false,...};
+bool g_bAutoHide[MAXPLAYERS+1] = {true,...};
+
+char g_sSuits[4][5];
+char g_sCards[13][3];
+char PREFIX[] = "{default}[{green}BlackJack{default}]";
+
+int iBetValue = 10;
+int g_iCardValue[13] = {2,3,4,5,6,7,8,9,10,10,10,10,11};
+
+Handle g_hPlayerCards[MAXPLAYERS+1];
+Handle g_hDealerCards[MAXPLAYERS+1];
+Handle g_hDealerThink[MAXPLAYERS+1];
+int g_iPlayerPot[MAXPLAYERS+1];
+int g_iBufferPlayerPot[MAXPLAYERS+1];	
+int g_iPlayerLastPot[MAXPLAYERS+1];
+int g_iPlayerCardValue[MAXPLAYERS+1];
+int g_iDealerCardValue[MAXPLAYERS+1];
+bool g_bIsIngame[MAXPLAYERS+1] = {false,...};
+bool g_bStays[MAXPLAYERS+1] = {false,...};
+bool g_bDealerEnds[MAXPLAYERS+1] = {false,...};
+GameStatus:g_iGameStatus[MAXPLAYERS+1] = {Status_None,...};
+bool g_bPlayerIsInMenu[MAXPLAYERS+1] = {false,...};
+bool g_bMoneyDealt[MAXPLAYERS+1] = {false,...};
+
+// For advert
+bool g_bPlayedBJ[MAXPLAYERS+1] = {false,...};
+
+public Plugin myinfo = 
 {
-
-    // ConVars
-    g_Cvar_Minimum_Bid = CreateConVar("sm_blackjack_minimum_bid", "50", "Minimum bid required to play", 0, true, 0.0);
-    g_Cvar_Maximum_Bid = CreateConVar("sm_blackjack_maximum_bid", "1000", "Maximum bid", 0, true, 0.0);
-
-    RegConsoleCmd("sm_blackjack", Command_Blackjack);
-    RegConsoleCmd("sm_bj", Command_Blackjack);
-
-    HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_PostNoCopy);
-
-    LoadTranslations("blackjack.phrases");
-    AutoExecConfig(true, "blackjack");
-
+	name = "Orizon - Blackjack",
+	author = "HerrMagic and Originalz ft. Jannik",
+	description = "Blackjack panel game",
+	version = PLUGIN_VERSION,
+	url = ""
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Helper Functions
-///////////////////////////////////////////////////////////////////////////////
-
-void GiveClientCredits(int client, int credits)
+public OnPluginStart()
 {
-    int currentCredts = Store_GetClientCredits(client);
-    Store_SetClientCredits(client, currentCredts + credits);
+	Handle hVersion = CreateConVar("sm_blackjack_version", PLUGIN_VERSION, "Blackjack version", FCVAR_PLUGIN|FCVAR_NOTIFY|FCVAR_REPLICATED|FCVAR_DONTRECORD);
+	if(hVersion != INVALID_HANDLE)
+		SetConVarString(hVersion, PLUGIN_VERSION);
+	
+	g_hCVMaxBet = CreateConVar("sm_blackjack_maxbet", "1000000", "Set the maximal amount of money a player is able to bet per game.", FCVAR_PLUGIN, true, 0.0);
+	g_hCVAdvertOnDeath = CreateConVar("sm_blackjack_advertondeath", "0", "Show an advert on death, if player didn't play already?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	
+	// Some basic setup to fill our deck
+	// Define all available cards
+	Format(g_sSuits[0], sizeof(g_sSuits[]), SUIT_SPADES);
+	Format(g_sSuits[1], sizeof(g_sSuits[]), SUIT_DIAMONDS);
+	Format(g_sSuits[2], sizeof(g_sSuits[]), SUIT_HEARTS);
+	Format(g_sSuits[3], sizeof(g_sSuits[]), SUIT_CLUBS);
+	
+	Format(g_sCards[0], sizeof(g_sCards[]), "2");
+	Format(g_sCards[1], sizeof(g_sCards[]), "3");
+	Format(g_sCards[2], sizeof(g_sCards[]), "4");
+	Format(g_sCards[3], sizeof(g_sCards[]), "5");
+	Format(g_sCards[4], sizeof(g_sCards[]), "6");
+	Format(g_sCards[5], sizeof(g_sCards[]), "7");
+	Format(g_sCards[6], sizeof(g_sCards[]), "8");
+	Format(g_sCards[7], sizeof(g_sCards[]), "9");
+	Format(g_sCards[8], sizeof(g_sCards[]), "10");
+	Format(g_sCards[9], sizeof(g_sCards[]), "J");
+	Format(g_sCards[10], sizeof(g_sCards[]), "Q");
+	Format(g_sCards[11], sizeof(g_sCards[]), "K");
+	Format(g_sCards[12], sizeof(g_sCards[]), "A");
+	
+	RegConsoleCmd("sm_bj", Cmd_BlackJack, "Opens the blackjack game.");
+	RegConsoleCmd("sm_blackjack", Cmd_BlackJack, "Opens the blackjack game.");
+	RegConsoleCmd("sm_bjhelp", Cmd_BlackJackHelp, "Displays the blackjack help and settings.");
+	RegConsoleCmd("sm_blackjackhelp", Cmd_BlackJackHelp, "Displays the blackjack help and settings.");
+	
+	if(LibraryExists("clientprefs"))
+	{
+		g_hAutoShowCookie = RegClientCookie("BlackJack_AutoShow", "Show the blackjack panel on death?", CookieAccess_Public);
+		g_hAutoHideCookie = RegClientCookie("BlackJack_AutoHide", "Hide the blackjack panel on spawn?", CookieAccess_Public);
+		// For lateloading..
+		for(int i=1;i<=MaxClients;i++)
+		{
+			if(IsClientInGame(i) && AreClientCookiesCached(i))
+				OnClientCookiesCached(i);
+		}
+	}
+	
+	HookEvent("player_spawn", Event_OnPlayerSpawn);
+	HookEvent("player_death", Event_OnPlayerDeath);
+	
+	AutoExecConfig(true, "blackjack");	
+	
 }
 
-// Deal two cards to the hand playing
-void InitializeHand(int hand, int[] cards)
+public OnClientCookiesCached(client)
 {
-    DealCard(hand, cards);
-    DealCard(hand, cards);
+	char sBuffer[5];
+	GetClientCookie(client, g_hAutoShowCookie, sBuffer, sizeof(sBuffer));
+	if(StrEqual(sBuffer, "1"))
+		g_bAutoShow[client] = true;
+	else
+		g_bAutoShow[client] = false;
+	
+	
+	GetClientCookie(client, g_hAutoHideCookie, sBuffer, sizeof(sBuffer));
+	if(StrEqual(sBuffer, "0"))
+		g_bAutoHide[client] = false;
+	else
+		g_bAutoHide[client] = true;
 }
 
-// Assign a card to the hand
-int DealCard(int hand, int[] cards)
+public OnLibraryAdded(const char[] name)
 {
-    int index;
-    for (;;)
-    {
-        index = GetRandomInt(0, 51);
-        if (cards[index] == NO_ONE)
-            break;
-    }
-    cards[index] = hand;
+	if(StrEqual(name, "clientprefs"))
+	{
+		g_hAutoShowCookie = RegClientCookie("BlackJack_AutoShow", "Show the blackjack panel on death?", CookieAccess_Public);
+		g_hAutoHideCookie = RegClientCookie("BlackJack_AutoHide", "Hide the blackjack panel on spawn?", CookieAccess_Public);
+	}
 }
 
-// "Resets" the deck
-void ClearDeck(int[] cards)
+public OnClientDisconnect(client)
 {
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        cards[i] = NO_ONE;
-    }
+	if(g_hPlayerCards[client] != INVALID_HANDLE)
+	{
+		CloseHandle(g_hPlayerCards[client]);
+		g_hPlayerCards[client] = INVALID_HANDLE;
+	}
+	
+	if(g_hDealerCards[client] != INVALID_HANDLE)
+	{
+		CloseHandle(g_hDealerCards[client]);
+		g_hDealerCards[client] = INVALID_HANDLE;
+	}
+	
+	if(g_hDealerThink[client] != INVALID_HANDLE)
+	{
+		KillTimer(g_hDealerThink[client]);
+		g_hDealerThink[client] = INVALID_HANDLE;
+	}
+	g_iPlayerPot[client] = 0;
+	g_iBufferPlayerPot[client] = 0;
+	g_iPlayerLastPot[client] = 0;
+	g_iPlayerCardValue[client] = 0;
+	g_iDealerCardValue[client] = 0;
+	g_bIsIngame[client] = false;
+	g_bStays[client] = false;
+	g_bDealerEnds[client] = false;
+	g_bPlayerIsInMenu[client] = false;
+	g_bAutoShow[client] = false;
+	g_bAutoHide[client] = true;
+	g_bMoneyDealt[client] = false;
+	g_iGameStatus[client] = Status_None;
+	g_bPlayedBJ[client] = false;
 }
 
-// Returns the score of the hand
-int ScoreHand(int hand, int[] cards)
+public Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 {
-    int score = 0;
-
-    // We need to loop through the cards twice; first, add up everything that
-    // is not an Ace. Then, if the score + ace <= 21, add 11. Otherwise, add 1.
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        if (cards[i] == hand)
-        {
-            // Deal with cards 2-9
-            if ((i % 13 > 0) && (i % 13 <= 9))
-            {
-                score += (i % 13) + 1;
-            }
-            // Deal with 10s, Jacks, Queens, and Kings
-            else if (i % 13 > 9)
-            {
-                score += 10;
-            }
-        }
-    }
-
-    // Now to loop through again and see if there are any Aces.
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        if ((cards[i] == hand) && (i % 13 == 0))
-        {
-            if ((score + 11) > 21)
-                score += 1;
-            else
-                score += 11;
-        }
-    }
-
-    return score;
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if(g_bPlayerIsInMenu[client] && g_bAutoHide[client])
+		CancelClientMenu(client);
 }
 
-// Returns the number of cards in a hand
-int GetNumberOfCards(int hand, int[] cards)
+public Event_OnPlayerDeath(Handle event, const char[] name, bool dontBroadcast)
 {
-    int count = 0;
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        if (cards[i] == hand)
-        {
-            count++;
-        }
-    }
-    return count;
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if(g_bAutoShow[client] && !g_bPlayerIsInMenu[client])
+	{
+		Cmd_BlackJack(client, 0);
+	}
+	
+	if(GetConVarBool(g_hCVAdvertOnDeath) && !g_bPlayedBJ[client] && !g_bAutoShow[client])
+	CPrintToChat(client, "%s {green}Type {default}!bj{green} to play blackjack while waiting! Type {default}!bjhelp{green} for help.", PREFIX);
 }
 
-// Returns the first card (used for the Dealer)
-void GetFirstCard(int hand, int[] cards, char[] buf, int size)
+public Action Cmd_BlackJack(int client, int args)
 {
-
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        if (cards[i] == hand)
-        {
-            Format(buf, size, "%s%s",
-                g_sRank[i % 13],
-                g_cSuit[i / 13]
-            );
-            return;
-        }
-    }
-
+	if(!client)
+	{
+		ReplyToCommand(client, "%s You have to be ingame to play.", PREFIX);
+		return Plugin_Handled;
+	}
+	
+	g_bPlayedBJ[client] = true;
+	
+	if(args == 0)
+	{
+			// He's already playing. Show the playing panel
+			if(g_bIsIngame[client] == true)
+			{
+				ShowGamePanel(client);
+			}
+			else
+			{
+				CPrintToChat(client, "%s {green}you can also use !bj <amount>", PREFIX);
+				ShowBetPanel(client);
+			}
+	} else if(args == 1)
+	{	
+		char buffer[256];
+		GetCmdArg(1, buffer, sizeof(buffer));
+		
+		int argument = StringToInt(buffer);
+		
+		int iAccount = Store_GetClientCredits(client);
+		
+		if(iAccount >= argument)
+		{
+			// He's already playing. Show the playing panel
+			if(g_bIsIngame[client] == true)
+			{
+				ShowGamePanel(client);
+			}
+			else
+			{
+				g_iBufferPlayerPot[client] = argument;
+				CPrintToChat(client, "%s {green}You bet {darkblue}%d {orange}credits", PREFIX, g_iBufferPlayerPot[client]);
+				ShowBetPanel(client);
+			}
+			
+		} else if(iAccount <= argument)
+		{
+			CPrintToChat(client, "%s {green}You don't have enough credits", PREFIX);
+			
+			return Plugin_Handled;
+		}
+	} else if (args > 1)
+	{
+		CPrintToChat(client, "%s {green}use {darkblue}!bj <amount> {green}to play Blackjack", PREFIX);
+	}
+	
+	return Plugin_Handled;
 }
 
-// Puts the cards of the current hand into the buffer.
-// Example:
-//      AH, 2D, 3S
-void GetCards(int hand, int[] cards, char[] buf, int size)
+public Action Cmd_BlackJackHelp(int client, int args)
 {
-
-
-    int currentCard = 0;
-    int numberOfCards = GetNumberOfCards(hand, cards);
-
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        if (cards[i] == hand)
-        {
-            currentCard++;
-            char tmpbuf[16];
-            // If this card is the last one the player has, no need to add a
-            // ',' after
-            if(currentCard == numberOfCards)
-            {
-                Format(tmpbuf, sizeof(tmpbuf), "%s%s",
-                    g_sRank[i % 13],
-                    g_cSuit[i / 13]
-                );
-            }
-            else
-            {
-                Format(tmpbuf, sizeof(tmpbuf), "%s%s, ",
-                    g_sRank[i % 13],
-                    g_cSuit[i / 13]
-                );
-            }
-            StrCat(buf, size, tmpbuf);
-        }
-    }
+	if(!client)
+	{
+		ReplyToCommand(client, "Blackjack: You have to be ingame.");
+		return Plugin_Handled;
+	}
+	
+	Handle hPanel = CreatePanel();
+	SetPanelTitle(hPanel, "-=BLACKJACK=-");
+	
+	DrawPanelItem(hPanel, "Play now");
+	char sBuffer[32];
+	Format(sBuffer, sizeof(sBuffer), "Show on death: %s", (g_bAutoShow[client]?"Yes":"No"));
+	DrawPanelItem(hPanel, sBuffer);
+	Format(sBuffer, sizeof(sBuffer), "Hide on spawn: %s", (g_bAutoHide[client]?"Yes":"No"));
+	DrawPanelItem(hPanel, sBuffer);
+	DrawPanelItem(hPanel, "Display rules");
+	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
+	Format(sBuffer, sizeof(sBuffer), "Maximal bet is %d Credits.", GetConVarInt(g_hCVMaxBet));
+	DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
+	DrawPanelItem(hPanel, "Number-cards count as their natural value; the pictures count as 10;", ITEMDRAW_RAWLINE);
+	DrawPanelItem(hPanel, "aces are valued as either 1 or 11 according to the player's best interest.", ITEMDRAW_RAWLINE);
+	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
+	
+	SetPanelCurrentKey(hPanel, 9);
+	DrawPanelItem(hPanel, "Exit");
+	SendPanelToClient(hPanel, client, Menu_Help, MENU_TIME_FOREVER);
+	CloseHandle(hPanel);
+	
+	return Plugin_Handled;
 }
 
-// Displays all hands to the client. If showDealer is false, then only the top
-// card will be displayed. If it is true, the dealer will show all cards.
-void DisplayHandsToClient(int client, int[] cards, bool showDealer = false)
+ShowBetPanel(client)
 {
-    int dealerScore = ScoreHand(DEALER, cards);
-    int handOneScore = ScoreHand(HAND_ONE, cards);
-    int handTwoScore = ScoreHand(HAND_TWO, cards);
+	int iAccount = Store_GetClientCredits(client);
+	Panel panel = new Panel();
+	
+	char betValueBuffer[64];
+	char betValueAmount[64];
+	char sBuffer[64];
+	if(g_iBufferPlayerPot[client] > 0 && iAccount >= g_iBufferPlayerPot[client]) {
+			
+		iAccount -= g_iBufferPlayerPot[client];
+		g_iPlayerPot[client] = g_iBufferPlayerPot[client];
+		g_iBufferPlayerPot[client] = 0;
+		Store_SetClientCredits(client, iAccount);
 
-    if (showDealer)
-    {
-        char dealerHand[128];
-        GetCards(DEALER, cards, dealerHand, sizeof(dealerHand));
-        PrintToChat(client, "%s %t", PREFIX, "DealerHand", dealerHand, dealerScore);
-    }
-    else 
-    {
-        char dealerCard[64];
-        GetFirstCard(DEALER, cards, dealerCard, sizeof(dealerCard));
-        PrintToChat(client, "%s %t", PREFIX, "DealerCard", dealerCard);
-    }
+	} else if(g_iPlayerPot[client] == 0 && iAccount >= g_iPlayerPot[client])
+	{
+		
+		iAccount -= g_iPlayerPot[client];
+		Store_SetClientCredits(client, iAccount);
+	}
+	
+	
+	panel.SetTitle("-=BLACKJACK=-");
+	Format(sBuffer, sizeof(sBuffer), "Credits : %d         POT : %d", iAccount, g_iPlayerPot[client]);
+	panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
+	panel.DrawItem("_______________", ITEMDRAW_RAWLINE);
+	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
+	
+	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
+	Format(betValueBuffer, sizeof(betValueBuffer), "             DEAL     +%d     -%d", iBetValue, iBetValue);
+	panel.DrawItem(betValueBuffer, ITEMDRAW_RAWLINE);
 
-    char handOne[128];
-    GetCards(HAND_ONE, cards, handOne, 128);
+	if(g_iPlayerPot[client] > 0)
+		panel.DrawItem("Press:       1        2          3", ITEMDRAW_RAWLINE);
+	else
+		panel.DrawItem("Press:                 2         3", ITEMDRAW_RAWLINE);
 
-    if (handTwoScore > 0)
-    {
-        char handTwo[128];
-        GetCards(HAND_TWO, cards, handTwo, sizeof(handTwo));
-        PrintToChat(client, "%s %t", PREFIX, "PlayerSplitHandOne", handOne, handOneScore);
-        PrintToChat(client, "%s %t", PREFIX, "PlayerSplitHandTwo", handTwo, handTwoScore);
+	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
+	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
+	
+	Format(betValueAmount, sizeof(betValueAmount), "Amount: %d", iBetValue);
+	panel.DrawItem(betValueAmount, ITEMDRAW_RAWLINE);
+	
+	if(iBetValue == 10)
+	{
+		panel.DrawItem("Edit Amount: 4 = UP", ITEMDRAW_RAWLINE);
+		//panel.DrawItem(" ------", ITEMDRAW_RAWLINE);
+	}
+	else if (iBetValue == 100)
+	{
+		panel.DrawItem("Edit Amount: 4 = UP", ITEMDRAW_RAWLINE);
+		panel.DrawItem("                      5 = DOWN", ITEMDRAW_RAWLINE);
+	}
+	else if (iBetValue == 1000)
+	{
+		panel.DrawItem("Edit Amount: ", ITEMDRAW_RAWLINE);
+		panel.DrawItem("                      5 = DOWN", ITEMDRAW_RAWLINE);
+	}
 
-    }
-    else 
-    {
-        PrintToChat(client, "%s %t", PREFIX, "PlayerSingleHand", handOne, handOneScore);
-    }
+	panel.DrawItem("", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+	SetPanelCurrentKey(panel, 9);
+	panel.DrawItem("Exit", ITEMDRAW_CONTROL);
+				  //1      2      3      4		5	   9
+	panel.SetKeys(((1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<8)));
+	
+	
+	if(panel.Send(client, Menu_Betting, MENU_TIME_FOREVER))
+		g_bPlayerIsInMenu[client] = true;
+	
+	delete panel;
+}
+ShowGamePanel(client)
+{
+	int iCountHigh = GetCardCount(client, true);
+	int iCountLow = GetCardCount(client, false);
+	
+	char NameBuffer[16];
+	GetClientName(client, NameBuffer, sizeof(NameBuffer));
+	
+	// He busted?
+	if(iCountHigh > 21 && iCountLow > 21)
+	{
+		g_iGameStatus[client] = Status_Lose;
+	}
+	g_iPlayerCardValue[client] = iCountHigh <= 21?iCountHigh:iCountLow;
+	
+	
+	// Build the game panel
+	Handle hPanel = CreatePanel();
+	char sBuffer[64];
+	SetPanelTitle(hPanel, "-=BLACKJACK=-");
+	Format(sBuffer, sizeof(sBuffer), "Credits: %d         POT: %d", Store_GetClientCredits(client), g_iPlayerPot[client]);
+	DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+	DrawPanelItem(hPanel, "_______________", ITEMDRAW_RAWLINE);
+	
+	// Build dealer card graphics
+	Format(sBuffer, sizeof(sBuffer), "");
+	int iSize = GetArraySize(g_hDealerCards[client]);
+	int cards[2];
+	for(int i=0;i<iSize;i++)
+	{
+		GetArrayArray(g_hDealerCards[client], i, cards, 2);
+		if(strlen(sBuffer) == 0)
+			Format(sBuffer, sizeof(sBuffer), "[%s%s]", g_sCards[cards[1]], g_sSuits[cards[0]]);
+		else
+			Format(sBuffer, sizeof(sBuffer), "%s [%s%s]", sBuffer, g_sCards[cards[1]], g_sSuits[cards[0]]);
+	}
+	
+	// The player is still able to hit, so we're not showing all dealers cards. He just has one anyways.
+	if(!g_bStays[client])
+	{
+		Format(sBuffer, sizeof(sBuffer), "DEALER  %s", sBuffer);
+	}
+	// The game ended. Show dealer cards.
+	else
+	{
+		Format(sBuffer, sizeof(sBuffer), "DEALER  %s = ", sBuffer);
+		
+		// Game ended? Show the final value
+		if(g_bDealerEnds[client])
+		{
+			// He got a black jack?
+			if(g_iGameStatus[client] == Status_Lose && GetArraySize(g_hDealerCards[client]) == 2 && g_iDealerCardValue[client] == 21)
+				Format(sBuffer, sizeof(sBuffer), "%s21 !!!  BLACKJACK", sBuffer);
+			else
+				Format(sBuffer, sizeof(sBuffer), "%s%d", sBuffer, g_iDealerCardValue[client]);
+		}
+		// Game is still running? (Dealer is thinking)
+		else
+		{
+			int iDealerCards1 = GetCardCount(client, false, true);
+			int iDealerCards2 = GetCardCount(client, true, true);
+			if(iDealerCards1 == iDealerCards2 || iDealerCards1 > 21 || iDealerCards2 > 21)
+				Format(sBuffer, sizeof(sBuffer), "%s%d", sBuffer, g_iDealerCardValue[client]);
+			else
+				Format(sBuffer, sizeof(sBuffer), "%s%d/%d", sBuffer, iDealerCards1, iDealerCards2);
+		}
+	}
+	DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+	
+	
+	// Build players card graphics
+	Format(sBuffer, sizeof(sBuffer), "");
+	iSize = GetArraySize(g_hPlayerCards[client]);
+	for(new i=0;i<iSize;i++)
+	{
+		GetArrayArray(g_hPlayerCards[client], i, cards, 2);
+		if(strlen(sBuffer) == 0)
+			Format(sBuffer, sizeof(sBuffer), "[%s%s]", g_sCards[cards[1]], g_sSuits[cards[0]]);
+		else
+			Format(sBuffer, sizeof(sBuffer), "%s [%s%s]", sBuffer, g_sCards[cards[1]], g_sSuits[cards[0]]);
+	}
+	
+	Format(sBuffer, sizeof(sBuffer), "YOU  %s = ", sBuffer);
+	// The player stays and the dealer thinks...
+	if(g_bStays[client])
+	{
+		// Blackjack!
+		if(g_iGameStatus[client] == Status_BlackJack)
+			Format(sBuffer, sizeof(sBuffer), "%s21 !!!  BLACKJACK", sBuffer);
+		// Just show the card value
+		else
+			Format(sBuffer, sizeof(sBuffer), "%s%d", sBuffer, g_iPlayerCardValue[client]);
+	}
+	// Player is still able to play
+	else
+	{
+		// Player has no ace or busted. Just show the value
+		if(g_iGameStatus[client] != Status_None || iCountHigh == iCountLow || iCountHigh > 21 || iCountLow > 21)
+			Format(sBuffer, sizeof(sBuffer), "%s%d", sBuffer, g_iPlayerCardValue[client]);
+		else
+			Format(sBuffer, sizeof(sBuffer), "%s%d/%d", sBuffer, iCountHigh, iCountLow);
+	}
+	DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+	
+	// He's still open to act. (Didn't press stay or double)
+	if(g_iGameStatus[client] == Status_None && !g_bStays[client])
+	{
+		DrawPanelItem(hPanel, "              HIT     STAY   DOUBLE", ITEMDRAW_RAWLINE);
+		DrawPanelItem(hPanel, "press:       1          2           3", ITEMDRAW_RAWLINE);
+		DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+		SetPanelKeys(hPanel, ((1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<8)));
+	}
+	else if(g_iGameStatus[client] != Status_None)
+	{
+		switch(g_iGameStatus[client])
+		{
+			case Status_Lose:
+			{
+				// The dealer is closer to 21.
+				if(g_bDealerEnds[client])
+				{
+					DrawPanelItem(hPanel, "- you lose -", ITEMDRAW_RAWLINE);
+					if (g_iPlayerPot[client] > 500)
+					{
+						CPrintToChatAll("%s {purple}%s {darkred}lost {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+					}
+				// You _overbuyed_ yourself!
+				} else
+				{
+					DrawPanelItem(hPanel, "- bust -", ITEMDRAW_RAWLINE);
+					if (g_iPlayerPot[client] > 500)
+					{
+						CPrintToChatAll("%s {purple}%s {darkred}lost {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+					}
+				}
+			}
+			case Status_BlackJack:
+			{
+				DrawPanelItem(hPanel, "!!! YOU WON !!!", ITEMDRAW_RAWLINE);
+				if(ServerCommand("sm_givecredits")){}
+				if(!g_bMoneyDealt[client])
+				{
+					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*3);
+					if (g_iPlayerPot[client] > 50)
+					{
+						CPrintToChatAll("%s {purple}%s {green}won {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+					}
+				}
+			}
+			case Status_Win:
+			{
+				DrawPanelItem(hPanel, "!!! YOU WON !!!", ITEMDRAW_RAWLINE);
+				if (g_iPlayerPot[client] > 50)
+				{
+					CPrintToChatAll("%s {purple}%s {green}won {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+				}
+				if(!g_bMoneyDealt[client])
+					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*2);
+			}
+			case Status_Draw:
+			{
+				DrawPanelItem(hPanel, "- dead heat -", ITEMDRAW_RAWLINE);
+				if(!g_bMoneyDealt[client])
+					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]);
+			}
+		}
+		DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+		SetPanelCurrentKey(hPanel, 4);
+		DrawPanelItem(hPanel, "Try again");
+		
+		// We dealt with the money. Don't give it again, when he pauses and resumes.
+		g_bMoneyDealt[client] = true;
+	}
+	else
+	{
+		DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+		DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
+	}
+	
+	SetPanelCurrentKey(hPanel, 9);
+	DrawPanelItem(hPanel, "Exit");
+	
+	if(SendPanelToClient(hPanel, client, Menu_GameHandler, MENU_TIME_FOREVER))
+		g_bPlayerIsInMenu[client] = true;
+	CloseHandle(hPanel);
 }
 
-bool CanPlayerSplit(int client, int[] cards)
+public Menu_Betting(Handle menu, MenuAction action, param1, param2)
 {
-    int cardOneValue = 0;
-    int cardTwoValue = 0;
-
-    // If the player has already split...
-    if (g_bPlayerSplit[client])
-        return false;
-
-
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        if (cards[i] == HAND_ONE)
-        {
-            if (cardOneValue == 0)
-            {
-                if (i % 13 == 1)
-                {
-                    cardOneValue = 11;
-                }
-                // Deal with cards 2-9
-                if ((i % 13 > 1) && (i % 13 < 10))
-                {
-                    cardOneValue = (i % 13) + 1;
-                }
-                // Deal with 10s, Jacks, Queens, and Kings
-                else if (i % 13 > 9)
-                {
-                    cardOneValue = 10;
-                }
-            }
-            else if (cardTwoValue == 0)
-            {
-                if (i % 13 == 1)
-                {
-                    cardTwoValue = 11;
-                }
-                // Deal with cards 2-9
-                if ((i % 13 > 1) && (i % 13 < 10))
-                {
-                    cardTwoValue = (i % 13) + 1;
-                }
-                // Deal with 10s, Jacks, Queens, and Kings
-                else if (i % 13 > 9)
-                {
-                    cardTwoValue = 10;
-                }
-            }
-
-        }
-    }
-
-    if ((cardOneValue == cardTwoValue))
-        return true;
-    else
-        return false;
-
+	// This panel is closed.
+	g_bPlayerIsInMenu[param1] = false;
+	if(action == MenuAction_Select)
+	{
+		// DEAL
+		if(param2 == 1)
+		{
+			// Did he bet money?!
+			if(g_iPlayerPot[param1] == 0)
+			{
+				ShowBetPanel(param1);
+				return;
+			}
+			
+			if(g_hPlayerCards[param1] == INVALID_HANDLE)
+				g_hPlayerCards[param1] = CreateArray(2);
+			else
+				ClearArray(g_hPlayerCards[param1]);
+			if(g_hDealerCards[param1] == INVALID_HANDLE)
+				g_hDealerCards[param1] = CreateArray(2);
+			else
+				ClearArray(g_hDealerCards[param1]);
+			
+			if(g_hDealerThink[param1] != INVALID_HANDLE)
+			{
+				KillTimer(g_hDealerThink[param1]);
+				g_hDealerThink[param1] = INVALID_HANDLE;
+			}
+			
+			//g_iPlayerLastPot[param1] = g_iPlayerPot[param1];
+			
+			g_bIsIngame[param1] = true;
+			g_bDealerEnds[param1] = false;
+			g_iGameStatus[param1] = Status_None;
+			g_bStays[param1] = false;
+			g_bMoneyDealt[param1] = false;
+			g_iPlayerCardValue[param1] = 0;
+			g_iDealerCardValue[param1] = 0;
+			
+			PullPlayerCard(param1);
+			PullPlayerCard(param1);
+			PullDealerCard(param1);
+			
+			ShowGamePanel(param1);
+		}
+		else if(param2 == 2)
+		{
+			int iAccount = Store_GetClientCredits(param1);
+			int iLimit = GetConVarInt(g_hCVMaxBet);
+			if(iAccount >= iBetValue && (iLimit == 0 || (g_iPlayerPot[param1]+iBetValue) <= iLimit))
+			{
+				g_iPlayerPot[param1] += iBetValue;
+				Store_SetClientCredits(param1, iAccount-iBetValue);
+			}
+			ShowBetPanel(param1);
+		}
+		else if(param2 == 3)
+		{
+			if((g_iPlayerPot[param1]-iBetValue) >= 0)
+			{
+				int iAccount = Store_GetClientCredits(param1);
+				g_iPlayerPot[param1] -= iBetValue;
+				Store_SetClientCredits(param1, iAccount+iBetValue);
+			}
+			ShowBetPanel(param1);
+		}
+		else if(param2 == 4)
+		{
+			// calc up
+			if (iBetValue == 10)
+			{
+				iBetValue = 100;
+			} 
+			else if (iBetValue == 100)
+			{
+				iBetValue = 1000;
+			} else if (iBetValue == 1000)
+			{
+				iBetValue = 10000;
+			}
+			ShowBetPanel(param1);
+		}
+		else if(param2 == 5)
+		{
+			// calc down
+			if (iBetValue == 100)
+			{
+				iBetValue = 10;
+			} 
+			else if (iBetValue == 1000)
+			{
+				iBetValue = 100;
+			} else if (iBetValue == 10000)
+			{
+				iBetValue = 1000;
+			}
+			ShowBetPanel(param1);
+		}
+		else if(param2 == 9)
+		{
+			int iAccount = Store_GetClientCredits(param1);
+			Store_SetClientCredits(param1, iAccount + g_iPlayerPot[param1]);
+			g_iPlayerPot[param1] = 0;
+			g_iBufferPlayerPot[param1] = 0;
+			g_iPlayerLastPot[param1] = 0;
+			g_iPlayerCardValue[param1] = 0;
+			g_iDealerCardValue[param1] = 0;
+			g_bIsIngame[param1] = false;
+			g_bStays[param1] = false;
+			g_bDealerEnds[param1] = false;
+			g_bPlayerIsInMenu[param1] = false;
+			//g_bAutoShow[client] = false;
+			//g_bAutoHide[client] = true;
+			g_bMoneyDealt[param1] = false;
+			g_iGameStatus[param1] = Status_None;
+			g_bPlayedBJ[param1] = false;
+			CPrintToChat(param1, "%s {green} Type {default}!bj{green} to play BlackJack again!", PREFIX);
+		}
+	}
 }
 
-void SplitHand(int client)
+public Menu_GameHandler(Handle menu, MenuAction action, param1, param2)
 {
-    for (int i = 0; i < NUMBEROFCARDS; i++)
-    {
-        if (g_iDecks[client][i] == HAND_ONE)
-        {
-            g_iDecks[client][i] = HAND_TWO;
-            // The player has split
-            g_bPlayerSplit[client] = true;
-            // They need to put in another bid
-            GiveClientCredits(client, -g_iBids[client]);
-            return;
-        }
-    }
-
+	// This panel is closed.
+	g_bPlayerIsInMenu[param1] = false;
+	if(action == MenuAction_Select)
+	{
+		// This game is done, he clicked "try again"
+		if(param2 == 4 && g_iGameStatus[param1] != Status_None)
+		{
+			g_iPlayerPot[param1] = 0;
+			g_iGameStatus[param1] = Status_None;
+			g_bIsIngame[param1] = false;
+			ShowBetPanel(param1);
+		}
+		// HITME
+		else if(param2 == 1 && g_iGameStatus[param1] != Status_Lose)
+		{
+			PullPlayerCard(param1);
+			ShowGamePanel(param1);
+		}
+		// STAND
+		// Let the dealer get his cards. Player won't be able to do anything anymore.
+		else if(param2 == 2 && g_iGameStatus[param1] != Status_Lose)
+		{
+			g_bStays[param1] = true;
+			g_hDealerThink[param1] = CreateTimer(0.7, Timer_DealerThink, GetClientUserId(param1), TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+			TriggerTimer(g_hDealerThink[param1]);
+		}
+		// DOUBLE
+		else if(param2 == 3 && g_iGameStatus[param1] != Status_Lose)
+		{
+			int iAccount = Store_GetClientCredits(param1);
+			int iLimit = GetConVarInt(g_hCVMaxBet);
+			if(iAccount >= g_iPlayerPot[param1] && (iLimit == 0 || (g_iPlayerPot[param1]*2) <= iLimit))
+			{
+				Store_SetClientCredits(param1, iAccount-g_iPlayerPot[param1]);
+				g_iPlayerPot[param1] *= 2;
+				g_iGameStatus[param1] = Status_None;
+				PullPlayerCard(param1);
+				
+				g_bStays[param1] = true;
+				ShowGamePanel(param1);
+				if(g_iGameStatus[param1] == Status_None)
+				{
+					g_hDealerThink[param1] = CreateTimer(0.7, Timer_DealerThink, GetClientUserId(param1), TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+					g_bDealerEnds[param1] = false;
+					
+				}
+				return;
+			}
+			
+			ShowGamePanel(param1);
+		}
+		else if(param2 == 9)
+		{
+			if(g_iGameStatus[param1] != Status_None)
+			{
+				g_iPlayerPot[param1] = 0;
+				g_iBufferPlayerPot[param1] = 0;
+				g_iPlayerLastPot[param1] = 0;
+				g_iPlayerCardValue[param1] = 0;
+				g_iDealerCardValue[param1] = 0;
+				g_bIsIngame[param1] = false;
+				g_bStays[param1] = false;
+				//g_bDealerEnds[param1] = false;
+				g_bPlayerIsInMenu[param1] = false;
+				//g_bAutoShow[client] = false;
+				//g_bAutoHide[client] = true;
+				//g_bMoneyDealt[param1] = false;
+				g_iGameStatus[param1] = Status_None;
+				g_bPlayedBJ[param1] = false;
+				CPrintToChat(param1, "%s {green} Type {default}!bj{green} to play again!", PREFIX);
+			} else
+			{
+				CPrintToChat(param1, "%s {green} Type {default}!bj{green} to resume!", PREFIX);
+			}
+		}
+	}
 }
 
-void DisplayBlackjackMenu(int client)
+public Menu_Help(Handle menu, MenuAction action, param1, param2)
 {
-    Menu blackjackMenu = new Menu(Menu_Blackjack, MENU_ACTIONS_DEFAULT);
-    blackjackMenu.SetTitle("Blackjack");
-    blackjackMenu.AddItem("hit", "Hit");
-    blackjackMenu.AddItem("stand", "Stand");
-
-    if (CanPlayerSplit(client, g_iDecks[client]))
-    {
-        blackjackMenu.AddItem("split", "Split");
-    }
-    else 
-    {
-        blackjackMenu.AddItem("", "Split", ITEMDRAW_DISABLED);
-    }
-    blackjackMenu.ExitButton = false;
-    blackjackMenu.Display(client, MENU_TIME_FOREVER);
+	if(action == MenuAction_Select)
+	{
+		// Play now
+		if(param2 == 1)
+		{
+			Cmd_BlackJack(param1, 0);
+		}
+		// Set auto play
+		else if(param2 == 2)
+		{
+			g_bAutoShow[param1] = !g_bAutoShow[param1];
+			if(LibraryExists("clientprefs"))
+			{
+				if(g_bAutoShow[param1])
+					SetClientCookie(param1, g_hAutoShowCookie, "1");
+				else
+					SetClientCookie(param1, g_hAutoShowCookie, "0");
+			}
+			
+			// Redraw the panel
+			Cmd_BlackJackHelp(param1, 0);
+		}
+		// Set auto hide
+		else if(param2 == 3)
+		{
+			g_bAutoHide[param1] = !g_bAutoHide[param1];
+			if(LibraryExists("clientprefs"))
+			{
+				if(g_bAutoHide[param1])
+					SetClientCookie(param1, g_hAutoHideCookie, "1");
+				else
+					SetClientCookie(param1, g_hAutoHideCookie, "0");
+			}
+			
+			// Redraw the panel
+			Cmd_BlackJackHelp(param1, 0);
+		}
+		else if(param2 == 4)
+		{
+			Handle hPanel = CreatePanel();
+			SetPanelTitle(hPanel, "Blackjack rules");
+			DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
+			DrawPanelItem(hPanel, "The goal is to bring the total card value to 21 or less without exceeding it.", ITEMDRAW_RAWLINE);
+			DrawPanelItem(hPanel, "If you exceed 21 you lose, if the dealer does, you win.", ITEMDRAW_RAWLINE);
+			DrawPanelItem(hPanel, "If both are below 21, the closer one wins.", ITEMDRAW_RAWLINE);
+			DrawPanelItem(hPanel, "You've a blackjack, if you've got 21 points with only your first 2 cards.", ITEMDRAW_RAWLINE);
+			DrawPanelItem(hPanel, "You decide to get another card (hit) or stay with your current value (stay)", ITEMDRAW_RAWLINE);
+			DrawPanelItem(hPanel, "and let the dealer get his cards. You're able to double your bet if you've", ITEMDRAW_RAWLINE);
+			DrawPanelItem(hPanel, "enough money and get one last more card and stay.", ITEMDRAW_RAWLINE);
+			DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
+			
+			SetPanelCurrentKey(hPanel, 8);
+			DrawPanelItem(hPanel, "Back");
+			SetPanelCurrentKey(hPanel, 9);
+			DrawPanelItem(hPanel, "Exit");
+			
+			SendPanelToClient(hPanel, param1, Menu_Rules, MENU_TIME_FOREVER);
+			CloseHandle(hPanel);
+		}
+	}
 }
 
-void Finalize(int client)
+public Menu_Rules(Handle menu, MenuAction action, param1, param2)
 {
-
-    int totalWon;
-    int scoreHandOne;
-    int scoreHandTwo;
-    int scoreDealer;
-    g_bInActiveGame[client] = false;
-    DisplayHandsToClient(client, g_iDecks[client], true);
-
-    // Deal the rest of the cards to the Dealer
-    while (ScoreHand(DEALER, g_iDecks[client]) < 17)
-    {
-        DealCard(DEALER, g_iDecks[client]);
-    }
-
-    scoreDealer = ScoreHand(DEALER, g_iDecks[client]);
-    scoreHandOne = ScoreHand(HAND_ONE, g_iDecks[client]);
-    if (g_bPlayerSplit[client])
-        scoreHandTwo = ScoreHand(HAND_TWO, g_iDecks[client]);
-
-
-    DisplayHandsToClient(client, g_iDecks[client], true);
-
-    // If the Dealer busts
-    if (scoreDealer > 21)
-    {
-        PrintToChat(client, "%s %t", PREFIX, "DealerBust");
-        // If the player has split
-        if (g_bPlayerSplit[client])
-        {
-            if (scoreHandOne <= 21)
-            {
-                GiveClientCredits(client, g_iBids[client] * 2);
-                totalWon += g_iBids[client];
-            }
-            if (scoreHandTwo <= 21)
-            {
-                GiveClientCredits(client, g_iBids[client] * 2);
-                totalWon += g_iBids[client];
-            }
-            PrintToChat(client, "%s %t", PREFIX, "PlayerWonCredits", totalWon, Store_GetClientCredits(client));
-
-        }
-        // If the player has not split
-        else 
-        {
-            if (ScoreHand(HAND_ONE, g_iDecks[client]) <= 21)
-            {
-                GiveClientCredits(client, g_iBids[client] * 2);
-                totalWon += g_iBids[client];
-                PrintToChat(client, "%s %t", PREFIX, "PlayerWonCredits", totalWon, Store_GetClientCredits(client));
-            }
-        }
-    }
-    // Otherwise, math
-    else
-    {
-        // If the player split, look at each hand
-        if (g_bPlayerSplit[client])
-        {
-            bool didEitherHandWin = false;
-            bool didEitherHandTie = false;
-            // If HandOne won
-            if ((scoreHandOne > scoreDealer) && (scoreHandOne <= 21))
-            {
-                didEitherHandWin = true;
-                GiveClientCredits(client, g_iBids[client] * 2);
-                totalWon += g_iBids[client];
-            }
-            // If HandOne tied
-            else if ((scoreHandOne == scoreDealer) && (scoreHandOne <= 21))
-            {
-                didEitherHandTie = true;
-                PrintToChat(client, "%s %t", PREFIX, "SplitHandOnePush");
-                GiveClientCredits(client, g_iBids[client]);
-            }
-
-            // If HandTwo won
-            if ((scoreHandTwo > scoreDealer) && (scoreHandTwo <= 21))
-            {
-                didEitherHandWin = true;
-                GiveClientCredits(client, g_iBids[client] * 2);
-                totalWon += g_iBids[client];
-            }
-            // If HandTwo tied
-            else if ((scoreHandTwo == scoreDealer) && (scoreHandTwo <= 21))
-            {
-                didEitherHandTie = true;
-                PrintToChat(client, "%s %t", PREFIX, "SplitHandTwoPush");
-                GiveClientCredits(client, g_iBids[client]);
-            }
-
-            if (didEitherHandWin)
-            {
-                PrintToChat(client, "%s %t", PREFIX, "PlayerWonCredits", totalWon, Store_GetClientCredits(client));
-            }
-
-            if (!didEitherHandWin && !didEitherHandTie)
-            {
-                PrintToChat(client, "%s %t", PREFIX, "SplitHandDealerWon");
-            }
-
-
-
-        }
-        // Player only had one hand
-        else 
-        {
-            // If HandOne won
-            if ((scoreHandOne > scoreDealer) && (scoreHandOne <= 21))
-            {
-                GiveClientCredits(client, g_iBids[client] * 2);
-                totalWon += g_iBids[client];
-                PrintToChat(client, "%s %t", PREFIX, "PlayerWonCredits", totalWon, Store_GetClientCredits(client));
-            }
-            // If HandOne tied
-            else if ((scoreHandOne == scoreDealer) && (scoreHandOne <= 21))
-            {
-                PrintToChat(client, "%s %t", PREFIX, "SingleHandPush");
-                GiveClientCredits(client, g_iBids[client]);
-            }
-            else
-            {
-                PrintToChat(client, "%s %t", PREFIX, "SingleHandDealerWon");
-            }
-        }
-
-    }
-
+	if(action == MenuAction_Select)
+	{
+		if(param2 == 8)
+		{
+			Cmd_BlackJackHelp(param1, 0);
+		}
+	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Command Functions
-///////////////////////////////////////////////////////////////////////////////
-public Action Command_Blackjack(int client, int args)
+public Action Timer_DealerThink(Handle timer, any userid)
 {
-
-    // If the player was already in an active game
-    if (g_bInActiveGame[client])
-    {
-        PrintToChat(client, "%s %t", PREFIX, "ResumePreviousGame");
-        DisplayBlackjackMenu(client);
-        return Plugin_Handled;
-    }
-
-
-    int tmpbid = g_Cvar_Minimum_Bid.IntValue;
-    int clientCredits = Store_GetClientCredits(client);
-
-    // If an argument is supplied, use that as the bid. Otherwise, assume
-    // the client is using a minimum bid of 50
-    if (args == 1)
-    {
-        char buf[64];
-        GetCmdArg(1, buf, sizeof(buf));
-        tmpbid = StringToInt(buf);
-
-        // Validate that the bid is within range(min_bid, max_bid)
-        if (tmpbid < g_Cvar_Minimum_Bid.IntValue || tmpbid > g_Cvar_Maximum_Bid.IntValue)
-        {
-            PrintToChat(client, "%s %t", PREFIX, "BidRequirements", g_Cvar_Minimum_Bid.IntValue, g_Cvar_Maximum_Bid.IntValue);
-            return Plugin_Handled;
-        }
-
-    }
-    else if (args > 1)
-    {
-        PrintToChat(client, "%s Usage: sm_blackjack OR sm_blackjack <amount>", PREFIX);
-        return Plugin_Handled;
-    }
-
-    if (clientCredits < tmpbid)
-    {
-        PrintToChat(client, "%s %t", PREFIX, "NotEnoughCredits", clientCredits);
-        return Plugin_Handled;
-    }
-
-    g_iBids[client] = tmpbid;
-    PrintToChat(client, "%s %t", PREFIX, "BeginGame", g_iBids[client]);
-    GiveClientCredits(client, -g_iBids[client]);
-    g_bInActiveGame[client] = true;
-
-    // Verify that the deck is "new"
-    ClearDeck(g_iDecks[client]);
-    g_bPlayerSplit[client] = false;
-    g_iCurrentHand[client] = HAND_ONE;
-
-    // Deal out cards
-    InitializeHand(HAND_ONE, g_iDecks[client]);
-    InitializeHand(DEALER, g_iDecks[client]);
-
-    DisplayHandsToClient(client, g_iDecks[client]);
-    
-    // If the player has Blackjack...
-    if (ScoreHand(HAND_ONE, g_iDecks[client]) == 21)
-    {
-        DisplayHandsToClient(client, g_iDecks[client], true);
-        if (ScoreHand(DEALER, g_iDecks[client]) == 21)
-        {
-            PrintToChat(client, "%s %t", PREFIX, "DealerAndPlayerBlackjack");
-            GiveClientCredits(client, g_iBids[client]);
-            g_bInActiveGame[client] = false;
-            return Plugin_Handled;
-        }
-        else 
-        {
-            GiveClientCredits(client, RoundFloat(g_iBids[client] * 2.5));
-            PrintToChat(client, "%s %t", PREFIX, "PlayerBlackjack", RoundFloat(g_iBids[client] * 1.5));
-            g_bInActiveGame[client] = false;
-            return Plugin_Handled;
-        }
-    }
-    // Dealer got Blackjack and won
-    if (ScoreHand(DEALER, g_iDecks[client]) == 21)
-    {
-        DisplayHandsToClient(client, g_iDecks[client], true);
-        PrintToChat(client, "%s %t", PREFIX, "DealerBlackjack");
-        g_bInActiveGame[client] = false;
-        return Plugin_Handled;
-    }
-
-    DisplayBlackjackMenu(client);
-
-    return Plugin_Handled;
-
+	int client = GetClientOfUserId(userid);
+	if(!client)
+		return Plugin_Stop;
+	
+	// Get the dealer another card
+	PullDealerCard(client);
+	
+	int iCountHigh = GetCardCount(client, true, true);
+	int iCountLow  = GetCardCount(client, false, true);
+	
+	// Dealer got blackjack.
+	if(GetArraySize(g_hDealerCards[client]) == 2 && iCountHigh == 21)
+	{
+		g_iDealerCardValue[client] = 21;
+		g_bDealerEnds[client] = true;
+		// Player has blackjack either?
+		if(GetArraySize(g_hPlayerCards[client]) == 2 && g_iPlayerCardValue[client] == 21)
+			g_iGameStatus[client] = Status_Draw;
+		else
+			g_iGameStatus[client] = Status_Lose;
+	}
+	// He lost
+	else if(iCountHigh > 21 && iCountLow > 21)
+	{
+		g_iDealerCardValue[client] = iCountHigh;
+		g_bDealerEnds[client] = true;
+		// Player has blackjack?
+		if(GetArraySize(g_hPlayerCards[client]) == 2 && g_iPlayerCardValue[client] == 21)
+			g_iGameStatus[client] = Status_BlackJack;
+		else
+			g_iGameStatus[client] = Status_Win;
+	}
+	// He got 21, but with more than 2 cards.
+	else if(iCountHigh == 21 || iCountLow == 21)
+	{
+		g_iDealerCardValue[client] = 21;
+		g_bDealerEnds[client] = true;
+		// Player got a blackjack?
+		if(GetArraySize(g_hPlayerCards[client]) == 2 && g_iPlayerCardValue[client] == 21)
+			g_iGameStatus[client] = Status_BlackJack;
+		// Player has 21 either?
+		else if(g_iPlayerCardValue[client] == 21)
+			g_iGameStatus[client] = Status_Draw;
+		else
+			g_iGameStatus[client] = Status_Lose;
+	}
+	// Dealer is still under 21, continue pulling cards
+	// (We check for < 17 below)
+	else
+	{
+		// Dealer has to count an ace as 11 if he doesn't get more than 21 if he does.
+		g_iDealerCardValue[client] = iCountHigh <= 21?iCountHigh:iCountLow;
+	}
+	
+	// Dealer has to stop at >= 17
+	if(g_iDealerCardValue[client] >= 17 && !g_bDealerEnds[client])
+	{
+		g_bDealerEnds[client] = true;
+		if(g_iDealerCardValue[client] < g_iPlayerCardValue[client])
+		{
+			// Player has blackjack?
+			if(GetArraySize(g_hPlayerCards[client]) == 2 && g_iPlayerCardValue[client] == 21)
+				g_iGameStatus[client] = Status_BlackJack;
+			else
+				g_iGameStatus[client] = Status_Win;
+		}
+		else if(g_iDealerCardValue[client] == g_iPlayerCardValue[client])
+		{
+			g_iGameStatus[client] = Status_Draw;
+		}
+		else
+		{
+			g_iGameStatus[client] = Status_Lose;
+		}
+	}
+	
+	ShowGamePanel(client);
+	
+	// Stop the timer, if the game ended.
+	if(g_bDealerEnds[client])
+	{
+		g_hDealerThink[client] = INVALID_HANDLE;
+		return Plugin_Stop;
+	}
+	else
+		return Plugin_Continue;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-// Menu Handler
-///////////////////////////////////////////////////////////////////////////////
-public int Menu_Blackjack(Menu blackjackMenu, MenuAction action, int param1, int param2)
+PullPlayerCard(client)
 {
-    switch (action)
-    {
-        case MenuAction_Select:
-        {
-            char selection[32];
-            blackjackMenu.GetItem(param2, selection, sizeof(selection));
-
-            if (StrEqual(selection, "hit"))
-            {
-                DealCard(g_iCurrentHand[param1], g_iDecks[param1]);
-                // If the user has busted
-                if (ScoreHand(g_iCurrentHand[param1], g_iDecks[param1]) > 21)
-                {
-                    // If the user has another hand
-                    if (g_bPlayerSplit[param1] && g_iCurrentHand[param1] == HAND_ONE)
-                    {
-                        g_iCurrentHand[param1] = HAND_TWO;
-                        PrintToChat(param1, "%s %t", PREFIX, "SplitHandOneBust");
-                        DisplayHandsToClient(param1, g_iDecks[param1]);
-                        DisplayBlackjackMenu(param1);
-                    }
-                    // If the user is on their second hand
-                    else if(g_bPlayerSplit[param1] && g_iCurrentHand[param1] == HAND_TWO)
-                    {
-                        PrintToChat(param1, "%s %t", PREFIX, "SplitHandTwoBust");
-                        Finalize(param1);
-                        // TODO: Finalize everything
-                    }
-                    // The user busted on their only hand
-                    else if (!g_bPlayerSplit[param1])
-                    {
-                        DisplayHandsToClient(param1, g_iDecks[param1], true);
-                        PrintToChat(param1, "%s %t", PREFIX, "SingleHandBust");
-                        g_bInActiveGame[param1] = false;
-                    }
-                }
-                else if (ScoreHand(g_iCurrentHand[param1], g_iDecks[param1]) == 21)
-                {
-                    // If the user has another hand
-                    if (g_bPlayerSplit[param1] && g_iCurrentHand[param1] == HAND_ONE)
-                    {
-                        g_iCurrentHand[param1] = HAND_TWO;
-                        PrintToChat(param1, "%s %t", PREFIX, "SplitHandOne21");
-                        DisplayHandsToClient(param1, g_iDecks[param1]);
-                        DisplayBlackjackMenu(param1);
-                    }
-                    if (g_bPlayerSplit[param1] && g_iCurrentHand[param1] == HAND_TWO)
-                    {
-                        PrintToChat(param1, "%s %t", PREFIX, "SplitHandTwo21");
-                        Finalize(param1);
-                    }
-                    // Else if the user has not split
-                    if (!g_bPlayerSplit[param1] && g_iCurrentHand[param1] == HAND_ONE)
-                    {
-                        Finalize(param1);
-                    }
-                }
-                else 
-                {
-                    DisplayHandsToClient(param1, g_iDecks[param1]);
-                    DisplayBlackjackMenu(param1);
-                }
-            }
-            else if (StrEqual(selection, "stand"))
-            {
-                // If they split and are still on hand one
-                if (g_bPlayerSplit[param1] && g_iCurrentHand[param1] == HAND_ONE)
-                {
-                    g_iCurrentHand[param1] = HAND_TWO;
-                    DisplayHandsToClient(param1, g_iDecks[param1]);
-                    DisplayBlackjackMenu(param1);
-                }
-                // Otherwise, finalize everything
-                else
-                {
-                    Finalize(param1);
-                }
-            }
-            else if (StrEqual(selection, "split"))
-            {
-                SplitHand(param1);
-                DealCard(HAND_ONE, g_iDecks[param1]);
-                DealCard(HAND_TWO, g_iDecks[param1]);
-                DisplayHandsToClient(param1, g_iDecks[param1]);
-                DisplayBlackjackMenu(param1);
-            }
-
-        }
-        case MenuAction_Cancel:
-        {
-            PrintToServer("Client %d's menu was cancelled: Reason %d", param1, param2);
-        }
-        case MenuAction_End:
-        {
-            delete blackjackMenu;
-        }
-    }
+	int newCard[2];
+	newCard[0] = GetURandomIntRange(0, 3);
+	newCard[1] = GetURandomIntRange(0, 12);
+	PushArrayArray(g_hPlayerCards[client], newCard, 2);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Event Handler
-///////////////////////////////////////////////////////////////////////////////
-public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
+PullDealerCard(client)
 {
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
-    g_bInActiveGame[client] = false;
+	int newCard[2];
+	newCard[0] = GetURandomIntRange(0, 3);
+	newCard[1] = GetURandomIntRange(0, 12);
+	PushArrayArray(g_hDealerCards[client], newCard, 2);
+}
+
+// Messy function to get the points of the cards
+GetCardCount(client, bool highace=true, bool dealer = false)
+{
+	int iSize;
+	if(!dealer)
+		iSize = GetArraySize(g_hPlayerCards[client]);
+	else
+		iSize = GetArraySize(g_hDealerCards[client]);
+	if(iSize == 0)
+		return 0;
+	
+	int iCount, cards[2];
+	bool multipleAces = false;
+	for(new i=0;i<iSize;i++)
+	{
+		if(!dealer)
+			GetArrayArray(g_hPlayerCards[client], i, cards, 2);
+		else
+			GetArrayArray(g_hDealerCards[client], i, cards, 2);
+		// The ace can be 11 or 1 point
+		// Counting 2 aces as 11 is stupid, so only count one.
+		if(cards[1] == 12 && (!highace || multipleAces))
+		{
+			iCount += 1;
+		}
+		else
+		{
+			iCount += g_iCardValue[cards[1]];
+			if(cards[1] == 12)
+				multipleAces = true;
+		}
+	}
+	return iCount;
+}
+
+stock GetURandomIntRange(min, max)
+{
+    return (GetURandomInt() % (max-min+1)) + min;
 }

@@ -484,7 +484,7 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 						EmitSoundToClient(client, g_sMenuExit);
 						Panel_CoinFlip(client);
 
-						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits");
 					}
 				}
 			}

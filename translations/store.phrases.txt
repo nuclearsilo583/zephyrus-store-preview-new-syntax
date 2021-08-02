@@ -1254,7 +1254,6 @@
 
 	"Not enough Credits"
 	{
-		"#format"	"{1:s}"
 		"en"		"You don't have enough credits"
 	}
 

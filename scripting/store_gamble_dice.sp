@@ -484,7 +484,7 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 						EmitSoundToClient(client, g_sMenuItem);
 						Panel_Dice(client);
 
-						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits");
 					}
 				}
 			}
@@ -615,7 +615,7 @@ public int Handler_Num(Menu panel, MenuAction action, int client, int itemNum)
 						EmitSoundToClient(client, g_sMenuItem);
 						Panel_Dice(client);
 
-						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits");
 					}
 				}
 			}

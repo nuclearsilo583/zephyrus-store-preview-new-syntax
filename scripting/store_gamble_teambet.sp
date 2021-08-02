@@ -542,7 +542,7 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 						EmitSoundToClient(client, g_sMenuItem);
 						Panel_TeamBet(client);
 
-						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits", g_sCreditsName);
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits");
 					}
 				}
 			}
