@@ -50,7 +50,7 @@
 #define LEVEL_GOLD 4
 #define LEVEL_AMOUNT 5
 
-ConVar gc_bVisible;
+ConVar gc_bVisible, gc_bItemSalable;
 
 char g_sChatPrefix[128];
 char g_sCreditsName[64] = "Credits";
@@ -88,7 +88,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -112,6 +112,7 @@ public void OnPluginStart()
 	AutoExecConfig_SetCreateFile(true);
 
 	gc_bVisible = AutoExecConfig_CreateConVar("store_lootbox_visible_for_all", "1", "1 - the lootbox is visible for all player / 0 - the lootbox is only visible for player who owns it.");
+	gc_bItemSalable = AutoExecConfig_CreateConVar("store_lootbox_item_salable", "1", "1 - the lootbox's item is sellable / 0 - the lootbox is nonsalable.");
 
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
@@ -477,13 +478,22 @@ public Action Timer_Open(Handle timer, int client)
 	{
 		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
-			Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
+			if(gc_bItemSalable.IntValue)
+				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
+			else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 1);
 		}
 		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
 		{
-			Store_GiveItem(client, itemid, _, GetTime() + time, item[iPrice]);
+			if(gc_bItemSalable.IntValue)
+				Store_GiveItem(client, itemid, _, GetTime() + time, item[iPrice]);
+			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
 		}
-		else Store_GiveItem(client, itemid, _, _, item[iPrice]);
+		else 
+		{
+			if(gc_bItemSalable.IntValue)
+				Store_GiveItem(client, itemid, _, _, item[iPrice]);
+			else Store_GiveItem(client, itemid, _, _, 1);
+		}
 		char sBuffer[128];
 		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item[szName], handler[szType]);
 
