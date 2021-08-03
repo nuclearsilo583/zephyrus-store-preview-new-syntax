@@ -1,5 +1,106 @@
 ﻿"Phrases"
 {
+	"Crash Info 4"
+	{
+		"#format"    "{1:i},{2:s},{3:i},{4:s}"
+		"en"        "- Minimum bet value is {1} {2}. Maximum bet value is {3} {4}. These limits may change with time."
+		"hu"        "- A minimum tét értéke {1} kredit. A maximális tét értéke {3} kredit. Ezek a határok idővel változhatnak."
+	}
+
+	"Crash Info 3"
+	{
+		"en"        "- The multiplier starts at 1.00x and you can cash out any time."
+		"hu"        "- A szorzó 1,00x -nál kezdődik, és bármikor lehetőség van a megállításra."
+	}
+
+	"Crash Info 2"
+	{
+		"en"        "- Crash is the game where players can bet on a multiplier, this multiplier related to an increasing curve that can crash at any moment."
+		"hu"        "- A Crash az, ahol a játékosok fogadhatnak és van egy szorzó, ami egy növekvő görbéhez kapcsolódik, és ez a görbe bármikor összeomolhat."
+	}
+
+	"Crash Info 1"
+	{
+		"en"        "           What is/How to play: Crash"
+		"hu"        "           Mi is a Crash/Hogy kell játszani a Crasht"
+	}
+
+	"Crash Already Start"
+	{
+		"en"        "Crash game is currently in progress. Please wait next game."
+		"hu"        "A Crash még jelenleg tart. Kérlek várd meg a következő játékot.
+	}
+
+	"Cash out"
+	{
+		"en"        "Cash out"
+		"hu"        "Megállítás"
+	}
+
+	"Crash!"
+	{
+		"en"        "Crash!"
+		"hu"        "Vége!"
+	}
+
+	"Gained"
+	{
+		"en"        "Gained"
+		"hu"        "Nyereményed"
+	}
+
+	"Gained x Credits"
+	{
+		"#format"    "{1:d},{2:s}"
+		"en"        "Gained: {1} {2}"
+		"hu"        "Nyereményed: {1} kredit"
+	}
+
+	"Starting"
+	{
+		"en"        "Starting"
+		"hu"        "Kezdés"
+	}
+
+	"Last x mins"
+	{
+		"#format"   "{1:d}"
+		"en"        "{green}{1} minute(s) {default}before crash starts."
+		"hu"        "{green}{1} perc {default}mielőtt elkezdődik a crash.
+	}
+
+	"Last x secs"
+	{
+		"#format"   "{1:d}"
+		"en"        "{green}{1} second(s) {default}before crash starts."
+		"hu"        "{green}{1} másodperc {default}mielőtt elkezdődik a crash."
+	}
+
+	"crash"
+	{
+		"en"        "Crash"
+	}
+
+	"Player won x Credits with X"
+	{
+		"#format"    "{1:N},{2:d},{3:s},{4:2.2f},{5:s}"
+		"en"        "{1} has won {2} {3} with multiplier of x{4} at {5}."
+		"hu"        "{1} nyert {2} kreditet x{4} szorzóval a {5} játékon."
+	}
+
+	"You won x Credits with X"
+	{
+		"#format"   "{1:d},{2:2.2f}"
+		"en"        "You won {1} credits with x{2}."
+		"hu"        "Nyertél {1} kreditet x{2} szorzóval."
+	}
+
+	"Type in chat !crash"
+	{
+		"en"        "Type in chat !crash <bet>"
+		"hu"        "Írd be: !crash <tét>"
+	}
+	
 	"Giveaway announcement"
 	{
 		"#format" 	"{1:s},{2:i}"
