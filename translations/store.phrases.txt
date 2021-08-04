@@ -157,6 +157,11 @@
 		"en"		"{yellow}{1}{purple} To do a giveaway the server must contain at least {green}{2} {purple}players."
 	}
 	
+	"Lootbox map ended"
+	{
+		"en" "The map has ended. Please wait for next map"
+	}
+	
 	"Lootbox round ended"
 	{
 		"en" "The round has ended. Please wait for new round"

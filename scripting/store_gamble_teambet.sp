@@ -241,7 +241,7 @@ public Action Command_Bet(int client, int args)
 		Panel_TeamBet(client);
 		Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
 
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Placed", iCredits, g_sCreditsName);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Placed", iCredits);
 	}
 
 	return Plugin_Handled;

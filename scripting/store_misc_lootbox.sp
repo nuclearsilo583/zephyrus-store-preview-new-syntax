@@ -50,7 +50,7 @@
 #define LEVEL_GOLD 4
 #define LEVEL_AMOUNT 5
 
-ConVar gc_bVisible, gc_bItemSalable;
+ConVar gc_bVisible, gc_bItemSellable;
 
 char g_sChatPrefix[128];
 char g_sCreditsName[64] = "Credits";
@@ -78,6 +78,7 @@ int g_iBoxCount = 0;
 int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 
 bool roundend = false;
+bool mapend = false;
 
 int m_iOpenProp[MAXPLAYERS+1] = -1;
 
@@ -88,7 +89,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -112,10 +113,61 @@ public void OnPluginStart()
 	AutoExecConfig_SetCreateFile(true);
 
 	gc_bVisible = AutoExecConfig_CreateConVar("store_lootbox_visible_for_all", "1", "1 - the lootbox is visible for all player / 0 - the lootbox is only visible for player who owns it.");
-	gc_bItemSalable = AutoExecConfig_CreateConVar("store_lootbox_item_salable", "1", "1 - the lootbox's item is sellable / 0 - the lootbox is nonsalable.");
+	gc_bItemSellable = AutoExecConfig_CreateConVar("store_lootbox_item_sellable", "1", "1 - the lootbox's item is sellable / 0 - the lootbox is nonsellable.");
 
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
+	
+	HookEvent("cs_win_panel_match", Event_End);
+}
+
+public void OnMapStart()
+{
+	mapend = false;
+}
+
+public void OnMapEnd()
+{
+	mapend = false;
+}
+
+public Action OnLogAction(Handle source, Identity ident,int client,int target, const char[] message)
+{
+	if( StrContains( message , "changed map to" ) != -1)
+	{
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (g_iLootboxEntityRef[i] != INVALID_ENT_REFERENCE)
+			{
+				Store_GiveItem(i, g_iItemID[g_iClientBox[i]], 0, 0, 0);
+
+				CPrintToChat(i, "%s%t", g_sChatPrefix, "You haven't opend the box in given time");
+			}
+			g_iClientBox[i] = -1;
+
+			RequestFrame(Frame_DeleteBox, i);
+			
+		}
+		mapend = true;
+	}
+}
+
+public void Event_End(Event event, const char[] name, bool dontBroadcast)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (g_iLootboxEntityRef[i] != INVALID_ENT_REFERENCE)
+		{
+			Store_GiveItem(i, g_iItemID[g_iClientBox[i]], 0, 0, 0);
+
+			CPrintToChat(i, "%s%t", g_sChatPrefix, "You haven't opend the box in given time");
+		}
+		g_iClientBox[i] = -1;
+
+		RequestFrame(Frame_DeleteBox, i);
+		
+	}
+	mapend = true;
 }
 
 public void OnClientDisconnect(int client)
@@ -272,14 +324,19 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 public int Lootbox_Equip(int client, int itemid)
 {
-	if (GameRules_GetProp("m_bWarmupPeriod") == 1) // Check if client open in warm up ? This will cause massive error log when they are open at the same time warm up end.
+	if (GameRules_GetProp("m_bWarmupPeriod")) // Check if client open in warm up ? This will cause massive error log when they are open at the same time warm up end.
 	{
 		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox warm up");
 		return 1;
 	}
-	if (roundend == true) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
+	if (roundend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
 		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox round ended");
+		return 1;
+	}
+	if (mapend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
+	{
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox map ended");
 		return 1;
 	}
 	if (!IsPlayerAlive(client))
@@ -478,19 +535,19 @@ public Action Timer_Open(Handle timer, int client)
 	{
 		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
-			if(gc_bItemSalable.IntValue)
+			if(gc_bItemSellable.IntValue)
 				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
 			else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 1);
 		}
 		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
 		{
-			if(gc_bItemSalable.IntValue)
+			if(gc_bItemSellable.IntValue)
 				Store_GiveItem(client, itemid, _, GetTime() + time, item[iPrice]);
 			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
 		}
 		else 
 		{
-			if(gc_bItemSalable.IntValue)
+			if(gc_bItemSellable.IntValue)
 				Store_GiveItem(client, itemid, _, _, item[iPrice]);
 			else Store_GiveItem(client, itemid, _, _, 1);
 		}
