@@ -1,0 +1,35 @@
+"Custom Model"
+{
+	"Dual Elite"
+	{
+		"Dual Infinity (CSO)"
+		{
+			"model"  "models/weapons/v_dual_infinity.mdl" // Custom v_ model (known as v_ in cs1.6)
+			"worldmodel"   "models/weapons/w_dual_infinity.mdl" // custom w_ model (known as p_ in cs1.6). Warning if your custom weapon dont have world and drop model please use valve's default p_ and w_ model in pak01_dir.vpk
+			"dropmodel"  "models/weapons/w_dualinfd.mdl" // custom w_ model (known as w_ in cs1.6). Warning if your custom weapon dont have world and drop model please use valve's default p_ and w_ model in pak01_dir.vpk
+			"entity"  "weapon_elite"	// Weapon to tie to (known as weapon_<name>) check all weapon type in https://steamcommunity.com/sharedfiles/filedetails/?id=570025313	
+			"type"		"CustomModel" 
+			"unique_id"				"uid_weapon_dual_infinity" // If you want to add item in lootbox module please give item a unique_id
+			"preview" 	"1" // enable preview or not. If you dont have w_ and p_ model please disable this
+			"slot" "1" // slot to store the custom weapon at the same time. Warning there are only 5 slots available (0-->4). If you want more slot simply edit the .sp file and change type name as CustomModel2, ... etc
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "350"
+					"time" "86400"
+				}	
+				"7 days"
+				{
+					"price" "1500"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "6000"
+					"time" "2592000‬"
+				}	
+			}
+		}		
+	}
+}

@@ -1,0 +1,114 @@
+"My new category"
+{
+	"description" 		"    Case opening system"
+	"shortcut"						"loot"
+    "A new subcategory in my category"
+    {
+         ...other subcategories...
+         ...items...
+    }
+
+    ...other subcategories...
+    ...items...
+}
+
+
+Example of a Category with two single items with all keys working for categories.
+
+...
+	"Category with two items - title"
+	{
+		"description"					"text to descrip the Category"
+		"shortcut"						"category"
+		"flag"							""
+		"steam"							""
+
+		"Item 1.1 - title"
+		{
+			"description"				"text to descrip the item"
+			"type"						"<type>"
+			"price"						"1000"
+		}
+		"Item 1.2 - title"
+		{
+			"type"						"<type>"
+			"price"						"1000"
+		}
+	}
+...
+
+Example of Sub-Categories with two items bundled to a package.
+
+...
+	"Another Category - title"
+	{
+		"With sub-Category - title"
+		{
+			"And sub-sub-Category - title"
+			{
+				"Two items in one package - title"
+				{
+					"price"					"1000"
+					"description"			"text to descrip the package"
+					"shortcut"				"package"
+					"flag"					""
+					"steam"					""
+					"secret"				""
+					"trade"					"1"
+
+					"Item 2.1"
+					{
+						"type"				"<type>"
+					}
+					"Item 2.2"
+					{
+						"type"				"<type>"
+					}
+				}
+			}
+		}
+	}	
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+Keys
+/////////////////////////////////////////////////////////////////////////////////
+"My new category"
+{
+	"description" 		"    <message_here>" // leave those blank string alone please
+	"shortcut"			"<message>" // player can access this categories via !<message> in-chat (sometime not work or not recommended).
+    "A new subcategory in my category"
+    {
+		"preview"					"1" // Enable preview system. Only module support this function can be used
+        "buyable"					"0" // Does this item buyable. 1 = yes, 0 = no
+		"ignore_vip"				"1" // even VIP can't buy this item
+		"ignore_free"				"1" // event sm_store_vip_flag active. Vip/Admins (even root access) can't buy this item
+		"steam"						"<STEAMID>" // STEAM_0:0:161198379
+		"flag"						"opqz" // flag for vip/admin access to this item
+		"type"						"<type>"
+		"price"						"<price>"
+		"unique_id"					"<string_max_64_characters>"
+    }
+	
+	to enable time for item
+	"Plans"
+	{
+		"<time_you_want_1>" // example 1 day
+		{
+			"price" "<price>"
+			"time" "86400" // in seconds. 86400 = 1 day
+		}
+		"<time_you_want_2>"
+		{
+			...
+			"time" "<time_you_want_2>"
+		}
+		"<time_you_want_3>"
+		{
+			...
+			"time" "<time_you_want_3>"
+		}
+	}
+
+}

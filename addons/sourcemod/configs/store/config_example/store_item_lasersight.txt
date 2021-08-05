@@ -1,0 +1,9 @@
+"Laser Sight"
+{
+	"Blue"
+	{
+		"color" "0 0 125"
+		"price" "120"
+		"type" "lasersight"
+	}
+}

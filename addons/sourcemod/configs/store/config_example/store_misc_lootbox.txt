@@ -1,0 +1,43 @@
+"Lootboxes"
+{
+	"Clutch Wibu 15 Days Case"
+	{
+		"type"						"lootbox"
+		"ignore_free"				"1"
+		"price"						"7000"
+		"price_back"				"7000" // must be same as "price"
+		"sell_ratio"				"0.35" // sell_ratio=price_back*sell_ratio
+		"unique_id"					"uid_Lootbox_wibu"
+		"model"						"models/props/crates/csgo_drop_crate_clutch.mdl" // you can check model in csgo pak01_dir.vpk or use custom box model
+		"sound"						"ui/item_drop4_mythical.wav" // sound. recommend to use this config. None config is usable
+		"file"						"particles/2j.pcf" // particle effect (sometime not work). None is usable
+		"name"						"vixr_final" // depend on "file". Name of the particle effect
+		"grey"						"57.000000" // grey percentage
+		"blue"						"25.000000"
+		"purple"					"10.000000"
+		"red"						"6.000000"
+		"gold"						"2.000000" // Note grey, blue, purple, red, gold must have sum value at 100%
+		"time" 						"1296000" // Time for items of case. Fix for planed item since they will appear to be pernament item.
+		
+		// This config is a bit confusing. There're 2 type of config.
+		// 1. "grey"					"uid_model_banana_joe" --> When opened a lootbox. The item's expiration date will have the "time" config.
+		// 2. "grey"					"uid_model_banana_joe-864000" --> When open a lootbox. The item will use the 864000 as a expiration time (in seconds) and no depend on "time"
+		// If you miss-type such as "uid_model_banana_joe-" or "uid_model_banana_joe-0". This will use the "time" config for expiration date.
+		// You can add multiple item for 1 "grey", "purple" .. item. Recommend only 30 items per case.
+		// You can config various day for each item.
+		"Items" 
+		{
+			"grey"					"uid_model_banana_joe-86400" // This item will last for 1 days if receive.
+			"grey"					"uid_model_kim_jong_un-" // This item will have 15 days config ("time")
+			"blue"					"uid_model_ram_neptune-0" // This item will have 15 days config ("time")
+			"blue"					"uid_model_rom_neptune-604800" // This item will last for 7 days if receive.
+			"purple"				"uid_model_fox_miku_skin3" // This item will have 15 days config ("time")
+			"purple"				"uid_model_klee_genshin" // ...
+			"red"					"uid_model_kagura_nana_skin1" // ...
+			"red"					"uid_model_kagura_nana_skin2"// ...
+			"red"					"uid_model_kagura_nana_skin3" // ...
+			"gold"					"uid_model_padoru_skin1" // ...
+			"gold"					"uid_model_padoru_skin2" // ...
+		}
+	}
+}

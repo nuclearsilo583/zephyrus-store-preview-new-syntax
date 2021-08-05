@@ -1,0 +1,8 @@
+"VertexLitGeneric" 
+{ 
+	"$basetexture"	"maoling/pet/misc/haipa/haipa_textures" 
+	$nocull 1
+	$alphatest 1
+	$alphatestreference .8
+	//$translucent 1
+} 

@@ -1,0 +1,472 @@
+// Using 2j.pcf particle file
+
+"Particle Effect"
+{
+	"Spawn Effect"
+	{
+		"Vortex (fire)"
+		{
+			"name"					"fire_vixr_final"
+			"preview"				"1"
+			"price"					"0"
+			"flag" "opqz"
+			"file"					"particles/2j.pcf"
+			"duration"				"5.500000"
+			"type"					"particle"
+			"slot"					"spawn"
+			"unique_id"				"uid_particle_spawn_vortex"
+		}
+		"Vortex (ice)"
+		{
+			"name"					"vixr_final"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"price"					"0"
+			"flag" "opqz"
+			"duration"				"5.500000"
+			"type"					"particle"
+			"slot"					"spawn"
+			"unique_id"				"uid_particle_spawn_vortex"
+		}
+	}
+		
+	"Kill Effect"
+	{
+		"Vortex (fire)"
+		{
+			"name"					"fire_vixr_final"
+			"file"					"particles/2j.pcf"
+			"duration"				"1.500000"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"kill"
+			"unique_id"				"uid_particle_kill_vortex_(fire)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Vortex (ice)"
+		{
+			"name"					"vixr_final"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"duration"				"1.500000"
+			"type"					"particle"
+			"slot"					"kill"
+			"unique_id"				"uid_particle_kill_vortex_(ice)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+	}
+	"Aura"
+	{
+		"Hell"
+		{
+			"name"					"hell_end"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_hell"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Lightning"
+		{
+			"name"					"molnii_final"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_lightning"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Geometry"
+		{
+			"name"					"new_001"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_geometry""Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Geometry2"
+		{
+			"name"					"new_002"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_geometry2"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Pink holl"
+		{
+			"name"					"new_003"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_pink_holl"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Tornado (Rainbow)"
+		{
+			"name"					"new_004"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_tornado_(rainbow)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Sphere (Color)"
+		{
+			"name"					"sphere"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_sphere_(color)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Splash"
+		{
+			"name"					"splash"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_splash"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Tornado 2 (Color)"
+		{
+			"name"					"tornado"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_tornado_2_(color)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Equalizer (diamond)"
+		{
+			"name"					"ekvalaizer_gray"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_equalizer_(diamond)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Equalizer (orange)"
+		{
+			"name"					"ekvalaizer_white"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_equalizer_(orange)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Equalizer (green)"
+		{
+			"name"					"ekvalaizer_black_blue"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_equalizer_(green)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Equalizer (pink)"
+		{
+			"name"					"ekvalaizer"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_equalizer_(pink)"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+		"Arcane Zeus"
+		{
+			"name"					"end"
+			"file"					"particles/2j.pcf"
+			"preview"				"1"
+			"type"					"particle"
+			"slot"					"aura"
+			"unique_id"				"uid_particle_aura_arcane_zeus"
+			"Plans"
+			{
+				"1 day"
+				{
+					"price" "4000"
+					"time" "86400"
+				}
+				"1 week"
+				{
+					"price" "25000"
+					"time" "604800"
+				}
+				"30 days"
+				{
+					"price" "70000"
+					"time" "2592000"
+				}
+			}
+		}
+	}
+}

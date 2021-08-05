@@ -1,0 +1,10 @@
+"Grenade Trails"
+{
+	"Thin Beam"
+	{
+		"material" "materials/sprites/combineball_trail_black_1.vmt"
+		"price" "120"
+		"type" "grenadetrail"
+		"color" "255 0 255 255"
+	}
+}

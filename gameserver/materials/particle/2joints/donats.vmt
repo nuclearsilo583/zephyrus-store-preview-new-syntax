@@ -1,0 +1,13 @@
+UnlitGeneric
+{
+	$basetexture "particle/2joints/donats"
+$translucent 1
+$distancealpha 1
+$softedges 1
+$edgesoftnessstart .6
+$edgesoftnessend .2
+$scaleedgesoftnessbasedonscreenres 1
+$vertexcolor 1
+$vertexalpha 1
+$no_fullbright 1
+}

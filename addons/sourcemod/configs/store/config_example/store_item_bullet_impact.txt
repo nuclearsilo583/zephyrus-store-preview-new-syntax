@@ -1,0 +1,148 @@
+"PaintBall"
+{
+	"Pink - Paintball"
+	{
+		"type"					"paintball"
+		"Decals"
+		{
+			"pink"
+			{
+				"material"		"paintball/pb_pink.vmt"
+			}
+		}
+		"Plans"
+		{
+			"1 day"
+			{
+				"price" "2500"
+				"time" "86400"
+			}
+			"1 week"
+			{
+				"price" "12000"
+				"time" "604800"
+			}
+			"30 days"
+			{
+				"price" "35000"
+				"time" "2592000"
+			}
+		}
+		"unique_id"				"uid_paintball_pink_-_paintball"
+	}
+	"Cyan and Green - Paintball"
+	{
+		"type"					"paintball"
+		"Decals"
+		{
+			"cyan"
+			{
+				"material"		"paintball/pb_cyan.vmt"
+			}
+			"green"
+			{
+				"material"		"paintball/pb_green.vmt"
+			}
+		}
+		"Plans"
+		{
+			"1 day"
+			{
+				"price" "2500"
+				"time" "86400"
+			}
+			"1 week"
+			{
+				"price" "12000"
+				"time" "604800"
+			}
+			"30 days"
+			{
+				"price" "35000"
+				"time" "2592000"
+			}
+		}
+		"unique_id"				"uid_paintball_cyan_and_green_-_paintball"
+	}
+	"Orange and Yellow - Paintball"
+	{
+		"type"					"paintball"
+		"Decals"
+		{
+			"yellow"
+			{
+				"material"		"paintball/pb_yellow.vmt"
+			}
+			"orange"
+			{
+				"material"		"paintball/pb_orange.vmt"
+			}
+		}
+		"Plans"
+		{
+			"1 day"
+			{
+				"price" "2500"
+				"time" "86400"
+			}
+			"1 week"
+			{
+				"price" "12000"
+				"time" "604800"
+			}
+			"30 days"
+			{
+				"price" "35000"
+				"time" "2592000"
+			}
+		}
+		"unique_id"				"uid_paintball_orange_and_yellow_-_paintball"
+	}
+	"Random - Paintball"
+	{
+		"type"					"paintball"
+		"Decals"
+		{
+			"cyan"
+			{
+				"material"		"paintball/pb_cyan.vmt"
+			}
+			"green"
+			{
+				"material"		"paintball/pb_green.vmt"
+			}
+			"pink"
+			{
+				"material"		"paintball/pb_pink.vmt"
+			}
+			"orange"
+			{
+				"material"		"paintball/pb_orange.vmt"
+			}
+			"yellow"
+			{
+				"material"		"paintball/pb_yellow.vmt"
+			}
+		}
+		"Plans"
+		{
+			"1 day"
+			{
+				"price" "2500"
+				"time" "86400"
+			}
+			"1 week"
+			{
+				"price" "12000"
+				"time" "604800"
+			}
+			"30 days"
+			{
+				"price" "35000"
+				"time" "2592000"
+			}
+		}
+		"unique_id"				"uid_paintball_random_-_paintball"
+	}
+}
+

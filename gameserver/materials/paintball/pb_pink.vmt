@@ -1,0 +1,9 @@
+DecalModulate
+{
+   $decal 1
+	$translucent 1
+   $decalscale 0.06
+   $envmap env_cubemap
+   $decalDynamicScale 1
+	$basetexture paintball/pb_pink
+}

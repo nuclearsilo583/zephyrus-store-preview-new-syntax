@@ -1,0 +1,11 @@
+"Trails"
+{
+	"8Bit Mushroom"
+	{
+		"material" "materials/sprites/store/trails/8bitmushroom.vmt"
+		"price" "300"
+		"color" "255 255 255 255"
+		"preview" "1"
+		"type" "trail"
+	}
+}

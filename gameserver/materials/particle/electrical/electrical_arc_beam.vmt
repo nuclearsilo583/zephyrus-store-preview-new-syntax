@@ -1,0 +1,10 @@
+Sprite
+{
+$basetexture "particle\electrical\electrical_arc_sprites"
+$translucent 1
+$additive 1
+$vertexcolor 1
+$vertexalpha 1
+$overbrightfactor 2
+$spriterendermode 5
+}

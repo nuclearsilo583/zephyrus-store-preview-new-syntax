@@ -1,0 +1,12 @@
+"Zombie Skins"
+{
+	"Pl Halloween"
+	{
+		"model" "models/player/thas/edited/uuz/pl/pl_halloween.mdl" // this model only for preview purpose. No affect to the actually class
+		"class" "pl_halloween" // must be the same name in configs/zr/playerclasses.txt
+		"zombie" "1"
+		"type" "zrclass"
+		"preview" "1"
+		"price" "1000"
+	}
+}

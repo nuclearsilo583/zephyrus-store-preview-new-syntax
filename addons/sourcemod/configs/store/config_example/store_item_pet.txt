@@ -1,0 +1,18 @@
+// Using 2j.pcf particle file
+
+"Pets"
+{
+	"Pet HK416"
+	{	
+		"model" "models/player/neru/pets/gf_hk416_scaled.mdl"
+		"position" "25.0 -20.0 0.0" // I can't help much at this config. You need to config by yourself and test ingame
+		"angles" "0.0 340.0 0.0" // I can't help much at this config. You need to config by yourself and test ingame
+		"idle" "ACT_IDLE" // Please use model viewer for the sequence name
+		"idle2" "ACT_IDLE_RARE" // Please use model viewer for the sequence name
+		"run" "ACT_RUN" // Please use model viewer for the sequence name
+		"preview"					"1"
+		"type" "pet"
+		"unique_id"					"uid_pet_hk416"
+		"price" "100"
+	}
+}

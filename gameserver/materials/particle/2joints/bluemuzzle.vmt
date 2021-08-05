@@ -1,0 +1,8 @@
+"Sprite"
+{
+	$basetexture "particle/2joints/bluemuzzle"
+	"$spriteorientation" "vp_parallel"
+	"$spriteorigin" "[ 0.50 0.50 ]"
+	"$basetexture" "effects/bluemuzzle"
+	"$spriterendermode" 8
+}

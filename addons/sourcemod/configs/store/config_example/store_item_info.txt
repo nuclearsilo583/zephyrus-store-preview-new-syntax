@@ -1,0 +1,32 @@
+// What is this item. Well this item display a message as panel message directly through store menu for some item information
+
+"Info"
+{
+	"Info for Clutch Wibu"
+	{
+		"text"					"1. Purple:/n- Fox Miku/n- Klee/n2. Red:/n- Yuyuko Mini Touhou/n- Kagura Nana (3 skins)/n3. Yellow:/n- Saber Padoru (2 skins)" // What is /n. This will slit your message as 2 lines.
+		"type"					"info"
+		"unique_id"				"uid_info_wibu_case"
+		
+	}
+	"Info for WildFire Vip"
+	{
+		"text"					"Red: 10 days VIP"
+		"type"					"info"
+		"unique_id"				"uid_info_vip_case"
+	}
+	
+	"Info for Bravo Pet"
+	{
+		"text"					"1. Purple:/n- Honkai Impact 3 Pets/n2. Red:/n- Girl's Front Line Pets/n3. Yellow:/n- Baron Bunny"
+		"type"					"info"
+		"unique_id"				"uid_info_vip_case"
+	}
+	
+	"Info for Spectrum VTuber"
+	{
+		"text"					"Gold: Kagura Nana (skin 4)"
+		"type"					"info"
+		"unique_id"				"uid_info_vip_case"
+	}
+}

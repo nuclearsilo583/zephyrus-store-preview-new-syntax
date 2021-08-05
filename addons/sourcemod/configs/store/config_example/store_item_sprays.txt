@@ -1,0 +1,11 @@
+"Sprays"
+{
+	"Ayaya"
+	{
+		"material" "materials/possession/decals/sprays/spray_1/ayaya.vmt"
+		"preview" "1"
+		"unique_id" "uid_spray_ayaya"
+		"type" "spray"
+		"price" "10000"
+	}
+}

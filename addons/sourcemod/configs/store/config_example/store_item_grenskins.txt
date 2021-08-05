@@ -1,0 +1,47 @@
+"Grenade Skins"
+{
+	"HE Grenade"
+	{
+		"Orange"
+		{
+			"model" "models/props/cs_italy/orange.mdl"
+			"grenade" "hegrenade"
+			"preview" "1"
+			"price" "60"
+			"type" "grenadeskin"
+		}
+
+		"Tortoise"
+		{
+			"model" "models/props/de_tides/vending_turtle.mdl"
+			"grenade" "hegrenade"
+			"price" "60"
+			"preview" "1"
+			"type" "grenadeskin"
+		}
+	}
+	
+	"Flashbang"
+	{	
+		"Banana"
+		{
+			"model" "models/props/cs_italy/bananna.mdl"
+			"grenade" "flashbang"
+			"price" "60"
+			"preview" "1"
+			"type" "grenadeskin"
+		}
+	}
+	
+	"Smokegrenade"
+	{
+		"Watermelon"
+		{
+			"model" "models/props_junk/watermelon01.mdl"
+			"grenade" "smokegrenade"
+			"price" "60"
+			"preview" "1"
+			"type" "grenadeskin"
+		}
+	}
+}
