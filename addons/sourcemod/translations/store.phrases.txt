@@ -1,5 +1,51 @@
 ﻿"Phrases"
 {
+	"Crash set auto"
+	{
+		"en"        "Set auto cashout value"
+	}
+	
+	"Crash auto input"
+	{
+		"en"        "Type your auto cashout in chat"
+	}
+	
+	"Crash Auto On Panel"
+	{
+		"en"        "Turn on auto cashout"
+	}
+	
+	"Crash Auto Off Panel"
+	{
+		"en"        "Turn off auto cashout"
+	}
+	
+	"Crash Auto Off"
+	{
+		"en"        "Off"
+	}
+	
+	"Crash Auto On"
+	{
+		"en"        "On"
+	}
+	
+	"Client Auto Cashout pref"
+	{
+		"en"        "Auto Cashout:"
+	}
+	
+	"Crash auto input set"
+	{
+		"en"        "Crash auto cash out set"
+	}
+	
+	"Crash Wrong input"
+	{
+		"#format"    "{1:0.2f}"
+		"en"        "Wrong input (must be {1} or above)."
+	}
+
 	"Crash Info 4"
 	{
 		"#format"    "{1:i},{2:s},{3:i},{4:s}"

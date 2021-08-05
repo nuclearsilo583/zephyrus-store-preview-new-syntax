@@ -3,9 +3,12 @@
 #include <sdktools>
 #include <store>
 #include <autoexecconfig>
+#include <clientprefs>
 
 #pragma tabsize 0
 #pragma newdecls required
+
+#define INPUT_AUTO 1 
 
 char g_sCreditsName[64] = "credits";
 char g_sChatPrefix[128];
@@ -18,11 +21,11 @@ public Plugin myinfo =
 	name = "Store - Crash gamble module",
 	author = "Emur, AiDN™, nuclear silo",
 	description = "Crash game Zephyrus's , nuclear silo's edited store",
-	version = "1.0"
+	version = "2.1"
 };
 
 //CVars
-ConVar gc_iStart, gc_iMax, gc_iMin, gc_bNotify, gc_iIncrease;
+ConVar gc_iStart, gc_iMax, gc_iMin, gc_bNotify, gc_iIncrease, gc_iAuto, gc_bCAuto;
 
 //Countdown
 int seconds;
@@ -34,8 +37,17 @@ int bet[MAXPLAYERS + 1], totalgained[MAXPLAYERS + 1];
 float number; //The number that gets higher.
 float x; // The number that is the limit.
 
+float client_auto[MAXPLAYERS + 1]; // The number for auto cashout.
+bool client_autoCash[MAXPLAYERS + 1]; // The number for auto cashout.
+int g_iChatType[MAXPLAYERS + 1] = {-1, ...};
+
+Handle AutoCashout_Cookies;
+
 public void OnPluginStart()
 {
+	//Cookies
+	AutoCashout_Cookies = RegClientCookie("Store_Crash_AutoCashoutCookie", "[Store - Crash] Auto crash out", CookieAccess_Protected);
+	
 	//Translations
 	LoadTranslations("store.phrases");
 	LoadTranslations("common.phrases");
@@ -46,14 +58,77 @@ public void OnPluginStart()
 	gc_iMin = CreateConVar("store_crash_min", "20", "Minium amount of credits to spend.");
 	gc_bNotify = CreateConVar("store_crash_notify_player", "1", "Wheither or not notify client on crash timer on chat.");
 	gc_iIncrease = CreateConVar("store_crash_increase_value", "200", "How fast the multiplier in crash increase. Dont touch if you dont know what you are doing.");
+	gc_iAuto = CreateConVar("store_crash_minimum_auto_cashout", "1.1", "Minimum value set for client");
+	gc_bCAuto = CreateConVar("store_crash_allow_cash_out_auto", "0", "Wheither to allow player to cash out if they enable auto cashout. 1 - Enable, 0 - Disable");
 
 	AutoExecConfig(true, "crash", "sourcemod/store");
 	//Commands
 	RegConsoleCmd("sm_crash", Command_Crash, "Command to see the panel");
+	RegConsoleCmd("sm_crashauto", Command_CrashAuto, "Command to see the panel");
 	
 	seconds = GetConVarInt(gc_iStart);
 	CreateTimer(1.0, maintimer, _, TIMER_REPEAT); //The timer that counts down.
+	
+	AddCommandListener(Command_Say, "say"); 
+	AddCommandListener(Command_Say, "say_team");
+	
+	HookEvent("round_end", Event_RoundEnd);
 }
+
+public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		onmenu[i] = 0;
+	}
+
+}
+
+//----------------------------------------------------------------------------------------------------
+// Purpose: Set client cookies once cached
+//----------------------------------------------------------------------------------------------------
+public void OnClientCookiesCached(int client)
+{
+	char sValue[32];
+	GetClientCookie(client, AutoCashout_Cookies, sValue, sizeof(sValue));
+	if (StrEqual(sValue,""))
+	{
+		char sBuffer[12];
+		Format(sBuffer, sizeof(sBuffer), "0/%f", gc_iAuto.FloatValue);
+		client_auto[client] = gc_iAuto.FloatValue;
+		SetClientCookie(client, AutoCashout_Cookies, sBuffer);
+	}
+	else 
+	{
+		char Explode_String[2][12];
+		ExplodeString(sValue, "/", Explode_String, 2, 12);
+		client_autoCash[client] = view_as<bool>(StringToInt(Explode_String[0]));
+		client_auto[client] = StringToFloat(Explode_String[1]);
+	}
+	
+	/*GetClientCookie(iClient, g_hCookie_HudPos, sBuffer_cookie, sizeof(sBuffer_cookie));
+	if (StrEqual(sBuffer_cookie,"")){
+		Format(sBuffer_cookie, sizeof(sBuffer_cookie), "%f/%f", g_DefaultHudPos[0], g_DefaultHudPos[1]);
+		SetClientCookie(iClient, g_hCookie_HudPos, sBuffer_cookie);
+		HudPosition[iClient][0] = g_DefaultHudPos[0];
+		HudPosition[iClient][1] = g_DefaultHudPos[1];
+	}else 
+	{
+		char Explode_HudPosition[2][32];
+		ExplodeString(sBuffer_cookie, "/", Explode_HudPosition, 2, 32);
+		HudPosition[iClient][0] = StringToFloat(Explode_HudPosition[0]);
+		HudPosition[iClient][1] = StringToFloat(Explode_HudPosition[1]);
+	}*/
+
+}
+
+void SaveClientCookies(int client)
+{
+	char sValue[32];
+	FormatEx(sValue, sizeof(sValue), "%b/%f", client_autoCash[client], client_auto[client]);
+	SetClientCookie(client, AutoCashout_Cookies, sValue);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public void Store_OnConfigExecuted(char[] prefix)
 {
@@ -107,6 +182,72 @@ public Action Command_Crash(int client, int args)
 	
    	return Plugin_Stop;
 }
+
+public Action Command_CrashAuto(int client, int args)
+{
+	char sMessage[64];
+	GetCmdArg(1, sMessage, sizeof(sMessage));
+	//StripQuotes(sMessage);
+	
+	float auto_amount = StringToFloat(sMessage);
+	
+	if(auto_amount >= gc_iAuto.FloatValue)
+	{
+		//char sBuffer_cookie[32];
+		//Format(sBuffer_cookie, sizeof(sBuffer_cookie), "%f", auto_amount);
+		//SetClientCookie(client, AutoCashout_Cookies, sBuffer_cookie);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Crash auto input set");
+		client_auto[client] = auto_amount;
+		SaveClientCookies(client)
+	}
+	else
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Crash Wrong input", gc_iAuto.FloatValue);
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Handled;
+}
+
+public Action Command_Say(int client, const char[] command,int argc)
+{
+	//Vouncher
+	if (g_iChatType[client] == -1)
+		return Plugin_Continue;
+		
+	char sMessage[64];
+	GetCmdArgString(sMessage, sizeof(sMessage));
+	StripQuotes(sMessage);
+		
+	switch(g_iChatType[client])
+	{
+		case INPUT_AUTO:
+		{
+			float auto_amount = StringToFloat(sMessage);
+			
+			if(auto_amount >= gc_iAuto.FloatValue)
+			{
+				//char sBuffer_cookie[32];
+				//Format(sBuffer_cookie, sizeof(sBuffer_cookie), "%f", auto_amount);
+				//SetClientCookie(client, AutoCashout_Cookies, sBuffer_cookie);
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Crash auto input set");
+				client_auto[client] = auto_amount;
+				SaveClientCookies(client)
+				g_iChatType[client] = -1;
+				return Plugin_Handled;
+			}
+			else
+			{
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Crash Wrong input", gc_iAuto.FloatValue);
+				g_iChatType[client] = -1;
+				return Plugin_Handled;
+			}
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public Action maintimer(Handle timer)
 {
@@ -193,6 +334,25 @@ public Action makeithigher(Handle timer)
 		return Plugin_Stop;
 	}
 	
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if(situation[i] == 1 && number != 0)
+		{
+			if(client_autoCash[i])
+			{
+				if (client_auto[i] <= number)
+				{
+					totalgained[i] = RoundToFloor(bet[i] * client_auto[i]);
+					situation[i] = 2;
+					int newcredits = Store_GetClientCredits(i) + totalgained[i];
+					Store_SetClientCredits(i, newcredits);
+					EmitSoundToClient(i, "store/win.mp3");
+					CPrintToChat(i, "%s%t", g_sChatPrefix, "You won x Credits with X", totalgained[i], number);
+				}
+			}
+		}
+	}
+	
 	return Plugin_Continue;
 }
 
@@ -240,47 +400,89 @@ public Action crashpanel(Handle timer, any client)
 			crashmenu_baslamadan.SetTitle(crashtext);
 			crashmenu_baslamadan.DrawText("---------------------------------");
 			crashmenu_baslamadan.DrawText("^");
-			crashmenu_baslamadan.DrawText("|  ");
+			//crashmenu_baslamadan.DrawText("|  ");
 			crashmenu_baslamadan.DrawText("|  ");
 			crashmenu_baslamadan.DrawText("|"); 
 			crashmenu_baslamadan.DrawText(startingtext);
 			crashmenu_baslamadan.DrawText("|  ");
-			crashmenu_baslamadan.DrawText("|  ");
+			//crashmenu_baslamadan.DrawText("|  ");
 			crashmenu_baslamadan.DrawText("| __ __ __ __ __ __ __ __ ");
 			crashmenu_baslamadan.DrawText("---------------------------------");
 			if(situation[client] == 0)
 			{
-				char command[32];
-				Format(command, sizeof(command), "    %t", "Type in chat !crash");
-				crashmenu_baslamadan.DrawText(command);
+				//char command[32];
+				Format(crashtext, sizeof(crashtext), "    %t", "Type in chat !crash");
+				crashmenu_baslamadan.DrawText(crashtext);
+				switch(client_autoCash[client])
+				{
+					case 0:
+					{
+						Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+						crashmenu_baslamadan.DrawText(crashtext);
+					}
+					case 1:
+					{
+						Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+						crashmenu_baslamadan.DrawText(crashtext);
+						Format(crashtext, sizeof(crashtext), "%t %0.2fx", "Client Auto Cashout pref", client_auto[client]);
+						crashmenu_baslamadan.DrawText(crashtext);
+					}
+				}
 				crashmenu_baslamadan.DrawText("---------------------------------");
 			}
 			else if(situation[client] == 1)
 			{
-				char buffer[64];
-				char buffer2[64];
-				Format(buffer, sizeof(buffer), "%t", "Your bet", bet[client], g_sCreditsName);
-				Format(buffer2, sizeof(buffer2), "%s: -",gainedcredits);
-				crashmenu_baslamadan.DrawText(buffer2);
-				crashmenu_baslamadan.DrawText(buffer);
+				//char buffer[64];
+				Format(crashtext, sizeof(crashtext), "%s: -",gainedcredits);
+				crashmenu_baslamadan.DrawText(crashtext);
+				Format(crashtext, sizeof(crashtext), "%t", "Your bet", bet[client], g_sCreditsName);
+				crashmenu_baslamadan.DrawText(crashtext);
+				switch(client_autoCash[client])
+				{
+					case 0:
+					{
+						Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+						crashmenu_baslamadan.DrawText(crashtext);
+					}
+					case 1:
+					{
+						Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+						crashmenu_baslamadan.DrawText(crashtext);
+						Format(crashtext, sizeof(crashtext), "%t %0.2fx", "Client Auto Cashout pref", client_auto[client]);
+						crashmenu_baslamadan.DrawText(crashtext);
+					}
+				}
 				crashmenu_baslamadan.DrawText("---------------------------------");
 			}
 			//SetPanelCurrentKey(crashmenu_baslamadan, 9);
 			crashmenu_baslamadan.CurrentKey = 1;
 			Format(crashtext, sizeof(crashtext), "%t", "Close");
 			crashmenu_baslamadan.DrawItem(crashtext);
+			
 			crashmenu_baslamadan.CurrentKey = 2;
 			Format(crashtext, sizeof(crashtext), "%t", "Game Info");
 			crashmenu_baslamadan.DrawItem(crashtext);
+			
 			crashmenu_baslamadan.CurrentKey = 3;
 			Format(crashtext, sizeof(crashtext), "%t", "Bet Minium", gc_iMin.IntValue);
 			crashmenu_baslamadan.DrawItem(crashtext, iCredits < gc_iMin.IntValue || situation[client]!=0 ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT);
+			
 			crashmenu_baslamadan.CurrentKey = 4;
 			Format(crashtext, sizeof(crashtext), "%t", "Bet Maximum", iCredits > gc_iMax.IntValue ? gc_iMax.IntValue : iCredits);
 			crashmenu_baslamadan.DrawItem(crashtext, iCredits < gc_iMin.IntValue || situation[client]!=0 ? ITEMDRAW_IGNORE  : ITEMDRAW_DEFAULT);
+			
 			crashmenu_baslamadan.CurrentKey = 5;
 			Format(crashtext, sizeof(crashtext), "%t", "Bet Random", gc_iMin.IntValue, iCredits > gc_iMax.IntValue ? gc_iMax.IntValue : iCredits);
-			crashmenu_baslamadan.DrawItem(crashtext, iCredits < gc_iMin.IntValue || situation[client]!=0 ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT);			
+			crashmenu_baslamadan.DrawItem(crashtext, iCredits < gc_iMin.IntValue || situation[client]!=0 ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT);
+			
+			crashmenu_baslamadan.CurrentKey = 6;
+			Format(crashtext, sizeof(crashtext), "%t", client_autoCash[client] ? "Crash Auto Off Panel":"Crash Auto On Panel");
+			crashmenu_baslamadan.DrawItem(crashtext, ITEMDRAW_DEFAULT);
+			
+			crashmenu_baslamadan.CurrentKey = 7;
+			Format(crashtext, sizeof(crashtext), "%t", "Crash set auto");
+			crashmenu_baslamadan.DrawItem(crashtext, client_autoCash[client] ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE);	
+			
 			crashmenu_baslamadan.DrawText("---------------------------------");
 			crashmenu_baslamadan.Send(client, crashmenu_handler, 1);
 			delete crashmenu_baslamadan;
@@ -300,10 +502,12 @@ public Action crashpanel(Handle timer, any client)
 			Format(betZ, sizeof(betZ), "%t", "Your bet", bet[client], g_sCreditsName);
 			Format(gainedZ, sizeof(gainedZ), "%t", "Gained x Credits", RoundToFloor(bet[client] * number), g_sCreditsName);
 			Panel crashmenu_aktif = new Panel();
-			crashmenu_aktif.SetTitle("Crash");
+			//crashmenu_aktif.SetTitle("Crash");
+			Format(crashtext, sizeof(crashtext), "%t" ,"crash");
+			crashmenu_aktif.SetTitle(crashtext);
 			crashmenu_aktif.DrawText("---------------------------------");
 			crashmenu_aktif.DrawText("^");
-			crashmenu_aktif.DrawText("|  ");
+			//crashmenu_aktif.DrawText("|  ");
 			crashmenu_aktif.DrawText("|  ");
 			crashmenu_aktif.DrawText("|"); 
 			crashmenu_aktif.DrawText(numberZ);
@@ -316,7 +520,7 @@ public Action crashpanel(Handle timer, any client)
 				Format(crashtext, sizeof(crashtext), "|              %t", "Crash!");
 				crashmenu_aktif.DrawText(crashtext);
 			}
-			crashmenu_aktif.DrawText("|  ");
+			//crashmenu_aktif.DrawText("|  ");
 			crashmenu_aktif.DrawText("| __ __ __ __ __ __ __ __ ");
 			crashmenu_aktif.DrawText("---------------------------------");
 			if(situation[client] == 0)
@@ -344,12 +548,43 @@ public Action crashpanel(Handle timer, any client)
 				if(situation[client] == 1)
 				{
 					crashmenu_aktif.DrawText(gainedZ);
+					switch(client_autoCash[client])
+					{
+						case 0:
+						{
+							Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+							crashmenu_aktif.DrawText(crashtext);
+						}
+						case 1:
+						{
+							Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+							crashmenu_aktif.DrawText(crashtext);
+							Format(crashtext, sizeof(crashtext), "%t %0.2f", "Client Auto Cashout pref", client_auto[client]);
+							crashmenu_aktif.DrawText(crashtext);
+						}
+					}
+					
 				}
 				else if(situation[client] == 2)
 				{
 					char lastgain[32];
 					Format(lastgain, sizeof(lastgain), "%t", "Gained x Credits", totalgained[client], g_sCreditsName);
 					crashmenu_aktif.DrawText(lastgain);
+					switch(client_autoCash[client])
+					{
+						case 0:
+						{
+							Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+							crashmenu_aktif.DrawText(crashtext);
+						}
+						case 1:
+						{
+							Format(crashtext, sizeof(crashtext), "%t %t", "Client Auto Cashout pref", client_autoCash[client] ? "Crash Auto On":"Crash Auto Off");
+							crashmenu_aktif.DrawText(crashtext);
+							Format(crashtext, sizeof(crashtext), "%t %0.2f", "Client Auto Cashout pref", client_auto[client]);
+							crashmenu_aktif.DrawText(crashtext);
+						}
+					}
 				}
 				crashmenu_aktif.DrawText(betZ);
 				crashmenu_aktif.DrawText("---------------------------------");
@@ -359,7 +594,11 @@ public Action crashpanel(Handle timer, any client)
 					{
 						crashmenu_aktif.CurrentKey = 1;
 						Format(crashtext, sizeof(crashtext), "%t", "Cash out");
-						crashmenu_aktif.DrawItem(crashtext);
+						if (client_autoCash[client] && !gc_bCAuto.BoolValue)
+						{
+							crashmenu_aktif.DrawItem(crashtext, ITEMDRAW_DISABLED);
+						}
+						else crashmenu_aktif.DrawItem(crashtext);
 						//SetPanelCurrentKey(crashmenu_aktif, 9);
 						//crashmenu_aktif.CurrentKey = 1;
 						//crashmenu_aktif.DrawItem("Withdraw");
@@ -512,7 +751,29 @@ public int crashmenu_handler(Menu menu, MenuAction action, int param1, int itemN
 
 				//ClientCommand(client, "play %s", g_sMenuItem);
 				EmitSoundToClient(param1, g_sMenuItem);
-				
+			}
+			case 6:
+			{
+				switch(client_autoCash[param1])
+				{
+					case 0:
+					{
+						client_autoCash[param1] = true;
+						SaveClientCookies(param1);
+					}
+					case 1:
+					{
+						client_autoCash[param1] = false;
+						SaveClientCookies(param1);
+					}
+				}
+				EmitSoundToClient(param1, g_sMenuItem);
+			}
+			case 7:
+			{
+				g_iChatType[param1] = INPUT_AUTO;
+				CPrintToChat(param1, "%s%t", g_sChatPrefix, "Crash auto input");
+				EmitSoundToClient(param1, g_sMenuItem);
 			}
 		}
 	}
