@@ -6,15 +6,15 @@
 #include <zephstocks>
 #endif
 
-new String:g_szKnives[STORE_MAX_ITEMS][64];
-new g_unDefIndex[STORE_MAX_ITEMS];
-new bool:g_bGivingKnife[MAXPLAYERS+1] = {false,...};
-new g_iKnives = 0;
+char g_szKnives[STORE_MAX_ITEMS][64];
+int g_unDefIndex[STORE_MAX_ITEMS];
+bool g_bGivingKnife[MAXPLAYERS+1] = {false,...};
+int g_iKnives = 0;
 
 #if defined STANDALONE_BUILD
-public OnPluginStart()
+public void OnPluginStart()
 #else
-public Knives_OnPluginStart()
+public void Knives_OnPluginStart()
 #endif
 {
 	if(!GAME_CSGO)
@@ -23,21 +23,21 @@ public Knives_OnPluginStart()
 	Store_RegisterHandler("knife", "entity", Knives_OnMapStart, Knives_Reset, Knives_Config, Knives_Equip, Knives_Remove, true);
 }
 
-public Knives_OnClientPutInServer(client)
+public void Knives_OnClientPutInServer(int client)
 {
 	SDKHook(client, SDKHook_WeaponEquipPost, Knives_OnPostWeaponEquip);
 }
 
-public Knives_OnMapStart()
+public void Knives_OnMapStart()
 {
 }
 
-public Knives_Reset()
+public void Knives_Reset()
 {
 	g_iKnives = 0;
 }
 
-public Knives_Config(&Handle:kv, itemid)
+public bool Knives_Config(Handle &kv, int itemid)
 {
 	Store_SetDataIndex(itemid, g_iKnives);
 	
@@ -48,7 +48,7 @@ public Knives_Config(&Handle:kv, itemid)
 	return true;
 }
 
-public Knives_Equip(client, id)
+public int Knives_Equip(int client, int id)
 {
 	if(IsClientInGame(client) && IsPlayerAlive(client))
 	{
@@ -58,23 +58,23 @@ public Knives_Equip(client, id)
 	return 0;
 }
 
-public Knives_Remove(client)
+public int Knives_Remove(int client)
 {
 	return 0;
 }
 
-stock Knives_GiveClient(client)
+stock void Knives_GiveClient(int client)
 {
 	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 		return;
 
-	new m_iKnife = GetPlayerWeaponSlot(client, 2);
+	int m_iKnife = GetPlayerWeaponSlot(client, 2);
 
 	if(m_iKnife != -1)
 	{
-		new m_iItem = Store_GetEquippedItem(client, "knife");
+		int m_iItem = Store_GetEquippedItem(client, "knife");
 		if(m_iItem < 0) return;
-		new m_iData = Store_GetDataIndex(m_iItem);
+		int m_iData = Store_GetDataIndex(m_iItem);
 		RemovePlayerItem(client, m_iKnife);
 		RemoveEdict(m_iKnife);
 		CreateTimer(0.1, Timer_ResetGivingKnife, client);
@@ -84,27 +84,27 @@ stock Knives_GiveClient(client)
 	}
 }
 
-public Action:Timer_ResetGivingKnife(Handle:timer, any:data)
+public Action Timer_ResetGivingKnife(Handle timer, any data)
 {
 	g_bGivingKnife[data]=false;
 	return Plugin_Stop;
 }
 
-public Action:Knives_OnPostWeaponEquip(client, weapon)
+public Action Knives_OnPostWeaponEquip(int client, int weapon)
 { 
 	if(!GAME_CSGO)
 		return Plugin_Continue;
 
-	new String:edict[64];
+	char edict[64];
 	GetEdictClassname(weapon, STRING(edict));
 	if (strcmp(edict, "weapon_knife")!=0)
 		return Plugin_Continue;
 
 	if(g_bGivingKnife[client])
 	{
-		new m_iItem = Store_GetEquippedItem(client, "knife");
+		int m_iItem = Store_GetEquippedItem(client, "knife");
 		if(m_iItem < 0) return Plugin_Continue;
-		new m_iData = Store_GetDataIndex(m_iItem);
+		int m_iData = Store_GetDataIndex(m_iItem);
 
 		if(g_unDefIndex[m_iData] != 0)
 			SetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex", g_unDefIndex[m_iData]);
@@ -116,9 +116,9 @@ public Action:Knives_OnPostWeaponEquip(client, weapon)
 	return Plugin_Continue;
 }
 
-public Action:Knives_CheckKnife(Handle:timer, any:serial)
+public Action Knives_CheckKnife(Handle timer, any serial)
 {
-	new client = GetClientFromSerial(serial);
+	int client = GetClientFromSerial(serial);
 	
 	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Handled;

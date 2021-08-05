@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.6"
+#define PLUGIN_VERSION "5.5.7"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -186,7 +186,6 @@ ConVar g_cvarChatTag2;
 //#include "store/invisibility.sp"
 //#include "store/commands.sp"
 //#include "store/doors.sp"
-//#include "store/knife.sp"
 //#include "store/zrclass.sp"
 //#include "store/jihad.sp"
 //#include "store/godmode.sp"
@@ -195,9 +194,15 @@ ConVar g_cvarChatTag2;
 //#include "store/respawn.sp"
 //#include "store/pets.sp"
 //#include "store/sprays.sp"
-//#include "store/weaponskins.sp"
 //#include "store/admin.sp"
 //#include "store_misc_voucher.sp"
+#endif
+
+//uncomment the next line if you using valve weapon skin and knives (warning, this may cause your server get banned. Please use at your own risk)
+//#define WEAPONS_KNIVES
+#if defined WEAPONS_KNIVES
+#include "store/knife.sp"
+#include "store/weaponskins.sp"
 #endif
 
 //////////////////////////////////
@@ -351,17 +356,21 @@ public void OnPluginStart()
 	//Doors_OnPluginStart();
 	//ZRClass_OnPluginStart();
 	//Jihad_OnPluginStart();
-	//Knives_OnPluginStart();
+
 	//Godmode_OnPluginStart();
 	//Sounds_OnPluginStart();
 	Attributes_OnPluginStart();
 	//Respawn_OnPluginStart();
 	//Pets_OnPluginStart();
 	//Sprays_OnPluginStart();
-	//WeaponSkins_OnPluginStart();
 	//AdminGroup_OnPluginStart();
 	//Vounchers_OnPluginStart();
 #endif
+
+	#if defined WEAPONS_KNIVES
+		Knives_OnPluginStart();
+		WeaponSkins_OnPluginStart();
+	#endif
 
 	Handle topmenu;
 	if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != INVALID_HANDLE))
@@ -1283,8 +1292,11 @@ public void OnClientPutInServer(int client)
 	if(IsFakeClient(client))
 		return;
 	//WeaponColors_OnClientPutInServer(client);
-	//Knives_OnClientPutInServer(client);
-	//WeaponSkins_OnClientPutInServer(client);
+	#if defined WEAPONS_KNIVES
+		Knives_OnClientPutInServer(client);
+		WeaponSkins_OnClientPutInServer(client);
+	#endif
+
 }
 #endif
 
@@ -3226,7 +3238,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 		}
 		
 		// Do some housekeeping
-		char m_szQuery[256], m_szVoucherQuery[2048], m_szLogCleaningQuery[256];
+		char m_szQuery[256], m_szLogCleaningQuery[256];
 		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `date_of_expiration` <> 0 AND `date_of_expiration` < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
 		

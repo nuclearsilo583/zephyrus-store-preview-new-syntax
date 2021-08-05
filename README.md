@@ -4,6 +4,8 @@
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
 
 # Newly added
+- Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
+	(Please uncomment //#define WEAPONS_KNIVES at line #202 to enable this module)
 - New Store Logging for module (Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
 ![log](https://user-images.githubusercontent.com/58926275/125444645-8c83105f-cc83-411d-bab9-a9e5689af9d9.png)
 - New Store Voucher system module (Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
