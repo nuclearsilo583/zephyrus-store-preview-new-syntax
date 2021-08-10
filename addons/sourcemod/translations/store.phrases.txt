@@ -1,5 +1,147 @@
 ﻿"Phrases"
 {
+	"Press"
+	{
+		"en"        "Press"
+		"hu"        "Nyomd meg"
+	}
+
+	"Amount"
+	{
+		"#format"    "{1:d}"
+		"en"        "Amount: {1}"
+		"hu"        "Összeg: {1}"
+	}
+
+	"Edit Amount"
+	{
+		"en"        "Edit Amount: "
+		"hu"        "Összeg módosítása: "
+	}
+
+	"Up"
+	{
+		"en"        "Up"
+		"hu"        "Felfelé"
+	}
+
+	"Down"
+	{
+		"en"        "Down"
+		"hu"        "Lefelé"
+	}
+
+	"Down2"
+	{
+		"en"        "                      5 = Down"
+		"hu"        "                      5 = Lefelé"
+	}
+
+	"You"
+	{
+		"en"        "YOU"
+		"hu"        "NEKED"
+	}
+
+	"21Blackjack"
+	{
+		"#format"    "{1:s}"
+		"en"        "{1}21 !!!  BLACKJACK  !!!"
+	}
+
+	"Dealer"
+	{
+		"en"        "DEALER"
+		"hu"        "OSZTÓ"
+	}
+
+	"Deal+-"
+	{
+		"#format"    "{1:d},{2:d}"
+		"en"        "             DEAL     +{1}     -{2}"
+		"hu"        "          RENDBEN     +{1}     -{2}"
+	}
+
+	"Credits and Pot"
+	{
+		"#format"    "{1:d},{2:d}"
+		"en"        "Credits: {1}          Pot: {2}"
+		"hu"        "Kreditek: {1}         Tét: {2}"
+	}
+
+	"Hit"
+	{
+		"en"        "Hit"
+		"hu"        "Lap kérés"
+	}
+
+	"Stay"
+	{
+		"en"        "Stand"
+		"hu"        "Tartózkodás"
+	}
+
+	"Double"
+	{
+		"en"        "Double"
+		"hu"        "Duplázás"
+	}
+
+	"blackjack"
+	{
+		"en"        "Blackjack"
+	}
+
+	"You lose"
+	{
+		"en"        "- you lost"
+		"hu"        "- vesztettél -"
+	}
+
+	"You won"
+	{
+		"en"        "!!! YOU WON !!!"
+		"hu"        "!!! NYERTÉL !!!"
+	}
+
+	"Dead heat"
+	{
+		"en"        "- dead heat -"
+		"hu"        "- holtverseny -"
+	}
+
+	"Try again"
+	{
+		"en"        "Try again"
+		"hu"        "Próbáld újra"
+	}
+
+	"Type in chat !blackjack"
+	{
+		"en"        "Type in chat !blackjack <bet>"
+		"hu"        "Írd be: !blackjack <tét>"
+	}
+	
+	"Blackjack Info 4"
+	{
+		"en"        "- Your hand value must get closer to 21 without go over and higher than dealer hand to win the game.\n- \"A\" + 10 value card = BlackJack. This is an instant win."
+	}
+
+	"Blackjack Info 3"
+	{
+		"en"        "- \"10,J,Q,K\": Counted as 10.\n- 2-9 Counted as their face value."
+	}
+
+	"Blackjack Info 2"
+	{
+		"en"        "Counting rules:\n- \"A\" card can be counted as 1/11. If the hand value exceeding 21 this card must be counted as 1."
+	}
+
+	"Blackjack Info 1"
+	{
+		"en"        "Blackjack is a game that the card value in your hand must higher than the dealer without exceeding 21"
+	}
+	
 	"Crash set auto"
 	{
 		"en"        "Set auto cashout value"

@@ -1,14 +1,12 @@
 #pragma semicolon 1
 #include <sourcemod>
+#include <sdktools>
 
 #undef REQUIRE_PLUGIN
 #undef REQUIRE_EXTENSIONS
-#include <clientprefs>
 #include <colors>
-#include <cstrike>
+#include <autoexecconfig>
 #include <store>
-
-#define PLUGIN_VERSION "2.0"
 
 #define SUIT_SPADES "♠"
 #define SUIT_DIAMONDS "♦"
@@ -23,17 +21,16 @@ enum GameStatus {
 	Status_Draw
 }
 
-Handle g_hCVMaxBet;
-Handle g_hCVAdvertOnDeath;
-
-Handle g_hAutoShowCookie = INVALID_HANDLE;
-Handle g_hAutoHideCookie = INVALID_HANDLE;
-bool g_bAutoShow[MAXPLAYERS+1] = {false,...};
-bool g_bAutoHide[MAXPLAYERS+1] = {true,...};
+ConVar gc_iMax, gc_iMin, gc_iLose, gc_iWon;
 
 char g_sSuits[4][5];
 char g_sCards[13][3];
-char PREFIX[] = "{default}[{green}BlackJack{default}]";
+
+char g_sCreditsName[64] = "credits";
+char g_sChatPrefix[128];
+
+char g_sMenuItem[64];
+char g_sMenuExit[64];
 
 int iBetValue = 10;
 int g_iCardValue[13] = {2,3,4,5,6,7,8,9,10,10,10,10,11};
@@ -58,21 +55,25 @@ bool g_bPlayedBJ[MAXPLAYERS+1] = {false,...};
 
 public Plugin myinfo = 
 {
-	name = "Orizon - Blackjack",
-	author = "HerrMagic and Originalz ft. Jannik",
-	description = "Blackjack panel game",
-	version = PLUGIN_VERSION,
-	url = ""
+	name = "Blackjack",
+	author = "HerrMagic and Originalz ft. Jannik, AiDN™, nuclear silo",
+	description = "Blackjack game Zephyrus's , nuclear silo's edited store",
+	version = "1.0"
 }
 
 public OnPluginStart()
 {
-	Handle hVersion = CreateConVar("sm_blackjack_version", PLUGIN_VERSION, "Blackjack version", FCVAR_PLUGIN|FCVAR_NOTIFY|FCVAR_REPLICATED|FCVAR_DONTRECORD);
-	if(hVersion != INVALID_HANDLE)
-		SetConVarString(hVersion, PLUGIN_VERSION);
+	//Translation
+	LoadTranslations("store.phrases");
+	LoadTranslations("common.phrases");
 	
-	g_hCVMaxBet = CreateConVar("sm_blackjack_maxbet", "1000000", "Set the maximal amount of money a player is able to bet per game.", FCVAR_PLUGIN, true, 0.0);
-	g_hCVAdvertOnDeath = CreateConVar("sm_blackjack_advertondeath", "0", "Show an advert on death, if player didn't play already?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	//ConVars
+	
+	gc_iMax = AutoExecConfig_CreateConVar("store_blackjack_max", "2000", "Maximum amount of credits to spend", _, true, 0.0);
+	gc_iMin = AutoExecConfig_CreateConVar("store_blackjack_min", "20", "Minimum amount of credits to spend.", _, true, 0.0);
+	gc_iLose = AutoExecConfig_CreateConVar("store_blackjack_lose", "500", "Amount of credits player lost to show in public.");
+	gc_iWon = AutoExecConfig_CreateConVar("store_blackjack_won", "500", "Amount of credits player won to show in public.");
+	AutoExecConfig(true, "blackjack", "sourcemod/store");
 	
 	// Some basic setup to fill our deck
 	// Define all available cards
@@ -97,52 +98,14 @@ public OnPluginStart()
 	
 	RegConsoleCmd("sm_bj", Cmd_BlackJack, "Opens the blackjack game.");
 	RegConsoleCmd("sm_blackjack", Cmd_BlackJack, "Opens the blackjack game.");
-	RegConsoleCmd("sm_bjhelp", Cmd_BlackJackHelp, "Displays the blackjack help and settings.");
-	RegConsoleCmd("sm_blackjackhelp", Cmd_BlackJackHelp, "Displays the blackjack help and settings.");
-	
-	if(LibraryExists("clientprefs"))
-	{
-		g_hAutoShowCookie = RegClientCookie("BlackJack_AutoShow", "Show the blackjack panel on death?", CookieAccess_Public);
-		g_hAutoHideCookie = RegClientCookie("BlackJack_AutoHide", "Hide the blackjack panel on spawn?", CookieAccess_Public);
-		// For lateloading..
-		for(int i=1;i<=MaxClients;i++)
-		{
-			if(IsClientInGame(i) && AreClientCookiesCached(i))
-				OnClientCookiesCached(i);
-		}
-	}
 	
 	HookEvent("player_spawn", Event_OnPlayerSpawn);
-	HookEvent("player_death", Event_OnPlayerDeath);
-	
-	AutoExecConfig(true, "blackjack");	
-	
 }
 
-public OnClientCookiesCached(client)
+public void Store_OnConfigExecuted(char[] prefix)
 {
-	char sBuffer[5];
-	GetClientCookie(client, g_hAutoShowCookie, sBuffer, sizeof(sBuffer));
-	if(StrEqual(sBuffer, "1"))
-		g_bAutoShow[client] = true;
-	else
-		g_bAutoShow[client] = false;
-	
-	
-	GetClientCookie(client, g_hAutoHideCookie, sBuffer, sizeof(sBuffer));
-	if(StrEqual(sBuffer, "0"))
-		g_bAutoHide[client] = false;
-	else
-		g_bAutoHide[client] = true;
-}
-
-public OnLibraryAdded(const char[] name)
-{
-	if(StrEqual(name, "clientprefs"))
-	{
-		g_hAutoShowCookie = RegClientCookie("BlackJack_AutoShow", "Show the blackjack panel on death?", CookieAccess_Public);
-		g_hAutoHideCookie = RegClientCookie("BlackJack_AutoHide", "Hide the blackjack panel on spawn?", CookieAccess_Public);
-	}
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+	ReadCoreCFG();
 }
 
 public OnClientDisconnect(client)
@@ -173,8 +136,6 @@ public OnClientDisconnect(client)
 	g_bStays[client] = false;
 	g_bDealerEnds[client] = false;
 	g_bPlayerIsInMenu[client] = false;
-	g_bAutoShow[client] = false;
-	g_bAutoHide[client] = true;
 	g_bMoneyDealt[client] = false;
 	g_iGameStatus[client] = Status_None;
 	g_bPlayedBJ[client] = false;
@@ -183,45 +144,28 @@ public OnClientDisconnect(client)
 public Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(g_bPlayerIsInMenu[client] && g_bAutoHide[client])
-		CancelClientMenu(client);
-}
-
-public Event_OnPlayerDeath(Handle event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(g_bAutoShow[client] && !g_bPlayerIsInMenu[client])
-	{
-		Cmd_BlackJack(client, 0);
-	}
-	
-	if(GetConVarBool(g_hCVAdvertOnDeath) && !g_bPlayedBJ[client] && !g_bAutoShow[client])
-	CPrintToChat(client, "%s {green}Type {default}!bj{green} to play blackjack while waiting! Type {default}!bjhelp{green} for help.", PREFIX);
+	if(g_bPlayerIsInMenu[client])
+	CancelClientMenu(client);
 }
 
 public Action Cmd_BlackJack(int client, int args)
 {
-	if(!client)
-	{
-		ReplyToCommand(client, "%s You have to be ingame to play.", PREFIX);
-		return Plugin_Handled;
-	}
-	
 	g_bPlayedBJ[client] = true;
 	
 	if(args == 0)
 	{
-			// He's already playing. Show the playing panel
-			if(g_bIsIngame[client] == true)
-			{
-				ShowGamePanel(client);
-			}
-			else
-			{
-				CPrintToChat(client, "%s {green}you can also use !bj <amount>", PREFIX);
-				ShowBetPanel(client);
-			}
-	} else if(args == 1)
+		// He's already playing. Show the playing panel
+		if(g_bIsIngame[client] == true)
+		{
+			ShowGamePanel(client);
+		}
+		else
+		{
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Type in chat !blackjack");
+			ShowBetPanel(client);
+		}
+	} 
+	else if(args == 1)
 	{	
 		char buffer[256];
 		GetCmdArg(1, buffer, sizeof(buffer));
@@ -229,6 +173,26 @@ public Action Cmd_BlackJack(int client, int args)
 		int argument = StringToInt(buffer);
 		
 		int iAccount = Store_GetClientCredits(client);
+		
+		if(iAccount >= argument && (gc_iMax.IntValue == 0 || argument <= gc_iMax.IntValue)){}
+		
+		else
+		{
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "You can't spend that much credits", gc_iMax.IntValue, g_sCreditsName);
+			return Plugin_Handled;
+		}
+		
+		
+		if(iAccount >= argument && (gc_iMax.IntValue == 0 || argument >= gc_iMin.IntValue))
+		{
+			
+		}
+		
+		else
+		{
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "You have to spend at least x credits.", gc_iMin.IntValue, g_sCreditsName);
+			return Plugin_Handled;
+		}		
 		
 		if(iAccount >= argument)
 		{
@@ -240,54 +204,22 @@ public Action Cmd_BlackJack(int client, int args)
 			else
 			{
 				g_iBufferPlayerPot[client] = argument;
-				CPrintToChat(client, "%s {green}You bet {darkblue}%d {orange}credits", PREFIX, g_iBufferPlayerPot[client]);
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Betting Placed", g_iBufferPlayerPot[client]);
 				ShowBetPanel(client);
 			}
 			
-		} else if(iAccount <= argument)
+		} 
+		else if(iAccount <= argument)
 		{
-			CPrintToChat(client, "%s {green}You don't have enough credits", PREFIX);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits");
 			
 			return Plugin_Handled;
 		}
-	} else if (args > 1)
+	} 
+	else if (args > 1)
 	{
-		CPrintToChat(client, "%s {green}use {darkblue}!bj <amount> {green}to play Blackjack", PREFIX);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Type in chat !blackjack");
 	}
-	
-	return Plugin_Handled;
-}
-
-public Action Cmd_BlackJackHelp(int client, int args)
-{
-	if(!client)
-	{
-		ReplyToCommand(client, "Blackjack: You have to be ingame.");
-		return Plugin_Handled;
-	}
-	
-	Handle hPanel = CreatePanel();
-	SetPanelTitle(hPanel, "-=BLACKJACK=-");
-	
-	DrawPanelItem(hPanel, "Play now");
-	char sBuffer[32];
-	Format(sBuffer, sizeof(sBuffer), "Show on death: %s", (g_bAutoShow[client]?"Yes":"No"));
-	DrawPanelItem(hPanel, sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "Hide on spawn: %s", (g_bAutoHide[client]?"Yes":"No"));
-	DrawPanelItem(hPanel, sBuffer);
-	DrawPanelItem(hPanel, "Display rules");
-	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
-	Format(sBuffer, sizeof(sBuffer), "Maximal bet is %d Credits.", GetConVarInt(g_hCVMaxBet));
-	DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
-	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
-	DrawPanelItem(hPanel, "Number-cards count as their natural value; the pictures count as 10;", ITEMDRAW_RAWLINE);
-	DrawPanelItem(hPanel, "aces are valued as either 1 or 11 according to the player's best interest.", ITEMDRAW_RAWLINE);
-	DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
-	
-	SetPanelCurrentKey(hPanel, 9);
-	DrawPanelItem(hPanel, "Exit");
-	SendPanelToClient(hPanel, client, Menu_Help, MENU_TIME_FOREVER);
-	CloseHandle(hPanel);
 	
 	return Plugin_Handled;
 }
@@ -300,6 +232,7 @@ ShowBetPanel(client)
 	char betValueBuffer[64];
 	char betValueAmount[64];
 	char sBuffer[64];
+	char sBuffer2[64];
 	if(g_iBufferPlayerPot[client] > 0 && iAccount >= g_iBufferPlayerPot[client]) {
 			
 		iAccount -= g_iBufferPlayerPot[client];
@@ -307,63 +240,83 @@ ShowBetPanel(client)
 		g_iBufferPlayerPot[client] = 0;
 		Store_SetClientCredits(client, iAccount);
 
-	} else if(g_iPlayerPot[client] == 0 && iAccount >= g_iPlayerPot[client])
+	} 
+	else if(g_iPlayerPot[client] == 0 && iAccount >= g_iPlayerPot[client])
 	{
 		
 		iAccount -= g_iPlayerPot[client];
 		Store_SetClientCredits(client, iAccount);
 	}
 	
-	
-	panel.SetTitle("-=BLACKJACK=-");
-	Format(sBuffer, sizeof(sBuffer), "Credits : %d         POT : %d", iAccount, g_iPlayerPot[client]);
+	Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
+	panel.SetTitle(sBuffer);
+	Format(sBuffer, sizeof(sBuffer), "%t", "Credits and Pot", iAccount, g_iPlayerPot[client]);
 	panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
 	panel.DrawItem("_______________", ITEMDRAW_RAWLINE);
 	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
 	
 	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
-	Format(betValueBuffer, sizeof(betValueBuffer), "             DEAL     +%d     -%d", iBetValue, iBetValue);
+	Format(betValueBuffer, sizeof(betValueBuffer), "%t", "Deal+-", iBetValue, iBetValue);
 	panel.DrawItem(betValueBuffer, ITEMDRAW_RAWLINE);
 
+	Format(sBuffer, sizeof(sBuffer), "%t", "Press");
 	if(g_iPlayerPot[client] > 0)
-		panel.DrawItem("Press:       1        2          3", ITEMDRAW_RAWLINE);
+	{
+		Format(sBuffer, sizeof(sBuffer), "%s:       1        2          3", sBuffer);
+		panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
+	}
+	
 	else
-		panel.DrawItem("Press:                 2         3", ITEMDRAW_RAWLINE);
-
+	{
+		Format(sBuffer, sizeof(sBuffer), "%s:                 2         3", sBuffer);
+		panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
+	}
+	
 	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
 	panel.DrawItem("", ITEMDRAW_SPACER | ITEMDRAW_RAWLINE);
 	
-	Format(betValueAmount, sizeof(betValueAmount), "Amount: %d", iBetValue);
+	Format(betValueAmount, sizeof(betValueAmount), "%t", "Amount", iBetValue);
 	panel.DrawItem(betValueAmount, ITEMDRAW_RAWLINE);
-	
+	Format(sBuffer, sizeof(sBuffer), "%t", "Edit Amount");
 	if(iBetValue == 10)
 	{
-		panel.DrawItem("Edit Amount: 4 = UP", ITEMDRAW_RAWLINE);
+		Format(sBuffer2, sizeof(sBuffer2), "%t", "Up");
+		Format(sBuffer, sizeof(sBuffer), "%s4 = %s", sBuffer, sBuffer2);
+		panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
 		//panel.DrawItem(" ------", ITEMDRAW_RAWLINE);
 	}
 	else if (iBetValue == 100)
 	{
-		panel.DrawItem("Edit Amount: 4 = UP", ITEMDRAW_RAWLINE);
-		panel.DrawItem("                      5 = DOWN", ITEMDRAW_RAWLINE);
+		Format(sBuffer2, sizeof(sBuffer2), "%t", "Up");
+		Format(sBuffer, sizeof(sBuffer), "%s4 = %s", sBuffer, sBuffer2);
+		panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
+		Format(sBuffer, sizeof(sBuffer), "%t", "Down2");
+		panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
 	}
 	else if (iBetValue == 1000)
 	{
-		panel.DrawItem("Edit Amount: ", ITEMDRAW_RAWLINE);
-		panel.DrawItem("                      5 = DOWN", ITEMDRAW_RAWLINE);
+		Format(sBuffer, sizeof(sBuffer), "%t", "Edit Amount");
+		panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
+		Format(sBuffer, sizeof(sBuffer), "%t", "Down2");
+		panel.DrawItem(sBuffer, ITEMDRAW_RAWLINE);
 	}
-
-	panel.DrawItem("", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
-	SetPanelCurrentKey(panel, 9);
-	panel.DrawItem("Exit", ITEMDRAW_CONTROL);
-				  //1      2      3      4		5	   9
-	panel.SetKeys(((1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<8)));
 	
+	SetPanelCurrentKey(panel, 6);
+	Format(sBuffer, sizeof(sBuffer), "%t", "Game Info");
+	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
+	SetPanelCurrentKey(panel, 9);
+	Format(sBuffer, sizeof(sBuffer), "%t", "Exit");
+	panel.DrawItem(sBuffer, ITEMDRAW_CONTROL);
+	
+	//				  1      2      3      4	  5	   	6		9
+	panel.SetKeys(((1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<8)));
 	
 	if(panel.Send(client, Menu_Betting, MENU_TIME_FOREVER))
 		g_bPlayerIsInMenu[client] = true;
 	
 	delete panel;
 }
+
 ShowGamePanel(client)
 {
 	int iCountHigh = GetCardCount(client, true);
@@ -382,9 +335,10 @@ ShowGamePanel(client)
 	
 	// Build the game panel
 	Handle hPanel = CreatePanel();
-	char sBuffer[64];
-	SetPanelTitle(hPanel, "-=BLACKJACK=-");
-	Format(sBuffer, sizeof(sBuffer), "Credits: %d         POT: %d", Store_GetClientCredits(client), g_iPlayerPot[client]);
+	char sBuffer[64], sBuffer2[64];
+	Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
+	SetPanelTitle(hPanel, sBuffer);
+	Format(sBuffer, sizeof(sBuffer), "%t", "Credits and Pot", Store_GetClientCredits(client), g_iPlayerPot[client]);
 	DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
 	DrawPanelItem(hPanel, "_______________", ITEMDRAW_RAWLINE);
 	
@@ -402,21 +356,22 @@ ShowGamePanel(client)
 	}
 	
 	// The player is still able to hit, so we're not showing all dealers cards. He just has one anyways.
+	Format(sBuffer2, sizeof(sBuffer2), "%t", "Dealer");
 	if(!g_bStays[client])
 	{
-		Format(sBuffer, sizeof(sBuffer), "DEALER  %s", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%s  %s", sBuffer2, sBuffer);
 	}
 	// The game ended. Show dealer cards.
 	else
 	{
-		Format(sBuffer, sizeof(sBuffer), "DEALER  %s = ", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%s  %s = ", sBuffer2, sBuffer);
 		
 		// Game ended? Show the final value
 		if(g_bDealerEnds[client])
 		{
 			// He got a black jack?
 			if(g_iGameStatus[client] == Status_Lose && GetArraySize(g_hDealerCards[client]) == 2 && g_iDealerCardValue[client] == 21)
-				Format(sBuffer, sizeof(sBuffer), "%s21 !!!  BLACKJACK", sBuffer);
+				Format(sBuffer, sizeof(sBuffer), "%t", "21Blackjack", sBuffer);
 			else
 				Format(sBuffer, sizeof(sBuffer), "%s%d", sBuffer, g_iDealerCardValue[client]);
 		}
@@ -447,13 +402,14 @@ ShowGamePanel(client)
 			Format(sBuffer, sizeof(sBuffer), "%s [%s%s]", sBuffer, g_sCards[cards[1]], g_sSuits[cards[0]]);
 	}
 	
-	Format(sBuffer, sizeof(sBuffer), "YOU  %s = ", sBuffer);
+	Format(sBuffer2, sizeof(sBuffer2), "%t", "You");
+	Format(sBuffer, sizeof(sBuffer), "%s  %s = ", sBuffer2, sBuffer);
 	// The player stays and the dealer thinks...
 	if(g_bStays[client])
 	{
 		// Blackjack!
 		if(g_iGameStatus[client] == Status_BlackJack)
-			Format(sBuffer, sizeof(sBuffer), "%s21 !!!  BLACKJACK", sBuffer);
+			Format(sBuffer, sizeof(sBuffer), "%t", "21Blackjack", sBuffer);
 		// Just show the card value
 		else
 			Format(sBuffer, sizeof(sBuffer), "%s%d", sBuffer, g_iPlayerCardValue[client]);
@@ -474,10 +430,13 @@ ShowGamePanel(client)
 	// He's still open to act. (Didn't press stay or double)
 	if(g_iGameStatus[client] == Status_None && !g_bStays[client])
 	{
-		DrawPanelItem(hPanel, "              HIT     STAY   DOUBLE", ITEMDRAW_RAWLINE);
-		DrawPanelItem(hPanel, "press:       1          2           3", ITEMDRAW_RAWLINE);
+		Format(sBuffer, sizeof(sBuffer), "%t", "Hit");
+		DrawPanelItem(hPanel, sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%t", "Stay");
+		DrawPanelItem(hPanel, sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%t", "Double");
+		DrawPanelItem(hPanel, sBuffer);
 		DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
-		SetPanelKeys(hPanel, ((1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<8)));
 	}
 	else if(g_iGameStatus[client] != Status_None)
 	{
@@ -488,54 +447,66 @@ ShowGamePanel(client)
 				// The dealer is closer to 21.
 				if(g_bDealerEnds[client])
 				{
-					DrawPanelItem(hPanel, "- you lose -", ITEMDRAW_RAWLINE);
-					if (g_iPlayerPot[client] > 500)
+					Format(sBuffer, sizeof(sBuffer), "%t", "You lose");
+					DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+					g_bIsIngame[client] = false;
+					if (g_iPlayerPot[client] >= gc_iLose.IntValue)
 					{
-						CPrintToChatAll("%s {purple}%s {darkred}lost {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+						CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iPlayerPot[client], g_sCreditsName, "blackjack");	
 					}
-				// You _overbuyed_ yourself!
-				} else
+					// You _overbuyed_ yourself!
+				} 
+				else
 				{
-					DrawPanelItem(hPanel, "- bust -", ITEMDRAW_RAWLINE);
-					if (g_iPlayerPot[client] > 500)
+					Format(sBuffer, sizeof(sBuffer), "%t", "You lose");
+					DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+					g_bIsIngame[client] = false;
+					if (g_iPlayerPot[client] > gc_iLose.IntValue)
 					{
-						CPrintToChatAll("%s {purple}%s {darkred}lost {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+						CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iPlayerPot[client], g_sCreditsName, "blackjack");	
 					}
 				}
 			}
 			case Status_BlackJack:
 			{
-				DrawPanelItem(hPanel, "!!! YOU WON !!!", ITEMDRAW_RAWLINE);
+				Format(sBuffer, sizeof(sBuffer), "%t", "You won");
+				DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+				g_bIsIngame[client] = false;
 				if(ServerCommand("sm_givecredits")){}
 				if(!g_bMoneyDealt[client])
 				{
 					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*3);
-					if (g_iPlayerPot[client] > 50)
+					if (g_iPlayerPot[client] > gc_iWon.IntValue)
 					{
-						CPrintToChatAll("%s {purple}%s {green}won {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+						CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, "blackjack");
 					}
 				}
 			}
 			case Status_Win:
 			{
-				DrawPanelItem(hPanel, "!!! YOU WON !!!", ITEMDRAW_RAWLINE);
-				if (g_iPlayerPot[client] > 50)
+				Format(sBuffer, sizeof(sBuffer), "%t", "You won");
+				DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+				g_bIsIngame[client] = false;
+				if (g_iPlayerPot[client] > gc_iWon.IntValue)
 				{
-					CPrintToChatAll("%s {purple}%s {green}won {darkblue}%d {orange}credits {green}in BlackJack", PREFIX, NameBuffer, g_iPlayerPot[client]);	
+					CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, "blackjack");	
 				}
 				if(!g_bMoneyDealt[client])
 					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*2);
 			}
 			case Status_Draw:
 			{
-				DrawPanelItem(hPanel, "- dead heat -", ITEMDRAW_RAWLINE);
+				Format(sBuffer, sizeof(sBuffer), "%t", "Dead heat");
+				DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
+				g_bIsIngame[client] = false;
 				if(!g_bMoneyDealt[client])
 					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]);
 			}
 		}
 		DrawPanelItem(hPanel, "", ITEMDRAW_SPACER|ITEMDRAW_RAWLINE);
 		SetPanelCurrentKey(hPanel, 4);
-		DrawPanelItem(hPanel, "Try again");
+		Format(sBuffer, sizeof(sBuffer), "%t", "Try again");
+		DrawPanelItem(hPanel, sBuffer);
 		
 		// We dealt with the money. Don't give it again, when he pauses and resumes.
 		g_bMoneyDealt[client] = true;
@@ -547,7 +518,8 @@ ShowGamePanel(client)
 	}
 	
 	SetPanelCurrentKey(hPanel, 9);
-	DrawPanelItem(hPanel, "Exit");
+	Format(sBuffer, sizeof(sBuffer), "%t", "Exit");
+	DrawPanelItem(hPanel, sBuffer);
 	
 	if(SendPanelToClient(hPanel, client, Menu_GameHandler, MENU_TIME_FOREVER))
 		g_bPlayerIsInMenu[client] = true;
@@ -604,8 +576,7 @@ public Menu_Betting(Handle menu, MenuAction action, param1, param2)
 		else if(param2 == 2)
 		{
 			int iAccount = Store_GetClientCredits(param1);
-			int iLimit = GetConVarInt(g_hCVMaxBet);
-			if(iAccount >= iBetValue && (iLimit == 0 || (g_iPlayerPot[param1]+iBetValue) <= iLimit))
+			if(iAccount >= iBetValue && (gc_iMax.IntValue == 0 || (g_iPlayerPot[param1]+iBetValue) <= gc_iMax.IntValue))
 			{
 				g_iPlayerPot[param1] += iBetValue;
 				Store_SetClientCredits(param1, iAccount-iBetValue);
@@ -632,9 +603,6 @@ public Menu_Betting(Handle menu, MenuAction action, param1, param2)
 			else if (iBetValue == 100)
 			{
 				iBetValue = 1000;
-			} else if (iBetValue == 1000)
-			{
-				iBetValue = 10000;
 			}
 			ShowBetPanel(param1);
 		}
@@ -648,11 +616,12 @@ public Menu_Betting(Handle menu, MenuAction action, param1, param2)
 			else if (iBetValue == 1000)
 			{
 				iBetValue = 100;
-			} else if (iBetValue == 10000)
-			{
-				iBetValue = 1000;
 			}
 			ShowBetPanel(param1);
+		}
+		else if(param2 == 6)
+		{
+			Panel_GameInfo(param1);
 		}
 		else if(param2 == 9)
 		{
@@ -667,12 +636,10 @@ public Menu_Betting(Handle menu, MenuAction action, param1, param2)
 			g_bStays[param1] = false;
 			g_bDealerEnds[param1] = false;
 			g_bPlayerIsInMenu[param1] = false;
-			//g_bAutoShow[client] = false;
-			//g_bAutoHide[client] = true;
 			g_bMoneyDealt[param1] = false;
 			g_iGameStatus[param1] = Status_None;
 			g_bPlayedBJ[param1] = false;
-			CPrintToChat(param1, "%s {green} Type {default}!bj{green} to play BlackJack again!", PREFIX);
+			CPrintToChat(param1, "%s%t", g_sChatPrefix, "Type in chat !blackjack");
 		}
 	}
 }
@@ -709,7 +676,7 @@ public Menu_GameHandler(Handle menu, MenuAction action, param1, param2)
 		else if(param2 == 3 && g_iGameStatus[param1] != Status_Lose)
 		{
 			int iAccount = Store_GetClientCredits(param1);
-			int iLimit = GetConVarInt(g_hCVMaxBet);
+			int iLimit = GetConVarInt(gc_iMax);
 			if(iAccount >= g_iPlayerPot[param1] && (iLimit == 0 || (g_iPlayerPot[param1]*2) <= iLimit))
 			{
 				Store_SetClientCredits(param1, iAccount-g_iPlayerPot[param1]);
@@ -743,93 +710,79 @@ public Menu_GameHandler(Handle menu, MenuAction action, param1, param2)
 				g_bStays[param1] = false;
 				//g_bDealerEnds[param1] = false;
 				g_bPlayerIsInMenu[param1] = false;
-				//g_bAutoShow[client] = false;
-				//g_bAutoHide[client] = true;
 				//g_bMoneyDealt[param1] = false;
 				g_iGameStatus[param1] = Status_None;
 				g_bPlayedBJ[param1] = false;
-				CPrintToChat(param1, "%s {green} Type {default}!bj{green} to play again!", PREFIX);
-			} else
+				CPrintToChat(param1, "%s%t", g_sChatPrefix, "Type in chat !blackjack");
+			} 
+			else
 			{
-				CPrintToChat(param1, "%s {green} Type {default}!bj{green} to resume!", PREFIX);
+				CPrintToChat(param1, "%s%t", g_sChatPrefix, "Type in chat !blackjack");
 			}
 		}
 	}
 }
 
-public Menu_Help(Handle menu, MenuAction action, param1, param2)
+//Show the games info panel
+void Panel_GameInfo(int client)
 {
-	if(action == MenuAction_Select)
-	{
-		// Play now
-		if(param2 == 1)
-		{
-			Cmd_BlackJack(param1, 0);
-		}
-		// Set auto play
-		else if(param2 == 2)
-		{
-			g_bAutoShow[param1] = !g_bAutoShow[param1];
-			if(LibraryExists("clientprefs"))
-			{
-				if(g_bAutoShow[param1])
-					SetClientCookie(param1, g_hAutoShowCookie, "1");
-				else
-					SetClientCookie(param1, g_hAutoShowCookie, "0");
-			}
-			
-			// Redraw the panel
-			Cmd_BlackJackHelp(param1, 0);
-		}
-		// Set auto hide
-		else if(param2 == 3)
-		{
-			g_bAutoHide[param1] = !g_bAutoHide[param1];
-			if(LibraryExists("clientprefs"))
-			{
-				if(g_bAutoHide[param1])
-					SetClientCookie(param1, g_hAutoHideCookie, "1");
-				else
-					SetClientCookie(param1, g_hAutoHideCookie, "0");
-			}
-			
-			// Redraw the panel
-			Cmd_BlackJackHelp(param1, 0);
-		}
-		else if(param2 == 4)
-		{
-			Handle hPanel = CreatePanel();
-			SetPanelTitle(hPanel, "Blackjack rules");
-			DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
-			DrawPanelItem(hPanel, "The goal is to bring the total card value to 21 or less without exceeding it.", ITEMDRAW_RAWLINE);
-			DrawPanelItem(hPanel, "If you exceed 21 you lose, if the dealer does, you win.", ITEMDRAW_RAWLINE);
-			DrawPanelItem(hPanel, "If both are below 21, the closer one wins.", ITEMDRAW_RAWLINE);
-			DrawPanelItem(hPanel, "You've a blackjack, if you've got 21 points with only your first 2 cards.", ITEMDRAW_RAWLINE);
-			DrawPanelItem(hPanel, "You decide to get another card (hit) or stay with your current value (stay)", ITEMDRAW_RAWLINE);
-			DrawPanelItem(hPanel, "and let the dealer get his cards. You're able to double your bet if you've", ITEMDRAW_RAWLINE);
-			DrawPanelItem(hPanel, "enough money and get one last more card and stay.", ITEMDRAW_RAWLINE);
-			DrawPanelItem(hPanel, "", ITEMDRAW_SPACER);
-			
-			SetPanelCurrentKey(hPanel, 8);
-			DrawPanelItem(hPanel, "Back");
-			SetPanelCurrentKey(hPanel, 9);
-			DrawPanelItem(hPanel, "Exit");
-			
-			SendPanelToClient(hPanel, param1, Menu_Rules, MENU_TIME_FOREVER);
-			CloseHandle(hPanel);
-		}
-	}
+	char sBuffer[1024];
+	Panel panel = new Panel();
+
+	//Build the panel title three lines high - Panel line #1-3
+	Format(sBuffer, sizeof(sBuffer), "%t" ,"blackjack");
+	panel.SetTitle(sBuffer);
+
+	// Draw Spacer Line - Panel line #4
+	panel.DrawText(" ");
+
+	Format(sBuffer, sizeof(sBuffer), "%t", "Blackjack Info 1");
+	panel.DrawText(sBuffer);
+	panel.DrawText(" ");
+	
+	Format(sBuffer, sizeof(sBuffer), "%t", "Blackjack Info 2");
+	panel.DrawText(sBuffer);
+	
+	Format(sBuffer, sizeof(sBuffer), "%t", "Blackjack Info 3");
+	panel.DrawText(sBuffer);
+	panel.DrawText(" ");
+	
+	Format(sBuffer, sizeof(sBuffer), "%t", "Blackjack Info 4");
+	panel.DrawText(sBuffer);
+
+	// Draw Spacer item - Panel line #11 - Panel item #1
+	panel.CurrentKey = 1;
+	Format(sBuffer, sizeof(sBuffer), "%t", "Back");
+	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
+	panel.CurrentKey = 9;
+	Format(sBuffer, sizeof(sBuffer), "%t", "Exit");
+	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
+
+	panel.Send(client, Handler_WheelRun, 30);
+
+	delete panel;
 }
 
-public Menu_Rules(Handle menu, MenuAction action, param1, param2)
+public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemNum)
 {
-	if(action == MenuAction_Select)
+	if (action == MenuAction_Select)
 	{
-		if(param2 == 8)
+		switch(itemNum)
 		{
-			Cmd_BlackJackHelp(param1, 0);
+			case 1:
+			{
+				ClientCommand(client, "sm_bj");
+				EmitSoundToClient(client, g_sMenuItem);
+			}
+			// Item 9 - exit cancel
+			case 9:
+			{
+				EmitSoundToClient(client, g_sMenuExit);
+			}
 		}
 	}
+
+	delete panel;
 }
 
 public Action Timer_DealerThink(Handle timer, any userid)
@@ -976,4 +929,41 @@ GetCardCount(client, bool highace=true, bool dealer = false)
 stock GetURandomIntRange(min, max)
 {
     return (GetURandomInt() % (max-min+1)) + min;
+}
+
+void ReadCoreCFG()
+{
+	char sFile[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/core.cfg");
+
+	Handle hParser = SMC_CreateParser();
+	char error[128];
+	int line = 0;
+	int col = 0;
+
+	SMC_SetReaders(hParser, INVALID_FUNCTION, Callback_CoreConfig, INVALID_FUNCTION);
+	SMC_SetParseEnd(hParser, INVALID_FUNCTION);
+
+	SMCError result = SMC_ParseFile(hParser, sFile, line, col);
+	delete hParser;
+
+	if (result == SMCError_Okay)
+		return;
+
+	SMC_GetErrorString(result, error, sizeof(error));
+	Store_SQLLogMessage(0, LOG_ERROR, "ReadCoreCFG: Error: %s on line %i, col %i of %s", error, line, col, sFile);
+}
+
+public SMCResult Callback_CoreConfig(Handle parser, char[] key, char[] value, bool key_quotes, bool value_quotes)
+{
+	if (StrEqual(key, "MenuItemSound", false))
+	{
+		strcopy(g_sMenuItem, sizeof(g_sMenuItem), value);
+	}
+	else if (StrEqual(key, "MenuExitBackSound", false))
+	{
+		strcopy(g_sMenuExit, sizeof(g_sMenuExit), value);
+	}
+
+	return SMCParse_Continue;
 }
