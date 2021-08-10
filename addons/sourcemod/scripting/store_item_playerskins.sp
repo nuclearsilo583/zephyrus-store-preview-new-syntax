@@ -205,7 +205,12 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 	
 	new m_iEquipped = Store_GetEquippedItem(client, "playerskin", 2);
 	if(m_iEquipped < 0)
-		return Plugin_Stop;
+		m_iEquipped = Store_GetEquippedItem(client, "playerskin", GetClientTeam(client)-2);
+	if(m_iEquipped >= 0)
+	{
+		int m_iData = Store_GetDataIndex(m_iEquipped);
+		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
+	}
 	
 	decl m_iData;
 	m_iData = Store_GetDataIndex(m_iEquipped);
