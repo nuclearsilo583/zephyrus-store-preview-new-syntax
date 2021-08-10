@@ -212,9 +212,9 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 	}
 	
-	decl m_iData;
-	m_iData = Store_GetDataIndex(m_iEquipped);
-	Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
+	//decl m_iData;
+	//m_iData = Store_GetDataIndex(m_iEquipped);
+	//Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 
 	/*else if(g_eCvars[g_cvarSkinForceChange].aCache)
 	{
