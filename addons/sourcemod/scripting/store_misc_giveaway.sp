@@ -23,7 +23,7 @@ public Plugin myinfo = {
 	name = "Store Giveaway",
 	author = "nuclear silo",
 	description = "Giveaway plugin compatible with zephyrus store.",
-	version = "1.1",
+	version = "1.2",
 	url = ""
 }
 
@@ -213,7 +213,7 @@ stock int GetRandomPlayer()
 
 	for (int i = 1; i <= MaxClients; i++) if (IsClientInGame(i))
 	{
-		if (IsPlayerAlive(i) && !IsFakeClient(i))
+		if (!IsFakeClient(i))
 		{
 			clients[clientCount++] = i;
 		}
@@ -230,7 +230,7 @@ stock int GetRandomPlayerNoAdmin()
 	for (int i = 1; i <= MaxClients; i++) 
 		if (IsClientInGame(i))
 		{
-			if (IsPlayerAlive(i) && !IsFakeClient(i) && !CheckCommandAccess(i, "sm_giveaway_flag_overwrite", ADMFLAG_GENERIC))
+			if (!IsFakeClient(i) && !CheckCommandAccess(i, "sm_giveaway_flag_overwrite", ADMFLAG_GENERIC))
 			{
 				clients[clientCount++] = i;
 			}
