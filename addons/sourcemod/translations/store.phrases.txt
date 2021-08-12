@@ -1,5 +1,10 @@
 ﻿"Phrases"
 {
+	"ColoredSmoke"
+	{
+		"en"        "Colored Smoke"
+	}
+	
 	"scoreboardtag"
     {
         "en"        "Scoreboard Tag"

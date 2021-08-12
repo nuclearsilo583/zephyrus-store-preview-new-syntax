@@ -6,11 +6,8 @@
 # Newly added
 - Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
 	(Please uncomment //#define WEAPONS_KNIVES at line #202 to enable this module)
-- New Store Logging for module (Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
-![log](https://user-images.githubusercontent.com/58926275/125444645-8c83105f-cc83-411d-bab9-a9e5689af9d9.png)
-- New Store Voucher system module (Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
-![voucher](https://user-images.githubusercontent.com/58926275/125775715-a282139a-7b71-4b76-9dc6-b3c686459a07.png)
-
+- New module: Colored Smoke ported from SHOP. ([youtube](https://www.youtube.com/watch?v=cTyMnAmgixI))
+	(You can change smoke color or change smoke particle's material to custom material. Current no preview support. Preview will support in 1.1 version)
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -52,8 +49,10 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
 - "description" key value
 - Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
-- New* Store Logging Message for module plugin (to find out errors).
-- New* Store Voucher system module (generating code, redeem, check, and buy)
+- Store Logging for module (To find out errors. Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
+![log](https://user-images.githubusercontent.com/58926275/125444645-8c83105f-cc83-411d-bab9-a9e5689af9d9.png)
+- Store Voucher system module generating code, redeem, check, and buy. Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
+![voucher](https://user-images.githubusercontent.com/58926275/125775715-a282139a-7b71-4b76-9dc6-b3c686459a07.png)
 
 # Important links
 Contact me via steam for bug report:

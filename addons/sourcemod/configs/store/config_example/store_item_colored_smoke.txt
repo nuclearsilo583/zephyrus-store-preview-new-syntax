@@ -1,0 +1,42 @@
+"Colored Smoke"
+{
+	"Green" //Default csgo smoke. But in green color
+	{
+		"rgb color"		"0 255 0"	//Color in Red Green Blue . If You use custom material please put value "255 255 255"
+		"start size"	"220"	// int. Size of the smoke particles when they're first emitted.
+		"end size"		"2"		// int. Size of the smoke particles at the point they fade out completely.
+		"base spread"	"100"	// int. Amount of random spread in the origins of the smoke particles when they're spawned.
+		"speed spread"	"20"	// int. Amount of random spread in the velocity of the smoke particles after they're spawned.
+		"twist"			"5"		// int. The amount, in degrees per second, that the smoke particles twist around the origin.
+		"speed"			"80"	// int. The speed at which the smoke particles move after they're spawned.
+		"rate"			"60"	// int. Rate at which to emit smoke particles (i.e. particles to emit per second).
+		"jet length"	"200"	// int. Length of the smokestack. Lifetime of the smoke particles is derived from this & particle speed.
+		"density"		"200"	// int. (Renderamt). How much you can see through the particles.
+		"lifetime"		"15"	// float. How long the smoke live. 0 - Dont kill (Warning. This may cause server crash if you dont know what you are doing)
+		
+		"unique_id" "uid_smoke_default_green"
+		"price" "100"
+		"material"		"particle/particle_smokegrenade1.vmt"	// string. The particle materials use for smoke. This is default value (You can change to custom one).
+		"type" "ColoredSmoke"
+	}
+	
+	"Ny Rainbow"
+	{
+		"rgb color"		"255 255 255"	//Color in Red Green Blue . If You use custom material please put value "255 255 255"
+		"start size"	"220"	// int. Size of the smoke particles when they're first emitted.
+		"end size"		"2"		// int. Size of the smoke particles at the point they fade out completely.
+		"base spread"	"100"	// int. Amount of random spread in the origins of the smoke particles when they're spawned.
+		"speed spread"	"20"	// int. Amount of random spread in the velocity of the smoke particles after they're spawned.
+		"twist"			"5"		// int. The amount, in degrees per second, that the smoke particles twist around the origin.
+		"speed"			"80"	// int. The speed at which the smoke particles move after they're spawned.
+		"rate"			"60"	// int. Rate at which to emit smoke particles (i.e. particles to emit per second).
+		"jet length"	"200"	// int. Length of the smokestack. Lifetime of the smoke particles is derived from this & particle speed.
+		"density"		"200"	// int. (Renderamt). How much you can see through the particles.
+		"lifetime"		"15"	// float. How long the smoke live. 0 - Dont kill (Warning. This may cause server crash if you dont know what you are doing)
+		
+		"unique_id" "uid_smoke_ny_rainbow"
+		"price" "100"
+		"material"		"aif/sprites/nydancerainbow.vmt"	// string. The particle materials use for smoke.
+		"type" "ColoredSmoke"
+	}
+}
