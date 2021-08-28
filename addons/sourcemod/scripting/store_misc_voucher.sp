@@ -48,7 +48,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -169,12 +169,19 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `date_of_create` INT NOT NULL default '0',\
 										  `date_of_redeem` INT NOT NULL default '0',\
 										  `name_of_redeem` varchar(64) NOT NULL,\
-										  `steam_of_redeem` TEXT NOT NULL,\
+										  `steam_of_redeem` varchar(64) NOT NULL,\
 										  `unlimited` TINYINT NOT NULL default '0',\
 										  `date_of_expiration` INT NOT NULL default '0',\
 										  `item_expiration` INT default NULL);");							
 			//Store_SQLQuery(m_szVoucherCreateTableQuery ,SQLCallback_VoidVoucher, 0);
 			SQL_TVoid(g_hDatabase, m_szVoucherCreateTableQuery);
+			
+			//Fix for no default value errors
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN voucher varchar(64) NOT NULL DEFAULT ' '");
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN name_of_create varchar(64) NOT NULL DEFAULT ' '");
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN steam_of_create varchar(64) NOT NULL DEFAULT ' '");
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN name_of_redeem varchar(64) NOT NULL DEFAULT ' '");
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN steam_of_redeem varchar(64) NOT NULL DEFAULT ' '");
 		}
 		else
 		{
@@ -203,6 +210,15 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										... " steam_of_redeem = \"voucher's item expired\","
 										... " item_expiration = 0 "
 										... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
+		//Store_SQLQuery(m_szVoucherQuery, SQLCallback_VoidVoucher, 0);
+		SQL_TVoid(g_hDatabase, m_szVoucherQuery);
+		
+		Format(m_szVoucherQuery, sizeof(m_szVoucherQuery), "UPDATE store_voucher SET"
+										... " name_of_redeem = \"voucher expired\","
+										... " date_of_redeem = %d,"
+										... " steam_of_redeem = \"voucher expired\","
+										... " item_expiration = 0 "
+										... "WHERE date_of_expiration < %d", GetTime(), GetTime());
 		//Store_SQLQuery(m_szVoucherQuery, SQLCallback_VoidVoucher, 0);
 		SQL_TVoid(g_hDatabase, m_szVoucherQuery);
 	}
@@ -1182,7 +1198,7 @@ public void SQLCallback_WriteCredits(Database db, DBResultSet results, const cha
 	if (!StrEqual("", error))
 	{
 		int client = GetClientOfUserId(pack.ReadCell());
-		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
+		Store_SQLLogMessage(client, 0, "SQLCallback_WriteCredits: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
 		EmitSoundToClient(client, g_sMenuExit);
@@ -1253,7 +1269,7 @@ public void SQLCallback_WriteCreditsAdmin(Database db, DBResultSet results, cons
 	if (!StrEqual("", error))
 	{
 		int client = GetClientOfUserId(pack.ReadCell());
-		Store_SQLLogMessage(client, 0, "SQLCallback_Write: Error: %s", error);
+		Store_SQLLogMessage(client, 0, "SQLCallback_WriteCreditsAdmin: Error: %s", error);
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Creating voucher failed", time);
 
 		EmitSoundToClient(client, g_sMenuExit);
