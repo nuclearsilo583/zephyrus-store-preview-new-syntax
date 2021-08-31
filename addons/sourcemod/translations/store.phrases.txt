@@ -3,17 +3,20 @@
 	"ColoredSmoke"
 	{
 		"en"        "Colored Smoke"
+		"chi"       "颜色烟雾"
 	}
-	
+
 	"scoreboardtag"
     {
         "en"        "Scoreboard Tag"
+				"chi"       "计分板标签"
     }
-	
+
 	"Press"
 	{
 		"en"        "Press"
 		"hu"        "Nyomd meg"
+		"chi"       "按"
 	}
 
 	"Amount"
@@ -21,36 +24,42 @@
 		"#format"    "{1:d}"
 		"en"        "Amount: {1}"
 		"hu"        "Összeg: {1}"
+		"chi"       "数量：{1}"
 	}
 
 	"Edit Amount"
 	{
 		"en"        "Edit Amount: "
 		"hu"        "Összeg módosítása: "
+		"chi"       "编辑数量："
 	}
 
 	"Up"
 	{
 		"en"        "Up"
 		"hu"        "Felfelé"
+		"chi"       "向上"
 	}
 
 	"Down"
 	{
 		"en"        "Down"
 		"hu"        "Lefelé"
+		"chi"       "向下"
 	}
 
 	"Down2"
 	{
 		"en"        "                      5 = Down"
 		"hu"        "                      5 = Lefelé"
+		"chi"       "                      5 = 向下"
 	}
 
 	"You"
 	{
 		"en"        "YOU"
 		"hu"        "NEKED"
+		"chi"       "你"
 	}
 
 	"21Blackjack"
@@ -63,6 +72,7 @@
 	{
 		"en"        "DEALER"
 		"hu"        "OSZTÓ"
+		"chi"       "庄家"
 	}
 
 	"Deal+-"
@@ -70,6 +80,7 @@
 		"#format"    "{1:d},{2:d}"
 		"en"        "             DEAL     +{1}     -{2}"
 		"hu"        "          RENDBEN     +{1}     -{2}"
+		"chi"       "             成交     +{1}     -{2}"
 	}
 
 	"Credits and Pot"
@@ -77,121 +88,143 @@
 		"#format"    "{1:d},{2:d}"
 		"en"        "Credits: {1}          Pot: {2}"
 		"hu"        "Kreditek: {1}         Tét: {2}"
+		"chi"       "点数：{1}          存钱罐：{2}"
 	}
 
 	"Hit"
 	{
 		"en"        "Hit"
 		"hu"        "Lap kérés"
+		"chi"       "拿牌"
 	}
 
 	"Stay"
 	{
 		"en"        "Stand"
 		"hu"        "Tartózkodás"
+		"chi"       "停牌"
 	}
 
 	"Double"
 	{
 		"en"        "Double"
 		"hu"        "Duplázás"
+		"chi"       "加倍"
 	}
 
 	"blackjack"
 	{
 		"en"        "Blackjack"
+		"chi"       "21点"
 	}
 
 	"You lose"
 	{
 		"en"        "- you lost"
 		"hu"        "- vesztettél -"
+		"chi"       "- 你输了"
 	}
 
 	"You won"
 	{
 		"en"        "!!! YOU WON !!!"
 		"hu"        "!!! NYERTÉL !!!"
+		"chi"       "!!! 你赢了 !!!"
 	}
 
 	"Dead heat"
 	{
 		"en"        "- dead heat -"
 		"hu"        "- holtverseny -"
+		"chi"       "- 不分胜负 -"
 	}
 
 	"Try again"
 	{
 		"en"        "Try again"
 		"hu"        "Próbáld újra"
+		"chi"       "再试一次"
 	}
 
 	"Type in chat !blackjack"
 	{
 		"en"        "Type in chat !blackjack <bet>"
 		"hu"        "Írd be: !blackjack <tét>"
+		"chi"       "在聊天输入 !blackjack <赌注>"
 	}
-	
+
 	"Blackjack Info 4"
 	{
 		"en"        "- Your hand value must get closer to 21 without go over and higher than dealer hand to win the game.\n- \"A\" + 10 value card = BlackJack. This is an instant win."
+		"chi"       "- 你手牌的总值必须接近21点而不能超过21点的情况下打败庄家来获胜。\n- \"A\" + 10 值卡 = 21点。这就是直接胜利。"
 	}
 
 	"Blackjack Info 3"
 	{
 		"en"        "- \"10,J,Q,K\": Counted as 10.\n- 2-9 Counted as their face value."
+		"chi"       "- \"10,J,Q,K\"：被算为10。\n- 2-9 以纸面价值计算。"
 	}
 
 	"Blackjack Info 2"
 	{
 		"en"        "Counting rules:\n- \"A\" card can be counted as 1/11. If the hand value exceeding 21 this card must be counted as 1."
+		"chi"       "计算规则：\n- \"A\" 卡可以被算做1或11。假如手牌价值超过了21点则此卡必须被算为1。"
 	}
 
 	"Blackjack Info 1"
 	{
 		"en"        "Blackjack is a game that the card value in your hand must higher than the dealer without exceeding 21"
+		"chi"       "21点是一个让自己手牌价值在不超过21点的前提下超过庄家的游戏。"
 	}
-	
+
 	"Crash set auto"
 	{
 		"en"        "Set auto cashout value"
+		"chi"       "设置自动兑现值"
 	}
-	
+
 	"Crash auto input"
 	{
 		"en"        "Type your auto cashout in chat"
+		"chi"       "在聊天区输入你的自动兑现"
 	}
-	
+
 	"Crash Auto On Panel"
 	{
 		"en"        "Turn on auto cashout"
+		"chi"       "打开自动兑现"
 	}
-	
+
 	"Crash Auto Off Panel"
 	{
 		"en"        "Turn off auto cashout"
+		"chi"       "关闭自动兑现"
 	}
-	
+
 	"Crash Auto Off"
 	{
 		"en"        "Off"
+		"chi"       "关"
 	}
-	
+
 	"Crash Auto On"
 	{
 		"en"        "On"
+		"chi"       "开"
 	}
-	
+
 	"Client Auto Cashout pref"
 	{
 		"en"        "Auto Cashout:"
+		"chi"       "自动兑现："
 	}
-	
+
 	"Crash auto input set"
 	{
 		"en"        "Crash auto cash out set"
+		"chi"       "设置了爆出现金自动兑现"
 	}
-	
+
 	"Crash Wrong input"
 	{
 		"#format"    "{1:0.2f}"
@@ -298,226 +331,266 @@
 		"en"        "Type in chat !crash <bet>"
 		"hu"        "Írd be: !crash <tét>"
 	}
-	
+
 	"Giveaway announcement"
 	{
 		"#format" 	"{1:s},{2:i}"
 		"en"		"<font color='#00CCFF'>Admin <font color='#ff0000'>{1}<font color='#00CCFF'> opened a giveaway with <font color='#15fb00'>{2} <font color='#00CCFF'>credits"
+		"chi"		"<font color='#00CCFF'>管理员 <font color='#ff0000'>{1}<font color='#00CCFF'> 开启了一次赠送活动，含有 <font color='#15fb00'>{2} <font color='#00CCFF'>点数"
 	}
-	
+
 	"Giveaway remaining time"
 	{
 		"#format" 	"{1:i}"
 		"en"		"<font color='#15fb00'>|| Giveaway starts in <font color='#ffff00'>{1}<font color='#15fb00'> seconds ||"
+		"chi"		"<font color='#15fb00'>|| 赠送活动开始时间剩余 <font color='#ffff00'>{1}<font color='#15fb00'> 秒 ||"
 	}
-	
+
 	"Giveaway winner hint text"
 	{
 		"#format" 	"{1:s},{2:s}"
 		"en"		"<font color='#dd2f2f'>{1}\n<font color='#00CCFF'>|| <font color='#15fb00'>Winner: <font color='#ff0000'>{2}<font color='#00CCFF'> ||"
+		"chi"		"<font color='#dd2f2f'>{1}\n<font color='#00CCFF'>|| <font color='#15fb00'>胜者: <font color='#ff0000'>{2}<font color='#00CCFF'> ||"
 	}
-	
+
 	"Giveaway winner chat"
 	{
 		"#format" 	"{1:s},{2:s},{3:i}"
 		"en"		"{yellow}{1} {purple}{2} {default}won a giveaway with {green}{3} {yellow}credits"
+		"chi"		"{yellow}{1} {purple}{2} {default}赢得了一次赠送活动，含有 {green}{3} {yellow}点数"
 	}
-	
+
 	"Giveaway winner in progress"
 	{
 		"#format" 	"{1:s}"
 		"en"		"<font color='#00CCFF'>|| <font color='#15fb00'>{1} <font color='#00CCFF'>||"
 	}
-	
+
 	"Low - #1-3 (1:2)"
 	{
 		"en"		"Low - #1-3 (1:2)"
+		"chi"		"低 - #1-3 (1:2)"
 	}
-	
+
 	"High - #4-6 (1:2)"
 	{
 		"en"		"High - #4-6 (1:2)"
+		"chi"		"高 - #4-6 (1:2)"
 	}
-	
+
 	"Choose Number (1:6)"
 	{
 		"en"		"Choose Number (1:6)"
+		"chi"		"选择数字 (1:6)"
 	}
-	
+
 	"Game in progress"
 	{
 		"en"		"Your current bet game is in progress. Please wait until it finished"
+		"chi"		"你的当前博彩游戏正在运行。请等待其完成"
 	}
-	
+
 	"Giveaway Minimum Players"
 	{
 		"#format"	"{1:s},{2:i}"
 		"en"		"{yellow}{1}{purple} To do a giveaway the server must contain at least {green}{2} {purple}players."
+		"chi"		"{yellow}{1}{purple} 想开始一次赠送活动服务器必须有至少 {green}{2} {purple}玩家。"
 	}
-	
+
 	"Lootbox map ended"
 	{
 		"en" "The map has ended. Please wait for next map"
+		"chi" "地图已结束。请等待下个地图"
 	}
-	
+
 	"Lootbox round ended"
 	{
 		"en" "The round has ended. Please wait for new round"
+		"chi" "回合已结束。请等待新回合"
 	}
-	
+
 	"Lootbox warm up"
 	{
 		"en" "You can't open in warmup"
+		"chi" "你不能在热身时打开"
 	}
-	
+
 	"Lootbox case is opening"
 	{
 		"en" "Please wait until your previous case has been opened"
+		"chi" "请等待你先前的箱子打开"
 	}
-	
+
 	"Client valid voucher"
 	{
 		"en" "Your generated and valid voucher are:\n "
+		"chi" "你的生成的有效的代金券是：\n "
 	}
-	
+
 	"All valid voucher"
 	{
 		"en" "All generated and valid voucher are:\n "
+		"chi" "所有生成的有效的代金券是：\n "
 	}
-	
+
 	"Check All Voucher"
 	{
 		"en" "Check All valid and available voucher (Admin Only)"
+		"chi" "检查全部有效的可用的代金券（管理员限定）"
 	}
-	
+
 	"Check Your valid Voucher"
 	{
 		"en" "Check your generated and valid available voucher"
+		"chi" "检查你的生成的有效的代金券"
 	}
-	
+
 	"Voucher admin min max generated"
 	{
 		"#format" "{1:i},{2:s},{3:s},{4:i},{5:i},{6:s}"
 		"en" "You are generating {green}{1} {default}{2}limited voucher{3} with values {purple}{4}-{5} {green}{6}"
+		"chi" "你生成 {green}{1} {default}{2}限定代金券{3} 含有额度 {purple}{4}-{5} {green}{6}"
 	}
-	
+
 	"Voucher admin generated"
 	{
 		"#format" "{1:i},{2:s},{3:s},{4:i},{5:s}"
 		"en" "You are generating {green}{1} {default}{2}limited voucher{3} with value {purple}{4} {green}{5}"
+		"chi" "你生成 {green}{1} {default}{2}限定代金券{3} 含有额度 {purple}{4} {green}{5}"
 	}
-	
+
 	"Voucher Code 17 chars"
 	{
 		"en" "For now voucher code should be excatly 17 chars"
+		"chi" "从现在起代金券代码必须是17字符"
 	}
-	
+
 	"Item Voucher disabled"
 	{
 		"en" "Voucher creation for item is currently disabled."
+		"chi" "此物品创造代金券已关闭"
 	}
-	
+
 	"Command is in-game only"
 	{
 		"en" "You need to be alive to use this command."
+		"chi" "你必须活着使用这个命令。"
 	}
-	
+
 	"Credit Voucher Not Enough"
 	{
 		"en" "You don't have enough credits to create voucher."
+		"chi" "你没有足够的点数创造代金券。"
 	}
-	
+
 	"Buy"
 	{
 		"en"		"Buy Item"
+		"chi"		"购买物品"
 	}
-	
+
 	"Inventory"
 	{
 		"en"		"Inventory"
+		"chi"		"库存"
 	}
-	
+
 	"say sound map max uses"
 	{
 		"#format"	"{1:d}"
 		"en"		"You have reach the max uses of say sound. {1} max use(s) per map"
+		"chi"		"你已达到最大使用saysound次数。每地图 {1} 最大次数"
 	}
-	
+
 	"say sound round max uses"
 	{
 		"#format"	"{1:d}"
 		"en"		"You have reach the max uses of say sound. {1} Max use(s) per round"
+		"chi"		"你已达到最大使用saysound次数。每回合 {1} 最大次数"
 	}
-	
+
 	"Search Info Title"
 	{
 		"#format"	"{1:s}"
 		"en"		"-------------- Store Search Menu Suggestion --------------\n -All related items will be listed here\n - Your current search string: '{1}'"
+		"chi"		"-------------- 商店搜索菜单建议 --------------\n -所有相关的物品会在此处列出\n - 你当前搜索的内容: '{1}'"
 	}
-	
+
 	"Price"
 	{
 		"#format"	"{1:i}"
 		"en"		"Price: {1}"
+		"chi"		"价格：{1}"
 	}
-	
+
 	"Cant be bought"
 	{
 		"en" "This item can not be bought"
+		"chi" "此物品无法购买"
 	}
-	
+
 	"Owned"
 	{
 		"en" "[Owned]"
+		"chi" "[拥有]"
 	}
-	
+
 	"Item not found"
 	{
 		"en" "Item not found"
+		"chi" "找不到物品"
 	}
-	
-	
+
+
 	"Item hidden"
 	{
 		"#format"	"{1:t}"
 		"en"		"{darkred}{1} {default}hidden. You wont't see them anymore."
+		"chi"		"{darkred}{1} {default}隐藏。你不会再看到它们了。"
 	}
 
 	"Item visible"
 	{
 		"#format"	"{1:t}"
 		"en"		"{green}{1}s {default}are visible again."
+		"chi"		"{green}{1} {default}又可见了。"
 	}
-	
+
 	"Buy Item"
 	{
 		"#format"	"{1:i}"
 		"en"		"Buy Item ({1})"
+		"chi"		"购买物品 ({1})"
 	}
-	
+
 	"LevelIcon"
 	{
 		"en" "level icon"
-	} 
+		"chi" "等级图标"
+	}
 
 	"Preview Item"
 	{
 		"en"		"Preview This Item"
+		"chi"		"预览这个物品"
 	}
-	
+
 	"Spawn Preview"
 	{
 		"en"		"Spawned a preview. Preview will disappear in 45 seconds"
+		"chi"		"已生成一个预览。预览会在45秒之后消失。"
 	}
 
 	"Play Preview"
 	{
 		"en"		"Playing preview sound for you."
+		"chi"		"为你播放预览声音。"
 	}
-	
+
 	"Parachute Reloaded"
 	{
 		"en"		"Parachute Reloaded"
+		"chi"		"降落伞重新装载"
 	}
 
 	"Parachute Empty"
@@ -530,18 +603,21 @@
 	{
 		"#format"	"{1:i},{2:i},{3:i}"
 		"en"		"{1} hours {2} minutes and {3} seconds"
+		"chi"		"{1} 小时 {2} 分钟 {3} 秒"
 	}
 
 	"x minutes, x seconds"
 	{
 		"#format"	"{1:i},{2:i}"
 		"en"		"{1} minutes and {2} seconds"
+		"chi"		"{1} 分钟 {2} 秒"
 	}
 
 	"x seconds"
 	{
 		"#format"	"{1:i}"
 		"en"		"{1} seconds"
+		"chi"		"{1} 秒"
 	}
 
 	"Counter-Terrorist"
@@ -568,44 +644,52 @@
 	"Back"
 	{
 		"en"		"Back"
+		"chi"		"返回"
 	}
 
 	"Exit"
 	{
 		"en"		"Exit"
+		"chi"		"返回"
 	}
 
 	"Close"
 	{
 		"en"		"Close"
+		"chi"		"关闭"
 	}
 
 	"Cancel"
 	{
 		"en"		"Cancel"
+		"chi"		"取消"
 	}
 
 	"Discount Started"
 	{
 		"#format"	"{1:s}"
 		"en"		"Discount: '{1}' has started! Happy shopping!"
+		"chi"		"折扣：'{1}' 已开始！购物愉快！"
 	}
 
 	"Discount Active"
 	{
 		"#format"	"{1:s}"
 		"en"		"Discount: '{1}' is active! Happy shopping!"
+		"chi"		"折扣： '{1}' 是激活的！购物愉快！"
 	}
 
 	"Discount Ended"
 	{
 		"#format"	"{1:s}"
 		"en"		"Discount: '{1}' has ended."
+		"chi"		"折扣：'{1}' 已结束。"
 	}
 
 	"discount"
 	{
 		"en"		" SALE"
+		"chi"		" 特惠"
 	}
 
 	"nodiscount"
@@ -617,58 +701,68 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You received {1} {green}{2}."
+		"chi"		"你收到了 {1} {green}{2}。"
 	}
-	
+
 	"You get x Credits Panel"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You received {1} {2}."
+		"chi"		"你收到了 {1} {2}。"
 	}
 
 	"Place x Credits"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Place {1} {2}"
+		"chi"		"放入 {1} {2}"
 	}
 
 	"Rerun x Credits"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Rerun {1} {2}"
+		"chi"		"重运行 {1} {2}"
 	}
 
 	"You win x Credits"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You win {1} {2}"
+		"chi"		"你赢得 {1} {2}"
 	}
-	
+
 	"You lost x Credits"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You lost {1} {2}"
+		"chi"		"你输掉 {1} {2}"
 	}
 
 	"You'll earn x Credits tomorrow"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You'll earn {1} {2} tomorrow!"
+		"chi"		"你会在明天赚得 {1} {2} ！"
 	}
 
 	"Wait until next daily"
 	{
 		"#format"	"{1:s}"
 		"en"		"You have to wait {1} until next daily."
+		"chi"		"你必须等 {1} 直到下一次日常。"
 	}
 
 	"start daily challange"
 	{
 		"en"		"start the 'daily challange'. Play next 6 days to received full bonus"
+		"chi"		"开始'日常挑战'。接下来6天来玩可获得完整奖励"
 	}
 
 	"You mastered the daily challange"
 	{
 		"en"		"You mastered the 'daily challange'! Try to beat it again!"
+		"chi"		"你制霸了'日常挑战'！尝试再次挑战！"
 	}
 
 	"Change your bet"
@@ -758,7 +852,7 @@
 		"#format"	"{1:N},{2:i},{3:s},{4:t}"
 		"en"		"{1} has won {2} {3} at {4}"
 	}
-	
+
 	"Player lost x Credits"
 	{
 		"#format"	"{1:N},{2:i},{3:s},{4:t}"
@@ -901,7 +995,7 @@
 	{
 		"en"		"You won with"
 	}
-	
+
 	"You lost with"
 	{
 		"en"		"You lost with"
@@ -999,7 +1093,7 @@
 		"#format"	"{1:i},{2:s}"
 		"en"		"You have to spend at least {1} {2}."
 	}
-	
+
 	"You have to spend at least x credits"
 	{
 		"#format"	"{1:i},{2:s}"
@@ -1085,11 +1179,13 @@
 	"Jetpack Reloaded"
 	{
 		"en"		"Jetpack is reloaded"
+		"chi"		"喷气背包已重载"
 	}
 
 	"Jetpack Empty"
 	{
 		"en"		"Jetpack is empty"
+		"chi"		"喷气背包空"
 	}
 
 	"Jihad Failed"
@@ -1113,36 +1209,43 @@
 	"infinityammo"
 	{
 		"en"		"Infinity Ammo"
+		"chi"		"无限弹药"
 	}
 
 	"flashlight"
 	{
 		"en"		"Flashlight"
+		"chi"		"手电筒"
 	}
 
 	"dice"
 	{
 		"en"		"Dice"
+		"chi"		"骰子"
 	}
 
 	"grenademodel"
 	{
 		"en"		"Grenade model"
+		"chi"		"手雷模型"
 	}
 
 	"grenadetrail"
 	{
 		"en"		"Grenade trail"
+		"chi"		"手雷轨迹"
 	}
 
 	"bullet_impact"
 	{
 		"en"		"Bullet impact"
+		"chi"		"子弹撞击"
 	}
 
 	"coinflip"
 	{
 		"en"		"Coinflip"
+		"chi"		"抛硬币"
 	}
 
 	"hitsound"
@@ -1153,26 +1256,31 @@
 	"command"
 	{
 		"en"		"Player/Server Command"
+		"chi"		"玩家/服务器命令"
 	}
 
 	"respawn"
 	{
 		"en"		"Respawn"
+		"chi"		"重生"
 	}
 
 	"daily"
 	{
 		"en"		"Daily Bonus"
+		"chi"		"日常奖励"
 	}
 
 	"teambet"
 	{
 		"en"		"TeamBet"
+		"chi"		"团队竞猜"
 	}
 
 	"toplists"
 	{
 		"en"		"TopLists"
+		"chi"		"排行榜"
 	}
 
 	"spawn"
@@ -1198,46 +1306,55 @@
 	"weaponmodel"
 	{
 		"en"		"Weapon Model"
+		"chi"		"武器模型"
 	}
 
 	"attachment"
 	{
 		"en"		"Attachment"
+		"chi"		"附件"
 	}
 
 	"lootbox"
 	{
 		"en"		"Lootbox"
+		"chi"		"战利品箱"
 	}
 
 	"crowns"
 	{
 		"en"		"Crowns Slot"
+		"chi"		"王冠槽"
 	}
 
 	"light"
 	{
 		"en"		"Light"
+		"chi"		"光"
 	}
 
 	"parachute"
 	{
 		"en"		"Parachute"
+		"chi"		"降落伞"
 	}
 
 	"info"
 	{
 		"en"		"Info Panel"
+		"chi"		"信息面板"
 	}
 
 	"froggyjump"
 	{
 		"en"		"Froggy Jump"
+		"chi"		"蛙跳"
 	}
 
 	"bunnyhob"
 	{
 		"en"		"BunnyHob"
+		"chi"		"兔子跳"
 	}
 
 	"mvp_sound"
@@ -1248,11 +1365,13 @@
 	"hunterjump"
 	{
 		"en"		"Hunter Jump"
+		"chi"		"Hunter 跳"
 	}
 
 	"laserpointer"
 	{
 		"en"		"Laser Pointer"
+		"chi"		"激光指示器"
 	}
 
 	"bulletsparks"
@@ -1348,285 +1467,337 @@
 	"Item Voucher"
 	{
 		"en"		"Make Voucher from item"
+		"chi"		"给物品制作代金券"
 	}
 
 	"Item Voucher in chat"
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
 		"en"		"You have convert {green}{1} ({2}){default} to Voucher {purple}{3}{default}."
+		"chi"		"你已转换 {green}{1} ({2}){default} 为代金券 {purple}{3}{default}。"
 	}
 
 	"Voucher in chat"
 	{
 		"#format"	"{1:s},{2:i},{3:s}"
 		"en"		"Created new voucher {purple}{1} {default}with value {yellow}{2} {default}{3}"
+		"chi"		"创造了新的代金券 {purple}{1} {default} 价值 {yellow}{2} {default}{3}"
 	}
 
 	"Voucher in console"
 	{
 		"#format"	"{1:s}"
 		"en"		"Voucher Code: {1}"
+		"chi"		"代金券代码: {1}"
 	}
 
 	"Package Voucher"
 	{
 		"en"		"Make Voucher from package"
+		"chi"		"从包制作代金券"
 	}
 
 	"Confirm_Voucher"
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"Are you sure you want convert {1} ({2}) to coupon?\nWARNING: If item in voucher expires before redeemed.\nThis voucher will be expired."
+		"chi"		"你确定要把 {1} ({2}) 转换为代金券吗？\n警告：假如在物品在兑换之前过期。\n此代金券将过期。"
 	}
 
 	"Vouchers"
 	{
 		"en"		"Voucher"
+		"chi"		"代金券"
 	}
 
 	"Redeem Voucher"
 	{
 		"en"		"Redeem a Voucher"
+		"chi"		"兑换一个代金券"
 	}
 
 	"Check Voucher"
 	{
 		"en"		"Check a Voucher"
+		"chi"		"检查一个代金券"
 	}
 
 	"Purchase Voucher"
 	{
 		"en"		"Purchase a Voucher"
+		"chi"		"购买一个代金券"
 	}
 
 	"Create Voucher"
 	{
 		"en"		"Create a Voucher"
+		"chi"		"创造一个代金券"
 	}
 
 	"SQL Cooldown"
 	{
 		"en"		"For security reasons you can not submit multiple requests in a short period."
+		"chi"		"因为安全原因你不能短期提交多个请求。"
 	}
 
 	"Limited"
 	{
 		"en"		"Limited - one player"
+		"chi"		"有限制的 - 单个玩家"
 	}
 
 	"Unlimited"
 	{
 		"en"		"Unlimited - several players"
+		"chi"		"无限制的 - 多个玩家"
 	}
 
 	"To late chat input"
 	{
 		"en"		"Your text input has not been done in the given time"
+		"chi"		"你的文本输入没有在所给时间内完成"
 	}
 
 	"Start again from begin"
 	{
 		"en"		"Please start again from begin"
+		"chi"		"请从头再次开始"
 	}
 
 	"Voucher accepted"
 	{
 		"en"		"The Voucher was {green}accepted"
+		"chi"		"代金券被{green}接受"
 	}
-	
+
 	"Voucher accepted Panel"
 	{
 		"en"		"The Voucher was accepted"
+		"chi"		"代金券被接受"
 	}
 
 	"Enter number of vouchers"
 	{
 		"en"		"Please enter the number of voucher to create in the chat!"
+		"chi"		"请聊天输入要创建的代金券的数字！"
 	}
 
 	"Enter value of vouchers"
 	{
 		"en"		"Please enter the value of voucher to purchase in the chat!"
+		"chi"		"请聊天输入代金券的价值！"
 	}
 
 	"Enter minimum value"
 	{
 		"en"		"Please enter the minium value of Credits in the chat!"
+		"chi"		"请聊天输入点数的最小值！"
 	}
 
 	"Enter custom amount"
 	{
 		"en"		"Please enter your custom amount in the chat!"
+		"chi"		"请聊天输入你的自定义数量！"
 	}
 
 	"Enter maximum value"
 	{
 		"en"		"Please enter the maximum value of Credits in the chat!"
+		"chi"		"请聊天输入点数的最大值！"
 	}
 
 	"Enter voucher code"
 	{
 		"en"		"Please enter your voucher code in the chat!"
+		"chi"		"请聊天输入你的代金券的代码！"
 	}
 
 	"Succesfully purchased voucher"
 	{
 		"en"		"You successfully purchased a voucher"
+		"chi"		"你成功购买了一个代金券"
 	}
 
 	"Voucher Value"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"The voucher has the value of {1} {2}"
+		"chi"		"此代金券有价值 {1} {2}"
 	}
 
 	"Voucher item"
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"The voucher includes {1} ({2})"
+		"chi"		"此代金券含有 {1} ({2})"
 	}
 
 	"Voucher in chat and console"
 	{
 		"en"		"You can find the voucher code also in chat and console"
+		"chi"		"你可以在聊天栏和控制到找到代金券代码"
 	}
 
 	"Voucher expired"
 	{
 		"#format"	"{1:s}"
 		"en"		"The entered voucher code has expired on {1}"
+		"chi"		"输入的代金券代码已在 {1} 过期"
 	}
 
 	"Voucher already redeemed"
 	{
 		"#format"	"{1:s}"
 		"en"		"The entered voucher code was already redeemed on {1}"
+		"chi"		"输入的代金券代码已在 {1} 被兑换"
 	}
 
 	"You already redeemed Voucher"
 	{
 		"en"		"You already redeemed the entered voucher code"
+		"chi"		"你已兑换了输入的代金券代码"
 	}
 
 	"You already own Voucher item"
 	{
 		"en"		"You already own the entered voucher item"
+		"chi"		"你已获得了代金券所含的物品"
 	}
 
 	"Creating voucher failed"
 	{
 		"#format"	"{1:i}"
 		"en"		"Creating voucher failed - Contact an admin with following timestamp: {1}"
+		"chi"		"创造代金券失败 - 附带后面的时间戳联系管理员：{1}"
 	}
 
 	"and is unlimited"
 	{
 		"en"		"and is unlimited"
+		"chi"		"并且是无限制的"
 	}
 
 	"and is limited"
 	{
 		"en"		"and is limited"
+		"chi"		"并且是有限制的"
 	}
 
 	"Voucher valid"
 	{
 		"en"		"The voucher code is valid"
+		"chi"		"代金券代码有效"
 	}
 
 	"Voucher invalid"
 	{
 		"#format"	"{1:s}"
 		"en"		"The entered voucher code '{1}' is not valid!"
+		"chi"		"输入的代金券代码 '{1}' 是无效的！"
 	}
 
 	"Voucher expire"
 	{
 		"#format"	"{1:s}"
 		"en"		"This voucher expire on {1}"
+		"chi"		"代金券过期于 {1}"
 	}
 
 	"Wrong voucher code format"
 	{
 		"en"		"The Voucher code has wrong format. must be XXXXX-XXXXX-XXXXX"
+		"chi"		"代金券代码格式错误。必须是 XXXXX-XXXXX-XXXXX"
 	}
 
 	"Value less than 1"
 	{
 		"en"		"You can't use a value less than 1."
+		"chi"		"你不能使用小于1的值。"
 	}
 
 	"Not enough Credits"
 	{
 		"en"		"You don't have enough credits"
+		"chi"		"你没有足够的点数"
 	}
 
 	"Smaller than min value"
 	{
 		"#format"	"{1:i}"
 		"en"		"You can't use a smaller value than your min value ({1})"
+		"chi"		"你不能使用一个比你的最小值({1})还小的值"
 	}
 
 	"You get x item"
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"You received a {green}{1} {yellow}({2})."
+		"chi"		"你获得了一个 {green}{1} {yellow}({2})."
 	}
-	
+
 	"You get x item Panel"
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"You received a {1} ({2})."
+		"chi"		"你收到了一个 {1} ({2})."
 	}
 
 	"Top Credits"
 	{
 		"en"		"Top Credits"
+		"chi"		"积分排行榜"
 	}
 
 	"Top Most Items"
 	{
 		"en"		"Top Most Items"
+		"chi"		"物品排行榜"
 	}
 
 	"Top Inv Worth"
 	{
 		"en"		"Top Inventar Worth"
+		"chi"		"库存价值排行榜"
 	}
 
 	"Top Credits Inv Worth"
 	{
 		"en"		"Top Credits + Inv Worth"
+		"chi"		"积分 + 库存价值 排行榜"
 	}
 
 	"You earned x Credits for"
 	{
 		"#format"	"{1:i},{2:s},{3:t}"
 		"en"		"You earned {1} {2} for {3}."
+		"chi"		"你赚得了 {1} {2} 为 {3}。"
 	}
 
 	"playing x on our server in row"
 	{
 		"#format"	"{1:i}"
 		"en"		"playing on our server {1} days in a row"
+		"chi"		"连续玩我们的服务器 {1} 天"
 	}
 
 	"x Credits for"
 	{
 		"#format"	"{1:i},{2:s},{3:s}"
 		"en"		"{1} {2} for '{3}'"
+		"chi"		"{1} {2} 为 '{3}'"
 	}
 
 	"You earned x Credits this round"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You earned {1} {2} this round"
+		"chi"		"你这回合赚得 {1} {2}"
 	}
 
 	"Total Credits"
 	{
 		"#format"	"{1:i},{2:s}"
-		"en"		"Total: {1} {2}"
+		"en"		"总计：{1} {2}"
 	}
 
 
@@ -1634,67 +1805,76 @@
 	{
 		"#format"	"{1:s},{2:s},{3:i},{4:s}"
 		"en"		"You won, but already own {1} ({2}). Item was sold for {3} {4}"
+		"chi"		"你赢了，但已经拥有{1} ({2})。物品被卖出得{3} {4}"
 	}
-	
+
 	"Already own item from box. Get Credits price back"
 	{
 		"#format"	"{1:s},{2:s},{3:i},{4:s}"
 		"en"		"You already own {green}{1} ({2}). {default}You are funded back {yellow}{3} {lime}{4}"
+		"chi"		"你已有{green}{1} ({2})。{default}你被退款回 {yellow}{3} {lime}{4}"
 	}
-	
+
 	"Error occured, no price back. Inform admin log"
 	{
 		"en"		"Error occured on getting price back. Please contact admin"
+		"chi"		"收回价格回时发生错误。请联系管理员。"
 	}
 
 	"You won lootbox item"
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"You won a {1} ({2})!"
+		"chi"		"你赢得了{1} ({2})"
 	}
-	
+
 	"Chat won lootbox item red"
 	{
 		"#format"	"{1:s},{2:s},{3:t}"
 		"en"		"{green}{1} {default}opened a container and found {red}{2} ({3})!"
+		"chi"		"{green}{1} {default}打开了一个箱子并发现了 {red}{2} ({3})！"
 	}
-	
+
 	"Chat won lootbox item gold"
 	{
 		"#format"	"{1:s},{2:s},{3:t}"
 		"en"		"{green}{1} {default}opened a container and found {yellow}{2} ({3})!"
+		"chi"		"{green}{1} {default}打开了一个箱子并发现了 {yellow}{2} ({3})！"
 	}
 
 	"You haven't opend the box in given time"
 	{
 		"en"		"You haven't opend the box in given time. The lootbox is back in your inventory"
+		"chi"		"你未能在所给时间内打开箱子。战利品箱已返回你的库存"
 	}
 
 	"Damage the crate to open"
 	{
 		"en"		"{darkred}Damage{default} the crate to {green}open!"
+		"chi"		"{darkred}伤害{default}箱子来{green}打开！"
 	}
-	
+
 	"You dont have permission"
 	{
 		"en" "You don't have permission to access this."
 		"hu" "Nincs jogosultságod ehhez."
-		"chi" "发生错误,无权使用"	
+		"chi" "发生错误,无权使用"
 	}
-	
+
 	"Spam Cooldown"
 	{
 		"#format"	"{1:i}"
 		"en"		"Spam Protection. Please wait {1} seconds."
+		"chi"		"刷屏保护。请等待 {1} 秒。"
 	}
-	
+
 	"Inventory hasnt been fetched"
 	{
-		"en" "Please wait. Your inventory hasn't been fetched yet."	
+		"en" "Please wait. Your inventory hasn't been fetched yet."
 		"hu" "Várj egy kicsit. A tárgyaid még nem töltöttek be."
 		"chi" "请等待 数据可能未连接成功,或服务器数据正在维护,如果不是全部玩家,建议尝试重新加入服务器!."
 	}
-	
+
 	"Item Bought"
 	{
 		"#format" "{1:s}"
@@ -1702,7 +1882,7 @@
 		"hu" "{1}"
 		"chi" "{1}"
 	}
-	
+
 	"Item Available"
 	{
 		"#format" "{1:s},{2:d}"
@@ -1710,7 +1890,7 @@
 		"hu" "{1} ({2})"
 		"chi" "{1} ({2})"
 	}
-	
+
 	"Item Plan Available"
 	{
 		"#format" "{1:s}"
@@ -1718,7 +1898,7 @@
 		"hu" "{1} (Válassz időszakot)"
 		"chi" "{1} (多选择)"
 	}
-	
+
 	"Item Equipped"
 	{
 		"#format" "{1:s}"
@@ -1726,28 +1906,28 @@
 		"hu" "{1} [FELVÉVE]"
 		"chi" "{1} [装备中]"
 	}
-	
+
 	"Item Equip"
 	{
 		"en" "Equip this item"
 		"hu" "Tárgy felvétele"
 		"chi" "装备这个物品"
 	}
-	
+
 	"Item Unequip"
 	{
 		"en" "Unequip"
 		"hu" "Tárgy levétele"
 		"chi" "取下这个物品"
 	}
-	
+
 	"Item Use"
 	{
 		"en" "Use this item"
 		"hu" "Tárgy használata"
 		"chi" "使用这个物品"
 	}
-	
+
 	"Item Sell"
 	{
 		"#format" "{1:d}"
@@ -1755,27 +1935,28 @@
 		"hu" "Eladás {1} kreditért"
 		"chi" "给系统回收 {1}"
 	}
-	
+
 	"Item Gift"
 	{
 		"en" "gift this item"
 		"chi" "赠送这个物品"
 	}
-	
+
 	"Title Store"
 	{
 		"en" "Store Menu"
 		"hu" "Bolt Menü"
+		"chi" "商店菜单"
 	}
-	
+
 	"Title Credits"
 	{
 		"#format" "{1:d}"
 		"en" "Credits: {1}"
 		"hu" "Kreditek: {1}"
-		"chi" "Credits: {1}"
+		"chi" "积分：{1}"
 	}
-	
+
 	"Title Expiration"
 	{
 		"#format" "{1:d},{2:d}"
@@ -1783,28 +1964,28 @@
 		"hu" "Lejár {1}n {2}ó múlva"
 		"chi" "将在 {1}天 {2}小时 到期"
 	}
-	
+
 	"Title Gift"
 	{
 		"en" "Choose a player to send gift to"
 		"hu" "Játékos kiválasztása ajándékozáshoz"
 		"chi" "选择玩家赠送"
 	}
-	
+
 	"Gift Player Left"
 	{
 		"en" "Selected player has already left the game."
 		"hu" "A kiválasztott játékos már elhagyta a játékot."
 		"chi" "选择的玩家当前状态不在游戏!."
 	}
-	
+
 	"Gift No Players"
 	{
 		"en" "There's noone you can gift this item to."
 		"hu" "Nincs senki akinek odatudnád adni ezt a tárgyat."
 		"chi" "似乎没有人可以获得这个,可能对方已经拥有."
 	}
-	
+
 	"Chat Bought Item"
 	{
 		"#format" "{1:s},{2:t}"
@@ -1812,7 +1993,7 @@
 		"hu" "A következőt vetted: {HIGHLIGHT}{1} {2}{NORMAL}."
 		"chi" "你购买了1个 {HIGHLIGHT}{1} {2}{NORMAL}."
 	}
-	
+
 	"Chat Sold Item"
 	{
 		"#format" "{1:s},{2:t}"
@@ -1820,7 +2001,7 @@
 		"hu" "A következőt adtad el: {HIGHLIGHT}{1} {2}{NORMAL}."
 		"chi" "你出售了 {HIGHLIGHT}{1} {2}{NORMAL}."
 	}
-	
+
 	"Chat Gift Item Sent"
 	{
 		"#format" "{1:s},{2:s},{3:t}"
@@ -1828,7 +2009,7 @@
 		"hu" "A következőt küldted: {HIGHLIGHT}{2} {3}{NORMAL} neki: {HIGHLIGHT}{1}{NORMAL}."
 		"chi" "你赠送了 {HIGHLIGHT}{1}{NORMAL} 个 {HIGHLIGHT}{2} {3}{NORMAL}."
 	}
-	
+
 	"Chat Gift Item Received"
 	{
 		"#format" "{1:s},{2:s},{3:t}"
@@ -1836,42 +2017,42 @@
 		"hu" "{HIGHLIGHT}{1}{NORMAL} a következőt küldte neked: {HIGHLIGHT}{2} {3}{NORMAL}."
 		"chi" "{HIGHLIGHT}{1}{NORMAL} 赠送给你 {HIGHLIGHT}{2} {3}{NORMAL}."
 	}
-	
+
 	"Credit Gift Disabled"
 	{
 		"en" "Credit gifting is disabled on this server."
 		"hu" "A szerveren a kreditek ajándékozása ki van kapcsolva."
 		"chi" "当前无法使用积分赠送."
 	}
-	
+
 	"Credit Invalid Amount"
 	{
 		"en" "Invalid amount of credits entered."
 		"hu" "Hibás összeget adtál meg."
 		"chi" "错误的分数值."
 	}
-	
+
 	"Credit Not Enough"
 	{
 		"en" "You don't have enough credits to buy this."
 		"hu" "Nincs elég kredited ehhez."
-		"chi" "你没有足够的积分购买这个,bbs.93x.net 可自助充值.."
+		"chi" "你没有足够的积分购买这个"
 	}
-	
+
 	"Credit Too Many Matches"
 	{
 		"en" "More than one client were found."
 		"hu" "Több mint egy játékos van ilyen névvel."
 		"chi" "相同客户端具有多个."
 	}
-	
+
 	"Credit No Match"
 	{
 		"en" "No player was found."
 		"hu" "Nincs ilyen játékos."
 		"chi" "未找到玩家."
 	}
-	
+
 	"Credit Gift Sent"
 	{
 		"#format" "{1:d},{2:s}"
@@ -1879,7 +2060,7 @@
 		"hu" "{HIGHLIGHT}{1}{NORMAL} kreditet küldtél neki: {HIGHLIGHT}{2}{NORMAL}."
 		"chi" "你已经发送 {HIGHLIGHT}{1}{NORMAL} credits积分给 {HIGHLIGHT}{2}{NORMAL}.
 	}
-	
+
 	"Credit Gift Received"
 	{
 		"#format" "{1:d},{2:s}"
@@ -1887,7 +2068,7 @@
 		"hu" "{HIGHLIGHT}{2}{NORMAL} {HIGHLIGHT}{1}{NORMAL} kreditet küldött neked."
 		"chi" "{HIGHLIGHT}{2}{NORMAL} 给了你 {HIGHLIGHT}{1}{NORMAL} credits."
 	}
-	
+
 	"Package Sell"
 	{
 		"#format" "{1:d}"
@@ -1895,35 +2076,35 @@
 		"hu" "Csomag eladása {1} kreditért"
 		"chi" "出售这个组合包 {1}"
 	}
-	
+
 	"Package Gift"
 	{
 		"en" "Gift this package"
 		"hu" "Csomag elajándékozása"
 		"chi" "赠送这个组合包"
 	}
-	
+
 	"PlayerSkins Settings Changed"
 	{
 		"en" "Your new settings will be applied on next spawn."
 		"hu" "Az új beállításaid a következő élettől fognak működni."
 		"chi" "您的新设置将在下个回合生效或当你重生."
 	}
-	
+
 	"Confirm_Yes"
 	{
 		"en" "Yes"
 		"hu" "Igen"
 		"chi" "Yes-是的,我确认!"
 	}
-	
+
 	"Confirm_No"
 	{
 		"en" "No"
 		"hu" "Nem"
 		"chi" "No-不,返回!!"
 	}
-	
+
 	"Confirm_Buy"
 	{
 		"#format" "{1:s},{2:t}"
@@ -1931,7 +2112,7 @@
 		"hu" "Biztosan meg akarod venni a következőt: {1} {2}?"
 		"chi" "购买确认 {1} {2}?"
 	}
-	
+
 	"Confirm_Sell"
 	{
 		"#format" "{1:s},{2:t},{3:d}"
@@ -1939,7 +2120,7 @@
 		"hu" "Biztosan el akarod adni a következőt: {1} {2}?"
 		"chi" "你确定你要出售 {1} {2} for {3}?"
 	}
-	
+
 	"Confirm_Gift"
 	{
 		"#format" "{1:s},{2:t},{3:s}"
@@ -1947,7 +2128,7 @@
 		"hu" "Biztosan el akarod ajándékozni a következőt: {1} {2} neki: {3}?"
 		"chi" "你确定你要赠送 {1} {2} 给 {3}?"
 	}
-	
+
 	"Confirm_Gift_Drop"
 	{
 		"#format" "{1:s},{2:t}"
@@ -1955,21 +2136,21 @@
 		"hu" "Biztosan el akarod ajándékozni a következőt: {1} {2}?"
 		"chi" "你确定你要丢弃 {1} {2} 在地上?"
 	}
-	
+
 	"Override Enabled"
 	{
 		"en" "Your current skin doesn't support hats. Your skin will be changed."
 		"hu" "A jelenlegi skined nem támogatja a sapkákat. A skined megváltoztatjuk, hogy tudd viselni a sapkád."
 		"chi" "你的皮肤不支持装饰. 你的皮肤会被自动变化."
 	}
-	
+
 	"Override Disabled"
 	{
 		"en" "Your skin doesn't support hats. Your equipped hat will be disabled."
 		"hu" "A jelenlegi skined nem támogatja a sapkákat. A sapkád nem tudod felvenni."
 		"chi" "你的皮肤不支持装饰,你的帽子被自动禁用."
 	}
-	
+
 	"Credits Given"
 	{
 		"#format" "{1:s}{2:d}"
@@ -1977,7 +2158,7 @@
 		"hu" "{1} {2} kreditet kapott."
 		"chi" "{1} 获得 {2} credits."
 	}
-	
+
 	"Betting Won"
 	{
 		"#format" "{1:d}"
@@ -1985,7 +2166,7 @@
 		"hu" "Sikeres volt a fogadásod. Nyertél {1} kreditet."
 		"chi" "你的Bet 为你赢得了 {1} credits."
 	}
-	
+
 	"Betting Lost"
 	{
 		"#format" "{1:d}"
@@ -1993,14 +2174,14 @@
 		"hu" "{1} kreditet vesztettél a fogadáson."
 		"chi" "你失去了 {1} credits 因为Bet."
 	}
-	
+
 	"Betting Invalid Team"
 	{
 		"en" "Invalid team identifier specified."
 		"hu" "Helytelen csapat azonosító."
 		"chi" "无效的组或队伍指定."
 	}
-	
+
 	"Betting Placed"
 	{
 		"#format" "{1:d}"
@@ -2008,21 +2189,21 @@
 		"hu" "Sikeresen fogadtál {1} kredit értékben."
 		"chi" "你成功放置Bet {1} credits."
 	}
-	
+
 	"Betting Already Placed"
 	{
 		"en" "You have already placed your bet for the round."
 		"hu" "Ebben a körben már fogadtál."
 		"chi" "你已经成功放置了Bet了!"
 	}
-	
+
 	"Betting Period Over"
 	{
 		"en" "The betting period is over for this round."
 		"hu" "Ebben a körben már nem fogadhatsz."
 		"chi" "本轮下注已经结束..."
 	}
-	
+
 	"Player Resetted"
 	{
 		"#format" "{1:s}"
@@ -2030,7 +2211,7 @@
 		"hu" "{1} nullázva lett."
 		"chi" "{1} 已被重置."
 	}
-	
+
 	"Player Credits"
 	{
 		"#format" "{1:s},{2:d}"
@@ -2038,7 +2219,7 @@
 		"hu" "{HIGHLIGHT}{1}{NORMAL} {HIGHLIGHT}{2}{NORMAL} kredittel rendelkezik."
 		"chi" "{HIGHLIGHT}{1}{NORMAL} 当前拥有 {HIGHLIGHT}{2}{NORMAL} credits."
 	}
-	
+
 	"Credits Earned For Killing"
 	{
 		"#format" "{1:d},{2:s}"
@@ -2046,7 +2227,7 @@
 		"hu" "{HIGHLIGHT}{2}{NORMAL} megölésével {HIGHLIGHT}{1}{NORMAL} kreditet szereztél."
 		"chi" "你赚得 {HIGHLIGHT}{1}{NORMAL} Credits积分 击杀玩家 {HIGHLIGHT}{2}{NORMAL}."
 	}
-	
+
 	"Credits Earned For Playing"
 	{
 		"#format" "{1:d}"
@@ -2054,14 +2235,14 @@
 		"hu" "{HIGHLIGHT}{1}{NORMAL} kreditet szereztél az itt töltött időért.
 		"chi" "你获得 {HIGHLIGHT}{1}{NORMAL} credits积分 来自服务器."
 	}
-	
+
 	"Drop Gift"
 	{
 		"en" "Drop as gift"
 		"hu" "Ajándékcsomagként eldobás"
 		"chi" "丢在地上,只有别人可以拾取"
 	}
-	
+
 	"Gift Item Picked"
 	{
 		"#format" "{1:s},{2:t}"
@@ -2069,7 +2250,7 @@
 		"hu" "A következőt vetted fel {HIGHLIGHT}{1} {2}{NORMAL}."
 		"chi" "你拾取礼物 {HIGHLIGHT}{1} {2}{NORMAL}."
 	}
-	
+
 	"Gift Credit Picked"
 	{
 		"#format" "{1:d}"
@@ -2077,7 +2258,7 @@
 		"hu" "{HIGHLIGHT}{1} kreditet{NORMAL} vettél fel."
 		"chi" "你拾取 {HIGHLIGHT}{1} credits{NORMAL}."
 	}
-	
+
 	"Credit Gift Dropped"
 	{
 		"#format" "{1:d}"
@@ -2085,397 +2266,396 @@
 		"hu" "{HIGHLIGHT}{1} kreditet{NORMAL} ajándékoztál el."
 		"chi" "你丢弃 {HIGHLIGHT}{1} credits{NORMAL}."
 	}
-	
+
 	"Must be Alive"
 	{
 		"en" "You must be alive to use this."
 		"hu" "Ez a parancs halottként nem használható."
 		"chi" "你必须活着才能使用."
 	}
-	
+
 	"TF Wrong Class"
 	{
 		"en" "This item was meant to be used with a different player class."
 		"hu" "Ez a tárgy egy másik kaszthoz való."
-		"chi" "This item was meant to be used with a different player class."
+		"chi" "此物品是给不同的玩家兵种使用的。"
 	}
-	
+
 	"Help_Back"
 	{
 		"en" "Back"
 		"hu" "Back"
 		"chi" "返回-Back"
 	}
-	
+
 	"Help_Exit"
 	{
 		"en" "Exit"
 		"hu" "Exit"
 		"chi" "退出-Exit"
 	}
-	
+
 	"Jetpack Fuel"
 	{
 		"#format" "{1:.1f}"
 		"en" "[Jetpack] Fuel: {1}"
 		"hu" "[Jetpack] Üzemanyag: {1}"
-		"chi" "[Jetpack] Fuel: {1}"
+		"chi" "[喷气背包] 燃料: {1}"
 	}
-	
+
 	"Health Round Limit"
 	{
 		"en" "You have reached the maximum amount of health packs you can buy this round."
 		"hu" "Ebben a körben már elég életet vettél."
 		"chi" "You have reached the maximum amount of health packs you can buy this round."
 	}
-	
+
 	"Respawn Round Limit"
 	{
 		"en" "You have reached the maximum number of respawns you can buy this round."
 		"hu" "Ebben a körben már elég újraéledést vettél."
 		"chi" "You have reached the maximum number of respawns you can buy this round."
 	}
-	
+
 	"Jihad Wrong Team"
 	{
 		"en" "You can't use the bomb in this team."
 		"hu" "Ebben a csapatban nem használhatod a bombát."
 		"chi" "You can't use the bomb in this team."
 	}
-	
+
 	"Jihad Failed"
 	{
 		"en" "Your bomb has failed to explode."
 		"hu" "A robbantás sikertelen volt."
 		"chi" "Your bomb has failed to explode."
 	}
-	
+
 	"Godmode Round Limit"
 	{
 		"en" "You have reached the maximum amount of godmodes you can buy this round."
 		"hu" "Ebben a körben már elég örök életet vettél."
 		"chi" "You have reached the maximum amount of godmodes you can buy this round."
 	}
-	
+
 	"Godmode Wrong Team"
 	{
 		"en" "You can't use godmode in this team."
 		"hu" "Ebben a csapatban nem használhatod az örök életet."
 		"chi" "You can't use godmode in this team."
 	}
-	
+
 	// Item type names for chat messages
 	"package"
 	{
 		"en" "package"
 		"hu" "csomag"
-		"chi" "组合包"	
+		"chi" "组合包"
 	}
-	
+
 	"hat"
 	{
 		"en" "hat"
 		"hu" "sapka"
 		"chi" "帽子"
 	}
-	
+
 	"tracer"
 	{
 		"en" "tracer"
 		"hu" "lézer"
 		"chi" "激光弹道"
 	}
-	
+
 	"playerskin"
 	{
 		"en" "player skin"
 		"hu" "játékos skin"
 		"chi" "人物皮肤"
 	}
-	
+
 	"saysound"
 	{
 		"en" "say sound"
 
 	}
-	
+
 	"zrclass"
 	{
 		"en" "player class"
 		"hu" "játékos típus"
 		"chi" "僵尸-类型"
 	}
-	
+
 	"trail"
 	{
 		"en" "trail"
 		"hu" "csík"
 		"chi" "足迹"
 	}
-	
+
 	"grenadeskin"
 	{
 		"en" "grenade skin"
 		"hu" "gránát skin"
 		"chi" "手雷皮肤"
 	}
-	
+
 	"grenadetrail"
 	{
 		"en" "grenade trail"
 		"hu" "gránát csík"
 		"chi" "手雷足迹"
 	}
-	
+
 	"weaponcolor"
 	{
 		"en" "weapon color"
 		"hu" "fegyver szín"
 		"chi" "武器颜色"
 	}
-	
+
 	"tfunusual"
 	{
 		"en" "hat effect"
 		"hu" "sapka effekt"
-		"chi" "hat effect"
+		"chi" "帽子特效"
 	}
-	
+
 	"tfhatdye"
 	{
 		"en" "hat dye"
 		"hu" "sapka szín"
-		"chi" "hat dye"
+		"chi" "帽子染色"
 	}
-	
+
 	"tfweapon"
 	{
 		"en" "custom weapon"
 		"hu" "saját fegyver"
-		"chi"  "custom weapon"
+		"chi"  "自定义武器"
 	}
-	
+
 	"tfhead"
 	{
 		"en" "head size"
 		"hu" "fej méret"
-		"chi"  "head size"
+		"chi"  "头大小"
 	}
-	
+
 	"tfhat"
 	{
 		"en" "building hat"
 		"hu" "építmény sapka"
-		"chi"  "building hat"
+		"chi"  "建筑物帽子"
 	}
-	
+
 	"tfweaponsize"
 	{
 		"en" "weapon size"
 		"hu" "fegyver méret"
 		"chi" "武器大小"
 	}
-	
+
 	"paintball"
 	{
 		"en" "bullets"
 		"hu" "golyók"
 		"chi" "弹孔"
 	}
-	
+
 	"watergun"
 	{
 		"en" "effect"
 		"hu" "effekt"
 		"chi" "效果"
 	}
-	
+
 	"nametag"
 	{
 		"en" "name tag"
 		"hu" "név tag"
 		"chi" "名字标签"
 	}
-	
+
 	"namecolor"
 	{
 		"en" "name color"
 		"hu" "név szín"
 		"chi" "名字颜色"
 	}
-	
+
 	"msgcolor"
 	{
 		"en" "message color"
 		"hu" "üzenet szín"
 		"chi" "消息颜色"
 	}
-	
+
 	"jetpack"
 	{
 		"en" "rocket"
 		"hu" "rakéta"
 		"chi" "火箭"
 	}
-	
+
 	"bunnyhop"
 	{
 		"en" "skill"
 		"hu" "képesség"
 		"chi" "连跳"
 	}
-	
+
 	"lasersight"
 	{
 		"en" "laser sight"
 		"hu" "lézer"
 		"chi" "激光瞄准器"
 	}
-	
+
 	"health"
 	{
 		"en" "pack"
 		"hu" "csomag"
 		"chi" "生命"
 	}
-	
+
 	"invisibility"
 	{
 		"en" "ability"
 		"hu" "képesség"
 		"chi" "隐身"
 	}
-	
+
 	"speed"
 	{
 		"en" "ability"
 		"hu" "képesség"
 		"chi" "速度"
 	}
-	
+
 	"gravity"
 	{
 		"en" "ability"
 		"hu" "képesség"
 		"chi" "重力"
 	}
-	
+
 	"weapon"
 	{
 		"en" "weapon"
 		"hu" "fegyver"
 		"chi" "武器"
 	}
-	
+
 	"sound"
 	{
 		"en" "sound"
 		"hu" "hang"
 		"chi" "音效"
 	}
-	
+
 	"command"
 	{
 		"en" ""
 		"hu" ""
 		"chi" "命令"
 	}
-	
+
 	"jihad"
 	{
 		"en" "bomb"
 		"hu" "bomba"
 		"chi" "炸弹"
 	}
-	
+
 	"godmode"
 	{
 		"en" "godmode"
 		"hu" "örök élet"
 		"chi" "上帝模式"
 	}
-	
+
 	"knife"
 	{
 		"en" "knife"
 		"hu" "kés"
 		"chi" "刀"
 	}
-	
+
 	"pet"
 	{
 		"en" "pet"
 		"hu" "állat"
 		"chi" "宠物"
 	}
-	
+
 	"weaponskin"
 	{
 		"en" "weapon skin"
 		"hu" "fegyver skin"
 		"chi" "武器皮肤"
 	}
-	
+
 	"spray"
 	{
 		"en" "spray"
 		"hu" "spray"
 		"chi" "喷漆"
 	}
-	
+
 	"admin"
 	{
 		"en" "admin"
 		"hu" "állat"
 		"chi" "权限"
 	}
-	
+
 	"killeff"
 	{
 		"en" "kill eff:"
 		"chi" "击杀效果"
 	}
-	
+
 	"spawneff"
 	{
 		"en" "spawn eff:"
 		"chi" "出生效果:"
 	}
-	
+
 	"hiteff"
 	{
 		"en" "击中效果:"
 		"chi" "击中效果:"
 	}
-	
+
 	"laserdraw"
 	{
 		"en" "laser draw:"
 		"chi" "激光画:"
 	}
-	
+
 	"Particles"
 	{
 		"en" "Particles:"
 		"chi" "粒子:"
 	}
-	
+
 	"glow"
 	{
 		"en" "glow"
 		"hu" "ragyogás"
 	}
-	
+
 	"Aura"
 	{
 		"en" "Aura:"
 		"chi" "光环:"
 	}
-	
+
 	"CustomModel"
 	{
 		"en" "Custom Weapon Model:"
 		"chi" "自定义武器模型:"
 	}
 }
-

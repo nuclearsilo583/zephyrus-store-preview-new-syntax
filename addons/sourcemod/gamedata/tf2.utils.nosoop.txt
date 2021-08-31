@@ -1,0 +1,149 @@
+"Games"
+{
+	"tf"
+	{
+		"Addresses"
+		{
+			"&TF_COND_LAST"
+			{
+				"signature"		"CTFPlayerShared::RemoveAllCond()"
+				"linux"
+				{
+					"offset"	"37"
+				}
+				"windows"
+				{
+					"offset"	"147"
+				}
+			}
+		}
+		"Offsets"
+		{
+			// virtual offsets
+			"CBaseCombatCharacter::Weapon_ShootPosition()"
+			{
+				"windows"	"269"
+				"linux"		"270"
+			}
+			"CBaseCombatWeapon::GetSlot()"
+			{
+				"windows"	"327"
+				"linux"		"333"
+			}
+			"CBaseEntity::IsBaseCombatWeapon()"
+			{
+				"windows"	"86"
+				"linux"		"87"
+			}
+			"CBaseEntity::IsWearable()"
+			{
+				"windows"	"87"
+				"linux"		"88"
+				"mac"		"88"
+			}
+			"CBaseEntity::TakeHealth()"
+			{
+				"windows"	"64"
+				"linux"		"65"
+			}
+			"CTFWeaponBase::GetMaxClip1()"
+			{
+				"windows"	"318"
+				"linux"		"324"
+			}
+			"CTFWeaponBase::GetWeaponID()"
+			{
+				"windows"	"373"
+				"linux"		"379"
+			}
+			"CTFPlayer::EquipWearable()"
+			{
+				"windows"	"431"
+				"linux"		"432"
+				"mac"		"432"
+			}
+			
+			// member offsets
+			// any resemblance to the names present in official game code is purely coincidental
+			// (this excludes names visible via sendprops and symbols, of course)
+			"CTFPlayer::m_hMyWearables"
+			{
+				// CUtlVector<EHandle>, currently offsetof(m_flMaxSpeed) - 0x14
+				"linux"		"3540"
+				"windows"	"3520"
+			}
+			"CTFPlayerShared::m_ConditionData"
+			{
+				"linux"		"8"
+				"windows"	"8"
+			}
+			"CTFPlayerShared::m_flBurnDuration"
+			{
+				// after unique xref to string "mult_wpn_burntime"
+				"linux"		"520"
+				"windows"	"520"
+			}
+			
+			"TFCondInfo_t::m_flDuration"
+			{
+				"linux"		"8"
+				"windows"	"8"
+			}
+			"TFCondInfo_t::m_hProvider"
+			{
+				"linux"		"12"
+				"windows"	"12"
+			}
+			
+			"sizeof(TFCondInfo_t)"
+			{
+				"linux"		"20"
+				"windows"	"20"
+			}
+		}
+		"Signatures"
+		{
+			"CTFPlayer::GetEntityForLoadoutSlot()"
+			{
+				// called a few blocks after function with unique x-ref string "enable_misc2_noisemaker"
+				"library"	"server"
+				"windows"	"\x55\x8b\xec\x51\x53\x8b\x5d\x2a\x57\x8b\xf9\x89\x7d\x2a\x83\xfb\x07\x74\x2a\x83\xfb\x08\x74\x2a\x83\xfb\x09\x74\x2a\x83\xfb\x0a\x74\x2a"
+				"linux"		"@_ZN9CTFPlayer23GetEntityForLoadoutSlotEib"
+				"mac"		"@_ZN9CTFPlayer23GetEntityForLoadoutSlotEib"
+			}
+			"CTFPlayer::GetMaxAmmo()"
+			{
+				"library"		"server"
+				"linux"			"@_ZN9CTFPlayer10GetMaxAmmoEii"
+				"windows"		"\x55\x8B\xEC\x8B\x45\x0C\x56\x57\x8B\xF9\x83\xF8\xFF"
+			}
+			"CTFPlayer::TeamFortress_SetSpeed()"
+			{
+				// function is x-ref to CTFPlayer::TeamFortress_CalculateMaxSpeed
+				"library"		"server"
+				"linux"			"@_ZN9CTFPlayer21TeamFortress_SetSpeedEv"
+				"windows"		"\x55\x8B\xEC\xA1\x2A\x2A\x2A\x2A\x83\xEC\x1C\x53"
+			}
+			"CTFPlayerShared::GetMaxBuffedHealth()"
+			{
+				// unique xref to call containing unique xref string "add_maxhealth"
+				"library"		"server"
+				"linux"			"@_ZN15CTFPlayerShared18GetMaxBuffedHealthEbb"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x08\x56\x8B\xF1\x57\x8B\x8E\x2A\x01\x00\x00"
+			}
+			"CTFPlayerShared::RemoveAllCond()"
+			{
+				// first non-virtual call after semi-unique xref to "Player.Spawn"
+				"library"		"server"
+				"linux"			"@_ZN15CTFPlayerShared13RemoveAllCondEv"
+				"windows"		"\x55\x8B\xEC\x51\x53\x56\x57\x8B\xF9\x8D\x8F\xE0\x00\x00\x00"
+			}
+			"PointInRespawnRoom()"
+			{
+				"library"		"server"
+				"linux"			"@_Z18PointInRespawnRoomPK11CBaseEntityRK6Vectorb"
+				"windows"		"\x55\x8B\xEC\x53\x33\xDB\x56\x57"
+			}
+		}
+	}
+}
