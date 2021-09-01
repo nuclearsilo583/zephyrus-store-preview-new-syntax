@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.7"
+#define PLUGIN_VERSION "5.5.8"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -196,6 +196,7 @@ ConVar g_cvarChatTag2;
 //#include "store/sprays.sp"
 //#include "store/admin.sp"
 //#include "store_misc_voucher.sp"
+#include "store/store_misc_toplists.sp"
 #endif
 
 //uncomment the next line if you using valve weapon skin and knives (warning, this may cause your server get banned. Please use at your own risk)
@@ -461,7 +462,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	
 	CreateNative("Store_SQLEscape", Native_SQLEscape);
 	CreateNative("Store_SQLQuery", Native_SQLQuery);
-	CreateNative("Store_SQLLogMessage", Native_LogMessage);											 
+	CreateNative("Store_SQLLogMessage", Native_LogMessage);	
+	CreateNative("Store_SQLTransaction", Native_SQLTransaction);	
 	
 	gf_hPreviewItem = CreateGlobalForward("Store_OnPreviewItem", ET_Ignore, Param_Cell, Param_String, Param_Cell);
 	gf_hOnConfigExecuted = CreateGlobalForward("Store_OnConfigExecuted", ET_Ignore, Param_String);
@@ -1178,6 +1180,54 @@ public void Natives_SQLCallback(Handle owner, Handle results, const char[] error
 	Call_PushString(error);
 	Call_PushCell(data);
 	Call_Finish();
+}
+
+public int Native_SQLTransaction(Handle plugin, int numParams)
+{
+	if (g_hDatabase == null)
+		return -1;
+
+	Transaction tnx = GetNativeCell(1);
+	DataPack pack = new DataPack();
+	pack.WriteCell(plugin);
+	pack.WriteFunction(GetNativeFunction(2));
+	pack.WriteCell(GetNativeCell(3));
+
+	//g_hDatabase.Execute(tnx, Natives_SQLTXNCallback_Success, Natives_SQLTXNCallback_Error, pack);
+	SQL_ExecuteTransaction(g_hDatabase, tnx, Natives_SQLTXNCallback_Success, Natives_SQLTXNCallback_Error, pack);
+
+	return 1;
+}
+
+public void Natives_SQLTXNCallback_Success(Database db, DataPack pack, int numQueries, Handle[] results, any[] queryData)
+{
+	PrintToServer("Store - Native Transaction Complete - Querys: %i", numQueries);
+
+	pack.Reset();
+	Handle plugin = pack.ReadCell();
+	Function callback = pack.ReadFunction();
+	any data = pack.ReadCell();
+	delete pack;
+
+	Call_StartFunction(plugin, callback);
+	Call_PushCell(db);
+	Call_PushCell(data);
+	Call_PushCell(numQueries);
+	Call_PushArray(results, numQueries);
+	Call_PushArray(queryData, numQueries);
+	Call_Finish();
+}
+
+public void Natives_SQLTXNCallback_Error(Database db, DataPack pack, int numQueries, const char[] error, int failIndex, any[] queryData)
+{
+	pack.Reset();
+	Handle plugin = pack.ReadCell();
+	delete pack;
+
+	char sBuffer[64];
+	GetPluginFilename(plugin, sBuffer, sizeof(sBuffer));
+
+	StoreLogMessage(0, LOG_ERROR, "Natives_SQLTXNCallback_Error: %s - Plugin: %s Querys: %i - FailedIndex: %i", error, sBuffer, numQueries, failIndex);
 }
 
 public int Native_LogMessage(Handle plugin, int numParams)
@@ -3707,6 +3757,7 @@ void Store_BuyItem(int client,int itemid,int plan=-1)
 	g_eClients[client][iCredits] -= m_iPrice;
 
 	Store_LogMessage(client, -g_eItems[itemid][iPrice], "Bought a %s %s", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
+	Store_SQLLogMessage(client, LOG_EVENT, "Bought a %s %s.", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
 	
 	Chat(client, "%t", "Chat Bought Item", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
 	Store_SaveClientData(client);
@@ -3733,7 +3784,8 @@ public void Store_SellItem(int client,int itemid)
 	Store_UnequipItem(client, itemid);
 	
 	Store_LogMessage(client, m_iCredits, "Sold a %s %s", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
-
+	Store_SQLLogMessage(client, LOG_EVENT, "Sold a %s %s", g_eItems[itemid][szName], g_eTypeHandlers[g_eItems[itemid][iHandler]][szType]);
+	
 	Store_RemoveItem(client, itemid);
 }
 
@@ -3756,6 +3808,7 @@ public void Store_GiftItem(int client,int receiver,int item)
 
 	Chat(client, "%t", "Chat Gift Item Sent", g_eClients[receiver][szName_Client], g_eItems[m_iId][szName], g_eTypeHandlers[g_eItems[m_iId][iHandler]][szType]);
 	Chat(receiver, "%t", "Chat Gift Item Received", g_eClients[target][szName_Client], g_eItems[m_iId][szName], g_eTypeHandlers[g_eItems[m_iId][iHandler]][szType]);
+	Store_SQLLogMessage(0, LOG_EVENT, "%s gift %s (%s) to %s", g_eClients[target][szName_Client], g_eItems[m_iId][szName], g_eTypeHandlers[g_eItems[m_iId][iHandler]][szType], g_eClients[receiver][szName_Client]);
 
 	Store_LogMessage(client, 0, "Gifted a %s to %N", g_eItems[m_iId][szName], receiver);
 }
@@ -3802,13 +3855,12 @@ public void ReadCoreCFG()
 
 public SMCResult Config_NewSection(Handle parser, const char[] section, bool quotes) 
 {
-    if (StrEqual(section, "Core"))
-    {
-        return SMCParse_Continue;
-    }
-	
-	
-    return SMCParse_Continue;
+	if (StrEqual(section, "Core"))
+	{
+		return SMCParse_Continue;
+	}
+
+	return SMCParse_Continue;
 }
 
 public SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] value, bool key_quotes, bool value_quotes)

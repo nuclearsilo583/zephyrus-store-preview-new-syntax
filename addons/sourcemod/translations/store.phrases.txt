@@ -1,5 +1,5 @@
 ﻿"Phrases"
-{
+{	
 	"ColoredSmoke"
 	{
 		"en"        "Colored Smoke"
@@ -9,7 +9,7 @@
 	"scoreboardtag"
     {
         "en"        "Scoreboard Tag"
-				"chi"       "计分板标签"
+		"chi"       "计分板标签"
     }
 
 	"Press"
@@ -1756,7 +1756,7 @@
 
 	"Top Inv Worth"
 	{
-		"en"		"Top Inventar Worth"
+		"en"		"Top Inventory Worth"
 		"chi"		"库存价值排行榜"
 	}
 
