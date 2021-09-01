@@ -196,7 +196,7 @@ ConVar g_cvarChatTag2;
 //#include "store/sprays.sp"
 //#include "store/admin.sp"
 //#include "store_misc_voucher.sp"
-#include "store/store_misc_toplists.sp"
+//#include "store/store_misc_toplists.sp"
 #endif
 
 //uncomment the next line if you using valve weapon skin and knives (warning, this may cause your server get banned. Please use at your own risk)
