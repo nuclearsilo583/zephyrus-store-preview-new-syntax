@@ -83,7 +83,7 @@ public Action Command_Drop(int client,int args)
 	return Plugin_Handled;
 }
 
-public void Gifts_OnMenu(Handle menu, int client,int itemid)
+public void Gifts_OnMenu(Handle &menu, int client,int itemid)
 {
 	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
 		return;
