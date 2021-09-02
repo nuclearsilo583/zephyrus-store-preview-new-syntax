@@ -97,6 +97,7 @@ native int Store_GetItemIdbyUniqueId(char[] unique_id);
 
 native int Store_SQLEscape(char[] escapeString);
 native int Store_SQLQuery(char[] query, SQLQueryCallback callback, any data);
+native int Store_SQLTransaction(Transaction tnx, SQLTxnSuccess callback, any data);
 
 /**
  * Set an mystore Log Message
