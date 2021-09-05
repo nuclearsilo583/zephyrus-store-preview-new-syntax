@@ -26,8 +26,8 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "1.2", 
-	url = "github.com/shanapu/MyStore"
+	version = "1.4", 
+	url = ""
 };
 
 public void OnPluginStart()
@@ -126,8 +126,8 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	}
 
 	Format(sName, sizeof(sName), "%s{teamcolor}%s%s", sNameTag, sNameColor, name);
-
-	CFormat(sName, sizeof(sName));
+	
+	ReplaceColors(sName, sizeof(sName), author);
 
 	strcopy(name, MAXLENGTH_NAME, sName);
 
@@ -136,7 +136,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		char sMessage[MAXLENGTH_BUFFER];
 		strcopy(sMessage, sizeof(sMessage), message);
 		Format(message, MAXLENGTH_BUFFER, "%s%s", g_sMessageColors[Store_GetDataIndex(iEquippedMsgColor)], sMessage);
-		CFormat(message, MAXLENGTH_BUFFER);
+		ReplaceColors(message, MAXLENGTH_BUFFER, author);
 	}
 
 	return Plugin_Changed;

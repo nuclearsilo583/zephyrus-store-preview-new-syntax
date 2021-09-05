@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.8"
+#define PLUGIN_VERSION "5.5.9"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -1075,6 +1075,13 @@ public int Native_GiveClientItem(Handle plugin,int numParams)
 	g_eClientItems[receiver][g_eClients[receiver][iItems]][iPriceOfPurchase] = g_eClientItems[target][item][iPriceOfPurchase];
 	
 	++g_eClients[receiver][iItems];
+	
+	LoopIngamePlayers(i)
+	{
+		Store_SaveClientData(i);
+		Store_SaveClientInventory(i);
+		Store_SaveClientEquipment(i);
+	}
 
 	return 1;
 }
