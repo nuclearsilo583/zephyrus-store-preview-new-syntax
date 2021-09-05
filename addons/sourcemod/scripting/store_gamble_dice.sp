@@ -65,7 +65,7 @@ public Plugin myinfo =
 	name = "Store - Dice gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -767,7 +767,8 @@ void Panel_RunAndWin(int client)
 
 			panel.DrawItem(sBuffer, ITEMDRAW_SPACER);
 			
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iBet[client], g_sCreditsName, "dice");
+			Format(sBuffer, sizeof(sBuffer), "%t", "dice");
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iBet[client], g_sCreditsName, sBuffer);
 		}
 	}
 
@@ -880,13 +881,15 @@ float GetAutoStopTime()
 
 void ProcessWin(int client, int bet, int multiply)
 {
+	char sBuffer[255];
 	int iProfit = bet * multiply;
 
 	// Add profit to balance
 	Store_SetClientCredits(client, Store_GetClientCredits(client) + iProfit);
 
 	// Play sound and notify other player abot this win
-	CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, iProfit, g_sCreditsName, "dice");
+	Format(sBuffer, sizeof(sBuffer), "%t", "dice");
+	CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, iProfit, g_sCreditsName, sBuffer);
 
 	//FakeClientCommandEx(client, "play %s", g_sMenuItem);
 	EmitSoundToClient(client, g_sMenuItem);
