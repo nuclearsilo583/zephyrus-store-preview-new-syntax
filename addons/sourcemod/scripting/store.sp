@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.5.9"
+#define PLUGIN_VERSION "5.6.0"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -318,6 +318,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_resetplayer", Command_ResetPlayer);
 	RegConsoleCmd("sm_credits", Command_Credits);
 	RegServerCmd("sm_store_custom_credits", Command_CustomCredits);
+	
 	
 	// Hook events
 	HookEvent("player_death", Event_PlayerDeath);
@@ -1093,7 +1094,20 @@ public int Native_HasClientItem(Handle plugin,int numParams)
 
 	// Can he even have it?	
 	if(!GetClientPrivilege(client, g_eItems[itemid][iFlagBits]) || !CheckSteamAuth(client, g_eItems[itemid][szSteam]))
-		return false;
+	{
+		if (g_eItems[itemid][iPrice] <= 0 && g_eItems[itemid][iPlans]==0)
+			return false;
+			//if(g_eClientItems[client][i][iDateOfExpiration]==0 || (g_eClientItems[client][i][iDateOfExpiration] && GetTime()<g_eClientItems[client][i][iDateOfExpiration]))
+		
+		for(int i=0;i<g_eClients[client][iItems];++i)
+		{	
+			if(g_eClientItems[client][i][iUniqueId] == itemid && !g_eClientItems[client][i][bDeleted])
+				if(g_eClientItems[client][i][iDateOfExpiration]==0 || (g_eClientItems[client][i][iDateOfExpiration] && GetTime()<g_eClientItems[client][i][iDateOfExpiration]))
+					return true;
+				else
+					return false;
+		}
+	}
 
 	// Is the item free (available for everyone)?
 	if (g_eItems[itemid][iPrice] <= 0 && g_eItems[itemid][iPlans]==0)
@@ -3887,7 +3901,7 @@ public SMCResult Config_EndSection(Handle parser)
 
 public void Config_End(Handle parser, bool halted, bool failed) 
 {
-}  
+}
 
 public void Store_ReloadConfig()
 {
