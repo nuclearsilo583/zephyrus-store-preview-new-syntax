@@ -58,7 +58,7 @@ public Plugin myinfo =
 	name = "Blackjack",
 	author = "HerrMagic and Originalz ft. Jannik, AiDN™, nuclear silo",
 	description = "Blackjack game Zephyrus's , nuclear silo's edited store",
-	version = "1.0"
+	version = "1.1"
 }
 
 public OnPluginStart()
@@ -452,7 +452,8 @@ ShowGamePanel(client)
 					g_bIsIngame[client] = false;
 					if (g_iPlayerPot[client] >= gc_iLose.IntValue)
 					{
-						CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iPlayerPot[client], g_sCreditsName, "blackjack");	
+						Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
+						CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iPlayerPot[client], g_sCreditsName, sBuffer);	
 					}
 					// You _overbuyed_ yourself!
 				} 
@@ -463,7 +464,8 @@ ShowGamePanel(client)
 					g_bIsIngame[client] = false;
 					if (g_iPlayerPot[client] > gc_iLose.IntValue)
 					{
-						CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iPlayerPot[client], g_sCreditsName, "blackjack");	
+						Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
+						CPrintToChatAll("%s%t", g_sChatPrefix, "Player lost x Credits", client, g_iPlayerPot[client], g_sCreditsName, sBuffer);	
 					}
 				}
 			}
@@ -478,7 +480,8 @@ ShowGamePanel(client)
 					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*3);
 					if (g_iPlayerPot[client] > gc_iWon.IntValue)
 					{
-						CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, "blackjack");
+						Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
+						CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, sBuffer);
 					}
 				}
 			}
@@ -489,7 +492,8 @@ ShowGamePanel(client)
 				g_bIsIngame[client] = false;
 				if (g_iPlayerPot[client] > gc_iWon.IntValue)
 				{
-					CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, "blackjack");	
+					Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
+					CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, sBuffer);
 				}
 				if(!g_bMoneyDealt[client])
 					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*2);

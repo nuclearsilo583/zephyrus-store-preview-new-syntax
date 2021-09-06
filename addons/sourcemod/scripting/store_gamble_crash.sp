@@ -21,7 +21,7 @@ public Plugin myinfo =
 	name = "Store - Crash gamble module",
 	author = "Emur, AiDN™, nuclear silo",
 	description = "Crash game Zephyrus's , nuclear silo's edited store",
-	version = "2.1"
+	version = "2.2"
 };
 
 //CVars
@@ -673,7 +673,8 @@ public int crashmenu_go_handler(Menu menu, MenuAction action, int param1, int it
 					Store_SetClientCredits(param1, newcredits);
 					if(number > 4)
 					{
-						CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits with X", param1, totalgained[param1], g_sCreditsName, number, "crash");
+						Format(sBuffer, sizeof(sBuffer), "%t", "crash");
+						CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits with X", param1, totalgained[param1], g_sCreditsName, number, sBuffer);
 					}
 					else
 					{

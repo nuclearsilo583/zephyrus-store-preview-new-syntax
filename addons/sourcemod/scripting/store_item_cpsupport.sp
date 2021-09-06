@@ -26,7 +26,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "1.4", 
+	version = "1.5", 
 	url = ""
 };
 
@@ -42,6 +42,7 @@ public void OnPluginStart()
 	Store_RegisterHandler("msgcolor", "color", _, CPSupport_Reset, MsgColors_Config, CPSupport_Equip, CPSupport_Remove, true);
 	Store_RegisterHandler("scoreboardtag", "scoreboardtag", _, CPSupport_Reset, ScoreboardTags_Config, CPSupport_Equip, CPSupport_Remove, true);
 
+	HookEvent("player_team", PlayerTeam_Callback);
 	HookEvent("player_spawn", PlayerSpawn_Callback);
 }
 
@@ -143,6 +144,30 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 }
 
 public Action PlayerSpawn_Callback(Event event, const char[] chName, bool bDontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+
+	int iEquippedScoreboardTag = Store_GetEquippedItem(client, "scoreboardtag");
+
+	if(iEquippedScoreboardTag < 0)
+		return Plugin_Continue;
+
+	char sBuffer[64];
+	char ScoreboardTag[64];
+
+	if(iEquippedScoreboardTag >= 0)
+	{
+		int m_iScoreboardTag = Store_GetDataIndex(iEquippedScoreboardTag);
+		strcopy(ScoreboardTag, sizeof(ScoreboardTag), g_sScoreboardTags[m_iScoreboardTag]);
+	}
+
+	Format(sBuffer, sizeof(sBuffer), "%s", ScoreboardTag);
+
+	CS_SetClientClanTag(client, sBuffer);
+	return Plugin_Handled;
+}
+
+public Action PlayerTeam_Callback(Event event, const char[] chName, bool bDontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
