@@ -479,7 +479,7 @@ stock bool InsertMenuItemEx(Handle menu,any position,any style, char[] info, cha
 		return (InsertMenuItem(menu, position, info, m_display, style)?true:false);
 }
 
-stock void ClearTimer(Handle timer)
+stock void ClearTimer(Handle &timer)
 {
 	if(timer != null)
 	{
