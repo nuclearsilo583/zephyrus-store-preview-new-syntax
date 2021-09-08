@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.6.0"
+#define PLUGIN_VERSION "5.6.1"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -118,6 +118,9 @@ int g_cvarPluginsLogging = -1;
 int g_cvarSilent = -1;
 //int g_cvarCredits = -1;
 int gc_iDescription = -1;
+int gc_iReloadType = -1;
+int gc_iReloadDelay = -1;
+int gc_iReloadNotify = -1;
 
 int g_eItems[STORE_MAX_ITEMS][Store_Item];
 int g_eClients[MAXPLAYERS+1][Client];
@@ -154,6 +157,9 @@ any g_eStoreAdmin;
 
 int PublicChatTrigger = 0;
 int SilentChatTrigger = 0;
+int time;
+
+Handle ReloadTimer = INVALID_HANDLE;
 
 ConVar g_cvarChatTag2;
 
@@ -304,6 +310,9 @@ public void OnPluginStart()
 	//g_cvarCredits = RegisterConVar("sm_store_cmd_credits_cooldown", "12", "Control of the spam cooldown time for !credits", TYPE_FLOAT);
 	
 	gc_iDescription = RegisterConVar("sm_store_description", "2", "Show item description 1 - only in menu page under item name / 2 - both menu and item page / 3 - only in item page in title", TYPE_INT);
+	gc_iReloadType = RegisterConVar("sm_store_reload_config_type", "0", "Type of reload config: 1 - Change map manually / 0 - Instantly reload current map", TYPE_INT);
+	gc_iReloadDelay = RegisterConVar("sm_store_reload_config_delay", "10", "Time in second to reload current map on store reload config. Dependence: \"sm_store_reload_config_type\" 0", TYPE_INT);
+	gc_iReloadNotify = RegisterConVar("sm_store_reload_config_notify", "1", "Store reloadconfig notify player", TYPE_INT);
 
 	
 	g_cvarChatTag2.AddChangeHook(OnSettingChanged);
@@ -319,6 +328,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_credits", Command_Credits);
 	RegServerCmd("sm_store_custom_credits", Command_CustomCredits);
 	
+	RegAdminCmd("sm_store_reloadconfig", Command_ReloadConfig, ADMFLAG_ROOT);																	  
 	
 	// Hook events
 	HookEvent("player_death", Event_PlayerDeath);
@@ -512,12 +522,36 @@ public void OnAdminMenuReady(Handle topmenu)
 	AddToTopMenu(g_hAdminMenu, "sm_store_resetplayer", TopMenuObject_Item, AdminMenu_ResetPlayer, g_eStoreAdmin, "sm_store_resetplayer", g_eCvars[g_cvarAdminFlag].aCache);
 	AddToTopMenu(g_hAdminMenu, "sm_store_givecredits", TopMenuObject_Item, AdminMenu_GiveCredits, g_eStoreAdmin, "sm_store_givecredits", g_eCvars[g_cvarAdminFlag].aCache);
 	AddToTopMenu(g_hAdminMenu, "sm_store_viewinventory", TopMenuObject_Item, AdminMenu_ViewInventory, g_eStoreAdmin, "sm_store_viewinventory", g_eCvars[g_cvarAdminFlag].aCache);
+	AddToTopMenu(g_hAdminMenu, "sm_store_reload_config", TopMenuObject_Item, AdminMenu_RealoadConfig, g_eStoreAdmin, "sm_store_reload_config", g_eCvars[g_cvarAdminFlag].aCache);
 }
 
 public void CategoryHandler_StoreAdmin(Handle topmenu, TopMenuAction action, TopMenuObject object_id,int param, char[] buffer,int maxlength)
 {
 	if (action == TopMenuAction_DisplayTitle || action == TopMenuAction_DisplayOption)
 		Format(buffer, maxlength, "Store Admin");
+}
+
+//////////////////////////////
+//		Reload config		//
+//////////////////////////////
+
+public void AdminMenu_RealoadConfig(Handle topmenu, TopMenuAction action, TopMenuObject object_id,int client, char[] buffer,int maxlength)
+{
+	if (action == TopMenuAction_DisplayOption)
+	{
+		Format(buffer, maxlength, "Reload store config");
+	}
+	else if (action == TopMenuAction_SelectOption)
+	{
+		g_iMenuNum[client] = 0;
+
+		char sBuffer[128];
+		if(!g_eCvars[gc_iReloadType].aCache)
+			Format(sBuffer, sizeof(sBuffer), "%t", "confirm_reload_type_0", view_as<int>(g_eCvars[gc_iReloadDelay].aCache));
+		else Format(sBuffer, sizeof(sBuffer), "%t", "confirm_reload_type_1");
+		Store_DisplayConfirmMenu(client, sBuffer, FakeMenuHandler_StoreReloadConfig, 0);
+
+	}
 }
 
 //////////////////////////////
@@ -734,6 +768,11 @@ public void OnMapStart()
 			Call_Finish();
 		}
 	}
+}
+
+public void OnMapEnd()
+{
+	ReloadTimer = INVALID_HANDLE;
 }
 
 public void OnConfigsExecuted()
@@ -3901,6 +3940,79 @@ public SMCResult Config_EndSection(Handle parser)
 
 public void Config_End(Handle parser, bool halted, bool failed) 
 {
+}
+
+public Action Command_ReloadConfig(int client, int args)
+{
+	
+	if(g_eCvars[g_cvarConfirmation].aCache)
+	{
+		char buffer[128];
+		if(!g_eCvars[gc_iReloadType].aCache)
+			Format(buffer, sizeof(buffer), "%t", "confirm_reload_type_0", view_as<int>(g_eCvars[gc_iReloadDelay].aCache));
+		else Format(buffer, sizeof(buffer), "%t", "confirm_reload_type_1");
+		Store_DisplayConfirmMenu(client, buffer, FakeMenuHandler_StoreReloadConfig, 0);
+	}
+	else
+	{
+		Store_ReloadConfig();
+		ReplyToCommand(client, "%s %s", g_sChatPrefix, "Config reloaded. Please restart or change map");
+	}
+}
+
+public void FakeMenuHandler_StoreReloadConfig(Handle menu, MenuAction action, int client,int param2)
+{
+	if (action == MenuAction_End)
+		CloseHandle(menu);
+	else if (action == MenuAction_Select)
+	{
+		if(menu == INVALID_HANDLE)
+		{
+			//FakeClientCommandEx(client, "sm_resetplayer \"%s\"", g_szClientData[client]);
+			//Store_ReloadConfig();
+			if(!g_eCvars[gc_iReloadType].aCache)
+			{
+				if(ReloadTimer != INVALID_HANDLE)
+				{
+					Chat(client, "%t", "Admin chat reload timer exist");
+				}
+				else
+				{
+					time = view_as<int>(g_eCvars[gc_iReloadDelay].aCache);
+					ReloadTimer = CreateTimer(1.0, Timer_ReloadConfig);
+				}
+			}
+			else
+			{
+				Store_ReloadConfig();
+				Chat(client, "%s", "Config reloaded. Please restart or change map");
+			}
+		}
+	}
+	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
+		RedisplayAdminMenu(g_hAdminMenu, client);
+}
+
+public Action Timer_ReloadConfig(Handle timer, DataPack pack)
+{
+	char map[128];
+	GetCurrentMap(map, 128);
+	
+	if(time > 0)
+	{
+		if(g_eCvars[gc_iReloadNotify].aCache)
+		{
+			//CPrintToChatAll("%t" , "Timer_Server_ReloadConfig", time);
+			ChatAll("%t" , "Timer_Server_ReloadConfig", time);
+		}
+		--time;
+		ReloadTimer = CreateTimer(1.0, Timer_ReloadConfig);
+	}
+	else 
+	{
+		Store_ReloadConfig();
+		ServerCommand("sm_map %s", map);
+	}
 }
 
 public void Store_ReloadConfig()

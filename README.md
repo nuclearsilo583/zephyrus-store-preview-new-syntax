@@ -4,10 +4,7 @@
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
 
 # Newly added
-- Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
-	(Please uncomment //#define WEAPONS_KNIVES at line #202 to enable this module)
-- New module: Colored Smoke ported from SHOP. ([youtube](https://www.youtube.com/watch?v=cTyMnAmgixI))
-	(You can change smoke color or change smoke particle's material to custom material. Current no preview support. Preview will support in 1.1 version)
+- Now supporting for in-game reload items.txt config without having restart server. (You need to change or reload map or may get some bugs).
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -37,12 +34,16 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Grenade skin (by zephyrus)
 - Sprays
 - Say sound
+- Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
+	(Please uncomment //#define WEAPONS_KNIVES at line #202 to enable this module)
 - more will be supported
 # Modules has no preview support:
 - PaintBall Effects (by shanapu)
 - Bullet Spark (by shanapu)
 - Grenade trail (by zephyrus)
 - Laser sight (by zephyrus)
+- Colored Smoke ported from SHOP. ([youtube](https://www.youtube.com/watch?v=cTyMnAmgixI))
+	(You can change smoke color or change smoke particle's material to custom material. Current no preview support. Preview will support in 1.1 version)
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)

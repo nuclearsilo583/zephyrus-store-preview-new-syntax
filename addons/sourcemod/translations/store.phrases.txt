@@ -1,5 +1,28 @@
 ﻿"Phrases"
 {	
+	"Admin chat reload timer exist"
+	{
+		"#format" "{1:i}"
+		"en" "You have already reload the config. Please change or reload the map."
+	}
+	
+	"Timer_Server_ReloadConfig"
+	{
+		"#format" "{1:i}"
+		"en" "Admin has reload store config. The map will be reloaded in {1} sec!"
+	}
+	
+	"confirm_reload_type_0"
+	{
+		"#format" "{1:i}"
+		"en" "Do you want to reset config?\nThe map will be reload after {1} sec!"
+	}
+	
+	"confirm_reload_type_1"
+	{
+		"en" "Do you want to reset config?\nYou need to change the map to apply or may get some bugs."
+	}
+	
 	"QuizzGenerated"
     {
         "#format" "{1:i},{2:s},{3:i},{4:i},{5:s}"
