@@ -64,8 +64,8 @@ $Copyright: (c) Simple Plugins 2008-2009$
  * @param 		message						The contents of the chat message (Byref)
  * @noreturn
  **********************************************************************/
-forward Action OnChatMessage(any author, Handle recipients, char[] name, char[] message);
-forward Action OnChatMessageSent(any author, char[] message);
+forward Action OnChatMessage(int &author, Handle recipients, char[] name, char[] message);
+forward Action OnChatMessageSent(int author, char[] message);
 
 
 
