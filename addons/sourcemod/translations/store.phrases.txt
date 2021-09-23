@@ -902,6 +902,136 @@
 		"chi"		"你制霸了'日常挑战'！尝试再次挑战！"
 	}
 
+	"You earned this round"
+    {
+        "en"        "You earned this round:"
+    }
+
+    "You earned no points this round"
+    {
+        "en"        "You earned no points this round."
+    }
+
+    "escape as VIP"
+    {
+        "en"        "escape as VIP"
+    }
+
+    "kill the VIP"
+    {
+        "en"        "kill the VIP"
+    }
+
+    "hostage rescued"
+    {
+        "en"        "hostage rescued"
+    }
+
+    "bomb explode"
+    {
+        "en"        "bomb explode"
+    }
+
+    "bomb defused"
+    {
+        "en"        "bomb defused"
+    }
+
+    "bomb planted"
+    {
+        "en"        "bomb planted"
+    }
+
+    "be the MVP"
+    {
+        "en"        "be the MVP"
+    }
+
+    "win the round"
+    {
+        "en"        "win the round"
+    }
+
+    "kill"
+    {
+        "en"        "kill"
+    }
+
+    "noscope kill"
+    {
+        "en"        "noscope kill"
+    }
+
+    "backstab kill"
+    {
+        "en"        "backstab kill"
+    }
+
+    "decoy grenade  kill"
+    {
+        "en"        "decoy grenade  kill"
+    }
+
+    "molotov kill"
+    {
+        "en"        "molotov kill"
+    }
+
+    "smokegrenade kill"
+    {
+        "en"        "smokegrenade kill"
+    }
+
+    "flashbang kill"
+    {
+        "en"        "flashbang kill"
+    }
+
+    "HE grenade kill"
+    {
+        "en"        "HE grenade kill"
+    }
+
+    "taser kill"
+    {
+        "en"        "taser kill"
+    }
+
+    "knife kill"
+    {
+        "en"        "knife kill"
+    }
+
+    "teamkill"
+    {
+        "en"        "teamkill"
+    }
+
+    "headshot"
+    {
+        "en"        "headshot"
+    }
+
+    "kill yourself"
+    {
+        "en"        "kill yourself"
+    }
+
+    "assist a kill"
+    {
+        "en"        "assist a kill"
+    }
+
+    "playing on the server"
+    {
+        "en"        "playing on the server"
+    }
+
+    "idle on the server"
+    {
+        "en"        "idle on the server"
+    }
+
 	"Change your bet"
 	{
 		"#format"	"{1:i},{2:s}"
@@ -1934,9 +2064,9 @@
 	"Total Credits"
 	{
 		"#format"	"{1:i},{2:s}"
-		"en"		"总计：{1} {2}"
+		"en"		"Total：{1} {2}"
+		"chi"		"总计：{1} {2}"
 	}
-
 
 	"Already own item from box. Get Credits back"
 	{
