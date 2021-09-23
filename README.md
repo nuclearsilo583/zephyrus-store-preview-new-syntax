@@ -4,7 +4,8 @@
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
 
 # Newly added
-- Now supporting for in-game reload items.txt config without having restart server. (You need to change or reload map or may get some bugs).
+- Added new preview support for name tag, name and message color.
+- Added new earning method for CSGO (This modules only work for csgo, dont install this if you use the 2009 source engine game. When you enable this please disable all the earning method in the core store.sp or you may get duplicate credits)
 
 # zephyrus-store (support SM 1.10).
 My rewritten zephyrus store
@@ -57,7 +58,8 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Store Give away (v1.0)
 - Store Math credits
 - Store Top list
-- Store Earning credits
+- Support for in-game reload items.txt config without having restart server. (You need to change or reload map or may get some bugs).
+- Store Earning credits (Warning: This modules only supported for csgo. If you're using the 2009 source engine. Dont use this. If you're using csgo please disable all the earning method of the core store.sp in the cfg file)
 
 # Important links
 Contact me via steam for bug report:

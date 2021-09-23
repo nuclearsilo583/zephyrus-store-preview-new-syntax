@@ -3,8 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-//#include <cstrike>
-
+#include <colorvariables>
 #include <store>
 #include <zephstocks>
 
@@ -37,8 +36,9 @@ public void OnPluginStart()
 	Store_RegisterHandler("nametag", "tag", _, CPSupport_Reset, NameTags_Config, CPSupport_Equip, CPSupport_Remove, true);
 	Store_RegisterHandler("namecolor", "color", _, CPSupport_Reset, NameColors_Config, CPSupport_Equip, CPSupport_Remove, true);
 	Store_RegisterHandler("msgcolor", "color", _, CPSupport_Reset, MsgColors_Config, CPSupport_Equip, CPSupport_Remove, true);
+	
+	LoadTranslations("store.phrases");
 }
-
 public void CPSupport_Reset()
 {
 	g_iNameTags = 0;
@@ -124,6 +124,46 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	}
 
 	return Plugin_Changed;
+}
+
+public void Store_OnPreviewItem(int client, char[] type, int index)
+{
+	char Buffer[255], sBuffer[255];
+	char clientname[MAX_NAME_LENGTH];
+	
+	GetClientName(client, clientname, sizeof(clientname));
+	
+	int temp = GetClientTeam(client);
+	switch(temp)
+	{
+		case 2:
+		{
+			FormatEx(Buffer, sizeof(Buffer), "{red}%s :", clientname);
+		}
+		case 3:
+		{
+			FormatEx(Buffer, sizeof(Buffer), "{blue}%s :", clientname);
+		}
+	}
+	
+	if(StrEqual(type, "nametag"))
+	{
+		
+		CPrintToChat(client, "%t", "CP Preview", g_sNameTags[index], Buffer, " {default}This is the preview text");
+		//CPrintToChat(client, "test");
+	}
+	else if(StrEqual(type, "namecolor"))
+	{
+		FormatEx(sBuffer, sizeof(sBuffer), "%s%s :", g_sNameColors[index], clientname);
+		CPrintToChat(client, "%t", "CP Preview", " ", sBuffer, " {default}This is the preview text");
+	}
+	else if(StrEqual(type, "msgcolor"))
+	{
+		//FormatEx(Buffer, sizeof(Buffer), "{teamcolor}%s :", clientname);
+		FormatEx(sBuffer, sizeof(sBuffer), " %sThis is the preview text", g_sMessageColors[index]);
+		CPrintToChat(client, "%t", "CP Preview", " ", Buffer, sBuffer);
+	}
+	else return;
 }
 
 stock bool IsValidClient(int client)

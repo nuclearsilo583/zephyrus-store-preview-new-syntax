@@ -711,6 +711,12 @@
 		"en"		"Preview This Item"
 		"chi"		"预览这个物品"
 	}
+	
+	"CP Preview"
+	{
+		"#format" "{1:s},{2:s},{3:s}"
+		"en"		"{1}{2}{3}"
+	}
 
 	"Spawn Preview"
 	{

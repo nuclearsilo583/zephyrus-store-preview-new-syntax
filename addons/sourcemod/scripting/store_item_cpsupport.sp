@@ -4,11 +4,12 @@
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
+#include <colorvariables>
 
 #include <store>
 #include <zephstocks>
 
-#include <colors> 
+//#include <multicolors> 
 #include <chat-processor> 
 
 char g_sNameTags[STORE_MAX_ITEMS][MAXLENGTH_NAME];
@@ -26,16 +27,13 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "1.5", 
+	version = "1.6", 
 	url = ""
 };
 
 public void OnPluginStart()
 {
-	//Store_SetDataIndex("nametag", _, SCPSupport_Reset, NameTags_Config, SCPSupport_Equip, CPSupport_Remove, true);
-	//Store_SetDataIndex("namecolor", _, SCPSupport_Reset, NameColors_Config, SCPSupport_Equip, CPSupport_Remove, true);
-	//Store_SetDataIndex("msgcolor", _, SCPSupport_Reset, MsgColors_Config, SCPSupport_Equip, CPSupport_Remove, true);
-	//Store_SetDataIndex("scoreboardtag", _, SCPSupport_Reset, ScoreboardTags_Config, SCPSupport_Equip, CPSupport_Remove, true);
+	LoadTranslations("store.phrases");
 	
 	Store_RegisterHandler("nametag", "tag", _, CPSupport_Reset, NameTags_Config, CPSupport_Equip, CPSupport_Remove, true);
 	Store_RegisterHandler("namecolor", "color", _, CPSupport_Reset, NameColors_Config, CPSupport_Equip, CPSupport_Remove, true);
@@ -189,6 +187,46 @@ public Action PlayerTeam_Callback(Event event, const char[] chName, bool bDontBr
 
 	CS_SetClientClanTag(client, sBuffer);
 	return Plugin_Handled;
+}
+
+public void Store_OnPreviewItem(int client, char[] type, int index)
+{
+	char Buffer[255], sBuffer[255];
+	char clientname[MAX_NAME_LENGTH];
+	
+	GetClientName(client, clientname, sizeof(clientname));
+	
+	int temp = GetClientTeam(client);
+	switch(temp)
+	{
+		case 2:
+		{
+			FormatEx(Buffer, sizeof(Buffer), "{orange}%s :", clientname);
+		}
+		case 3:
+		{
+			FormatEx(Buffer, sizeof(Buffer), "{bluegrey}%s :", clientname);
+		}
+	}
+	
+	if(StrEqual(type, "nametag"))
+	{
+		
+		CPrintToChat(client, "%t", "CP Preview", g_sNameTags[index], Buffer, " {default}This is the preview text");
+		//CPrintToChat(client, "test");
+	}
+	else if(StrEqual(type, "namecolor"))
+	{
+		FormatEx(sBuffer, sizeof(sBuffer), "%s%s :", g_sNameColors[index], clientname);
+		CPrintToChat(client, "%t", "CP Preview", " ", sBuffer, " {default}This is the preview text");
+	}
+	else if(StrEqual(type, "msgcolor"))
+	{
+		//FormatEx(Buffer, sizeof(Buffer), "{teamcolor}%s :", clientname);
+		FormatEx(sBuffer, sizeof(sBuffer), " %sThis is the preview text", g_sMessageColors[index]);
+		CPrintToChat(client, "%t", "CP Preview", " ", Buffer, sBuffer);
+	}
+	else return;
 }
 
 stock bool IsValidClient(int client)
