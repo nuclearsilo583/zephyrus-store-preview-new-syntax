@@ -57,6 +57,7 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Store Give away (v1.0)
 - Store Math credits
 - Store Top list
+- Store Earning credits
 
 # Important links
 Contact me via steam for bug report:
