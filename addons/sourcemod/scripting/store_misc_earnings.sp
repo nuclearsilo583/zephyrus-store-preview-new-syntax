@@ -5,9 +5,15 @@
 #include <clientprefs>
 
 #include <store>
+#include <zephstocks>
 
-#include <colors>
+#include <multicolors>
 #include <autoexecconfig>
+
+//#define PLUGINS_ZOMBIE_ENABLE
+#if defined PLUGINS_ZOMBIE_ENABLE
+#include <zombiereloaded>
+#endif
 
 #undef REQUIRE_EXTENSIONS
 #include <SteamWorks>
@@ -89,7 +95,7 @@ public Plugin myinfo =
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -272,7 +278,12 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	{
 		if (damage > 99.0)
 		{
-			GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+			#if defined PLUGINS_ZOMBIE_ENABLE
+			if(damage > GetClientHealth(victim))
+				GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+			#else
+				GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+			#endif
 		}
 		else if (damage > GetClientHealth(victim))
 		{
@@ -425,7 +436,126 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	bool headshot = event.GetBool("headshot");
 	char sWeapon[32];
 	event.GetString("weapon", sWeapon, sizeof(sWeapon));
+	
+	#if defined PLUGINS_ZOMBIE_ENABLE
+	// Zombie mode (ZR, ZP) enabled
+	if(!ZR_IsClientZombie(attacker))
+	{
+		if (IsValidClient(assister) && g_iAssist[g_iActive[assister]] > 0)
+		{
+			GiveCredits(assister, g_iAssist[g_iActive[assister]], "%t", "assist a kill");
+		}
 
+		if (attacker == victim && g_iSuicide[g_iActive[attacker]] != 0)
+		{
+			GiveCredits(attacker, g_iSuicide[g_iActive[attacker]], "%t", "kill yourself");
+		}
+
+		if (!IsFakeClient(victim) && g_iMsg[g_iActive[victim]] == 2)
+		{
+			if (g_iSum[victim] != 0)
+			{
+				CPrintToChat(victim, "%s%t", g_sChatPrefix, "You earned x Credits this round", g_iSum[victim], g_sCreditsName);
+			}
+			g_iSum[victim] = 0;
+		}
+		else if (!IsFakeClient(victim) && g_iMsg[g_iActive[victim]] == 3)
+		{
+			if (g_hSum[victim].Size > 0)
+			{
+				StringMapSnapshot hSum = g_hSum[victim].Snapshot();
+				char sBuffer[32];
+				int sum = 0;
+				CPrintToChat(victim, "%s%t", g_sChatPrefix, "You earned this round");
+				CPrintToChat(victim, "%s%t", g_sChatPrefix, "Spacer");
+				for (int i = 0; i < hSum.Length; i++)
+				{
+					hSum.GetKey(i, sBuffer, sizeof(sBuffer));
+					int value;
+					g_hSum[victim].GetValue(sBuffer, value);
+					sum += value;
+					CPrintToChat(victim, "%s%t", g_sChatPrefix, "x Credits for", value, g_sCreditsName, sBuffer);
+				}
+				CPrintToChat(victim, "%s%t", g_sChatPrefix, "Spacer");
+				CPrintToChat(victim, "%s%t", g_sChatPrefix, "Total Credits", sum, g_sCreditsName);
+
+				delete hSum;
+				g_hSum[victim].Clear();
+			}
+			else
+			{
+				CPrintToChat(victim, "%s%t", g_sChatPrefix, "You earned no points this round");
+			}
+		}
+
+		if (attacker == victim)
+			return;
+
+		if (StrContains(sWeapon, "knife") != -1 || StrContains(sWeapon, "bayonet") != -1)
+			return;
+
+		int iBuffer;
+		if (!gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim) && g_iTK[g_iActive[attacker]] != 0)
+		{
+			GiveCredits(attacker, g_iTK[g_iActive[attacker]], "%t", "teamkill");
+
+			return;
+		}
+		else if (StrContains(sWeapon, "taser") != -1 && g_iTaser[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iTaser[g_iActive[attacker]], "%t", "taser kill");
+		}
+		else if (StrContains(sWeapon, "hegrenade") != -1 && g_iHE[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iHE[g_iActive[attacker]], "%t", "HE grenade kill");
+		}
+		else if (StrContains(sWeapon, "flashbang") != -1 && g_iFlash[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iFlash[g_iActive[attacker]], "%t", "flashbang kill");
+		}
+		else if (StrContains(sWeapon, "smokegrenade") != -1 && g_iSmoke[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iSmoke[g_iActive[attacker]], "%t", "smokegrenade kill");
+		}
+		/*else if ((StrContains(sWeapon, "molotov") != -1 || StrContains(sWeapon, "incgrenade") != -1) && g_iMolotov[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%t", "molotov kill");
+		}*/
+		else if ((StrContains(sWeapon, "inferno") != -1 && g_iMolotov[g_iActive[attacker]] > 0))
+		{
+			GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%t", "molotov kill");
+		}
+		else if (StrContains(sWeapon, "decoy") != -1 && g_iDecoy[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iDecoy[g_iActive[attacker]], "%t", "decoy grenade  kill");
+		}
+		/*else if (g_hSnipers.GetValue(sWeapon[7], iBuffer) && g_iNoScope[g_iActive[attacker]] > 0 && GetEntProp(attacker, Prop_Data, "m_iFOV") <= 0 || GetEntProp(attacker, Prop_Data, "m_iFOV") == GetEntProp(attacker, Prop_Data, "m_iDefaultFOV"))
+		{
+			GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
+		}*/
+		else if (g_hSnipers.GetValue(sWeapon[7], iBuffer) && g_iNoScope[g_iActive[attacker]] > 0 || !(0 < GetEntProp(attacker, Prop_Data, "m_iFOV") < GetEntProp(attacker, Prop_Data, "m_iDefaultFOV")))
+		{
+			GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
+		}
+		else if (headshot && g_iHeadshot[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iHeadshot[g_iActive[attacker]], "%t", "headshot");
+		}
+		else if (g_iKill[g_iActive[attacker]] > 0)
+		{
+			GiveCredits(attacker, g_iKill[g_iActive[attacker]], "%t", "kill");
+		}
+	}
+	else 
+	{
+		char victim_name[MAX_NAME_LENGTH];
+		GetClientName(victim, victim_name, sizeof(victim_name));
+		Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iKill[g_iActive[attacker]])
+		//Chat(attacker, "%t", "Credits Earned For Killing", g_iKill[g_iActive[attacker]], victim_name);
+		CPrintToChat(attacker, "%s%t", g_sChatPrefix, "Zombie Earning Kill", g_iKill[g_iActive[attacker]], victim_name);
+	}
+	#else
+	// No zombie (ZR, ZP) enable
 	if (IsValidClient(assister) && g_iAssist[g_iActive[assister]] > 0)
 	{
 		GiveCredits(assister, g_iAssist[g_iActive[assister]], "%t", "assist a kill");
@@ -530,6 +660,7 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	{
 		GiveCredits(attacker, g_iKill[g_iActive[attacker]], "%t", "kill");
 	}
+	#endif
 }
 
 public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)

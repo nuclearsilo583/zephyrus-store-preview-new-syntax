@@ -1,5 +1,11 @@
 ﻿"Phrases"
 {	
+	"Zombie Earning Kill"
+	{
+		"#format" "{1:i},{2:s}"
+		"en" "You earned {green}{1}{default} credits for killing {green}{2}."
+	}
+
 	"Admin chat reload timer exist"
 	{
 		"#format" "{1:i}"
