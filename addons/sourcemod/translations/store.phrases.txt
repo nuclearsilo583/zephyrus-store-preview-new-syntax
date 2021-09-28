@@ -724,6 +724,11 @@
 		"en"		"{1}{2}{3}"
 	}
 
+	"This is the preview text"
+	{
+		"en"		" {default}This is the preview text."
+	}
+	
 	"Spawn Preview"
 	{
 		"en"		"Spawned a preview. Preview will disappear in 45 seconds"
@@ -2361,6 +2366,12 @@
 		"en" "Gift this package"
 		"hu" "Csomag elajándékozása"
 		"chi" "赠送这个组合包"
+	}
+
+	"Player Skin module disabled"
+	{
+		"en"	"Store Player Skin module is currently temporary disabled."
+		"hu"	"A Store Játékos Skin modulja jelenleg kivan kapcsolva."
 	}
 
 	"PlayerSkins Settings Changed"
