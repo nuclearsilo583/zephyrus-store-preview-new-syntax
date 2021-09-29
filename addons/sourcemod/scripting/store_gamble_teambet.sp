@@ -407,7 +407,7 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 			case 7:
 			{
 				//ClientCommand(client, "play %s", g_sMenuItem);
-				EmitSoundToClient(client, g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuExit);
 				Store_DisplayPreviousMenu(client);
 			}
 			case 8:
@@ -419,7 +419,7 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 			case 9: 
 			{
 				//ClientCommand(client, "play %s", g_sMenuItem);
-				EmitSoundToClient(client, g_sMenuItem);
+				EmitSoundToClient(client, g_sMenuExit);
 			}
 		}
 	}
