@@ -148,7 +148,7 @@ public PlayerSkins_Equip(client, int id)
 		else if(Store_IsClientLoaded(client))
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
 		}
-	else CPrintToChat(client, "%s%t", g_sChatPrefix, "Player Skin module disabled"");
+	else CPrintToChat(client, "%s%t", g_sChatPrefix, "Player Skin module disabled");
 	
 	return (g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2;
 }
