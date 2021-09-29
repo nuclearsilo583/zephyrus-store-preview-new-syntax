@@ -136,7 +136,7 @@ public PlayerSkins_Equip(client, int id)
 		/*else
 		{
 			if(Store_IsClientLoaded(client))
-				Chat(client, "%t", "PlayerSkins Settings Changed");
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
 
 			if(g_ePlayerSkins[m_iData][bTemporary])
 			{
@@ -146,9 +146,9 @@ public PlayerSkins_Equip(client, int id)
 		}*/
 		
 		else if(Store_IsClientLoaded(client))
-			CPrintToChat(client, " %s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
 		}
-	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled", g_sChatPrefix);
+	else CPrintToChat(client, "%s%t", g_sChatPrefix, "Player Skin module disabled");
 	
 	return (g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2;
 }
@@ -156,7 +156,7 @@ public PlayerSkins_Equip(client, int id)
 public PlayerSkins_Remove(client, id)
 {
 	/*if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant].aCache)
-		CPrintToChat(client, "%t", "PlayerSkins Settings Changed");*/
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "PlayerSkins Settings Changed");*/
 	if (g_eCvars[g_bSkinEnable].aCache == 1)
 	{
 	
@@ -165,9 +165,9 @@ public PlayerSkins_Remove(client, id)
 			if (!ZR_IsClientZombie(client))
 				CS_UpdateClientModel(client);
 		}
-		else CPrintToChat(client, " %s%t", g_sChatPrefix , "PlayerSkins Settings Changed");
+		else CPrintToChat(client, "%s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
 	}
-	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled", g_sChatPrefix);
+	else CPrintToChat(client, "%s%t", g_sChatPrefix, "Player Skin module disabled"");
 	
 	return ((g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2);
 }
@@ -184,7 +184,7 @@ public void PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBroad
 		
 		CreateTimer(Delay, PlayerSkins_PlayerSpawnPost, GetClientUserId(client));
 	}
-	else CPrintToChat(client, "%sStore Player Skin module is currently temporary disabled", g_sChatPrefix);
+	else CPrintToChat(client, "%s%t", g_sChatPrefix, "Player Skin module disabled");
 	
 	//return Plugin_Continue;
 }

@@ -27,7 +27,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "1.6", 
+	version = "1.7", 
 	url = ""
 };
 
@@ -191,7 +191,7 @@ public Action PlayerTeam_Callback(Event event, const char[] chName, bool bDontBr
 
 public void Store_OnPreviewItem(int client, char[] type, int index)
 {
-	char Buffer[255], sBuffer[255];
+	char Buffer[255], sBuffer[255], PreviewBuffer[255];
 	char clientname[MAX_NAME_LENGTH];
 	
 	GetClientName(client, clientname, sizeof(clientname));
@@ -211,19 +211,21 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	
 	if(StrEqual(type, "nametag"))
 	{
-		
-		CPrintToChat(client, "%t", "CP Preview", g_sNameTags[index], Buffer, " {default}This is the preview text");
+		FormatEx(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
+		CPrintToChat(client, "%t", "CP Preview", g_sNameTags[index], Buffer, PreviewBuffer);
 		//CPrintToChat(client, "test");
 	}
 	else if(StrEqual(type, "namecolor"))
 	{
 		FormatEx(sBuffer, sizeof(sBuffer), "%s%s :", g_sNameColors[index], clientname);
-		CPrintToChat(client, "%t", "CP Preview", " ", sBuffer, " {default}This is the preview text");
+		FormatEx(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
+		CPrintToChat(client, "%t", "CP Preview", " ", sBuffer, PreviewBuffer);
 	}
 	else if(StrEqual(type, "msgcolor"))
 	{
 		//FormatEx(Buffer, sizeof(Buffer), "{teamcolor}%s :", clientname);
-		FormatEx(sBuffer, sizeof(sBuffer), " %sThis is the preview text", g_sMessageColors[index]);
+		FormatEx(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
+		FormatEx(sBuffer, sizeof(sBuffer), " %s%s", g_sMessageColors[index], PreviewBuffer);
 		CPrintToChat(client, "%t", "CP Preview", " ", Buffer, sBuffer);
 	}
 	else return;
