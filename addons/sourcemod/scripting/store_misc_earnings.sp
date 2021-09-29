@@ -10,10 +10,11 @@
 #include <multicolors>
 #include <autoexecconfig>
 
-//#define PLUGINS_ZOMBIE_ENABLE
-#if defined PLUGINS_ZOMBIE_ENABLE
+#define PLUGINS_ZOMBIE_ENABLE
+/*#if defined PLUGINS_ZOMBIE_ENABLE
+//Cause loop ThrowNativeError
 #include <zombiereloaded>
-#endif
+#endif*/
 
 #undef REQUIRE_EXTENSIONS
 #include <SteamWorks>
@@ -95,7 +96,7 @@ public Plugin myinfo =
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -280,9 +281,12 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 		{
 			#if defined PLUGINS_ZOMBIE_ENABLE
 			if(damage > GetClientHealth(victim))
-				GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+				if(GetClientTeam(attacker) != GetClientTeam(victim))
+					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
 			#else
+			if(gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim))
 				GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+			else GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
 			#endif
 		}
 		else if (damage > GetClientHealth(victim))
@@ -439,7 +443,7 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	
 	#if defined PLUGINS_ZOMBIE_ENABLE
 	// Zombie mode (ZR, ZP) enabled
-	if(!ZR_IsClientZombie(attacker))
+	if(GetClientTeam(attacker) == 3) // Better to manually check by team index instead of ZR_IsClientZombie
 	{
 		if (IsValidClient(assister) && g_iAssist[g_iActive[assister]] > 0)
 		{
@@ -550,9 +554,13 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	{
 		char victim_name[MAX_NAME_LENGTH];
 		GetClientName(victim, victim_name, sizeof(victim_name));
-		Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iKill[g_iActive[attacker]])
-		//Chat(attacker, "%t", "Credits Earned For Killing", g_iKill[g_iActive[attacker]], victim_name);
-		CPrintToChat(attacker, "%s%t", g_sChatPrefix, "Zombie Earning Kill", g_iKill[g_iActive[attacker]], victim_name);
+		if(attacker != victim)
+		{
+			Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iKill[g_iActive[attacker]])
+			//Chat(attacker, "%t", "Credits Earned For Killing", g_iKill[g_iActive[attacker]], victim_name);
+			CPrintToChat(attacker, "%s%t", g_sChatPrefix, "Zombie Earning Kill", g_iKill[g_iActive[attacker]], victim_name);
+		}
+		else return;
 	}
 	#else
 	// No zombie (ZR, ZP) enable
