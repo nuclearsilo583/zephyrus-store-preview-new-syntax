@@ -326,12 +326,12 @@ public int Lootbox_Equip(int client, int itemid)
 {
 	if (roundend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
-		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox round ended");
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox round ended");
 		return 1;
 	}
 	if (mapend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
-		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox map ended");
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox map ended");
 		return 1;
 	}
 	if (!IsPlayerAlive(client))
@@ -342,7 +342,7 @@ public int Lootbox_Equip(int client, int itemid)
 
 	if (g_iLootboxEntityRef[client] != INVALID_ENT_REFERENCE) // Prevent spam. The previous case wont be killed.
 	{
-		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox case is opening");
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox case is opening");
 		return 1;
 	}
 	
