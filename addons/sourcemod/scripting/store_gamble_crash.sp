@@ -654,6 +654,7 @@ public Action crashpanel(Handle timer, any client)
 
 public int crashmenu_go_handler(Menu menu, MenuAction action, int param1, int itemNum)
 {
+	char sBuffer[255];
 	if(action == MenuAction_Select)
 	{
 		
