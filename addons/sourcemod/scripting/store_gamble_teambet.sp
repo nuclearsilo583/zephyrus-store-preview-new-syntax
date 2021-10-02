@@ -66,8 +66,8 @@ public Plugin myinfo =
 {
 	name = "Store - Teambet gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
-	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	description = "Origin code is from Shanapu - I just edit to be compatible with Zephyrus Store, bugfix by AiDN™",
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -153,12 +153,6 @@ public Action Command_Bet(int client, int args)
 		return Plugin_Handled;
 	}
 
-	if (g_iBet[client] > 0)
-	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Already Placed");
-		return Plugin_Handled;
-	}
-
 	if (args < 1 || args > 2)
 	{
 		Panel_TeamBet(client);
@@ -171,6 +165,13 @@ public Action Command_Bet(int client, int args)
 	GetCmdArg(1, sBuffer, 32);
 	int iBet;
 	int iCredits = Store_GetClientCredits(client);
+
+
+	if (g_iBet[client] > 0)
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Already Placed");
+		return Plugin_Handled;
+	}
 
 	if (IsCharNumeric(sBuffer[0]))
 	{
@@ -241,7 +242,7 @@ public Action Command_Bet(int client, int args)
 		Panel_TeamBet(client);
 		Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
 
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Placed", iCredits);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Placed", g_iBet[client]);
 	}
 
 	return Plugin_Handled;
@@ -273,13 +274,13 @@ void Panel_TeamBet(int client)
 		panel.DrawText(" ");
 		panel.CurrentKey = 3;
 		Format(sBuffer, sizeof(sBuffer), "%t", "Bet Minium", gc_iMin.IntValue);
-		panel.DrawItem(sBuffer, ITEMDRAW_DISABLED);
+		panel.DrawItem(sBuffer, g_iBet[client] > 0 ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
 		panel.CurrentKey = 4;
 		Format(sBuffer, sizeof(sBuffer), "%t", "Bet Maximum", iCredits > gc_iMax.IntValue ? gc_iMax.IntValue : iCredits);
-		panel.DrawItem(sBuffer, ITEMDRAW_DISABLED);
+		panel.DrawItem(sBuffer, g_iBet[client] > 0 ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
 		panel.CurrentKey = 5;
 		Format(sBuffer, sizeof(sBuffer), "%t", "Bet Random", gc_iMin.IntValue, iCredits > gc_iMax.IntValue ? gc_iMax.IntValue : iCredits);
-		panel.DrawItem(sBuffer, ITEMDRAW_DISABLED);
+		panel.DrawItem(sBuffer, g_iBet[client] > 0 ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
 	}
 	else if (g_iBetOnT == 0 && g_iBetOnCT == 0)
 	{
@@ -323,13 +324,13 @@ void Panel_TeamBet(int client)
 			panel.DrawText(" ");
 			panel.CurrentKey = 3;
 			Format(sBuffer, sizeof(sBuffer), "%t", "Bet Minium", gc_iMin.IntValue);
-			panel.DrawItem(sBuffer, ITEMDRAW_DISABLED);
+			panel.DrawItem(sBuffer, g_iBet[client] > 0 ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
 			panel.CurrentKey = 4;
 			Format(sBuffer, sizeof(sBuffer), "%t", "Bet Maximum", iCredits > gc_iMax.IntValue ? gc_iMax.IntValue : iCredits);
-			panel.DrawItem(sBuffer, ITEMDRAW_DISABLED);
+			panel.DrawItem(sBuffer, g_iBet[client] > 0 ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
 			panel.CurrentKey = 5;
 			Format(sBuffer, sizeof(sBuffer), "%t", "Bet Random", gc_iMin.IntValue, iCredits > gc_iMax.IntValue ? gc_iMax.IntValue : iCredits);
-			panel.DrawItem(sBuffer, ITEMDRAW_DISABLED);
+			panel.DrawItem(sBuffer, g_iBet[client] > 0 ? ITEMDRAW_DISABLED : ITEMDRAW_DEFAULT);
 		}
 		else if (g_iBet[client] == 0)
 		{
@@ -530,7 +531,7 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 						}
 
 						Store_SetClientCredits(client, iCredits - g_iBet[client]);
-						CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Placed", iCredits);
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "TeamBet Placed", g_iBet[client]);
 						//ClientCommand(client, "play sound/%s", g_sMenuItem);
 						EmitSoundToClient(client, g_sMenuItem);
 						Panel_TeamBet(client);
@@ -591,10 +592,7 @@ public Action TeamBet_RoundStart(Event event, const char[] name, bool dontBroadc
 public Action TeamBet_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	int iWinner = event.GetInt("winner");
-	g_iBetOnT = 0;
-	g_iBetOnCT = 0;
-
-	if (g_iBetOnT == 0 || g_iBetOnCT == 0 || !(CS_TEAM_T <= iWinner <= CS_TEAM_CT))
+	if (g_iBetOnT == 0 || g_iBetOnCT == 0)
 	{
 		for (int i = 1; i <= MaxClients; i++)
 		{
@@ -602,6 +600,8 @@ public Action TeamBet_RoundEnd(Event event, const char[] name, bool dontBroadcas
 				continue;
 
 			Store_SetClientCredits(i, Store_GetClientCredits(i) + g_iBet[i]);
+			
+			CPrintToChat(i, "%s%t", g_sChatPrefix, "TeamBet not betted");
 
 			g_iBet[i] = 0;
 			g_iTeam[i] = 0;
@@ -630,13 +630,15 @@ public Action TeamBet_RoundEnd(Event event, const char[] name, bool dontBroadcas
 			Store_SetClientCredits(i, Store_GetClientCredits(i) + RoundFloat(g_iBet[i] * fMulti));
 			CPrintToChat(i, "%s%t", g_sChatPrefix, "TeamBet Won", RoundFloat(g_iBet[i] * fMulti), g_sCreditsName);
 		}
-		else
+		else if (g_iBet[i] >= 1)
 		{
 			CPrintToChat(i, "%s%t", g_sChatPrefix, "TeamBet Lost", g_iBet[i], g_sCreditsName);
 		}
 
 		g_iBet[i] = 0;
 		g_iTeam[i] = 0;
+		g_iBetOnT = 0;
+		g_iBetOnCT = 0;
 	}
 
 	return Plugin_Continue;
@@ -650,7 +652,7 @@ void Panel_GameInfo(int client)
 	Panel panel = new Panel();
 
 	//Build the panel title three lines high - Panel line #1-3
-	Format(sBuffer, sizeof(sBuffer), "%t\n%t", "dice", "Title Credits", iCredits);
+	Format(sBuffer, sizeof(sBuffer), "%t\n%t", "teambet", "Title Credits", iCredits);
 	panel.SetTitle(sBuffer);
 
 	// Draw Spacer Line - Panel line #4

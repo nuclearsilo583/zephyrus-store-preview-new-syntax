@@ -1148,6 +1148,11 @@
 		"en"		"Game Info"
 	}
 
+	"TeamBet not betted"
+	{
+		"en"		"There was no bet on the other team, so you got the coins back."
+	}
+
 	"TeamBet Won"
 	{
 		"#format"	"{1:i},{2:s}"
