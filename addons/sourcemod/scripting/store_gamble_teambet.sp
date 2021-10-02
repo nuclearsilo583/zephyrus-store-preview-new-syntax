@@ -54,7 +54,6 @@ ConVar gc_iMin;
 ConVar gc_iMax;
 ConVar gc_bAlive;
 
-int g_iClientCount;
 int g_iTeamBetStart = 0;
 int g_iBet[MAXPLAYERS + 1];
 int g_iTeam[MAXPLAYERS + 1];
@@ -67,9 +66,19 @@ public Plugin myinfo =
 	name = "Store - Teambet gamble module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compatible with Zephyrus Store, bugfix by AiDN™",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
+
+public int PlayerCount()
+{
+	int count;
+	for (int i=1;i<=MaxClients;i++)
+		if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i))
+			count++;
+	
+	return count;
+}
 
 public void OnPluginStart()
 {
@@ -99,21 +108,8 @@ public void Store_OnConfigExecuted(char[] prefix)
 	ReadCoreCFG();
 }
 
-public void OnClientPutInServer(int client)
-{
-	if (IsFakeClient(client))
-		return;
-
-	g_iClientCount++;
-}
-
 public void OnClientDisconnect(int client)
 {
-	if (IsFakeClient(client))
-		return;
-
-	g_iClientCount--;
-
 	if (g_iBet[client] < 1)
 		return;
 
@@ -124,6 +120,8 @@ public void OnClientDisconnect(int client)
 
 public Action Command_Bet(int client, int args)
 {
+	int count;
+	count = PlayerCount();
 	// Command comes from console
 	if (!client)
 	{
@@ -146,7 +144,7 @@ public Action Command_Bet(int client, int args)
 		return Plugin_Handled;
 	}
 
-	if (g_iClientCount < gc_iMinPlayer.IntValue)
+	if (count < gc_iMinPlayer.IntValue)
 	{
 		CReplyToCommand(client, "%s%t", g_sChatPrefix, "Min Player", gc_iMinPlayer.IntValue);
 
@@ -251,16 +249,20 @@ public Action Command_Bet(int client, int args)
 void Panel_TeamBet(int client)
 {
 	char sBuffer[255];
+	
+	int count;
+	count = PlayerCount();
+	
 	int iCredits = Store_GetClientCredits(client); // Get credits
 	Panel panel = new Panel();
 
 	Format(sBuffer, sizeof(sBuffer), "%t\n%t", "teambet", "Title Credits", iCredits);
 	panel.SetTitle(sBuffer);
 	panel.DrawText(" ");
-	if ((g_iBetOnT == 0 && g_iBetOnCT == 0) && (g_iTeamBetStart + gc_iBetPeriod.IntValue < GetTime() || g_iClientCount < gc_iMinPlayer.IntValue))
+	if ((g_iBetOnT == 0 && g_iBetOnCT == 0) && (g_iTeamBetStart + gc_iBetPeriod.IntValue < GetTime() || count < gc_iMinPlayer.IntValue))
 	{
 		panel.DrawText(" ");
-		if (g_iClientCount < gc_iMinPlayer.IntValue)
+		if (count < gc_iMinPlayer.IntValue)
 		{
 			Format(sBuffer, sizeof(sBuffer), "    %t", "Min Player", gc_iMinPlayer.IntValue);
 		}
