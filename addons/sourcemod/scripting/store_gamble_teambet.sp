@@ -66,7 +66,7 @@ public Plugin myinfo =
 	name = "Store - Teambet gamble module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compatible with Zephyrus Store, bugfix by AiDN™",
-	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -363,7 +363,9 @@ void Panel_TeamBet(int client)
 	panel.CurrentKey = 7;
 	Format(sBuffer, sizeof(sBuffer), "%t", "Back");
 	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
-	panel.DrawItem("", ITEMDRAW_SPACER);
+	panel.CurrentKey = 8;
+	Format(sBuffer, sizeof(sBuffer), "%t", "Game Info");
+	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
 	panel.CurrentKey = 9;
 	Format(sBuffer, sizeof(sBuffer), "%t", "Exit");
 	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
@@ -481,9 +483,6 @@ void Panel_ChooseTeam(int client)
 	panel.CurrentKey = 7;
 	Format(sBuffer, sizeof(sBuffer), "%t", "Back");
 	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
-	panel.CurrentKey = 8;
-	Format(sBuffer, sizeof(sBuffer), "%t", "Game Info");
-	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
 	panel.CurrentKey = 9;
 	Format(sBuffer, sizeof(sBuffer), "%t", "Exit");
 	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
@@ -553,12 +552,6 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 			{
 				Panel_TeamBet(client);
 				//ClientCommand(client, "play %s", g_sMenuItem);
-				EmitSoundToClient(client, g_sMenuItem);
-			}
-			case 8:
-			{
-				Panel_GameInfo(client);
-				//ClientCommand(client, "play sound/%s", g_sMenuItem);
 				EmitSoundToClient(client, g_sMenuItem);
 			}
 			case 9: 
@@ -689,10 +682,33 @@ void Panel_GameInfo(int client)
 	Format(sBuffer, sizeof(sBuffer), "%t", "Exit");
 	panel.DrawItem(sBuffer, ITEMDRAW_DEFAULT);
 
-	panel.Send(client, Handler_ChooseTeam, 14);
+	panel.Send(client, Handler_WheelRun, MENU_TIME_FOREVER);
 
 	delete panel;
 }
+
+public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemNum)
+{
+	if (action == MenuAction_Select)
+	{
+		switch(itemNum)
+		{
+			case 7:
+			{
+				ClientCommand(client, "sm_bet");
+				EmitSoundToClient(client, g_sMenuItem);
+			}
+			// Item 9 - exit cancel
+			case 9:
+			{
+				EmitSoundToClient(client, g_sMenuExit);
+			}
+		}
+	}
+
+	delete panel;
+}
+
 void ReadCoreCFG()
 {
 	char sFile[PLATFORM_MAX_PATH];
