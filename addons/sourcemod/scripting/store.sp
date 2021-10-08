@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "5.6.1"
+#define PLUGIN_VERSION "5.6.2"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -19,9 +19,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <colors>
-//#include <smartdm>
-#include <csgocolors_fix>
+#include <multicolors>
 
 #undef REQUIRE_EXTENSIONS
 #undef REQUIRE_PLUGIN
@@ -156,8 +154,8 @@ char g_szClientData[MAXPLAYERS+1][256];
 any g_eStoreAdmin;
 
 int PublicChatTrigger = 0;
-int SilentChatTrigger = 0;
-int time;
+//int SilentChatTrigger = 0;
+int hTime;
 
 Handle ReloadTimer = INVALID_HANDLE;
 
@@ -264,7 +262,7 @@ public void OnPluginStart()
 	}
 
 	// Supress warnings about unused variables.....
-	if(GAME_DOD || GAME_L4D || GAME_L4D2 || g_bL4D || g_bL4D2 || g_bND) {}
+	if(GAME_DOD || GAME_L4D || GAME_L4D2 || g_bL4D || g_bL4D2 || g_bND || GAME_TF2 || GAME_CSGO || GAME_CSS) {}
 
 	// Setting default values
 	for(int i=1;i<=MaxClients;++i)
@@ -972,24 +970,36 @@ public int Native_IsItemInBoughtPackage(Handle plugin,int numParams)
 	return false;
 }
 
-public int Native_DisplayConfirmMenu(Handle plugin,int numParams)
+public int Native_DisplayConfirmMenu(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	char title[255];
-	GetNativeString(2, STRING(title));
-	any callback = GetNativeCell(3);
-	any data = GetNativeCell(4);
+	char sBuffer[255];
+	GetNativeString(2, sBuffer, sizeof(sBuffer));
 
-	Handle m_hMenu = CreateMenu(MenuHandler_Confirm);
-	SetMenuTitle(m_hMenu, title);
-	SetMenuExitButton(m_hMenu, false);
-	char m_szCallback[32];
-	char m_szData[11];
-	Format(STRING(m_szCallback), "%d.%d", plugin, callback);
-	IntToString(data, STRING(m_szData));
-	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szCallback, "%t", "Confirm_Yes");
-	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szData, "%t", "Confirm_No");
-	DisplayMenu(m_hMenu, client, 0);
+	//Zephyrus magic with pinch of kxnlr
+	DataPack pack = new DataPack();
+	pack.WriteCell(plugin);
+	pack.WriteCell(GetNativeCell(3));
+	pack.Reset();
+
+	char sCallback[32];
+	char sData[11];
+	IntToString(view_as<int>(pack), sCallback, sizeof(sCallback));
+	IntToString(GetNativeCell(4), sData, sizeof(sData));
+
+	//delete pack;
+	Menu menu = new Menu(MenuHandler_Confirm);
+	menu.SetTitle(sBuffer);
+
+	Format(sBuffer, sizeof(sBuffer), "%t", "Confirm_Yes");
+	menu.AddItem(sCallback, sBuffer, ITEMDRAW_DEFAULT);
+
+	Format(sBuffer, sizeof(sBuffer), "%t", "Confirm_No");
+	menu.AddItem(sData, sBuffer, ITEMDRAW_DEFAULT);
+	//Zephyrus magic
+
+	menu.ExitButton = false;
+	menu.Display(client, MENU_TIME_FOREVER);
 }
 
 public int Native_ShouldConfirm(Handle plugin,int numParams)
@@ -999,8 +1009,16 @@ public int Native_ShouldConfirm(Handle plugin,int numParams)
 
 public int Native_GetItem(Handle plugin,int numParams)
 {
-	//SetNativeArray(2, view_as<int>(g_eItems[GetNativeCell(1)]), sizeof(g_eItems[]));
-	SetNativeArray(2, view_as<int>(g_eItems[GetNativeCell(1)]), sizeof(g_eItems[])); 	
+
+	any aBuffer[sizeof(g_eItems[])]; //[] nur einmal
+
+	for (int i = 0; i < sizeof(g_eItems[]); i++)
+	{
+		aBuffer[i] = g_eItems[GetNativeCell(1)][i];
+	}
+
+	SetNativeArray(2, aBuffer, sizeof(g_eItems[]));
+
 }
 
 public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
@@ -1019,23 +1037,35 @@ public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
 
 public int Native_GetHandler(Handle plugin,int numParams)
 {
-	//SetNativeArray(2, view_as<int>(g_eTypeHandlers[GetNativeCell(1)][GetNativeCell(2)]), sizeof(g_eTypeHandlers[])); 
-	SetNativeArray(2, view_as<int>(g_eTypeHandlers[GetNativeCell(1)]), sizeof(g_eTypeHandlers[])); 
+	
+	any aBuffer[sizeof(g_eTypeHandlers[])]; //[] nur einmal
+
+	for (int i = 0; i < sizeof(g_eTypeHandlers[]); i++)
+	{
+		aBuffer[i] = g_eTypeHandlers[GetNativeCell(1)][i];
+	}
+
+	SetNativeArray(2, aBuffer, sizeof(g_eTypeHandlers[]));
 }
 
 public int Native_GetClientItem(Handle plugin,int numParams)
 {
 	int client = GetNativeCell(1);
-	int itemid = GetNativeCell(2);
 
-	int uid = Store_GetClientItemId(client, itemid);
-	if(uid<0)
-		return 0;
+	int uid = Store_GetClientItemId(client, GetNativeCell(2));
+	if (uid < 0)
+		return false;
 
-	//SetNativeArray(3, view_as<int>(g_eClientItems[client][uid][GetNativeCell(3)]), sizeof(g_eClientItems[][][])); 
-	SetNativeArray(3, view_as<int>(g_eClientItems[client][uid]), sizeof(g_eClientItems[][])); 
+	any aBuffer[sizeof(g_eClientItems[][])]; //[] nur einmal
 
-	return 1;
+	for (int i = 0; i < sizeof(g_eClientItems[][]); i++)
+	{
+		aBuffer[i] = g_eClientItems[client][uid][i];
+	}
+
+	SetNativeArray(3, aBuffer, sizeof(g_eClientItems[][]));
+
+	return true;
 }
 
 public int Native_GiveItem(Handle plugin,int numParams)
@@ -1470,7 +1500,7 @@ public Action Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 
 	if(!attacker || victim == attacker || !IsClientInGame(attacker) || IsFakeClient(attacker))
 		return Plugin_Continue;
-	if (GAME_L4D2 && g_eCvars[g_cvarCreditAmountKill].aCache)
+	if ((GAME_L4D2 || GAME_L4D) && g_eCvars[g_cvarCreditAmountKill].aCache)
 	{
 		if( victim ) // still give credits on killing Specials Infected
 		{
@@ -3085,33 +3115,39 @@ public int MenuHandler_Gift(Handle menu, MenuAction action,int client,int param2
 			DisplayItemMenu(client, g_iSelectedItem[client]);
 }
 
-public int MenuHandler_Confirm(Handle menu, MenuAction action,int client,int param2)
+public int MenuHandler_Confirm(Menu menu, MenuAction action, int client, int param2)
 {
 	if (action == MenuAction_End)
-		CloseHandle(menu);
+	{
+		delete menu;
+	}
 	else if (action == MenuAction_Select)
-	{		
-		if(param2 == 0)
+	{
+		if (param2 == 0)
 		{
-			char m_szCallback[32];
-			char m_szData[11];
-			GetMenuItem(menu, 0, STRING(m_szCallback));
-			GetMenuItem(menu, 1, STRING(m_szData));
-			any m_iPos = FindCharInString(m_szCallback, '.');
-			m_szCallback[m_iPos] = 0;
-			Handle m_hPlugin = view_as<Handle>(StringToInt(m_szCallback));
-			Function fnMenuCallback = view_as<Function>(StringToInt(m_szCallback[m_iPos+1]));
-			if(fnMenuCallback != INVALID_FUNCTION)
+			char sCallback[32];
+			char sData[11];
+			GetMenuItem(menu, 0, sCallback, sizeof(sCallback));
+			GetMenuItem(menu, 1, sData, sizeof(sData));
+
+			DataPack pack = view_as<DataPack>(StringToInt(sCallback));
+			Handle m_hPlugin = view_as<Handle>(pack.ReadCell());
+			Function fnMenuCallback = pack.ReadCell();
+			delete pack;
+
+			if (fnMenuCallback != INVALID_FUNCTION)
 			{
 				Call_StartFunction(m_hPlugin, fnMenuCallback);
 				Call_PushCell(INVALID_HANDLE);
 				Call_PushCell(MenuAction_Select);
 				Call_PushCell(client);
-				Call_PushCell(StringToInt(m_szData));
+				Call_PushCell(StringToInt(sData));
 				Call_Finish();
 			}
 			else
+			{
 				Store_DisplayPreviousMenu(client);
+			}
 		}
 		else
 		{
@@ -3927,8 +3963,8 @@ public SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] v
 {
 	if(StrEqual(key, "PublicChatTrigger", false))
 		PublicChatTrigger = value[0];
-	else if(StrEqual(key, "SilentChatTrigger", false))
-		SilentChatTrigger = value[0];
+	//else if(StrEqual(key, "SilentChatTrigger", false))
+	//	SilentChatTrigger = value[0];
 	
 	return SMCParse_Continue;
 }
@@ -3978,7 +4014,7 @@ public void FakeMenuHandler_StoreReloadConfig(Handle menu, MenuAction action, in
 				}
 				else
 				{
-					time = view_as<int>(g_eCvars[gc_iReloadDelay].aCache);
+					hTime = view_as<int>(g_eCvars[gc_iReloadDelay].aCache);
 					ReloadTimer = CreateTimer(1.0, Timer_ReloadConfig);
 				}
 			}
@@ -3998,14 +4034,14 @@ public Action Timer_ReloadConfig(Handle timer, DataPack pack)
 	char map[128];
 	GetCurrentMap(map, 128);
 	
-	if(time > 0)
+	if(hTime > 0)
 	{
 		if(g_eCvars[gc_iReloadNotify].aCache)
 		{
 			//CPrintToChatAll("%t" , "Timer_Server_ReloadConfig", time);
-			ChatAll("%t" , "Timer_Server_ReloadConfig", time);
+			ChatAll("%t" , "Timer_Server_ReloadConfig", hTime);
 		}
-		--time;
+		--hTime;
 		ReloadTimer = CreateTimer(1.0, Timer_ReloadConfig);
 	}
 	else 
