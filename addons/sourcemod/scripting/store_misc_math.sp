@@ -41,7 +41,7 @@ public Plugin myinfo =
 	name = "Math Quiz",
 	author = "Arkarr & Simon & AiDN™",
 	description = "Give credits on correct math answer, to nuclear silo's edited store by AiDN™.",
-	version = "1.0",
+	version = "1.1",
 	url = ""
 };
  
@@ -175,7 +175,7 @@ public Action Command_Say(int client, const char[] command, int args)
 		for (new i = 0; i < len; i++)
 		{
 			if ( !IsCharNumeric(szNumber[i]) )
-				return false;
+				return Plugin_Continue;
 		}
 		if (ProcessSolution(client, iNumber))
 			SendEndQuestion(client);
