@@ -67,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Roulette gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -760,10 +760,14 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 void PanelInject_Bowl(Panel panel, int client)
 {
 	char sBuffer[256];
+	
 	// This are your roulette fields. We need '=' '*' & '#' as placeholder cause the '▁' '█' & '▒' ascii symbols would screw up the bowl postion due to their bigger size in arrays
-	char sNumber[] = {"==0= #26# **3* #35# *12* #28# **7* #29# *18* #22# **9* #31# *14* #20# **1* #33# *16* #24# **5* #10# *23* ##8# *30* #11# *36* #13# *27* ##6# *34* #17# *25* ##2# *21* ##4# *19* #15# *32* ==0= #26# **3* #35# *12*"};
-	char sColor[]  = {"==== #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** ==== #### **** #### ****"};
-	//int iNumber[] = {0, 26, 3, 35, 12, 28, 7, 29, 18, 22, 9, 31, 14, 20, 1, 33, 16, 24, 5, 10, 23, 8, 30, 11, 36, 13, 27, 6, 34, 17, 25, 2, 21, 4, 19, 15, 32};
+	char sNumber[PLATFORM_MAX_PATH];
+	Format(sNumber, sizeof(sNumber), "==0= #26# **3* #35# *12* #28# **7* #29# *18* #22# **9* #31# *14* #20# **1* #33# *16* #24# **5* #10# *23* ##8# *30* #11# *36* #13# *27* ##6# *34* #17# *25* ##2# *21* ##4# *19* #15# *32* ==0= #26# **3* #35# *12*");
+	
+	char sColor[PLATFORM_MAX_PATH];
+	Format(sColor, sizeof(sColor), "==== #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** #### **** ==== #### **** #### ****");
+	
 	panel.DrawText(" ");
 	// Draw the position indicator in top mid
 	Format(sBuffer, sizeof(sBuffer), "                         ⮟");

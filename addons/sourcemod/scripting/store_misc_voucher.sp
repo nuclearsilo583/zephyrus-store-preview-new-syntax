@@ -48,7 +48,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -806,17 +806,17 @@ void Panel_VoucherPurchaseSuccess(int client, int credits = 0, char[] voucher, c
 
 	if (!credits)
 	{
-		any item[Store_Item];
-		any handler[Type_Handler];
+		Store_Item item;
+		Type_Handler handler;
 
 		int itemid = Store_GetItemIdbyUniqueId(uniqueID);
 
 		Store_GetItem(itemid, item);
 
-		Store_GetHandler(item[iHandler], handler);
+		Store_GetHandler(item.iHandler, handler);
 
 
-		Format(sBuffer, sizeof(sBuffer), "%t", "Voucher item", item[szName], handler[szType]);
+		Format(sBuffer, sizeof(sBuffer), "%t", "Voucher item", item.szName, handler.szType);
 	}
 	else
 	{
@@ -855,16 +855,16 @@ void Panel_VoucherAccept(int client, int credits, char[] voucher, char[] uniqueI
 
 	if (!credits)
 	{
-		any item[Store_Item];
-		any handler[Type_Handler];
+		Store_Item item;
+		Type_Handler handler;
 
 		int itemid = Store_GetItemIdbyUniqueId(uniqueID);
 
 		Store_GetItem(itemid, item);
 
-		Store_GetHandler(item[iHandler], handler);
+		Store_GetHandler(item.iHandler, handler);
 
-		Format(sBuffer, sizeof(sBuffer), "%t", "You get x item Panel", item[szName], handler[szType]);
+		Format(sBuffer, sizeof(sBuffer), "%t", "You get x item Panel", item.szName, handler.szType);
 	}
 	else
 	{
@@ -1065,15 +1065,15 @@ void SQL_WriteVoucher(int client, char[] voucher, int credits = 0, bool unlimite
 	int expire_date;
 	if (!StrEqual(uniqueID[0], ""))
 	{
-		any item[Client_Item];
-		//any handler[Type_Handler];
+		Client_Item item;
+		//Type_Handler handler;
 
 		int itemidtemp = Store_GetItemIdbyUniqueId(uniqueID);
 
 		Store_GetClientItem(client, itemidtemp, item);
 		//int uids = Store_GetClientItemId(client, itemidtemp);
 		//int expire_date = g_eClientItems[client][uids][iDateOfExpiration];
-		expire_date = item[iDateOfExpiration];
+		expire_date = item.iDateOfExpiration;
 
 		// Query
 		Format(sQuery, sizeof(sQuery), "INSERT INTO `store_voucher` "
@@ -1139,18 +1139,18 @@ public void SQLCallback_Write(Database db, DBResultSet results, const char[] err
 		return;
 	}
 
-	any item[Store_Item];
-	any handler[Type_Handler];
+	Store_Item item;
+	Type_Handler handler;
 
 	Store_GetItem(itemid, item);
 
-	Store_GetHandler(item[iHandler], handler);
+	Store_GetHandler(item.iHandler, handler);
 
 	Store_RemoveItem(client, itemid);
-	Panel_VoucherPurchaseSuccess(client, credits, sVoucher, item[szUniqueId]);
+	Panel_VoucherPurchaseSuccess(client, credits, sVoucher, item.szUniqueId);
 	LogMessage("Purchase Voucher: %s", sVoucher);
 
-	CPrintToChat(client, "%s%t", g_sChatPrefix, "Item Voucher in chat", item[szName], handler[szType], sVoucher);	
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Item Voucher in chat", item.szName, handler.szType, sVoucher);	
 	
 	PrintToConsole(client, "%t", "Voucher in console", sVoucher);
 }
@@ -1396,7 +1396,7 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 						return;
 					}
 
-					any item[Store_Item];
+					Store_Item item;
 					Store_GetItem(itemid, item);
 
 					if (Store_HasClientItem(client, itemid))
@@ -1411,23 +1411,23 @@ public void SQLCallback_Fetch(Database db, DBResultSet results, const char[] err
 						//Store_GiveItem(client, itemid, _, GetTime() + 86400, item[iPrice]);
 						if(item_expiration !=0)
 						{
-							Store_GiveItem(client, itemid, _, GetTime() + (item_expiration - GetTime()), item[iPrice]);
+							Store_GiveItem(client, itemid, _, GetTime() + (item_expiration - GetTime()), item.iPrice);
 						}
-						else Store_GiveItem(client, itemid, _, _, item[iPrice]);
-						any handler[Type_Handler];
-						Store_GetHandler(item[iHandler], handler);
+						else Store_GiveItem(client, itemid, _, _, item.iPrice);
+						Type_Handler handler;
+						Store_GetHandler(item.iHandler, handler);
 						
-						if (item[bPreview])
+						if (item.bPreview)
 						{
 							Call_StartForward(gf_hPreviewItem);
 							Call_PushCell(client);
-							Call_PushString(handler[szType]);
-							Call_PushCell(item[iData]);
+							Call_PushString(handler.szType);
+							Call_PushCell(item.iData);
 							Call_Finish();
 						}
 
 						CPrintToChat(client, "%s%t", g_sChatPrefix, "Voucher accepted");
-						CPrintToChat(client, "%s%t", g_sChatPrefix, "You get x item", item[szName], handler[szType]);
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "You get x item", item.szName, handler.szType);
 
 					}
 				}
@@ -1588,13 +1588,13 @@ public void SQLCallback_Check(Database db, DBResultSet results, const char[] err
 					return;
 				}
 
-				any item[Store_Item];
+				Store_Item item;
 				Store_GetItem(itemid, item);
 				
-				any handler[Type_Handler];
-				Store_GetHandler(item[iHandler], handler);
+				Type_Handler handler;
+				Store_GetHandler(item.iHandler, handler);
 
-				Format(sBuffer, sizeof(sBuffer), "%t %t", "Voucher item", item[szName], handler[szType], unlimited ? "and is unlimited" : "and is limited");
+				Format(sBuffer, sizeof(sBuffer), "%t %t", "Voucher item", item.szName, handler.szType, unlimited ? "and is unlimited" : "and is limited");
 			}
 			else
 			{
@@ -1693,21 +1693,21 @@ public void Voucher_OnMenu(Menu &menu, int client, int itemid)
 	if (Store_IsClientVIP(client))
 		return;
 		
-	any itemclient[Client_Item];
+	Client_Item itemclient;
 	Store_GetClientItem(client, itemid, itemclient);
-	if (itemclient[iPriceOfPurchase]<=0)
+	if (itemclient.iPriceOfPurchase<=0)
 		return;
 
-	any item[Store_Item];
+	Store_Item item;
 	Store_GetItem(itemid, item);
 
-	any handler[Type_Handler];
-	Store_GetHandler(item[iHandler], handler);
+	Type_Handler handler;
+	Store_GetHandler(item.iHandler, handler);
 
 	char sBuffer[128];
 	if(g_eCvars[gc_bItemVoucherEnabled].aCache)
 	{
-		if (StrEqual(handler[szType], "package"))
+		if (StrEqual(handler.szType, "package"))
 		{
 			Format(sBuffer, sizeof(sBuffer), "%t", "Package Voucher");
 			menu.AddItem("voucher_package", sBuffer, ITEMDRAW_DEFAULT);
@@ -1733,18 +1733,18 @@ public bool Voucher_OnHandler(int client, char[] selection, int itemid)
 		}
 			else
 			{
-			any item[Store_Item];
+			Store_Item item;
 			Store_GetItem(itemid, item);
 
 			g_iSelectedItem[client] = itemid;
 
-			any handler[Type_Handler];
-			Store_GetHandler(item[iHandler], handler);
+			Type_Handler handler;
+			Store_GetHandler(item.iHandler, handler);
 
 			if (Store_ShouldConfirm())
 			{
 				char sTitle[1024];
-				Format(sTitle, sizeof(sTitle), "%t", "Confirm_Voucher", item[szName], handler[szType]);
+				Format(sTitle, sizeof(sTitle), "%t", "Confirm_Voucher", item.szName, handler.szType);
 				Store_DisplayConfirmMenu(client, sTitle, Store_OnConfirmHandler, 1);
 			}
 			else
@@ -1768,11 +1768,11 @@ public void Store_OnConfirmHandler(Menu menu, MenuAction action, int client, int
 void VoucherItem(int client, int itemid)
 {
 
-	any item[Store_Item];
+	Store_Item item;
 	Store_GetItem(itemid, item);
 
 	char sBuffer[1024];
 	GenerateVoucherCode(sBuffer, sizeof(sBuffer));
-	SQL_WriteVoucher(client, sBuffer, 0, false, item[szUniqueId]);
+	SQL_WriteVoucher(client, sBuffer, 0, false, item.szUniqueId);
 	g_iLastQuery[client] = GetTime();
 }

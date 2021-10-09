@@ -17,57 +17,57 @@ int g_cvarChatTag = -1;
 #define STORE_MAX_PLANS 8
 #define STORE_MAX_SLOTS 12
 
-enum Item_Plan
+enum struct Item_Plan
 {
-	String:szName_Plan[ITEM_NAME_LENGTH],
-	iPrice_Plan,
-	iTime_Plan
+	char szName_Plan[ITEM_NAME_LENGTH];
+	int iPrice_Plan;
+	int iTime_Plan;
 }
 
-enum Store_Item
+enum struct Store_Item
 {
-	String:szName[ITEM_NAME_LENGTH],
-	String:szUniqueId[PLATFORM_MAX_PATH],
-	String:szShortcut[64],
-	String:szSteam[256],
-	String:szDescription[256],
-	iId,
-	iPrice,
-	iParent,
-	iHandler,
-	iFlagBits,
-	iData,
-	iPlans,
-	bool:bBuyable,
-	bool:bIgnoreFree,
-	bool:bIgnoreVIP,
-	bool:bPreview,
-	Handle:hAttributes,
+	char szName[ITEM_NAME_LENGTH];
+	char szUniqueId[PLATFORM_MAX_PATH];
+	char szShortcut[64];
+	char szSteam[256];
+	char szDescription[256];
+	int iId;
+	int iPrice;
+	int iParent;
+	int iHandler;
+	int iFlagBits;
+	int iData;
+	int iPlans;
+	bool bBuyable;
+	bool bIgnoreFree;
+	bool bIgnoreVIP;
+	bool bPreview;
+	Handle hAttributes;
 }
 
-enum Type_Handler
+enum struct Type_Handler
 {
-	String:szType[64],
-	String:szUniqueKey[32],
-	bool:bEquipable,
-	bool:bRaw,
-	Handle:hPlugin,
-	Function:fnMapStart,
-	Function:fnReset,
-	Function:fnConfig,
-	Function:fnUse,
-	Function:fnRemove
+	char szType[64];
+	char szUniqueKey[32];
+	bool bEquipable;
+	bool bRaw;
+	Handle hPlugin;
+	Function fnMapStart;
+	Function fnReset;
+	Function fnConfig;
+	Function fnUse;
+	Function fnRemove;
 }
 
-enum Client_Item
+enum struct Client_Item
 {
-	iId_Client_Item,
-	iUniqueId,
-	bool:bSynced,
-	bool:bDeleted,
-	iDateOfPurchase,
-	iDateOfExpiration,
-	iPriceOfPurchase,
+	int iId_Client_Item;
+	int iUniqueId;
+	bool bSynced;
+	bool bDeleted;
+	int iDateOfPurchase;
+	int iDateOfExpiration;
+	int iPriceOfPurchase;
 }
 
 native int Store_RegisterHandler(char[] type, char[] uniquekey, Function mapstart = INVALID_FUNCTION, Function reset = INVALID_FUNCTION, Function config = INVALID_FUNCTION, Function use = INVALID_FUNCTION, Function remove = INVALID_FUNCTION, bool equipable = true, bool raw = false);
@@ -84,11 +84,11 @@ native bool Store_IsClientVIP(int client);
 native bool Store_IsItemInBoughtPackage(int client, int itemid, int uid=-1);
 native bool Store_ShouldConfirm();
 native void Store_DisplayConfirmMenu(int client, char[] title, Function callback,int data);
-native int Store_GetItem(int itemid, any output[Store_Item]);
-native void Store_GetHandler(int index, any output[Type_Handler]);
+native int Store_GetItem(int itemid, any output[sizeof(Store_Item)]);
+native void Store_GetHandler(int index, any output[sizeof(Type_Handler)]);
 native void Store_GiveItem(int client, int itemid, int purchase=0, int expiration=0, int price=0);
 native void Store_RemoveItem(int client, int itemid);
-native bool Store_GetClientItem(int client, int itemid, any output[Client_Item]);
+native bool Store_GetClientItem(int client, int itemid, any output[sizeof(Client_Item)]);
 native int Store_GetClientTarget(int client);
 native int Store_GiveClientItem(int client, int recipient, int itemid);
 native bool Store_HasClientItem(int client, int itemid);

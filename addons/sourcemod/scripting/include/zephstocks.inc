@@ -1101,6 +1101,9 @@ stock void IdentifyGame()
 		g_bL4D2 = true;
 	else if(strcmp(m_szGameDir, "nucleardawn")==0)
 		g_bND = true;
+		
+	// Supress warnings about unused variables.....
+	if(g_bL4D || g_bL4D2 || g_bND) {}
 }
 
 stock bool IsPluginLoaded(char[] name)

@@ -1,13 +1,14 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 //////////////////////////////
 //		DEFINITIONS			//
 //////////////////////////////
 
 #define PLUGIN_NAME "Store - Trade System"
-#define PLUGIN_AUTHOR "Zephyrus"
+#define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A trade system for the Store plugin."
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "2.0"
 #define PLUGIN_URL ""
 
 #define STORE_TRADE_MAX_OFFERS 16 // Usermessage may not be able to hold more at a time
@@ -32,19 +33,19 @@
 //		GLOBAL VARIABLES		//
 //////////////////////////////////
 
-new g_cvarTradeEnabled = -1;
-new g_cvarTradeCooldown = -1;
-new g_cvarTradeReadyDelay = -1;
+int g_cvarTradeEnabled = -1;
+int g_cvarTradeCooldown = -1;
+int g_cvarTradeReadyDelay = -1;
 
-new bool:g_bReady[MAXPLAYERS+1] = {false, ...};
-new bool:g_bMenuOpen[MAXPLAYERS+1] = {false, ...};
+bool g_bReady[MAXPLAYERS+1] = {false, ...};
+bool g_bMenuOpen[MAXPLAYERS+1] = {false, ...};
 
-new g_iTraders[MAXPLAYERS+1] = {0, ...};
-new g_iOfferedCredits[MAXPLAYERS+1] = {0, ...};
-new g_iOffers[MAXPLAYERS+1][STORE_TRADE_MAX_OFFERS];
-new g_iTradeCooldown[MAXPLAYERS+1] = {0, ...};
+int g_iTraders[MAXPLAYERS+1] = {0, ...};
+int g_iOfferedCredits[MAXPLAYERS+1] = {0, ...};
+int g_iOffers[MAXPLAYERS+1][STORE_TRADE_MAX_OFFERS];
+int g_iTradeCooldown[MAXPLAYERS+1] = {0, ...};
 
-new Handle:g_hReadyTimers[MAXPLAYERS+1] = {INVALID_HANDLE};
+Handle g_hReadyTimers[MAXPLAYERS+1] = {INVALID_HANDLE};
 
 //////////////////////////////
 //			MODULES			//
@@ -54,7 +55,7 @@ new Handle:g_hReadyTimers[MAXPLAYERS+1] = {INVALID_HANDLE};
 //		PLUGIN DEFINITION		//
 //////////////////////////////////
 
-public Plugin:myinfo = 
+public Plugin myinfo = 
 {
 	name = PLUGIN_NAME,
 	author = PLUGIN_AUTHOR,
@@ -67,7 +68,7 @@ public Plugin:myinfo =
 //		PLUGIN FORWARDS		//
 //////////////////////////////
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	IdentifyGame();
 
@@ -90,7 +91,7 @@ public OnPluginStart()
 	CreateTimer(1.0, Timer_ShowPartnerMenu, _, TIMER_REPEAT);
 }
 
-public OnAllPluginsLoaded()
+public void OnAllPluginsLoaded()
 {
 	g_cvarChatTag = HookConVar("sm_store_chat_tag", TYPE_STRING);
 }
@@ -99,21 +100,21 @@ public OnAllPluginsLoaded()
 //		CLIENT FORWARDS		//
 //////////////////////////////
 
-public OnClientConnected(client)
+public void OnClientConnected(int client)
 {
 	g_iTradeCooldown[client] = 0;
 	ResetTrade(client);
 }
 
-public OnClientDisconnect(client)
+public void OnClientDisconnect(int client)
 {
-	new target = GetClientOfUserId(g_iTraders[client]);
+	int target = GetClientOfUserId(g_iTraders[client]);
 	if(target && IsClientInGame(target))
 		ResetTrade(target);
 	ResetTrade(client);
 }
 
-public Action:Timer_ShowPartnerMenu(Handle:timer, any:data)
+public Action Timer_ShowPartnerMenu(Handle timer, any data)
 {
 	LoopIngamePlayers(i)
 	{
@@ -128,7 +129,7 @@ public Action:Timer_ShowPartnerMenu(Handle:timer, any:data)
 //	    	COMMANDS 		//
 //////////////////////////////
 
-public Action:Command_Offer(client, args)
+public Action Command_Offer(int client, int args)
 {
 	if(!g_iTraders[client])
 	{
@@ -136,10 +137,10 @@ public Action:Command_Offer(client, args)
 		return Plugin_Handled;
 	}
 
-	decl String:m_szCredits[11];
+	char m_szCredits[11];
 	GetCmdArg(1, STRING(m_szCredits));
 
-	new m_iCredits = StringToInt(m_szCredits);
+	int m_iCredits = StringToInt(m_szCredits);
 	if(m_iCredits < 0 || Store_GetClientCredits(client) < m_iCredits)
 	{
 		Chat(client, "%t", "Credit Invalid Amount");
@@ -153,7 +154,7 @@ public Action:Command_Offer(client, args)
 	return Plugin_Handled;
 }
 
-public Action:Command_Trade(client, args)
+public Action Command_Trade(int client, int args)
 {
 	if(g_iTraders[client])
 	{
@@ -168,11 +169,11 @@ public Action:Command_Trade(client, args)
 		return Plugin_Handled;
 	}
 
-	new Handle:m_hMenu = CreateMenu(MenuHandler_SelectPlayer);
+	Handle m_hMenu = CreateMenu(MenuHandler_SelectPlayer);
 	SetMenuTitle(m_hMenu, "%t", "Trade Select Player");
 
-	decl String:m_szUserId[11];
-	decl String:m_szClientName[64];
+	char m_szUserId[11];
+	char m_szClientName[64];
 	LoopIngamePlayers(i)
 	{
 		if(i == client)
@@ -195,29 +196,29 @@ public Action:Command_Trade(client, args)
 //		 STORE TRADE		//
 //////////////////////////////
 
-public ResetTrade(client)
+public void ResetTrade(int client)
 {
-	new target = GetClientOfUserId(g_iTraders[client]);
+	int target = GetClientOfUserId(g_iTraders[client]);
 
 	g_bReady[client] = false;
 	g_iTraders[client] = 0;
 	g_iOfferedCredits[client] = 0; 
 	ClearTimer(g_hReadyTimers[client]);
 	g_hReadyTimers[target] = INVALID_HANDLE;
-	for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
+	for(int i=0;i<STORE_TRADE_MAX_OFFERS;++i)
 		g_iOffers[client][i] = -1;
 	PrintKeyHintText(client, "");
 }
 
-public MenuHandler_SelectPlayer(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_SelectPlayer(Handle menu, MenuAction action, int client, int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
 	else if (action == MenuAction_Select)
 	{
-		decl String:m_szUserId[11];
+		char m_szUserId[11];
 		GetMenuItem(menu, param2, STRING(m_szUserId));
-		new target = GetClientOfUserId(StringToInt(m_szUserId));
+		int target = GetClientOfUserId(StringToInt(m_szUserId));
 		if(!target || !IsClientInGame(target))
 		{
 			Chat(client, "%t", "Player left");
@@ -229,7 +230,7 @@ public MenuHandler_SelectPlayer(Handle:menu, MenuAction:action, client, param2)
 		g_iTraders[client] = GetClientUserId(target);
 
 		Chat(client, "%t", "Waiting for confirmation");
-		new Handle:m_hMenu = CreateMenu(MenuHandler_InitTrade);
+		Handle m_hMenu = CreateMenu(MenuHandler_InitTrade);
 		SetMenuTitle(m_hMenu, "%t", "Trade Confirm", client);
 		SetMenuExitButton(m_hMenu, false);
 		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "yes", "%t", "Confirm_Yes");
@@ -238,13 +239,13 @@ public MenuHandler_SelectPlayer(Handle:menu, MenuAction:action, client, param2)
 	}
 }
 
-public MenuHandler_InitTrade(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_InitTrade(Handle menu, MenuAction action, int client, int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
 	else if (action == MenuAction_Cancel && g_iTraders[client] == 0)
 	{
-		for(new i=1;i<=MaxClients;++i)
+		for(int i=1;i<=MaxClients;++i)
 		{
 			if(g_iTraders[i] == GetClientUserId(client))
 			{
@@ -256,8 +257,8 @@ public MenuHandler_InitTrade(Handle:menu, MenuAction:action, client, param2)
 	}
 	else if (action == MenuAction_Select)
 	{
-		new target = 0;
-		for(new i=1;i<=MaxClients;++i)
+		int target = 0;
+		for(int i=1;i<=MaxClients;++i)
 		{
 			if(g_iTraders[i] == GetClientUserId(client))
 			{
@@ -291,49 +292,49 @@ public MenuHandler_InitTrade(Handle:menu, MenuAction:action, client, param2)
 	}
 }
 
-public DisplayTradeMenu(client)
+public void DisplayTradeMenu(int client)
 {
-	new target = GetClientOfUserId(g_iTraders[client]);
+	int target = GetClientOfUserId(g_iTraders[client]);
 	if(!target || !IsClientInGame(target))
 		return;
 
 	g_bMenuOpen[client] = true;
 
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Trade);
+	Handle m_hMenu = CreateMenu(MenuHandler_Trade);
 	SetMenuTitle(m_hMenu, "%t", "Trade Title", target, g_iOfferedCredits[client]);
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "ready", "%t", "Ready", (g_bReady[client]?"X":" "));
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "cancel", "%t", "Cancel");
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "offer", "%t\n\n\n", "Offer");
 
-	new m_eItem[Store_Item];
-	new m_eHandler[Type_Handler];
-	decl String:m_szItemID[11];
+	Store_Item m_eItem;
+	Type_Handler m_eHandler;
+	char m_szItemID[11];
 
-	for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
+	for(int i=0;i<STORE_TRADE_MAX_OFFERS;++i)
 	{
 		if(g_iOffers[client][i] == -1)
 			continue;
 		Store_GetItem(g_iOffers[client][i], m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
 
 		IntToString(g_iOffers[client][i], STRING(m_szItemID));
-		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szItemID, "%s %s", m_eItem[szName], m_eHandler[szType]);
+		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szItemID, "%s %s", m_eItem.szName, m_eHandler.szType);
 	}
 
 	DisplayMenu(m_hMenu, client, 0);
 }
 
-public DisplayPartnerMenu(client)
+public void DisplayPartnerMenu(int client)
 {
-	new target = GetClientOfUserId(g_iTraders[client]);
+	int target = GetClientOfUserId(g_iTraders[client]);
 	if(!target || !IsClientInGame(target))
 		return;
 
 	if(g_iTraders[target] == 0)
 		return;
 
-	new bool:m_bRedisplay = false;
-	new bool:m_bRedisplayTarget = false;
+	bool m_bRedisplay = false;
+	bool m_bRedisplayTarget = false;
 	if(g_iOfferedCredits[client] > Store_GetClientCredits(client))
 	{
 		g_iOfferedCredits[client] = 0;
@@ -346,17 +347,17 @@ public DisplayPartnerMenu(client)
 		Chat(client, "%t", "Trade Menu");
 	}
 
-	decl String:m_szMessage[256];
-	new idx = 0;
+	char m_szMessage[256];
+	int idx = 0;
 	idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%t\n\n", (g_bReady[target]?"Partner Ready":"Partner Not Ready"));
 	idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%t\n\n", "Partner Credit Offer", g_iOfferedCredits[target]);
 	idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%t\n\n", "Partner Item Offer");
 
-	new m_eItem[Store_Item];
-	new m_eHandler[Type_Handler];
+	Store_Item m_eItem;
+	Type_Handler m_eHandler;
 
-	new index = 0;
-	for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
+	int index = 0;
+	for(int i=0;i<STORE_TRADE_MAX_OFFERS;++i)
 	{
 		if(g_iOffers[target][i] == -1)
 			continue;
@@ -368,8 +369,8 @@ public DisplayPartnerMenu(client)
 			continue;
 		}
 		Store_GetItem(g_iOffers[target][i], m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
-		idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%d. %s %s\n", ++index, m_eItem[szName], m_eHandler[szType]);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
+		idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%d. %s %s\n", ++index, m_eItem.szName, m_eHandler.szType);
 	}
 
 	if(m_bRedisplay)
@@ -380,7 +381,7 @@ public DisplayPartnerMenu(client)
 	PrintKeyHintText(client, m_szMessage);
 }
 
-public MenuHandler_Trade(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_Trade(Handle menu, MenuAction action, int client, int param2)
 {
 	if (action == MenuAction_End)
 	{
@@ -398,7 +399,7 @@ public MenuHandler_Trade(Handle:menu, MenuAction:action, client, param2)
 			g_bReady[client] = !g_bReady[client];
 			DisplayTradeMenu(client);
 
-			new target = GetClientOfUserId(g_iTraders[client]);
+			int target = GetClientOfUserId(g_iTraders[client]);
 
 			if(g_bReady[client] && g_bReady[target])
 			{
@@ -416,7 +417,7 @@ public MenuHandler_Trade(Handle:menu, MenuAction:action, client, param2)
 		{
 			if(Store_ShouldConfirm())
 			{
-				new Handle:m_hMenu = CreateMenu(MenuHandler_Cancel);
+				Handle m_hMenu = CreateMenu(MenuHandler_Cancel);
 				SetMenuTitle(m_hMenu, "%t", "Trade Confirm Cancel", client);
 				SetMenuExitButton(m_hMenu, false);
 				AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "yes", "%t", "Confirm_Yes");
@@ -433,11 +434,11 @@ public MenuHandler_Trade(Handle:menu, MenuAction:action, client, param2)
 		}
 		else
 		{
-			new String:m_szItemId[11];
+			char m_szItemId[11];
 			GetMenuItem(menu, param2, STRING(m_szItemId));
-			new m_iItemID = StringToInt(m_szItemId);
+			int m_iItemID = StringToInt(m_szItemId);
 
-			for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
+			for(int i=0;i<STORE_TRADE_MAX_OFFERS;++i)
 			{
 				if(g_iOffers[client][i] == m_iItemID)
 				{
@@ -450,11 +451,11 @@ public MenuHandler_Trade(Handle:menu, MenuAction:action, client, param2)
 	}
 }
 
-public Action:Timer_ReadyTimer(Handle:timer, any:data)
+public Action Timer_ReadyTimer(Handle timer, any data)
 {
-	new client = 0;
-	new target = 0;
-	for(new i=1;i<=MaxClients;++i)
+	int client = 0;
+	int target = 0;
+	for(int i=1;i<=MaxClients;++i)
 		if(g_hReadyTimers[i] == timer)
 		{
 			if(data > 0)
@@ -472,7 +473,7 @@ public Action:Timer_ReadyTimer(Handle:timer, any:data)
 	}
 	else
 	{
-		for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
+		for(int i=0;i<STORE_TRADE_MAX_OFFERS;++i)
 		{
 			if(g_iOffers[client][i] != -1)
 				Store_GiveClientItem(client, target, g_iOffers[client][i]);
@@ -497,7 +498,7 @@ public Action:Timer_ReadyTimer(Handle:timer, any:data)
 	return Plugin_Continue;
 }
 
-public MenuHandler_Cancel(Handle:menu, MenuAction:action, client, param2)
+public int MenuHandler_Cancel(Handle menu, MenuAction action, int client, int param2)
 {
 	if (action == MenuAction_End)
 		CloseHandle(menu);
@@ -509,7 +510,7 @@ public MenuHandler_Cancel(Handle:menu, MenuAction:action, client, param2)
 		if(param2 == 0)
 		{
 			ResetTrade(client);
-			new target = GetClientOfUserId(g_iTraders[client]);
+			int target = GetClientOfUserId(g_iTraders[client]);
 			if(!target || !IsClientInGame(target))
 				return;
 			ResetTrade(target);
@@ -524,9 +525,9 @@ public MenuHandler_Cancel(Handle:menu, MenuAction:action, client, param2)
 //		STORE CALLBACKS		//
 //////////////////////////////
 
-public Trade_OnMenu(&Handle:menu, client, itemid)
+public void Trade_OnMenu(Handle &menu, int client, int itemid)
 {
-	new target = Store_GetClientTarget(client);
+	int target = Store_GetClientTarget(client);
 	if(!Store_IsClientVIP(target) && !Store_IsItemInBoughtPackage(target, itemid) && g_iTraders[client])
 	{
 		RemoveAllMenuItems(menu);
@@ -538,19 +539,19 @@ public Trade_OnMenu(&Handle:menu, client, itemid)
 	}
 }
 
-public bool:Trade_OnHandler(client, String:info[], itemid)
+public bool Trade_OnHandler(int client, char[] info, int itemid)
 {
 	if(!g_eCvars[g_cvarTradeEnabled].aCache)
 		return false;
 
 	if(strcmp(info, "add_to_offer")==0)
 	{
-		new m_eItem[Store_Item];
-		new m_eHandler[Type_Handler];
+		Store_Item m_eItem;
+		Type_Handler m_eHandler;
 		Store_GetItem(itemid, m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
-		decl String:m_szTitle[128];
-		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Offer_Item", m_eItem[szName], m_eHandler[szType]);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
+		char m_szTitle[128];
+		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Offer_Item", m_eItem.szName, m_eHandler.szType);
 		Store_SetClientMenu(client, 2);
 		if(Store_ShouldConfirm())
 			Store_DisplayConfirmMenu(client, m_szTitle, Trade_MenuHandler, itemid);
@@ -558,12 +559,12 @@ public bool:Trade_OnHandler(client, String:info[], itemid)
 			Trade_MenuHandler(INVALID_HANDLE, MenuAction_Select, client, itemid);
 	} else if(strcmp(info, "trade_this_item")==0)
 	{
-		new m_eItem[Store_Item];
-		new m_eHandler[Type_Handler];
+		Store_Item m_eItem;
+		Type_Handler m_eHandler;
 		Store_GetItem(itemid, m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
-		decl String:m_szTitle[128];
-		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Trade_Item", m_eItem[szName], m_eHandler[szType]);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
+		char m_szTitle[128];
+		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Trade_Item", m_eItem.szName, m_eHandler.szType);
 		Store_SetClientMenu(client, 2);
 		if(Store_ShouldConfirm())
 			Store_DisplayConfirmMenu(client, m_szTitle, Trade_ConfirmTradeHandler, itemid);
@@ -573,14 +574,14 @@ public bool:Trade_OnHandler(client, String:info[], itemid)
 	return false;
 }
 
-public Trade_MenuHandler(Handle:menu, MenuAction:action, client, param2)
+public int Trade_MenuHandler(Handle menu, MenuAction action, int client, int param2)
 {
 	if(action == MenuAction_Select)
 	{
 		if(menu == INVALID_HANDLE)
 		{
-			new target = Store_GetClientTarget(client);
-			for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
+			int target = Store_GetClientTarget(client);
+			for(int i=0;i<STORE_TRADE_MAX_OFFERS;++i)
 			{
 				if(g_iOffers[target][i] == -1)
 				{
@@ -594,7 +595,7 @@ public Trade_MenuHandler(Handle:menu, MenuAction:action, client, param2)
 	}
 }
 
-public Trade_ConfirmTradeHandler(Handle:menu, MenuAction:action, client, param2)
+public int Trade_ConfirmTradeHandler(Handle menu, MenuAction action, int client, int param2)
 {
 	if(action == MenuAction_Select)
 	{

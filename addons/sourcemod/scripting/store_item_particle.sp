@@ -69,7 +69,7 @@ public Plugin myinfo =
 	name = "Store - Particle item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -102,6 +102,9 @@ public void OnPluginStart()
 
 		OnClientCookiesCached(i);
 	}
+	
+	// Supress warnings about unused variables.....
+	if(g_cvarChatTag){}
 }
 
 public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
@@ -134,14 +137,14 @@ void CMD_Hide(int client)
 			g_bHide[client] = true;
 			IntToString(1, sCookieValue, sizeof(sCookieValue));
 			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "particle");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "particle");
 		}
 		case true:
 		{
 			g_bHide[client] = false;
 			IntToString(0, sCookieValue, sizeof(sCookieValue));
 			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "particle");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "particle");
 		}
 	}
 }

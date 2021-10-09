@@ -43,7 +43,7 @@ public Plugin myinfo =
 	name = "Store - Pet item module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -514,7 +514,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+	//int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
 	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
 	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
 	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);

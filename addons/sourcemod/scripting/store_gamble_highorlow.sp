@@ -32,7 +32,7 @@ public Plugin myinfo =
 	name = "High or Low",
 	author = "SheriF & AiDN™",
 	description = "Higher & Lower Gamble for Zephyrus's store by SheriF, for nuclear silo's edited store by AiDN™",
-	version = "1.0"
+	version = "1.1"
 };
 
 public void OnPluginStart()
@@ -48,6 +48,9 @@ public void OnPluginStart()
 	g_cvWon = CreateConVar("store_hol_won", "400", "Amount of credits player won to show in public.");
 	g_cvCooldownTime = CreateConVar("store_cooldown_time", "30.0", "Cooldown for the high or low command. Usage: The amount of second between each try of the command . 0.0-Disable.");
 	AutoExecConfig(true, "highorlow", "sourcemod/store");
+	
+	// Supress warnings about unused variables.....
+	if(g_cvarChatTag){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)

@@ -58,7 +58,7 @@ public Plugin myinfo =
 	name = "Blackjack",
 	author = "HerrMagic and Originalz ft. Jannik, AiDN™, nuclear silo",
 	description = "Blackjack game Zephyrus's , nuclear silo's edited store",
-	version = "1.1"
+	version = "1.2"
 }
 
 public OnPluginStart()
@@ -100,6 +100,9 @@ public OnPluginStart()
 	RegConsoleCmd("sm_blackjack", Cmd_BlackJack, "Opens the blackjack game.");
 	
 	HookEvent("player_spawn", Event_OnPlayerSpawn);
+	
+	// Supress warnings about unused variables.....
+	if(g_cvarChatTag){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)

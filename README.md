@@ -2,22 +2,16 @@
 - CSGO: emote
 - CSS: done (if you want more module contact me)
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
+- TF2: now supported
 
 # Newly added
-- Added new preview support for name tag, name and message color.
-- Added new earning method for CSGO (This modules only work for csgo, dont install this if you use the 2009 source engine game. When you enable this please disable all the earning method in the core store.sp or you may get duplicate credits)
+- After 7 months since this Repo created. The store can only compile in SM 1.10 due to array-based enum struct syntax. But now today (10/9/2021), the store is rewritten for new enum struct syntax and can compile in SM 1.11 without any errors/warning.
+[image](https://user-images.githubusercontent.com/58926275/136654734-1741fedc-c541-4e5a-bc4f-ad0283750240.png)
 
-# zephyrus-store (support SM 1.10).
+# zephyrus-store (support SM 1.10 and SM 1.11).
 My rewritten zephyrus store
 
 Store system for CS:GO.
-Zephyrus store system rewritten with preview support (compilable with SM 1.10) 
-
-Not support for compile in SM 1.11
-
-Since this is zephyrus's store that was rewritten so any custom module that support zephyrus store can also be run without any problem. Contact me if you find any bugs or error.
-
-Update 18/3: Re-add tf2 item support (I dont know this is gonna work or not). Please fell free to create a new issue post for bug report.
 
 P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have some module that need to rework to be able to use. I will rework any that needed and will store in `<game_name>_modules` folders. Check for it (if you see no item that store in that folder, which mean you need to install any you wish from the main scripting folder and test run if you may find any error.)
 
@@ -37,6 +31,7 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Say sound
 - Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
 	(Please uncomment //#define WEAPONS_KNIVES at line #202 to enable this module)
+- Name tag, name and message color.
 - more will be supported
 # Modules has no preview support:
 - PaintBall Effects (by shanapu)

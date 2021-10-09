@@ -89,7 +89,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -119,6 +119,9 @@ public void OnPluginStart()
 	AutoExecConfig_CleanFile();
 	
 	HookEvent("cs_win_panel_match", Event_End);
+	
+	// Supress warnings about unused variables.....
+	if(g_cvarChatTag){}
 }
 
 public void OnMapStart()
@@ -326,17 +329,17 @@ public int Lootbox_Equip(int client, int itemid)
 {
 	if (GameRules_GetProp("m_bWarmupPeriod")) // Check if client open in warm up ? This will cause massive error log when they are open at the same time warm up end.
 	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox warm up");
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox warm up");
 		return 1;
 	}
 	if (roundend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox round ended");
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox round ended");
 		return 1;
 	}
 	if (mapend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox map ended");
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox map ended");
 		return 1;
 	}
 	if (!IsPlayerAlive(client))
@@ -347,7 +350,7 @@ public int Lootbox_Equip(int client, int itemid)
 
 	if (g_iLootboxEntityRef[client] != INVALID_ENT_REFERENCE) // Prevent spam. The previous case wont be killed.
 	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox case is opening");
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox case is opening");
 		return 1;
 	}
 	
@@ -508,10 +511,10 @@ public Action Timer_Open(Handle timer, int client)
 		return Plugin_Stop;
 	}
 
-	any item[Store_Item];
+	Store_Item item;
 	Store_GetItem(itemid, item);
-	any handler[Type_Handler];
-	Store_GetHandler(item[iHandler], handler);
+	Type_Handler handler;
+	Store_GetHandler(item.iHandler, handler);
 
 	if (Store_HasClientItem(client, itemid))
 	{
@@ -523,12 +526,12 @@ public Action Timer_Open(Handle timer, int client)
 		else
 		{
 			Store_SetClientCredits(client, Store_GetClientCredits(client) + RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])));
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits price back", item[szName], handler[szType], RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])), g_sCreditsName);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits price back", item.szName, handler.szType, RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])), g_sCreditsName);
 			
 			if (g_iClientLevel[client] == LEVEL_RED)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item.szName, handler.szType);
 			if (g_iClientLevel[client] == LEVEL_GOLD)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item.szName, handler.szType);
 		}
 	}
 	else
@@ -536,41 +539,41 @@ public Action Timer_Open(Handle timer, int client)
 		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
+				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
 			else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 1);
 		}
 		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + time, item[iPrice]);
+				Store_GiveItem(client, itemid, _, GetTime() + time, item.iPrice);
 			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
 		}
 		else 
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, _, item[iPrice]);
+				Store_GiveItem(client, itemid, _, _, item.iPrice);
 			else Store_GiveItem(client, itemid, _, _, 1);
 		}
 		char sBuffer[128];
-		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item[szName], handler[szType]);
+		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item.szName, handler.szType);
 
 		CPrintToChat(client, "%s%s", g_sChatPrefix, sBuffer);
 		Store_SQLLogMessage(client, LOG_EVENT, "Opened a lootbox #%i. Item: %s.", g_iClientBox[client], sUId);
 		if (g_iClientLevel[client] == LEVEL_RED)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item.szName, handler.szType);
 		if (g_iClientLevel[client] == LEVEL_GOLD)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item.szName, handler.szType);
 			
 		CRemoveTags(sBuffer, sizeof(sBuffer));
 		PrintHintText(client, sBuffer);
 	}
 
-	if (item[bPreview] && IsPlayerAlive(client))
+	if (item.bPreview && IsPlayerAlive(client))
 	{
 		Call_StartForward(gf_hPreviewItem);
 		Call_PushCell(client);
-		Call_PushString(handler[szType]);
-		Call_PushCell(item[iData]);
+		Call_PushString(handler.szType);
+		Call_PushCell(item.iData);
 		Call_Finish();
 	}
 

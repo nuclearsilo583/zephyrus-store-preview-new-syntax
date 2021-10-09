@@ -1,7 +1,8 @@
 #include <sourcemod>
-#include <colorvariables>
+//#include <colorvariables>
 #include <sdktools>
 #include <store>
+#include <multicolors>
 
 #pragma newdecls required
 
@@ -23,7 +24,7 @@ public Plugin myinfo = {
 	name = "Store Giveaway",
 	author = "nuclear silo",
 	description = "Giveaway plugin compatible with zephyrus store.",
-	version = "1.2",
+	version = "1.4",
 	url = ""
 }
 
@@ -41,7 +42,8 @@ public void OnPluginStart()
 
 	LoadTranslations("store.phrases");
 	
-	
+	// Supress warnings about unused variables.....
+	if(g_cvarChatTag){}
 }
 
 public void OnConfigsExecuted()

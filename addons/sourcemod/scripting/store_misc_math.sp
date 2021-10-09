@@ -41,7 +41,7 @@ public Plugin myinfo =
 	name = "Math Quiz",
 	author = "Arkarr & Simon & AiDN™",
 	description = "Give credits on correct math answer, to nuclear silo's edited store by AiDN™.",
-	version = "1.1",
+	version = "1.2",
 	url = ""
 };
  
@@ -69,6 +69,9 @@ public void OnPluginStart()
 	
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
+	
+	// Supress warnings about unused variables.....
+	if(g_cvarChatTag){}
 }
 
 public void OnMapStart()

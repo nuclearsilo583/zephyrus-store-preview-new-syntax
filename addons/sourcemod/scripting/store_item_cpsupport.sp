@@ -4,12 +4,12 @@
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
-#include <colorvariables>
+//#include <colorvariables>
 
 #include <store>
 #include <zephstocks>
 
-//#include <multicolors> 
+#include <multicolors> 
 #include <chat-processor> 
 
 char g_sNameTags[STORE_MAX_ITEMS][MAXLENGTH_NAME];
@@ -27,7 +27,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "1.7", 
+	version = "1.8", 
 	url = ""
 };
 

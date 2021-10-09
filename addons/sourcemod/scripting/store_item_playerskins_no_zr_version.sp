@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Player Skin Module (No ZR version)",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -101,12 +101,12 @@ public void PlayerSkins_OnMapStart()
 {
 	for(int i=0;i<g_iPlayerSkins;++i)
 	{
-		g_ePlayerSkins[i].nModelIndex = PrecacheModel2(g_ePlayerSkins[i].szModel, true);
+		g_ePlayerSkins[i].nModelIndex = PrecacheModel(g_ePlayerSkins[i].szModel, true);
 		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i].szModel);
 
 		if(g_ePlayerSkins[i].szArms[0]!=0)
 		{
-			PrecacheModel2(g_ePlayerSkins[i].szArms, true);
+			PrecacheModel(g_ePlayerSkins[i].szArms, true);
 			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i].szArms);
 		}
 	}
@@ -116,10 +116,10 @@ public void PlayerSkins_OnMapStart()
 		(FileExists(g_eCvars[g_cvarSkinForceChangeTArms].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeTArms].sCache, true)))
 	{
 		g_bTForcedSkin = true;
-		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeT].sCache, true);
+		PrecacheModel(g_eCvars[g_cvarSkinForceChangeT].sCache, true);
 		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeT].sCache);
 		
-		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeTArms].sCache, true);
+		PrecacheModel(g_eCvars[g_cvarSkinForceChangeTArms].sCache, true);
 		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeTArms].sCache);
 	}
 	else
@@ -130,10 +130,10 @@ public void PlayerSkins_OnMapStart()
 			(FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache, true)))
 	{
 		g_bCTForcedSkin = true;
-		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeCT].sCache, true);
+		PrecacheModel(g_eCvars[g_cvarSkinForceChangeCT].sCache, true);
 		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeCT].sCache);
 		
-		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeCTArms].sCache, true);
+		PrecacheModel(g_eCvars[g_cvarSkinForceChangeCTArms].sCache, true);
 		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeCTArms].sCache);
 	}
 	else

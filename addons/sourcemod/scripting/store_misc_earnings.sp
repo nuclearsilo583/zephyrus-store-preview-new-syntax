@@ -10,7 +10,7 @@
 #include <multicolors>
 #include <autoexecconfig>
 
-#define PLUGINS_ZOMBIE_ENABLE
+//#define PLUGINS_ZOMBIE_ENABLE
 /*#if defined PLUGINS_ZOMBIE_ENABLE
 //Cause loop ThrowNativeError
 #include <zombiereloaded>
@@ -122,8 +122,8 @@ public void OnPluginStart()
 	g_hSnipers.SetValue("g3sg1", 1);
 	g_hSnipers.SetValue("scar20", 1);
 
-	g_cDate = RegClientCookie("store_date", "Store Daily Date", CookieAccess_Private);
-	g_cDay = RegClientCookie("store_day", "Store Daily Day", CookieAccess_Private);
+	g_cDate = RegClientCookie("store_date", "Store Daily Date", CookieAccess_Public);
+	g_cDay = RegClientCookie("store_day", "Store Daily Day", CookieAccess_Public);
 
 	LoadConfig();
 }

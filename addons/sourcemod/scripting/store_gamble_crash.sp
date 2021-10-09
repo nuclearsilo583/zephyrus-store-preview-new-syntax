@@ -21,7 +21,7 @@ public Plugin myinfo =
 	name = "Store - Crash gamble module",
 	author = "Emur, AiDN™, nuclear silo",
 	description = "Crash game Zephyrus's , nuclear silo's edited store",
-	version = "2.2"
+	version = "2.3"
 };
 
 //CVars
@@ -38,7 +38,7 @@ float number; //The number that gets higher.
 float x; // The number that is the limit.
 
 float client_auto[MAXPLAYERS + 1]; // The number for auto cashout.
-bool client_autoCash[MAXPLAYERS + 1]; // The number for auto cashout.
+int client_autoCash[MAXPLAYERS + 1]; // The number for auto cashout.
 int g_iChatType[MAXPLAYERS + 1] = {-1, ...};
 
 Handle AutoCashout_Cookies;
@@ -73,6 +73,9 @@ public void OnPluginStart()
 	AddCommandListener(Command_Say, "say_team");
 	
 	HookEvent("round_end", Event_RoundEnd);
+	
+	// Supress warnings about unused variables.....
+	if(g_cvarChatTag){}
 }
 
 public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)

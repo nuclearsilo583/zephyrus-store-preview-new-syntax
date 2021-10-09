@@ -107,8 +107,8 @@ public void ZRClass_Reset()
 
 public bool ZRClass_Config(KeyValues &kv, int itemid)
 {
-	if(!IsPluginLoaded("zombiereloaded"))
-		return false;
+	//if(!IsPluginLoaded("zombiereloaded"))
+	//	return false;
 	//int g_iCount = 0;
 	Store_SetDataIndex(itemid, g_iZRClasses);
 	//MyStore_SetDataIndex(itemid, g_iCount);
@@ -134,7 +134,7 @@ public bool ZRClass_Config(KeyValues &kv, int itemid)
 public int ZRClass_Equip(int client, int id)
 {
 	int m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = g_eZRClasses[m_iData].unIndex;
+	g_iClientClasses[client][view_as<int>(g_eZRClasses[m_iData].bZombie)] = g_eZRClasses[m_iData].unIndex;
 	
 	if (g_eCvars[g_bSkinEnable].aCache == 1)
 	{
@@ -146,7 +146,7 @@ public int ZRClass_Equip(int client, int id)
 public int ZRClass_Remove(int client, int id)
 {
 	int m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = -1;
+	g_iClientClasses[client][view_as<int>(g_eZRClasses[m_iData].bZombie)] = -1;
 	
 	if (g_eCvars[g_bSkinEnable].aCache == 1)
 	{

@@ -19,6 +19,15 @@ int g_iLaserDot = -1;
 
 Handle g_hSnipers = INVALID_HANDLE;
 
+public Plugin myinfo = 
+{
+	name = "Store - Laser sight item module",
+	author = "zephyrus, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	description = "",
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	url = ""
+};
+
 public void OnPluginStart()
 {
 
@@ -46,6 +55,9 @@ public void OnPluginStart()
 	SetTrieValue(g_hSnipers, "ssg08", 1);
 	SetTrieValue(g_hSnipers, "spring", 1);
 	SetTrieValue(g_hSnipers, "k98s", 1);
+	
+	// Supress warnings about unused variables.....
+	if(GAME_TF2){}
 }
 
 public void LaserSight_OnMapStart()
