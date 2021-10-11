@@ -574,6 +574,21 @@
 		"chi"		"{yellow}{1}{purple} 想开始一次赠送活动服务器必须有至少 {green}{2} {purple}玩家。"
 	}
 
+	"Credit Giveaway Not Enough"
+	{
+		"en" "You don't have enough credits to create giveaway."
+	}
+
+	"No have flag"
+	{
+		"en" "You don't have access to use this command."
+	}
+
+	"Now run a giveaway"
+	{
+		"en"		"Now running a giveaway, try again in a few seconds."
+	}
+
 	"Lootbox map ended"
 	{
 		"en" "The map has ended. Please wait for next map"
