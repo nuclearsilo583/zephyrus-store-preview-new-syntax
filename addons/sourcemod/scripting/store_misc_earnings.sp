@@ -74,8 +74,6 @@ char g_sSteam[256];
 bool g_bGroupMember[MAXPLAYERS + 1];
 bool gp_bSteamWorks;
 
-int g_iClientCount;
-
 ConVar gc_bFFA;
 
 Handle 	g_cDate,
@@ -96,7 +94,7 @@ public Plugin myinfo =
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -217,8 +215,6 @@ public void Store_OnConfigExecuted(char[] prefix)
 
 public void OnClientConnected(int client)
 {
-	if (!IsFakeClient(client))
-		g_iClientCount++;
 	ConnectTime[client] = GetTime();
 }
 
@@ -255,13 +251,15 @@ public void OnClientPostAdminCheck(int client)
 
 public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], const float damagePosition[3])
 {
+	int count = PlayerCount();
+
 	if (!(damagetype & DMG_SLASH))
 		return Plugin_Continue;
 
 	if (!IsValidClient(victim, true, true) || attacker == victim || !IsValidClient(attacker, true, false))
 		return Plugin_Continue;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[attacker]])
+	if (count < g_iMinPlayer[g_iActive[attacker]])
 		return Plugin_Continue;
 
 	if (g_iBackstab[g_iActive[attacker]] < 1 && g_iKnife[g_iActive[attacker]] < 1)
@@ -280,13 +278,14 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 		if (damage > 99.0)
 		{
 			#if defined PLUGINS_ZOMBIE_ENABLE
-			if(damage > GetClientHealth(victim))
-				if(GetClientTeam(attacker) != GetClientTeam(victim))
+				if(damage > GetClientHealth(victim))
+					if(GetClientTeam(attacker) != GetClientTeam(victim))
 					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
 			#else
-			if(gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim))
-				GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
-			else GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+				if(gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim))
+					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+				else if(GetClientTeam(attacker) != GetClientTeam(victim))
+					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
 			#endif
 		}
 		else if (damage > GetClientHealth(victim))
@@ -333,8 +332,6 @@ public void OnClientDisconnect(int client)
 		return;
 
 	g_bGroupMember[client] = false;
-
-	g_iClientCount--;
 	
 	ConnectTime[client] = 0;
 }
@@ -387,12 +384,14 @@ void GiveCredits(int client, int credits, const char[] reason, any ...)
 
 public Action Timer_Timer(Handle timer)
 {
+	int count = PlayerCount();
+
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || IsFakeClient(i))
 			continue;
 
-		if (g_iClientCount < g_iMinPlayer[g_iActive[i]])
+		if (count < g_iMinPlayer[g_iActive[i]])
 			continue;
 
 		if (!CheckSteamAuth(i, g_sSteam[i]))
@@ -415,6 +414,7 @@ public Action Timer_Timer(Handle timer)
 		else if (g_iTime[i][INACTIVE] >= g_fTimer[g_iActive[i]])
 		{
 			g_iTime[i][INACTIVE] = 0;
+			if(g_iInactive[g_iActive] > 0)
 			GiveCredits(i, g_iInactive[g_iActive[i]], "%t", "idle on the server");
 		}
 	}
@@ -426,14 +426,15 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	int attacker = GetClientOfUserId(event.GetInt("attacker"));
-
+	int count = PlayerCount();
+	
 	if (!IsValidClient(victim, g_bBots[g_iActive[attacker]], true))
 		return;
 
 	if (!IsValidClient(attacker, true, true))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[attacker]])
+	if (count < g_iMinPlayer[g_iActive[attacker]])
 		return;
 
 	int assister = GetClientOfUserId(event.GetInt("assister"));
@@ -674,7 +675,7 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	int winner = event.GetInt("winner");
-
+	int count = PlayerCount();
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsValidClient(i, false, false))
@@ -682,7 +683,7 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 
 		if (GetClientTeam(i) == winner)
 		{
-			if (g_iClientCount >= g_iMinPlayer[g_iActive[i]] && g_iWin[g_iActive[i]] > 0)
+			if (count >= g_iMinPlayer[g_iActive[i]] && g_iWin[g_iActive[i]] > 0)
 			{
 				GiveCredits(i, g_iWin[g_iActive[i]], "%t", "win the round");
 			}
@@ -730,14 +731,14 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 public void Event_MVP(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-
+	int count = PlayerCount();
 	if (!IsValidClient(client, false, true))
 		return;
 
 	if (!CheckSteamAuth(client, g_sSteam[client]))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[client]])
+	if (count < g_iMinPlayer[g_iActive[client]])
 		return;
 
 	if (g_iMVP[g_iActive[client]] < 1)
@@ -749,6 +750,7 @@ public void Event_MVP(Event event, const char[] name, bool dontBroadcast)
 public void Event_BombPlanted(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	int count = PlayerCount();
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -756,7 +758,7 @@ public void Event_BombPlanted(Event event, const char[] name, bool dontBroadcast
 	if (!CheckSteamAuth(client, g_sSteam[client]))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[client]])
+	if (count < g_iMinPlayer[g_iActive[client]])
 		return;
 
 	if (g_iPlant[g_iActive[client]] < 1)
@@ -768,6 +770,7 @@ public void Event_BombPlanted(Event event, const char[] name, bool dontBroadcast
 public void Event_BombDefused(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	int count = PlayerCount();
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -775,7 +778,7 @@ public void Event_BombDefused(Event event, const char[] name, bool dontBroadcast
 	if (!CheckSteamAuth(client, g_sSteam[client]))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[client]])
+	if (count < g_iMinPlayer[g_iActive[client]])
 		return;
 
 	if (g_iDefuse[g_iActive[client]] < 1)
@@ -787,6 +790,7 @@ public void Event_BombDefused(Event event, const char[] name, bool dontBroadcast
 public void Event_BombExploded(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	int count = PlayerCount();
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -794,7 +798,7 @@ public void Event_BombExploded(Event event, const char[] name, bool dontBroadcas
 	if (!CheckSteamAuth(client, g_sSteam[client]))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[client]])
+	if (count < g_iMinPlayer[g_iActive[client]])
 		return;
 
 	if (g_iExplode[g_iActive[client]] < 1)
@@ -806,6 +810,7 @@ public void Event_BombExploded(Event event, const char[] name, bool dontBroadcas
 public void Event_HostageRescued(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	int count = PlayerCount();
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -813,7 +818,7 @@ public void Event_HostageRescued(Event event, const char[] name, bool dontBroadc
 	if (!CheckSteamAuth(client, g_sSteam[client]))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[client]])
+	if (count < g_iMinPlayer[g_iActive[client]])
 		return;
 
 	if (g_iRescued[g_iActive[client]] < 1)
@@ -825,6 +830,7 @@ public void Event_HostageRescued(Event event, const char[] name, bool dontBroadc
 public void Event_VipKilled(Event event, const char[] name, bool dontBroadcast)
 {
 	int attacker = GetClientOfUserId(event.GetInt("attacker"));
+	int count = PlayerCount();
 
 	if (!IsValidClient(attacker, false, true))
 		return;
@@ -832,7 +838,7 @@ public void Event_VipKilled(Event event, const char[] name, bool dontBroadcast)
 	if (!CheckSteamAuth(attacker, g_sSteam[attacker]))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[attacker]])
+	if (count < g_iMinPlayer[g_iActive[attacker]])
 		return;
 
 	if (g_iVIPkill[g_iActive[attacker]] < 1)
@@ -844,6 +850,7 @@ public void Event_VipKilled(Event event, const char[] name, bool dontBroadcast)
 public void Event_VipEscaped(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	int count = PlayerCount();
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -851,7 +858,7 @@ public void Event_VipEscaped(Event event, const char[] name, bool dontBroadcast)
 	if (!CheckSteamAuth(client, g_sSteam[client]))
 		return;
 
-	if (g_iClientCount < g_iMinPlayer[g_iActive[client]])
+	if (count < g_iMinPlayer[g_iActive[client]])
 		return;
 
 	if (g_iVIPescape[g_iActive[client]] < 1)
@@ -977,6 +984,16 @@ bool CheckSteamAuth(int client, char[] steam)
 		return false;
 
 	return true;
+}
+
+public int PlayerCount()
+{
+	int count;
+	for (int i=1;i<=MaxClients;i++)
+		if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i))
+			count++;
+	
+	return count;
 }
 
 bool IsValidClient(int client, bool bots = true, bool dead = true)

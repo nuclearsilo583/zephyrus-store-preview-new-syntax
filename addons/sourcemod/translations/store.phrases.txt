@@ -1,5 +1,39 @@
 ﻿"Phrases"
 {	
+
+	"You collected"
+	{
+		"#format"	"{1:i},{2:s}"
+		"en"		"You collected {1} {2}"
+		"hu"		"Felvettél {1} kreditet"
+	}
+
+	"No pick up - removed"
+	{
+		"en"		"No one pick up your dropped credits. The credits were removed."
+		"hu"		"Senki nem vette fel az eldobott krediteket. A kreditek törlésre kerültek."
+	}
+
+	"No pick up - back to you"
+	{
+		"en"		"No one pick up your dropped credits. You get it back."
+		"hu"		"Senki nem vette fel az eldobott krediteket. Visszakaptad."
+	}
+	
+	"You dropped"
+	{
+		"#format"	"{1:i},{2:s}"
+		"en"		"You dropped {1} {2}"
+		"hu"		"Eldobtál {1} kreditet"
+	}
+	
+	"Too many money on the ground"
+	{
+		"#format"	"{1:s}"
+		"en"	"Too many {1} on the ground, you can't drop more at this time!"
+		"hu"	"Túl sok kredit van a földön, nem tudsz jelenleg eldobni többet!"
+	}
+
 	"Zombie Earning Kill"
 	{
 		"#format" "{1:i},{2:s}"
