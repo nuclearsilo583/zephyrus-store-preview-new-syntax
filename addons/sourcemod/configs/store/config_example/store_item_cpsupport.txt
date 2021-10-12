@@ -64,7 +64,7 @@
   	  {
  	       "J1BroS"
       		{
-			"scoreboardtag" J1BroS
+			"scoreboardtag" "J1BroS"
 			"price" "100"
 			"type" "scoreboardtag"
 			"unique_id" "uid_scoreboardtag_j1bros"
