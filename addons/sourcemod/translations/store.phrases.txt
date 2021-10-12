@@ -2498,7 +2498,7 @@
 	"Credits Given"
 	{
 		"#format" "{1:s}{2:d}"
-		"en" "{1} has been given {2} credits."
+		"en" "{1} received {2} credits."
 		"hu" "{1} {2} kreditet kapott."
 		"chi" "{1} 获得 {2} credits."
 	}
