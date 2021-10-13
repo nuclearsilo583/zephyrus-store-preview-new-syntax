@@ -181,11 +181,34 @@ public Action CommandGiveaway(int client, int args)
 
 public Action TimerGiveaway(Handle timer, any client)
 {
-	static int Number = 0;
-	char sBuffer[254];
-	if (Number >= 100)
+	if(IsClientInGame(client) && IsClientConnected(client) && !IsFakeClient(client))
 	{
-		Number = 0;
+		static int Number = 0;
+		char sBuffer[254];
+		if (Number >= 100)
+		{
+			Number = 0;
+			char name[MAX_NAME_LENGTH];
+			int randomNumber;
+			
+			if (gc_bAdmin.BoolValue)
+				randomNumber = GetRandomPlayer();
+			else randomNumber = GetRandomPlayerNoAdmin();
+			GetClientName(randomNumber, name, MAX_NAME_LENGTH);
+			
+			Format(sBuffer, sizeof(sBuffer), "%t", "Giveaway winner hint text", g_sChatPrefix, name)
+			PrintCenterTextAll(sBuffer);
+			CPrintToChatAll("%t", "Giveaway winner chat", g_sChatPrefix, name, credits);
+			
+			Store_SetClientCredits(randomNumber, Store_GetClientCredits(randomNumber) + credits);
+			
+			//LogToFile("addons/sourcemod/logs/zgiveaway/zgiveawayfile.log", "The admin %s did a giveaway and %s won", admins, name);
+			Store_SQLLogMessage(creatorID, LOG_EVENT, "%s did a giveaway and %s won", admins, name);
+			
+			g_iActive = 0;
+			
+			return Plugin_Stop;
+		}
 		char name[MAX_NAME_LENGTH];
 		int randomNumber;
 		
@@ -194,30 +217,10 @@ public Action TimerGiveaway(Handle timer, any client)
 		else randomNumber = GetRandomPlayerNoAdmin();
 		GetClientName(randomNumber, name, MAX_NAME_LENGTH);
 		
-		Format(sBuffer, sizeof(sBuffer), "%t", "Giveaway winner hint text", g_sChatPrefix, name)
+		Format(sBuffer, sizeof(sBuffer), "%t", "Giveaway winner in progress", name)
 		PrintCenterTextAll(sBuffer);
-		CPrintToChatAll("%t", "Giveaway winner chat", g_sChatPrefix, name, credits);
-		
-		Store_SetClientCredits(randomNumber, Store_GetClientCredits(randomNumber) + credits);
-		
-		//LogToFile("addons/sourcemod/logs/zgiveaway/zgiveawayfile.log", "The admin %s did a giveaway and %s won", admins, name);
-		Store_SQLLogMessage(creatorID, LOG_EVENT, "%s did a giveaway and %s won", admins, name);
-		
-		g_iActive = 0;
-		
-		return Plugin_Stop;
+		Number++;
 	}
-	char name[MAX_NAME_LENGTH];
- 	int randomNumber;
-	
-	if (gc_bAdmin.BoolValue)
-		randomNumber = GetRandomPlayer();
-	else randomNumber = GetRandomPlayerNoAdmin();
-	GetClientName(randomNumber, name, MAX_NAME_LENGTH);
-	
-	Format(sBuffer, sizeof(sBuffer), "%t", "Giveaway winner in progress", name)
-	PrintCenterTextAll(sBuffer);
-	Number++;
 	
 	return Plugin_Continue;
 }
