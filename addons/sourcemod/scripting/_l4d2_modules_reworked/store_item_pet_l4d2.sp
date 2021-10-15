@@ -42,9 +42,9 @@ Handle g_hHideCookie = INVALID_HANDLE;
 public Plugin myinfo = 
 {
 	name = "Store - Pet item module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -385,7 +385,7 @@ void ResetPet(int client)
 	if (iEntity == INVALID_ENT_REFERENCE)
 		return;
 
-	AcceptEntityInput(iEntity, "Kill");
+	RemoveEntity(iEntity);
 	SDKUnhook(iEntity, SDKHook_SetTransmit, Hook_SetTransmit);
 }
 
@@ -565,7 +565,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			AcceptEntityInput(entity, "Kill");
+			RemoveEntity(entity);
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

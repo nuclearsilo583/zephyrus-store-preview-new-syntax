@@ -445,17 +445,17 @@ public int TFWeapon_RemoveChild(int client)
 	{
 		SDKUnhook(g_iClientWeapons[client][0], SDKHook_SetTransmit, Hook_TFSetTransmit);
 		TF2_RemoveWearable(client, g_iClientWeapons[client][0]);
-		AcceptEntityInput(g_iClientWeapons[client][0], "Kill");
+		RemoveEntity(g_iClientWeapons[client][0]);
 	}
 	if(g_iClientWeapons[client][1]>0 && IsValidEntity(g_iClientWeapons[client][1]))
 	{
 		SDKUnhook(g_iClientWeapons[client][1], SDKHook_SetTransmit, Hook_TFSetTransmit);
-		AcceptEntityInput(g_iClientWeapons[client][1], "Kill");
+		RemoveEntity(g_iClientWeapons[client][1]);
 	}
 	if(g_iClientWeapons[client][2]>0 && IsValidEntity(g_iClientWeapons[client][2]))
 	{
 		SDKUnhook(g_iClientWeapons[client][2], SDKHook_SetTransmit, Hook_TFSetTransmit);
-		AcceptEntityInput(g_iClientWeapons[client][2], "Kill");
+		RemoveEntity(g_iClientWeapons[client][2]);
 	}
 	g_iClientWeapons[client][0] = -1;
 	g_iClientWeapons[client][1] = -1;
@@ -759,7 +759,7 @@ public int TFHat_Destroy(int ent)
 
 	int ent2 = EntRefToEntIndex(g_iEntHats[ent]);
 	if(ent2 && IsValidEntity(ent2))
-		AcceptEntityInput(ent2, "Kill");
+		RemoveEntity(ent2);
 	g_iEntHats[ent] = 0;
 }
 

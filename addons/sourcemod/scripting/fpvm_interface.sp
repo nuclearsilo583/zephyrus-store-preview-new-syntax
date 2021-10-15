@@ -21,7 +21,7 @@
 #include <smlib>
 
 
-#define DATA "3.2"
+#define DATA "3.3"
 
 Handle trie_weapons[MAXPLAYERS+1];
 
@@ -39,7 +39,7 @@ bool hook[MAXPLAYERS+1];
 public Plugin myinfo = 
 {
 	name = "SM First Person View Models Interface",
-	author = "Franc1sco franug",
+	author = "Franc1sco franug, AiDN™",
 	description = "",
 	version = DATA,
 	url = "http://steamcommunity.com/id/franug"
@@ -624,7 +624,7 @@ RefreshWeapon(client, char[] name)
 		new clip2 = Weapon_GetSecondaryClip(weapon);
 		
 		RemovePlayerItem(client, weapon);
-		AcceptEntityInput(weapon, "Kill");
+		RemoveEntity(weapon);
 		//PrintToChat(client, "verdadero custom %s", name);
 		if(StrEqual(name, "weapon_knife"))
 		{
@@ -632,7 +632,7 @@ RefreshWeapon(client, char[] name)
 			if(zeus != -1)
 			{
 				RemovePlayerItem(client, zeus);
-				AcceptEntityInput(zeus, "Kill");
+				RemoveEntity(zeus);
 				weapon = GivePlayerItem(client, name);
 				GivePlayerItem(client, "weapon_taser");
 			}
