@@ -48,7 +48,7 @@ ConVar gc_fAutoStop;
 ConVar gc_fSpeed;
 ConVar gc_bAlive;
 
-char g_sCreditsName[64] = "Credits";
+char g_sCreditsName[64] = "credits";
 char g_sChatPrefix[128];
 
 char g_sMenuItem[64];
