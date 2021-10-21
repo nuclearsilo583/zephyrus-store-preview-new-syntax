@@ -414,8 +414,8 @@ public Action Timer_Timer(Handle timer)
 		else if (g_iTime[i][INACTIVE] >= g_fTimer[g_iActive[i]])
 		{
 			g_iTime[i][INACTIVE] = 0;
-			if(g_iInactive[g_iActive] > 0)
-			GiveCredits(i, g_iInactive[g_iActive[i]], "%t", "idle on the server");
+			if(g_iInactive[g_iActive[i]] > 0)
+				GiveCredits(i, g_iInactive[g_iActive[i]], "%t", "idle on the server");
 		}
 	}
 
