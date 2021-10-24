@@ -409,6 +409,7 @@ public Action Timer_Timer(Handle timer)
 		if (g_iTime[i][ACTIVE] >= g_fTimer[g_iActive[i]])
 		{
 			g_iTime[i][ACTIVE] = 0;
+			if(g_iPlay[g_iActive[i]] > 0)
 			GiveCredits(i, g_iPlay[g_iActive[i]], "%t", "playing on the server");
 		}
 		else if (g_iTime[i][INACTIVE] >= g_fTimer[g_iActive[i]])
