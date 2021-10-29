@@ -1,3 +1,6 @@
+//If the Toplist not work, check your MySQL variables 'sql mode' if there is ONLY_FULL_GROUP_BY, take it out.
+//The seconds, minutes and hours 'toplist' translations for some language spelling.
+
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
@@ -35,9 +38,9 @@ ArrayList g_aTopLists[4];
 public Plugin myinfo = 
 {
 	name = "Store - Toplists module",
-	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -79,7 +82,7 @@ void Menu_TopLists(int client)
 
 	char sBuffer[128];
 	int iCredits = Store_GetClientCredits(client); // Get credits
-	Format(sBuffer, sizeof(sBuffer), "%t - %s\n%t", "Title Store", "toplists", "Title Credits", iCredits);
+	Format(sBuffer, sizeof(sBuffer), "%t - %t\n%t", "Title Store", "toplists", "Title Credits", iCredits);
 	menu.SetTitle(sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "%t", "Top Credits");
@@ -295,8 +298,8 @@ void Panel_Credits(int client, int type)
 {
 	Panel panel = new Panel();
 
-	char sName[64];
-	char sBuffer[64];
+	char sName[256];
+	char sBuffer[256], sBuffer2[256];
 
 	int iCredits = Store_GetClientCredits(client); // Get credits
 
@@ -329,11 +332,14 @@ void Panel_Credits(int client, int type)
 			case TL_INV, TL_INV_CREDITS:
 			{
 				int items = pack.ReadCell();
-				Format(sBuffer, sizeof(sBuffer), "    %i. %s:   %i %s (%i items)", i + 1, sName, credits, g_sCreditsName, items);
+				Format(sBuffer, sizeof(sBuffer), "%t", "items");
+				Format(sBuffer, sizeof(sBuffer), "%t", "inv and inv credits", i + 1, sName, credits, g_sCreditsName, items, sBuffer);
 			}
 			case TL_CREDITS, TL_ITEMS:
 			{
-				Format(sBuffer, sizeof(sBuffer), "    %i. %s:   %i %s", i + 1, sName, credits, type == TL_CREDITS ? g_sCreditsName : "Items");
+				Format(sBuffer, sizeof(sBuffer), "%t", "items");
+				Format(sBuffer2, sizeof(sBuffer2), "%t", "creditstoplist", g_sCreditsName);
+				Format(sBuffer, sizeof(sBuffer), "    %i. %s:   %i %s", i + 1, sName, credits, type == TL_CREDITS ? sBuffer2 : sBuffer);
 			}
 		}
 		panel.DrawText(sBuffer);
@@ -354,7 +360,7 @@ void Panel_Credits(int client, int type)
 	else
 	{
 		SecToTime(GetTime() - g_iUpdateTime, sBuffer, sizeof(sBuffer));
-		Format(sBuffer, sizeof(sBuffer), "    %s %s ago", "last update", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%t", "last update", sBuffer);
 		panel.DrawText(sBuffer);
 
 		//When last update older than "mystore_toplist_update_interval"
@@ -474,14 +480,14 @@ int SecToTime(int time, char[] buffer, int size)
 
 	if (iHours >= 1)
 	{
-		Format(buffer, size, "%t", "x hours, x minutes, x seconds", iHours, iMinutes, iSeconds);
+		Format(buffer, size, "%t", "x hours, x minutes, x seconds toplist", iHours, iMinutes, iSeconds);
 	}
 	else if (iMinutes >= 1)
 	{
-		Format(buffer, size, "%t", "x minutes, x seconds", iMinutes, iSeconds);
+		Format(buffer, size, "%t", "x minutes, x seconds toplist", iMinutes, iSeconds);
 	}
 	else
 	{
-		Format(buffer, size, "%t", "x seconds", iSeconds);
+		Format(buffer, size, "%t", "x seconds toplist", iSeconds);
 	}
 }
