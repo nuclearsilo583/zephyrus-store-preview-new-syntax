@@ -40,7 +40,7 @@ public Plugin myinfo =
 	name = "Store - Toplists module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -103,6 +103,14 @@ public int Handler_TopLists(Menu menu, MenuAction action, int client, int param2
 {
 	if (action == MenuAction_Select)
 	{
+		if(param2 == 0)
+			g_iList[client] = TL_CREDITS;
+		else if(param2 == 1)
+			g_iList[client] = TL_ITEMS;
+		else if(param2 == 2)
+			g_iList[client] = TL_INV;
+		else if(param2 == 3)
+			g_iList[client] = TL_INV_CREDITS;
 		Panel_Credits(client, param2);
 	}
 	else if (action == MenuAction_Cancel)
