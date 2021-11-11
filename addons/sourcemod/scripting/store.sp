@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.1_Edited_Database"
+#define PLUGIN_VERSION "6.2_Edited_Database"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -3217,6 +3217,8 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  );*/
 
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
+			// Edit exist date column
+			SQL_TQuery(g_hDatabase, SQLCallback_CheckError, "ALTER TABLE store_logs MODIFY COLUMN date TIMESTAMP NOT NULL");
 			char m_szQuery[512];
 			Format(STRING(m_szQuery), "CREATE TABLE IF NOT EXISTS `%s` (\
 										  `id` int(11) NOT NULL AUTO_INCREMENT,\
@@ -3303,6 +3305,12 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 			}
 		}
 	}
+}
+
+public void SQLCallback_CheckError(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	if(!StrEqual("", error))
+		LogError("Error happened. Error: %s", error);
 }
 
 public void SQLCallback_LoadClientInventory_Credits(Handle owner, Handle hndl, const char[] error, any userid)
