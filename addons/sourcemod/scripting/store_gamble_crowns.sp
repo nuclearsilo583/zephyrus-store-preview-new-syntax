@@ -53,7 +53,7 @@ ConVar gc_iBar;
 ConVar gc_iCrown;
 ConVar gc_iSmily;
 
-char g_sCreditsName[64] = "Credits";
+char g_sCreditsName[64] = "credits";
 char g_sChatPrefix[128];
 
 char g_sMenuItem[64];
@@ -69,9 +69,9 @@ int g_iRollStopped[MAXPLAYERS+1] = {-1, ...};
 public Plugin myinfo = 
 {
 	name = "Store - Crowns gamble module",
-	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

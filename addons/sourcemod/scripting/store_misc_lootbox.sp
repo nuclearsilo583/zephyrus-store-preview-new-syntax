@@ -53,7 +53,7 @@
 ConVar gc_bVisible, gc_bItemSellable;
 
 char g_sChatPrefix[128];
-char g_sCreditsName[64] = "Credits";
+char g_sCreditsName[64] = "credits";
 float g_fSellRatio;
 
 char g_sPickUpSound[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
@@ -87,9 +87,9 @@ Handle gf_hPreviewItem;
 public Plugin myinfo = 
 {
 	name = "Store - Lootbox module",
-	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
