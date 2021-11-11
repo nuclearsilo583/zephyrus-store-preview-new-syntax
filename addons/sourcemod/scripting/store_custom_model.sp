@@ -30,9 +30,9 @@ char g_sChatPrefix[128];
 public Plugin myinfo =
 {
 	name = "Store Custom Weapon Models",
-	author = "Mr.Derp & Franc1sco franug | Zephyrus Store Module & bbs.93x.net, AiDN™",
+	author = "Mr.Derp & Franc1sco franug | Zephyrus Store Module & bbs.93x.net",
 	description = "Custom Knife Models",
-	version = "3.1",
+	version = "3.0",
 	url = "http://bbs.93x.net"
 }
 
@@ -293,7 +293,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			RemoveEntity(entity);
+			AcceptEntityInput(entity, "Kill");
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

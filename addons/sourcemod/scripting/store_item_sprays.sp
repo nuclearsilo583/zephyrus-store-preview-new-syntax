@@ -210,7 +210,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			RemoveEntity(entity);
+			AcceptEntityInput(entity, "Kill");
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

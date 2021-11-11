@@ -53,7 +53,7 @@ ConVar gc_iBar;
 ConVar gc_iCrown;
 ConVar gc_iSmily;
 
-char g_sCreditsName[64] = "credits";
+char g_sCreditsName[64] = "Credits";
 char g_sChatPrefix[128];
 
 char g_sMenuItem[64];

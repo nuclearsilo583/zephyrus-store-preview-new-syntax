@@ -50,9 +50,9 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 public Plugin myinfo = 
 {
 	name = "Store - Trail Module [TF2:Modules]",
-	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -337,7 +337,7 @@ public int RemoveTrail(int client,int slot)
 		if(strcmp("env_spritetrail", m_szClassname)==0)
 		{
 			SDKUnhook(g_iClientTrails[client][slot], SDKHook_SetTransmit, Hook_TrailSetTransmit);
-			RemoveEntity(g_iClientTrails[client][slot]);
+			AcceptEntityInput(g_iClientTrails[client][slot], "Kill");
 		}
 	}
 	g_iClientTrails[client][slot]=0;
@@ -522,7 +522,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			RemoveEntity(entity);
+			AcceptEntityInput(entity, "Kill");
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

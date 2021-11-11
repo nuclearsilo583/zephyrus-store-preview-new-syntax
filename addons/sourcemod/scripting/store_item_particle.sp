@@ -67,9 +67,9 @@ int g_iIndexType[STORE_MAX_ITEMS];
 public Plugin myinfo = 
 {
 	name = "Store - Particle item module",
-	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -485,7 +485,7 @@ void Remove_Particle(int client, int slot)
 			if (IsValidEdict(g_iEntity[slot][client]))
 			{
 				SDKUnhook(g_iEntity[slot][client], SDKHook_SetTransmit, Hook_SetTransmit);
-				RemoveEntity(g_iEntity[slot][client]);
+				AcceptEntityInput(g_iEntity[slot][client], "Kill");
 			}
 		}
 		g_iEntity[slot][client] = 0;
@@ -498,7 +498,7 @@ public Action Timer_ClearParticle(Handle timer, int reference)
 
 	if (entity > 0 && IsValidEdict(entity))
 	{
-		RemoveEntity(entity);
+		AcceptEntityInput(entity, "Kill");
 	}
 }
 

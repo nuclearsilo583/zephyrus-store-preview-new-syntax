@@ -87,9 +87,9 @@ Handle gf_hPreviewItem;
 public Plugin myinfo = 
 {
 	name = "Store - Lootbox module [TF2:Modules]",
-	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -584,7 +584,7 @@ public Action Timer_RemoveEfx(Handle timer, int reference)
 
 	if (IsValidEdict(iEnt))
 	{
-		RemoveEntity(iEnt);
+		AcceptEntityInput(iEnt, "kill");
 	}
 }
 
@@ -802,7 +802,7 @@ public void Frame_DeleteBox(int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit);
-			RemoveEntity(entity);
+			AcceptEntityInput(entity, "Kill");
 		}
 	}
 	g_iLootboxEntityRef[client] = INVALID_ENT_REFERENCE;

@@ -36,9 +36,9 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 public Plugin myinfo =
 {
 	name = "Store Grenade Skin",
-	author = "zephyrus, nuclear silo, AiDN™",
+	author = "zephyrus, nuclear silo",
 	description = "change grenade model",
-	version = "1.1",
+	version = "1.0",
 	url = ""
 }
 
@@ -261,7 +261,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			RemoveEntity(entity);
+			AcceptEntityInput(entity, "Kill");
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

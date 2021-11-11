@@ -290,7 +290,7 @@ public void RemoveHat(int client,int slot)
 		char m_szClassname[64];
 		GetEdictClassname(g_iClientHats[client][slot], STRING(m_szClassname));
 		if(strcmp("prop_dynamic", m_szClassname)==0)
-			RemoveEntity(g_iClientHats[client][slot]);
+			AcceptEntityInput(g_iClientHats[client][slot], "Kill");
 	}
 	g_iClientHats[client][slot]=0;
 
@@ -469,7 +469,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			RemoveEntity(entity);
+			AcceptEntityInput(entity, "Kill");
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
