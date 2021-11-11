@@ -77,7 +77,6 @@ int g_iItemID[MAX_LOOTBOXES];
 int g_iBoxCount = 0;
 int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 
-bool roundend = false;
 bool mapend = false;
 
 int m_iOpenProp[MAXPLAYERS+1] = -1;
@@ -106,9 +105,6 @@ public void OnPluginStart()
 
 	LoadTranslations("store.phrases");
 
-	HookEvent("round_end", Event_RoundEnd);
-	HookEvent("round_start", Event_RoundStart);
-
 	AutoExecConfig_SetFile("lootbox", "sourcemod/store");
 	AutoExecConfig_SetCreateFile(true);
 
@@ -119,6 +115,8 @@ public void OnPluginStart()
 	AutoExecConfig_CleanFile();
 	
 	HookEventEx("teamplay_win_panel", Event_End);
+	
+	if(g_cvarChatTag){}
 }
 
 public void OnMapStart()
@@ -324,11 +322,6 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 public int Lootbox_Equip(int client, int itemid)
 {
-	if (roundend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
-	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox round ended");
-		return 1;
-	}
 	if (mapend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox map ended");
@@ -429,6 +422,7 @@ public void Case_OnAnimationDone(const char[] output, int caller, int activator,
 	}
 }
 
+/*
 void CreateGlow(int ent)
 {
 	int iOffset = GetEntSendPropOffs(ent, "m_clrGlow");
@@ -441,6 +435,7 @@ void CreateGlow(int ent)
 	SetEntData(ent, iOffset + 2, 0, _, true);
 	SetEntData(ent, iOffset + 3, 255, _, true);
 }
+*/
 
 int CreateRotator(int ent, float pos[3])
 {
@@ -503,10 +498,10 @@ public Action Timer_Open(Handle timer, int client)
 		return Plugin_Stop;
 	}
 
-	any item[Store_Item];
+	Store_Item item;
 	Store_GetItem(itemid, item);
-	any handler[Type_Handler];
-	Store_GetHandler(item[iHandler], handler);
+	Type_Handler handler;
+	Store_GetHandler(item.iHandler, handler);
 
 	if (Store_HasClientItem(client, itemid))
 	{
@@ -518,12 +513,12 @@ public Action Timer_Open(Handle timer, int client)
 		else
 		{
 			Store_SetClientCredits(client, Store_GetClientCredits(client) + RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])));
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits price back", item[szName], handler[szType], RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])), g_sCreditsName);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits price back", item.szName, handler.szType, RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])), g_sCreditsName);
 			
 			if (g_iClientLevel[client] == LEVEL_RED)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item.szName, handler.szType);
 			if (g_iClientLevel[client] == LEVEL_GOLD)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item.szName, handler.szType);
 		}
 	}
 	else
@@ -531,41 +526,41 @@ public Action Timer_Open(Handle timer, int client)
 		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
+				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
 			else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 1);
 		}
 		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + time, item[iPrice]);
+				Store_GiveItem(client, itemid, _, GetTime() + time, item.iPrice);
 			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
 		}
 		else 
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, _, item[iPrice]);
+				Store_GiveItem(client, itemid, _, _, item.iPrice);
 			else Store_GiveItem(client, itemid, _, _, 1);
 		}
 		char sBuffer[128];
-		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item[szName], handler[szType]);
+		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item.szName, handler.szType);
 
 		CPrintToChat(client, "%s%s", g_sChatPrefix, sBuffer);
 		Store_SQLLogMessage(client, LOG_EVENT, "Opened a lootbox #%i. Item: %s.", g_iClientBox[client], sUId);
 		if (g_iClientLevel[client] == LEVEL_RED)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item.szName, handler.szType);
 		if (g_iClientLevel[client] == LEVEL_GOLD)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item.szName, handler.szType);
 			
 		CRemoveTags(sBuffer, sizeof(sBuffer));
 		PrintHintText(client, sBuffer);
 	}
 
-	if (item[bPreview] && IsPlayerAlive(client))
+	if (item.bPreview && IsPlayerAlive(client))
 	{
 		Call_StartForward(gf_hPreviewItem);
 		Call_PushCell(client);
-		Call_PushString(handler[szType]);
-		Call_PushCell(item[iData]);
+		Call_PushString(handler.szType);
+		Call_PushCell(item.iData);
 		Call_Finish();
 	}
 
@@ -768,29 +763,6 @@ void CreateEffect(int client, float fPos[3])
 
 	CreateTimer(1.5, Timer_RemoveEfx, EntIndexToEntRef(iEfx));
 //	PrintToServer("fired %s", g_sEfxName[g_iClientBox[client]]);
-}
-
-
-public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
-{
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (g_iLootboxEntityRef[i] != INVALID_ENT_REFERENCE)
-		{
-			Store_GiveItem(i, g_iItemID[g_iClientBox[i]], 0, 0, 0);
-
-			CPrintToChat(i, "%s%t", g_sChatPrefix, "You haven't opend the box in given time");
-		}
-		g_iClientBox[i] = -1;
-
-		RequestFrame(Frame_DeleteBox, i);
-	}
-	roundend = true;
-}
-
-public void Event_RoundStart(Event event, char[] name, bool dontBroadcast)
-{
-	roundend = false;
 }
 
 public void Frame_DeleteBox(int client)

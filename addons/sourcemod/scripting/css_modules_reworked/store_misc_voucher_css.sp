@@ -45,7 +45,7 @@ Handle g_hDatabase = INVALID_HANDLE;
 
 public Plugin myinfo = 
 {
-	name = "Store - Voucher module [TF2:Modules]",
+	name = "Store - Voucher module [CSS:Modules]",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
 	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number

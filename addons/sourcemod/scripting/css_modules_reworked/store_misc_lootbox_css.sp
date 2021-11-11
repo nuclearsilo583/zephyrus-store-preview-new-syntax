@@ -34,7 +34,7 @@
 
 #include <store> 
 
-#include <morecolors> //https://raw.githubusercontent.com/shanapu/Store/master/scripting/include/colors.inc
+#include <multicolors>
 #include <smartdm> //https://forums.alliedmods.net/attachment.php?attachmentid=136152&d=1406298576
 #include <autoexecconfig> //https://raw.githubusercontent.com/Impact123/AutoExecConfig/development/autoexecconfig.inc
 
@@ -50,10 +50,10 @@
 #define LEVEL_GOLD 4
 #define LEVEL_AMOUNT 5
 
-ConVar gc_bVisible;
+ConVar gc_bVisible, gc_bItemSellable;
 
 char g_sChatPrefix[128];
-char g_sCreditsName[64] = "credits";
+char g_sCreditsName[64] = "Credits";
 float g_fSellRatio;
 
 char g_sPickUpSound[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
@@ -78,6 +78,7 @@ int g_iBoxCount = 0;
 int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 
 bool roundend = false;
+bool mapend = false;
 
 int m_iOpenProp[MAXPLAYERS+1] = -1;
 
@@ -85,10 +86,10 @@ Handle gf_hPreviewItem;
 
 public Plugin myinfo = 
 {
-	name = "Store - Lootbox module",
-	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	name = "Store - Lootbox module [CSS:Modules]",
+	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -112,9 +113,63 @@ public void OnPluginStart()
 	AutoExecConfig_SetCreateFile(true);
 
 	gc_bVisible = AutoExecConfig_CreateConVar("store_lootbox_visible_for_all", "1", "1 - the lootbox is visible for all player / 0 - the lootbox is only visible for player who owns it.");
+	gc_bItemSellable = AutoExecConfig_CreateConVar("store_lootbox_item_sellable", "1", "1 - the lootbox's item is sellable / 0 - the lootbox is nonsellable.");
 
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
+	
+	HookEventEx("teamplay_win_panel", Event_End);
+	
+	if(g_cvarChatTag){}
+}
+
+public void OnMapStart()
+{
+	mapend = false;
+}
+
+public void OnMapEnd()
+{
+	mapend = false;
+}
+
+public Action OnLogAction(Handle source, Identity ident,int client,int target, const char[] message)
+{
+	if( StrContains( message , "changed map to" ) != -1)
+	{
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (g_iLootboxEntityRef[i] != INVALID_ENT_REFERENCE)
+			{
+				Store_GiveItem(i, g_iItemID[g_iClientBox[i]], 0, 0, 0);
+
+				CPrintToChat(i, "%s%t", g_sChatPrefix, "You haven't opend the box in given time");
+			}
+			g_iClientBox[i] = -1;
+
+			RequestFrame(Frame_DeleteBox, i);
+			
+		}
+		mapend = true;
+	}
+}
+
+public void Event_End(Event event, const char[] name, bool dontBroadcast)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (g_iLootboxEntityRef[i] != INVALID_ENT_REFERENCE)
+		{
+			Store_GiveItem(i, g_iItemID[g_iClientBox[i]], 0, 0, 0);
+
+			CPrintToChat(i, "%s%t", g_sChatPrefix, "You haven't opend the box in given time");
+		}
+		g_iClientBox[i] = -1;
+
+		RequestFrame(Frame_DeleteBox, i);
+		
+	}
+	mapend = true;
 }
 
 public void OnClientDisconnect(int client)
@@ -191,7 +246,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 	if (!FileExists(g_sModel[g_iBoxCount], true))
 	{
-		//Store_LogMessage(0, LOG_ERROR, "Can't find model %s.", g_sModel[g_iBoxCount]);
+		Store_SQLLogMessage(0, LOG_ERROR, "Can't find model %s.", g_sModel[g_iBoxCount]);
 		return false;
 	}
 
@@ -215,7 +270,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 	}
 	if (percent != 100.0)
 	{
-		//Store_LogMessage(0, LOG_ERROR, "Lootbox #%i - Sum of levels is not 100%", g_iBoxCount + 1);
+		Store_SQLLogMessage(0, LOG_ERROR, "Lootbox #%i - Sum of levels is not 100%", g_iBoxCount + 1);
 		return false;
 	}
 
@@ -252,7 +307,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 		if (lvlindex == -1)
 		{
-			//Store_LogMessage(0, LOG_ERROR, "Lootbox #%i - unknown level color: %s", sBuffer);
+			Store_SQLLogMessage(0, LOG_ERROR, "Lootbox #%i - unknown level color: %s", sBuffer);
 			return false;
 		}
 
@@ -271,9 +326,14 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 public int Lootbox_Equip(int client, int itemid)
 {
-	if (roundend == true) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
+	if (roundend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
-		CPrintToChat(client, "%sThe round has ended. Please wait for new round", g_sChatPrefix);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox round ended");
+		return 1;
+	}
+	if (mapend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox map ended");
 		return 1;
 	}
 	if (!IsPlayerAlive(client))
@@ -284,7 +344,7 @@ public int Lootbox_Equip(int client, int itemid)
 
 	if (g_iLootboxEntityRef[client] != INVALID_ENT_REFERENCE) // Prevent spam. The previous case wont be killed.
 	{
-		CPrintToChat(client, "%sPlease wait until your previous case has been opened", g_sChatPrefix);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox case is opening");
 		return 1;
 	}
 	
@@ -371,6 +431,7 @@ public void Case_OnAnimationDone(const char[] output, int caller, int activator,
 	}
 }
 
+/*
 void CreateGlow(int ent)
 {
 	int iOffset = GetEntSendPropOffs(ent, "m_clrGlow");
@@ -383,6 +444,7 @@ void CreateGlow(int ent)
 	SetEntData(ent, iOffset + 2, 0, _, true);
 	SetEntData(ent, iOffset + 3, 255, _, true);
 }
+*/
 
 int CreateRotator(int ent, float pos[3])
 {
@@ -421,13 +483,19 @@ int CreateLight(int ent, float pos[3])
 
 public Action Timer_Open(Handle timer, int client)
 {
-	char sUId[64];
-	strcopy(sUId, sizeof(sUId), g_sLootboxItems[g_iClientBox[client]][GetRandomInt(0, g_iItemLevelCount[g_iClientBox[client]][g_iClientLevel[client]] - 1)][g_iClientLevel[client]]); // sry
-
+	char temp[64], sUId[64], sParts[2][64];
+	strcopy(temp, sizeof(temp), g_sLootboxItems[g_iClientBox[client]][GetRandomInt(0, g_iItemLevelCount[g_iClientBox[client]][g_iClientLevel[client]] - 1)][g_iClientLevel[client]]); // sry
+	
+	int iCount = ExplodeString(temp, "-", sParts, 2, 64);
+	sUId = sParts[0];
+	int time = StringToInt(sParts[1]);
 	int itemid = Store_GetItemIdbyUniqueId(sUId);
 	
 	char name[64];
 	GetClientName(client, name, sizeof(name));
+	
+	if (time == 0)
+		iCount = 1;
 
 	if (itemid == -1)
 	{
@@ -435,14 +503,14 @@ public Action Timer_Open(Handle timer, int client)
 		Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
 		CPrintToChat(client, "%s%s", g_sChatPrefix, "Error occured, item back. Inform admin log");
 
-		//Store_LogMessage(0, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
+		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
 		return Plugin_Stop;
 	}
 
-	any item[Store_Item];
+	Store_Item item;
 	Store_GetItem(itemid, item);
-	any handler[Type_Handler];
-	Store_GetHandler(item[iHandler], handler);
+	Type_Handler handler;
+	Store_GetHandler(item.iHandler, handler);
 
 	if (Store_HasClientItem(client, itemid))
 	{
@@ -454,41 +522,54 @@ public Action Timer_Open(Handle timer, int client)
 		else
 		{
 			Store_SetClientCredits(client, Store_GetClientCredits(client) + RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])));
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits price back", item[szName], handler[szType], RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])), g_sCreditsName);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Already own item from box. Get Credits price back", item.szName, handler.szType, RoundFloat(g_iPriceBack[g_iClientBox[client]]*view_as<float>(g_iSellRatio[g_iClientBox[client]])), g_sCreditsName);
 			
 			if (g_iClientLevel[client] == LEVEL_RED)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item.szName, handler.szType);
 			if (g_iClientLevel[client] == LEVEL_GOLD)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item.szName, handler.szType);
 		}
 	}
 	else
 	{
-		if(g_iTime[g_iClientBox[client]]>0)
+		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
-			Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item[iPrice]);
+			if(gc_bItemSellable.IntValue)
+				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+			else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 1);
 		}
-		else Store_GiveItem(client, itemid, _, _, item[iPrice]);
+		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
+		{
+			if(gc_bItemSellable.IntValue)
+				Store_GiveItem(client, itemid, _, GetTime() + time, item.iPrice);
+			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
+		}
+		else 
+		{
+			if(gc_bItemSellable.IntValue)
+				Store_GiveItem(client, itemid, _, _, item.iPrice);
+			else Store_GiveItem(client, itemid, _, _, 1);
+		}
 		char sBuffer[128];
-		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item[szName], handler[szType]);
+		Format(sBuffer, sizeof(sBuffer), "%t", "You won lootbox item", item.szName, handler.szType);
 
 		CPrintToChat(client, "%s%s", g_sChatPrefix, sBuffer);
-		
+		Store_SQLLogMessage(client, LOG_EVENT, "Opened a lootbox #%i. Item: %s.", g_iClientBox[client], sUId);
 		if (g_iClientLevel[client] == LEVEL_RED)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item red", name, item.szName, handler.szType);
 		if (g_iClientLevel[client] == LEVEL_GOLD)
-			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item[szName], handler[szType]);
+			CPrintToChatAll("%s%t", g_sChatPrefix, "Chat won lootbox item gold", name, item.szName, handler.szType);
 			
 		CRemoveTags(sBuffer, sizeof(sBuffer));
 		PrintHintText(client, sBuffer);
 	}
 
-	if (item[bPreview] && IsPlayerAlive(client))
+	if (item.bPreview && IsPlayerAlive(client))
 	{
 		Call_StartForward(gf_hPreviewItem);
 		Call_PushCell(client);
-		Call_PushString(handler[szType]);
-		Call_PushCell(item[iData]);
+		Call_PushString(handler.szType);
+		Call_PushCell(item.iData);
 		Call_Finish();
 	}
 
@@ -576,13 +657,11 @@ public Action Timer_Color(Handle timer, DataPack pack)
 
 	int index = g_iClientBox[client];
 	float fPos[3];
-	float fVec[3];
-	GetClientAbsOrigin(client, fVec);
 	GetEntPropVector(lootbox, Prop_Send, "m_vecOrigin", fPos);
 	fPos[2] -= 0.2;
 	TeleportEntity(lootbox, fPos, NULL_VECTOR, NULL_VECTOR);
 	g_iClientSpeed[client] -= 5;
-	EmitAmbientSound("ui/csgo_ui_crate_item_scroll.wav", fVec, _, _, _, _, _, _);
+	EmitAmbientSound("ui/csgo_ui_crate_item_scroll.wav", fPos, _, _, _, _, _, _);
 
 	char sBuffer[128];
 	IntToString(g_iClientSpeed[client], sBuffer, sizeof(sBuffer));
@@ -625,14 +704,13 @@ public Action Timer_Color(Handle timer, DataPack pack)
 			return Plugin_Stop;
 		}
 	}
-
+	
 	float percent = GetRandomFloat(0.0001, 100.0);
 
 	if (percent < g_fChance[index][LEVEL_GREY])
 	{
 		SetEntityRenderColor(lootbox, 155, 255, 255, 255);
 		g_iClientLevel[client] = LEVEL_GREY;
-		
 		DispatchKeyValue(light, "_light", "155 255 255 255");
 		return Plugin_Continue;
 	}
@@ -641,7 +719,6 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_BLUE])
 	{
 		SetEntityRenderColor(lootbox, 0, 0, 255, 255);
-		
 		DispatchKeyValue(light, "_light", "0 0 255 255");
 		g_iClientLevel[client] = LEVEL_BLUE;
 		return Plugin_Continue;
@@ -651,7 +728,6 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_PURPLE])
 	{
 		SetEntityRenderColor(lootbox, 255, 0, 255, 255);
-		
 		DispatchKeyValue(light, "_light", "255 0 255 255");
 		g_iClientLevel[client] = LEVEL_PURPLE;
 		return Plugin_Continue;
@@ -661,7 +737,6 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_RED])
 	{
 		SetEntityRenderColor(lootbox, 255, 0, 0, 255);
-		
 		DispatchKeyValue(light, "_light", "255 0 0 255");
 		g_iClientLevel[client] = LEVEL_RED;
 		return Plugin_Continue;
@@ -672,7 +747,6 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_GOLD])
 	{
 		SetEntityRenderColor(lootbox, 255, 255, 0, 255);
-		
 		DispatchKeyValue(light, "_light", "255 255 0 255");
 		g_iClientLevel[client] = LEVEL_GOLD;
 		return Plugin_Continue;
