@@ -48,7 +48,7 @@ ConVar gc_iMin;
 ConVar gc_iMax;
 ConVar gc_iFee;
 
-char g_sCreditsName[64] = "Credits";
+char g_sCreditsName[64] = "credits";
 char g_sChatPrefix[128];
 
 char g_sMenuItem[64];
@@ -65,9 +65,9 @@ int g_iPlayer = 0;
 public Plugin myinfo = 
 {
 	name = "Store - Jackpot gamble module",
-	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
