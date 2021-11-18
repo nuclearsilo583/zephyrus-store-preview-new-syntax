@@ -3300,8 +3300,6 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 			{
 				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
 				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
-				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
-				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
 			}
 		}
 	}
