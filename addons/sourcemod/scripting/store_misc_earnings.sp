@@ -11,6 +11,7 @@
 #include <autoexecconfig>
 
 //#define PLUGINS_ZOMBIE_ENABLE
+
 /*#if defined PLUGINS_ZOMBIE_ENABLE
 //Cause loop ThrowNativeError
 #include <zombiereloaded>
@@ -89,18 +90,32 @@ StringMap g_hSum[MAXPLAYERS + 1];
 #define INACTIVE 1
 int g_iTime[MAXPLAYERS + 1][2];
 
+char g_szGameDir[64];
+
 public Plugin myinfo = 
 {
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
 public void OnPluginStart()
 {
 	LoadTranslations("store.phrases");
+	
+	// Identify the game
+	GetGameFolderName(STRING(g_szGameDir));
+	
+	if(strcmp(g_szGameDir, "cstrike")==0)
+		PrintToServer("Loaded CSS as a game engine");
+	else if(strcmp(g_szGameDir, "csgo")==0)
+		PrintToServer("Loaded CSGO as a game engine");
+	else
+	{
+		SetFailState("This game is not be supported. Please contact the author for support.");
+	}
 
 	RegConsoleCmd("sm_daily", Command_Daily, "Recieve your daily credits");
 
@@ -535,11 +550,8 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 		{
 			GiveCredits(attacker, g_iDecoy[g_iActive[attacker]], "%t", "decoy grenade  kill");
 		}
-		/*else if (g_hSnipers.GetValue(sWeapon[7], iBuffer) && g_iNoScope[g_iActive[attacker]] > 0 && GetEntProp(attacker, Prop_Data, "m_iFOV") <= 0 || GetEntProp(attacker, Prop_Data, "m_iFOV") == GetEntProp(attacker, Prop_Data, "m_iDefaultFOV"))
-		{
-			GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
-		}*/
-		else if (g_hSnipers.GetValue(sWeapon[7], iBuffer) && g_iNoScope[g_iActive[attacker]] > 0 || !(0 < GetEntProp(attacker, Prop_Data, "m_iFOV") < GetEntProp(attacker, Prop_Data, "m_iDefaultFOV")))
+		else if ((StrContains(sWeapon, "awp") != -1 || StrContains(sWeapon, "ssg08") != -1 || StrContains(sWeapon, "scout") != -1 || StrContains(sWeapon, "g3sg1") != -1 || StrContains(sWeapon, "scar20") != -1)
+			&& g_iNoScope[g_iActive[attacker]] > 0 && !(0 < GetEntProp(attacker, Prop_Data, "m_iFOV") < GetEntProp(attacker, Prop_Data, "m_iDefaultFOV")))
 		{
 			GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
 		}
@@ -619,7 +631,7 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	if (StrContains(sWeapon, "knife") != -1 || StrContains(sWeapon, "bayonet") != -1)
 		return;
 
-	int iBuffer;
+	//int iBuffer;
 	if (!gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim) && g_iTK[g_iActive[attacker]] != 0)
 	{
 		GiveCredits(attacker, g_iTK[g_iActive[attacker]], "%t", "teamkill");
@@ -654,11 +666,8 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	{
 		GiveCredits(attacker, g_iDecoy[g_iActive[attacker]], "%t", "decoy grenade  kill");
 	}
-	/*else if (g_hSnipers.GetValue(sWeapon[7], iBuffer) && g_iNoScope[g_iActive[attacker]] > 0 && GetEntProp(attacker, Prop_Data, "m_iFOV") <= 0 || GetEntProp(attacker, Prop_Data, "m_iFOV") == GetEntProp(attacker, Prop_Data, "m_iDefaultFOV"))
-	{
-		GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
-	}*/
-	else if (g_hSnipers.GetValue(sWeapon[7], iBuffer) && g_iNoScope[g_iActive[attacker]] > 0 || !(0 < GetEntProp(attacker, Prop_Data, "m_iFOV") < GetEntProp(attacker, Prop_Data, "m_iDefaultFOV")))
+	else if ((StrContains(sWeapon, "awp") != -1 || StrContains(sWeapon, "ssg08") != -1 || StrContains(sWeapon, "scout") != -1 || StrContains(sWeapon, "g3sg1") != -1 || StrContains(sWeapon, "scar20") != -1)
+			&& g_iNoScope[g_iActive[attacker]] > 0 && !(0 < GetEntProp(attacker, Prop_Data, "m_iFOV") < GetEntProp(attacker, Prop_Data, "m_iDefaultFOV")))
 	{
 		GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
 	}

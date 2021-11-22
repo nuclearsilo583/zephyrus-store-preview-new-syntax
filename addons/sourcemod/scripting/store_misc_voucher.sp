@@ -48,7 +48,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -78,8 +78,7 @@ public void OnPluginStart()
 
 	AddCommandListener(Command_Say, "say"); 
 	AddCommandListener(Command_Say, "say_team");
-	
-	g_cvDatabaseEntry = FindConVar("sm_store_database");
+
 }
 
 public void OnAllPluginsLoaded()
@@ -95,6 +94,8 @@ public void Store_OnConfigExecuted(char[] prefix)
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 
 	ReadCoreCFG();
+	
+	g_cvDatabaseEntry = FindConVar("sm_store_database");
 	char buffer[128];
 	g_cvDatabaseEntry.GetString(buffer, 128);
 	SQL_TConnect(SQLCallback_Connect, buffer);

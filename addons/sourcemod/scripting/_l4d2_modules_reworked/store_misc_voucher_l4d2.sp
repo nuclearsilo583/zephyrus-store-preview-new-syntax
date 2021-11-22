@@ -79,7 +79,6 @@ public void OnPluginStart()
 	AddCommandListener(Command_Say, "say"); 
 	AddCommandListener(Command_Say, "say_team");
 	
-	g_cvDatabaseEntry = FindConVar("sm_store_database");
 }
 
 public void OnAllPluginsLoaded()
@@ -95,6 +94,7 @@ public void Store_OnConfigExecuted(char[] prefix)
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 
 	ReadCoreCFG();
+	g_cvDatabaseEntry = FindConVar("sm_store_database");
 	char buffer[128];
 	g_cvDatabaseEntry.GetString(buffer, 128);
 	SQL_TConnect(SQLCallback_Connect, buffer);
