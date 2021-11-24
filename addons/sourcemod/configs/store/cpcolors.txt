@@ -1,0 +1,29 @@
+"cp_colors"
+{
+	"1"
+	{
+		"name"			"Green"
+		"color"			"{green}"
+	}
+	"2"
+	{
+		"name"			"Orchid"
+		"color"			"{orchid}"
+	}
+	"3"
+	{
+		"name"			"Yellow"
+		"color"			"{yellow}"
+	}
+	"4"
+	{
+		"name"			"Orange"
+		"color"			"{orange}"
+	}
+	
+	"5" // This color only work for 2009 source engine (dont use this on csgo)
+	{
+		"name"			"Dark turquoise"
+		"color"			"{darkturquoise}"
+	}
+}

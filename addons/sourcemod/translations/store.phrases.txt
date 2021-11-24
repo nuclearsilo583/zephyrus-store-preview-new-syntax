@@ -1,6 +1,20 @@
 ﻿"Phrases"
 {	
-
+	"CP Disabled Color"
+	{
+		"en" "Custom tag color disabled."
+	}
+	
+	"CP No file found"
+	{
+		"en" "The custom tag color for user has been disabled. Please contact admin for further support."
+	}
+	
+	"CP No Name Tag Equipped"
+	{
+		"en" "You dont have any name tag equipped"
+	}
+	
 	"You collected"
 	{
 		"#format"	"{1:i},{2:s}"
