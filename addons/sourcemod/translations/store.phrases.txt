@@ -2161,9 +2161,9 @@
 
 	"You earned x Credits for"
 	{
-		"#format"	"{1:i},{2:s},{3:t}"
-		"en"		"You earned {1} {2} for {3}."
-		"chi"		"你赚得了 {1} {2} 为 {3}。"
+		"#format"	"{1:i},{2:s} "
+		"en"		"You earned {1} {2} for "
+		"chi"		"你赚得了 {1} {2} 为。 "
 	}
 
 	"playing x on our server in row"

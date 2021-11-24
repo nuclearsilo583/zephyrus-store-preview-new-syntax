@@ -92,12 +92,15 @@ int g_iTime[MAXPLAYERS + 1][2];
 
 char g_szGameDir[64];
 
+ConVar Warmup_Enable;
+bool GAME_CSS = false;
+
 public Plugin myinfo = 
 {
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -109,7 +112,10 @@ public void OnPluginStart()
 	GetGameFolderName(STRING(g_szGameDir));
 	
 	if(strcmp(g_szGameDir, "cstrike")==0)
+	{
 		PrintToServer("Loaded CSS as a game engine");
+		GAME_CSS = true;
+	}
 	else if(strcmp(g_szGameDir, "csgo")==0)
 		PrintToServer("Loaded CSGO as a game engine");
 	else
@@ -137,6 +143,10 @@ public void OnPluginStart()
 
 	g_cDate = RegClientCookie("store_date", "Store Daily Date", CookieAccess_Public);
 	g_cDay = RegClientCookie("store_day", "Store Daily Day", CookieAccess_Public);
+
+	Warmup_Enable = CreateConVar("sm_store_earning_enable_warmup", "1", "Wheither to enable earning credits while in warmup");
+	
+	AutoExecConfig(true, "earnings", "sourcemod/store")
 
 	LoadConfig();
 }
@@ -172,15 +182,15 @@ public Action Command_Daily(int client, int args)
 
 		switch(iDay)
 		{
-			case 2, 3, 4, 5, 6: CPrintToChat(client, "%s%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][iDay - 1], g_sCreditsName, "playing x on our server in row", iDay);
+			case 2, 3, 4, 5, 6: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][iDay - 1], g_sCreditsName, "playing x on our server in row", iDay);
 			case 7:
 			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][iDay - 1], g_sCreditsName, "playing x on our server in row", iDay);
+				CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][iDay - 1], g_sCreditsName, "playing x on our server in row", iDay);
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "You mastered the daily challange");
 				Store_SQLLogMessage(client, LOG_EVENT, "Mastered the daily challange (7days) for %i credits'", g_iDaily[g_iActive[client]][iDay - 1]);
 				iDay = 0;
 			}
-			default: CPrintToChat(client, "%s%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][0], g_sCreditsName, "start daily challange");
+			default: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][0], g_sCreditsName, "start daily challange");
 		}
 
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "You'll earn x Credits tomorrow", g_iDaily[g_iActive[client]][iDay], g_sCreditsName);
@@ -266,6 +276,8 @@ public void OnClientPostAdminCheck(int client)
 
 public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], const float damagePosition[3])
 {
+	char Buffer[255];
+	
 	int count = PlayerCount();
 
 	if (!(damagetype & DMG_SLASH))
@@ -292,20 +304,28 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	{
 		if (damage > 99.0)
 		{
+			Format(Buffer, sizeof(Buffer), "%s", "backstab kill");
 			#if defined PLUGINS_ZOMBIE_ENABLE
 				if(damage > GetClientHealth(victim))
 					if(GetClientTeam(attacker) != GetClientTeam(victim))
-					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+					{
+						GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], Buffer);
+					}
 			#else
 				if(gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim))
-					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+				{
+					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], Buffer);
+				}
 				else if(GetClientTeam(attacker) != GetClientTeam(victim))
-					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], "%t", "backstab kill");
+				{
+					GiveCredits(attacker, g_iBackstab[g_iActive[attacker]], Buffer);
+				}
 			#endif
 		}
 		else if (damage > GetClientHealth(victim))
 		{
-			GiveCredits(attacker, g_iKnife[g_iActive[attacker]], "%t", "knife kill");
+			Format(Buffer, sizeof(Buffer), "%s", "knife kill")
+			GiveCredits(attacker, g_iKnife[g_iActive[attacker]], Buffer);
 		}
 	}
 
@@ -351,7 +371,7 @@ public void OnClientDisconnect(int client)
 	ConnectTime[client] = 0;
 }
 
-void GiveCredits(int client, int credits, const char[] reason, any ...)
+void GiveCredits(int client, int credits, char[] reason, any ...)
 {
 	float multi[3] = {1.0, ...};
 	char sBuffer[64];
@@ -375,12 +395,12 @@ void GiveCredits(int client, int credits, const char[] reason, any ...)
 
 	credits = RoundToNearest(credits * multi[0] * multi[1] * multi[2] * g_fClientMulti[client]);
 
-	VFormat(sBuffer, sizeof(sBuffer), reason, 4);
+	//VFormat(sBuffer, sizeof(sBuffer), reason, 4);
 	Store_SetClientCredits(client, Store_GetClientCredits(client) + credits);
 
 	switch(g_iMsg[g_iActive[client]])
 	{
-		case 1: CPrintToChat(client, "%s%t", g_sChatPrefix, "You earned x Credits for", credits, g_sCreditsName, sBuffer);
+		case 1: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", credits, g_sCreditsName, reason);
 		case 2: g_iSum[client] += credits;
 		case 3:
 		{
@@ -399,6 +419,7 @@ void GiveCredits(int client, int credits, const char[] reason, any ...)
 
 public Action Timer_Timer(Handle timer)
 {
+	char Buffer[255];
 	int count = PlayerCount();
 
 	for (int i = 1; i <= MaxClients; i++)
@@ -425,13 +446,19 @@ public Action Timer_Timer(Handle timer)
 		{
 			g_iTime[i][ACTIVE] = 0;
 			if(g_iPlay[g_iActive[i]] > 0)
-			GiveCredits(i, g_iPlay[g_iActive[i]], "%t", "playing on the server");
+			{
+				Format(Buffer, sizeof(Buffer), "%s", "playing on the server");
+				GiveCredits(i, g_iPlay[g_iActive[i]], Buffer);
+			}
 		}
 		else if (g_iTime[i][INACTIVE] >= g_fTimer[g_iActive[i]])
 		{
 			g_iTime[i][INACTIVE] = 0;
 			if(g_iInactive[g_iActive[i]] > 0)
-				GiveCredits(i, g_iInactive[g_iActive[i]], "%t", "idle on the server");
+			{
+				Format(Buffer, sizeof(Buffer), "%s", "idle on the server")
+				GiveCredits(i, g_iInactive[g_iActive[i]], Buffer);
+			}
 		}
 	}
 
@@ -452,10 +479,14 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 
 	if (count < g_iMinPlayer[g_iActive[attacker]])
 		return;
+		
+	if(!GAME_CSS)
+		if(GameRules_GetProp("m_bWarmupPeriod") && !Warmup_Enable.BoolValue)
+			return;
 
 	int assister = GetClientOfUserId(event.GetInt("assister"));
 	bool headshot = event.GetBool("headshot");
-	char sWeapon[32];
+	char sWeapon[32], Buffer[255];
 	event.GetString("weapon", sWeapon, sizeof(sWeapon));
 	
 	#if defined PLUGINS_ZOMBIE_ENABLE
@@ -464,12 +495,14 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	{
 		if (IsValidClient(assister) && g_iAssist[g_iActive[assister]] > 0)
 		{
-			GiveCredits(assister, g_iAssist[g_iActive[assister]], "%t", "assist a kill");
+			Format(Buffer, sizeof(Buffer), "%s", "assist a kill");
+			GiveCredits(assister, g_iAssist[g_iActive[assister]], Buffer);
 		}
 
 		if (attacker == victim && g_iSuicide[g_iActive[attacker]] != 0)
 		{
-			GiveCredits(attacker, g_iSuicide[g_iActive[attacker]], "%t", "kill yourself");
+			Format(Buffer, sizeof(Buffer), "%s", "kill yourself");
+			GiveCredits(attacker, g_iSuicide[g_iActive[attacker]], Buffer);
 		}
 
 		if (!IsFakeClient(victim) && g_iMsg[g_iActive[victim]] == 2)
@@ -518,50 +551,60 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 		int iBuffer;
 		if (!gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim) && g_iTK[g_iActive[attacker]] != 0)
 		{
-			GiveCredits(attacker, g_iTK[g_iActive[attacker]], "%t", "teamkill");
+			Format(Buffer, sizeof(Buffer), "%s", "teamkill");
+			GiveCredits(attacker, g_iTK[g_iActive[attacker]], Buffer);
 
 			return;
 		}
 		else if (StrContains(sWeapon, "taser") != -1 && g_iTaser[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iTaser[g_iActive[attacker]], "%t", "taser kill");
+			Format(Buffer, sizeof(Buffer), "%s", "taser kill");
+			GiveCredits(attacker, g_iTaser[g_iActive[attacker]], Buffer);
 		}
 		else if (StrContains(sWeapon, "hegrenade") != -1 && g_iHE[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iHE[g_iActive[attacker]], "%t", "HE grenade kill");
+			Format(Buffer, sizeof(Buffer), "%s", "HE grenade kill");
+			GiveCredits(attacker, g_iHE[g_iActive[attacker]], Buffer);
 		}
 		else if (StrContains(sWeapon, "flashbang") != -1 && g_iFlash[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iFlash[g_iActive[attacker]], "%t", "flashbang kill");
+			Format(Buffer, sizeof(Buffer), "%s", "flashbang kill");
+			GiveCredits(attacker, g_iFlash[g_iActive[attacker]], Buffer);
 		}
 		else if (StrContains(sWeapon, "smokegrenade") != -1 && g_iSmoke[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iSmoke[g_iActive[attacker]], "%t", "smokegrenade kill");
+			Format(Buffer, sizeof(Buffer), "%s", "smokegrenade kill");
+			GiveCredits(attacker, g_iSmoke[g_iActive[attacker]], Buffer);
 		}
 		/*else if ((StrContains(sWeapon, "molotov") != -1 || StrContains(sWeapon, "incgrenade") != -1) && g_iMolotov[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%t", "molotov kill");
+			GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%s", "molotov kill");
 		}*/
 		else if ((StrContains(sWeapon, "inferno") != -1 && g_iMolotov[g_iActive[attacker]] > 0))
 		{
-			GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%t", "molotov kill");
+			Format(Buffer, sizeof(Buffer), "%s", "molotov kill");
+			GiveCredits(attacker, g_iMolotov[g_iActive[attacker]],Buffer);
 		}
 		else if (StrContains(sWeapon, "decoy") != -1 && g_iDecoy[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iDecoy[g_iActive[attacker]], "%t", "decoy grenade  kill");
+			Format(Buffer, sizeof(Buffer), "%s", "decoy grenade  kill");
+			GiveCredits(attacker, g_iDecoy[g_iActive[attacker]], Buffer);
 		}
 		else if ((StrContains(sWeapon, "awp") != -1 || StrContains(sWeapon, "ssg08") != -1 || StrContains(sWeapon, "scout") != -1 || StrContains(sWeapon, "g3sg1") != -1 || StrContains(sWeapon, "scar20") != -1)
 			&& g_iNoScope[g_iActive[attacker]] > 0 && !(0 < GetEntProp(attacker, Prop_Data, "m_iFOV") < GetEntProp(attacker, Prop_Data, "m_iDefaultFOV")))
 		{
-			GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
+			Format(Buffer, sizeof(Buffer), "%s", "noscope kill");
+			GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], Buffer);
 		}
 		else if (headshot && g_iHeadshot[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iHeadshot[g_iActive[attacker]], "%t", "headshot");
+			Format(Buffer, sizeof(Buffer), "%s", "headshot");
+			GiveCredits(attacker, g_iHeadshot[g_iActive[attacker]], Buffer);
 		}
 		else if (g_iKill[g_iActive[attacker]] > 0)
 		{
-			GiveCredits(attacker, g_iKill[g_iActive[attacker]], "%t", "kill");
+			Format(Buffer, sizeof(Buffer), "%s", "kill");
+			GiveCredits(attacker, g_iKill[g_iActive[attacker]], Buffer);
 		}
 	}
 	else 
@@ -571,7 +614,7 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 		if(attacker != victim)
 		{
 			Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iKill[g_iActive[attacker]])
-			//Chat(attacker, "%t", "Credits Earned For Killing", g_iKill[g_iActive[attacker]], victim_name);
+			//Chat(attacker, "%s", "Credits Earned For Killing", g_iKill[g_iActive[attacker]], victim_name);
 			CPrintToChat(attacker, "%s%t", g_sChatPrefix, "Zombie Earning Kill", g_iKill[g_iActive[attacker]], victim_name);
 		}
 		else return;
@@ -580,12 +623,14 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	// No zombie (ZR, ZP) enable
 	if (IsValidClient(assister) && g_iAssist[g_iActive[assister]] > 0)
 	{
-		GiveCredits(assister, g_iAssist[g_iActive[assister]], "%t", "assist a kill");
+		Format(Buffer, sizeof(Buffer), "%s", "assist a kill");
+		GiveCredits(assister, g_iAssist[g_iActive[assister]], Buffer);
 	}
 
 	if (attacker == victim && g_iSuicide[g_iActive[attacker]] != 0)
 	{
-		GiveCredits(attacker, g_iSuicide[g_iActive[attacker]], "%t", "kill yourself");
+		Format(Buffer, sizeof(Buffer), "%s", "kill yourself");
+		GiveCredits(attacker, g_iSuicide[g_iActive[attacker]], Buffer);
 	}
 
 	if (!IsFakeClient(victim) && g_iMsg[g_iActive[victim]] == 2)
@@ -634,50 +679,60 @@ public void Event_PlayerDeath(Event event, char[] name, bool dontBroadcast)
 	//int iBuffer;
 	if (!gc_bFFA.BoolValue && GetClientTeam(attacker) == GetClientTeam(victim) && g_iTK[g_iActive[attacker]] != 0)
 	{
-		GiveCredits(attacker, g_iTK[g_iActive[attacker]], "%t", "teamkill");
+		Format(Buffer, sizeof(Buffer), "%s", "teamkill");
+		GiveCredits(attacker, g_iTK[g_iActive[attacker]], Buffer);
 
 		return;
 	}
 	else if (StrContains(sWeapon, "taser") != -1 && g_iTaser[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iTaser[g_iActive[attacker]], "%t", "taser kill");
+		Format(Buffer, sizeof(Buffer), "%s", "taser kill");
+		GiveCredits(attacker, g_iTaser[g_iActive[attacker]], Buffer);
 	}
 	else if (StrContains(sWeapon, "hegrenade") != -1 && g_iHE[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iHE[g_iActive[attacker]], "%t", "HE grenade kill");
+		Format(Buffer, sizeof(Buffer), "%s", "HE grenade kill");
+		GiveCredits(attacker, g_iHE[g_iActive[attacker]], Buffer);
 	}
 	else if (StrContains(sWeapon, "flashbang") != -1 && g_iFlash[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iFlash[g_iActive[attacker]], "%t", "flashbang kill");
+		Format(Buffer, sizeof(Buffer), "%s", "flashbang kill");
+		GiveCredits(attacker, g_iFlash[g_iActive[attacker]], Buffer);
 	}
 	else if (StrContains(sWeapon, "smokegrenade") != -1 && g_iSmoke[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iSmoke[g_iActive[attacker]], "%t", "smokegrenade kill");
+		Format(Buffer, sizeof(Buffer), "%s", "smokegrenade kill");
+		GiveCredits(attacker, g_iSmoke[g_iActive[attacker]], Buffer);
 	}
 	/*else if ((StrContains(sWeapon, "molotov") != -1 || StrContains(sWeapon, "incgrenade") != -1) && g_iMolotov[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%t", "molotov kill");
+		GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%s", "molotov kill");
 	}*/
 	else if ((StrContains(sWeapon, "inferno") != -1 && g_iMolotov[g_iActive[attacker]] > 0))
 	{
-		GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], "%t", "molotov kill");
+		Format(Buffer, sizeof(Buffer), "%s", "molotov kill");
+		GiveCredits(attacker, g_iMolotov[g_iActive[attacker]], Buffer);
 	}
 	else if (StrContains(sWeapon, "decoy") != -1 && g_iDecoy[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iDecoy[g_iActive[attacker]], "%t", "decoy grenade  kill");
+		Format(Buffer, sizeof(Buffer), "%s", "decoy grenade  kill");
+		GiveCredits(attacker, g_iDecoy[g_iActive[attacker]], Buffer);
 	}
 	else if ((StrContains(sWeapon, "awp") != -1 || StrContains(sWeapon, "ssg08") != -1 || StrContains(sWeapon, "scout") != -1 || StrContains(sWeapon, "g3sg1") != -1 || StrContains(sWeapon, "scar20") != -1)
 			&& g_iNoScope[g_iActive[attacker]] > 0 && !(0 < GetEntProp(attacker, Prop_Data, "m_iFOV") < GetEntProp(attacker, Prop_Data, "m_iDefaultFOV")))
 	{
-		GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], "%t", "noscope kill");
+		Format(Buffer, sizeof(Buffer), "%s", "noscope kill");
+		GiveCredits(attacker, g_iNoScope[g_iActive[attacker]], Buffer);
 	}
 	else if (headshot && g_iHeadshot[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iHeadshot[g_iActive[attacker]], "%t", "headshot");
+		Format(Buffer, sizeof(Buffer), "%s", "headshot");
+		GiveCredits(attacker, g_iHeadshot[g_iActive[attacker]], Buffer);
 	}
 	else if (g_iKill[g_iActive[attacker]] > 0)
 	{
-		GiveCredits(attacker, g_iKill[g_iActive[attacker]], "%t", "kill");
+		Format(Buffer, sizeof(Buffer), "%s", "kill");
+		GiveCredits(attacker, g_iKill[g_iActive[attacker]], Buffer);
 	}
 	#endif
 }
@@ -686,6 +741,7 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	int winner = event.GetInt("winner");
 	int count = PlayerCount();
+	char Buffer[255];
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsValidClient(i, false, false))
@@ -695,7 +751,8 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 		{
 			if (count >= g_iMinPlayer[g_iActive[i]] && g_iWin[g_iActive[i]] > 0)
 			{
-				GiveCredits(i, g_iWin[g_iActive[i]], "%t", "win the round");
+				Format(Buffer, sizeof(Buffer), "%s", "win the round");
+				GiveCredits(i, g_iWin[g_iActive[i]], Buffer);
 			}
 		}
 
@@ -740,6 +797,7 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 
 public void Event_MVP(Event event, const char[] name, bool dontBroadcast)
 {
+	char Buffer[255];
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	int count = PlayerCount();
 	if (!IsValidClient(client, false, true))
@@ -753,14 +811,16 @@ public void Event_MVP(Event event, const char[] name, bool dontBroadcast)
 
 	if (g_iMVP[g_iActive[client]] < 1)
 		return;
-
-	GiveCredits(client, g_iMVP[g_iActive[client]], "%t", "be the MVP");
+	
+	Format(Buffer, sizeof(Buffer), "%s", "be the MVP");
+	GiveCredits(client, g_iMVP[g_iActive[client]], "%s", Buffer);
 }
 
 public void Event_BombPlanted(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	int count = PlayerCount();
+	char Buffer[255];
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -774,13 +834,17 @@ public void Event_BombPlanted(Event event, const char[] name, bool dontBroadcast
 	if (g_iPlant[g_iActive[client]] < 1)
 		return;
 
-	GiveCredits(client, g_iPlant[g_iActive[client]], "%t", "bomb planted");
+	Format(Buffer, sizeof(Buffer), "%s", "bomb planted");
+	GiveCredits(client, g_iPlant[g_iActive[client]], Buffer);
 }
 
 public void Event_BombDefused(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	int count = PlayerCount();
+	
+	char Buffer[255];
+	Format(Buffer, sizeof(Buffer), "%s", "bomb defused");
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -794,13 +858,16 @@ public void Event_BombDefused(Event event, const char[] name, bool dontBroadcast
 	if (g_iDefuse[g_iActive[client]] < 1)
 		return;
 
-	GiveCredits(client, g_iDefuse[g_iActive[client]], "%t", "bomb defused");
+	GiveCredits(client, g_iDefuse[g_iActive[client]], Buffer);
 }
 
 public void Event_BombExploded(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	int count = PlayerCount();
+	
+	char Buffer[255];
+	Format(Buffer, sizeof(Buffer), "%s", "bomb explode");
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -814,13 +881,16 @@ public void Event_BombExploded(Event event, const char[] name, bool dontBroadcas
 	if (g_iExplode[g_iActive[client]] < 1)
 		return;
 
-	GiveCredits(client, g_iExplode[g_iActive[client]], "%t", "bomb explode");
+	GiveCredits(client, g_iExplode[g_iActive[client]], Buffer);
 }
 
 public void Event_HostageRescued(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	int count = PlayerCount();
+	
+	char Buffer[255];
+	Format(Buffer, sizeof(Buffer), "%s", "hostage rescued");
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -834,13 +904,16 @@ public void Event_HostageRescued(Event event, const char[] name, bool dontBroadc
 	if (g_iRescued[g_iActive[client]] < 1)
 		return;
 
-	GiveCredits(client, g_iRescued[g_iActive[client]], "%t", "hostage rescued");
+	GiveCredits(client, g_iRescued[g_iActive[client]], Buffer);
 }
 
 public void Event_VipKilled(Event event, const char[] name, bool dontBroadcast)
 {
 	int attacker = GetClientOfUserId(event.GetInt("attacker"));
 	int count = PlayerCount();
+	
+	char Buffer[255];
+	Format(Buffer, sizeof(Buffer), "%s", "kill the VIP");
 
 	if (!IsValidClient(attacker, false, true))
 		return;
@@ -854,13 +927,16 @@ public void Event_VipKilled(Event event, const char[] name, bool dontBroadcast)
 	if (g_iVIPkill[g_iActive[attacker]] < 1)
 		return;
 
-	GiveCredits(attacker, g_iVIPkill[g_iActive[attacker]], "%t", "kill the VIP");
+	GiveCredits(attacker, g_iVIPkill[g_iActive[attacker]], Buffer);
 }
 
 public void Event_VipEscaped(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	int count = PlayerCount();
+	
+	char Buffer[255];
+	Format(Buffer, sizeof(Buffer), "%s", "escape as VIP");
 
 	if (!IsValidClient(client, false, true))
 		return;
@@ -874,7 +950,7 @@ public void Event_VipEscaped(Event event, const char[] name, bool dontBroadcast)
 	if (g_iVIPescape[g_iActive[client]] < 1)
 		return;
 
-	GiveCredits(client, g_iVIPescape[g_iActive[client]], "%t", "escape as VIP");
+	GiveCredits(client, g_iVIPescape[g_iActive[client]], "%s", Buffer);
 }
 
 void LoadConfig()
