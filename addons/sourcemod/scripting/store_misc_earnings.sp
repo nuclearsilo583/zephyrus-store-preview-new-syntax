@@ -813,7 +813,7 @@ public void Event_MVP(Event event, const char[] name, bool dontBroadcast)
 		return;
 	
 	Format(Buffer, sizeof(Buffer), "%s", "be the MVP");
-	GiveCredits(client, g_iMVP[g_iActive[client]], "%s", Buffer);
+	GiveCredits(client, g_iMVP[g_iActive[client]], Buffer);
 }
 
 public void Event_BombPlanted(Event event, const char[] name, bool dontBroadcast)
