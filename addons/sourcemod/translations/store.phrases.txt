@@ -2161,7 +2161,7 @@
 
 	"You earned x Credits for"
 	{
-		"#format"	"{1:i},{2:s} "
+		"#format"	"{1:i},{2:s}"
 		"en"		"You earned {1} {2} for "
 		"chi"		"你赚得了 {1} {2} 为。 "
 	}
