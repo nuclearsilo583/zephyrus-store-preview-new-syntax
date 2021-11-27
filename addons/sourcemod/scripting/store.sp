@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.2_Edited_Database"
+#define PLUGIN_VERSION "6.2"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -1209,12 +1209,12 @@ public int Native_SQLEscape(Handle plugin, int numParams)
 	if (g_hDatabase == null)
 		return -1;
 
-	char sBuffer[512];
+	char sBuffer[512], sBuffer2[512];
 	GetNativeString(1, sBuffer, sizeof(sBuffer));
 
-	SQL_EscapeString(g_hDatabase, sBuffer, sBuffer, sizeof(sBuffer));
+	SQL_EscapeString(g_hDatabase, sBuffer, sBuffer2, sizeof(sBuffer2));
 
-	SetNativeString(1, sBuffer, sizeof(sBuffer));
+	SetNativeString(1, sBuffer2, sizeof(sBuffer2));
 
 	return 1;
 }
@@ -3299,6 +3299,8 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 			else
 			{
 				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
+				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
 				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
 			}
 		}

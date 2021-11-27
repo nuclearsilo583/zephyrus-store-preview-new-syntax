@@ -55,7 +55,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.0", 
+	version = "2.0_sql_query_test_fix", 
 	url = ""
 };
 
@@ -166,7 +166,7 @@ public void SQL_FetchUser_CB(Database db, DBResultSet results, const char[] erro
 	}
 	else 
 	{
-		if(!IsFakeClient(iClient))
+		if(!IsFakeClient(iClient) && IsValidClient(iClient))
 			SQL_RegisterPerks(iClient);
 	}
 }
@@ -175,6 +175,7 @@ void SQL_RegisterPerks(int client)
 {
 	char szQuery[512], name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
+	Store_SQLEscape(name);
 	FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `store_cp_perk` (`authId`, `name`) VALUES ('%s', '%s')", g_szAuth[client], name);
 	Store_SQLQuery(szQuery, SQL_CheckForErrors, GetClientSerial(client));
 }
