@@ -162,6 +162,7 @@ public bool Pets_Config(KeyValues &kv, int itemid)
 	kv.GetString("idle2", g_sIdle2[g_iCount], 64);
 	kv.GetString("run", g_sRun[g_iCount], 64);
 	kv.GetVector("position", g_fPosition[g_iCount]);
+	kv.GetVector("angles", g_fAngles[g_iCount]);
 	g_iCount++;
 
 	return true;
