@@ -6,12 +6,13 @@
 #include <multicolors>
 #include <store>
 #include <zephstocks>
+#include <tf2_stocks>
 
 #pragma semicolon 1
 #pragma newdecls required
 
 bool GAME_CSGO = false;
-//bool GAME_TF2 = false;
+bool GAME_TF2 = false;
 
 enum struct Trail
 {
@@ -66,8 +67,8 @@ public void OnPluginStart()
 	
 	if(strcmp(m_szGameDir, "csgo")==0)
 		GAME_CSGO = true;
-	//else if(strcmp(m_szGameDir, "tf")==0)
-	//	GAME_TF2 = true;
+	else if(strcmp(m_szGameDir, "tf")==0)
+		GAME_TF2 = true;
 
 	g_cvarPadding = RegisterConVar("sm_store_trails_padding", "30.0", "Space between two trails", TYPE_FLOAT);
 	g_cvarMaxColumns = RegisterConVar("sm_store_trails_columns", "3", "Number of columns before starting to increase altitude", TYPE_INT);
@@ -398,24 +399,26 @@ public void OnGameFrame()
 		}
 	}
 }
-/*
+
 public Action Hook_TrailSetTransmit(int ent,int client)
 {
-	new Hide = ShouldHideTrail(client, ent);
+	int Hide = ShouldHideTrail(client, ent);
 	if(Hide)
 	{
 		if(Hide == 2)
 			return Plugin_Handled;
 		else if(Hide == 1)
 		{
-			for(new i=0;i<STORE_MAX_SLOTS;++i)
+			for(int i=0;i<STORE_MAX_SLOTS;++i)
 				if(g_iClientTrails[client][i]==ent)
 					return Plugin_Continue;
 			return Plugin_Handled;
 		}
 	}
 	
-	return Plugin_Continue;
+	Set_EdictFlags(ent);
+
+	return g_bHide[client] ? Plugin_Handled : Plugin_Continue;
 }
 
 stock int ShouldHideTrail(int client,int ent)
@@ -431,25 +434,25 @@ stock int ShouldHideTrail(int client,int ent)
 		}
 	}
 
-	static Available = -1;
+	/*static Available = -1;
 	if(Available==-1)
 		Available = GetFeatureStatus(FeatureType_Native, "HideTrails_ShouldHide")==FeatureStatus_Available?1:0;
 
 	if(Available == 1)
 	{
 		return HideTrails_ShouldHide(client);
-	}
+	}*/
 	return 0;
 }
-*/
 
+/*
 public Action Hook_TrailSetTransmit(int ent, int client)
 {
 	Set_EdictFlags(ent);
 
 	return g_bHide[client] ? Plugin_Handled : Plugin_Continue;
 }
-
+*/
 void Set_EdictFlags(int edict)
 {
 	if (GetEdictFlags(edict) & FL_EDICT_ALWAYS)
