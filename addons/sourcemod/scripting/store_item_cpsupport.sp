@@ -1,14 +1,13 @@
-#pragma semicolon 1
-#pragma newdecls required
+
 
 #include <sourcemod>
 #include <sdktools>
-//#include <colorvariables>
+#include <colorvariables>
 
 #include <store>
 #include <zephstocks>
 
-#include <multicolors> 
+//#include <multicolors> 
 #include <chat-processor> 
 
 
@@ -17,6 +16,9 @@
 #if defined csgo_css
 #include <cstrike>
 #endif
+
+#pragma semicolon 1
+#pragma newdecls required
 
 char g_sChatPrefix[128];
 
@@ -48,14 +50,12 @@ char g_szAuth[MAXPLAYERS + 1][32];
 char g_sTempClanTag[MAXPLAYERS + 1][32];
 #endif
 
-char g_szGameDir[64];
-
 public Plugin myinfo = 
 {
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.0_sql_query_test_fix", 
+	version = "2.1", 
 	url = ""
 };
 
@@ -67,16 +67,13 @@ public void OnPluginStart()
 	Store_RegisterHandler("namecolor", "color", _, CPSupport_Reset, NameColors_Config, CPSupport_Equip, CPSupport_Remove, true);
 	Store_RegisterHandler("msgcolor", "color", _, CPSupport_Reset, MsgColors_Config, CPSupport_Equip, CPSupport_Remove, true);
 	
-	GetGameFolderName(STRING(g_szGameDir));
+	#if defined csgo_css
+	Store_RegisterHandler("scoreboardtag", "scoreboardtag", _, CPSupport_Reset, ScoreboardTags_Config, ScoreboardTags_Equip, ScoreboardTags_Remove, true);
+	PrintToServer("CS:GO, CSS detected as a game engine. The scoreboard tag module will be enabled.");
 	
-	if(strcmp(g_szGameDir, "cstrike")==0 || strcmp(g_szGameDir, "csgo")==0)
-	{
-		//GAME_CSGO = true;
-		//GAME_CSS = true;
-		Store_RegisterHandler("scoreboardtag", "scoreboardtag", _, CPSupport_Reset, ScoreboardTags_Config, ScoreboardTags_Equip, ScoreboardTags_Remove, true);
-		PrintToServer("CS:GO, CSS detected as a game engine. The scoreboard tag module will be enabled.");
-	}
-	else PrintToServer("Can not detecte CS:GO, CSS as a game engine. The scoreboard tag module will be disabled.");
+	#else 
+	PrintToServer("Can not detecte CS:GO, CSS as a game engine. The scoreboard tag module will be disabled.");
+	#endif
 	
 	HookEvent("player_team", PlayerTeam_Callback);
 	HookEvent("player_spawn", PlayerSpawn_Callback);
@@ -93,26 +90,24 @@ public void OnPluginStart()
 	}
 	else FileEnable = true;
 }
-
+#if defined csgo_css
 public void OnClientPutInServer(int client)
 {
 	if(!IsValidClient(client))
         return;
-       
-	#if defined csgo_css
-		 CS_GetClientClanTag(client, g_sTempClanTag[client], 32);
-	#endif
+
+	CS_GetClientClanTag(client, g_sTempClanTag[client], 32);
+	
 }
 
 public void OnClientCommandKeyValues_Post(int client, KeyValues kv)
 {
-	#if defined csgo_css
 	char szCommmand[32];
 	
 	if(kv.GetSectionName(szCommmand, 32) && strcmp(szCommmand, "ClanTagChanged", false) == 0)
 		kv.GetString("tag", g_sTempClanTag[client], 32);
-	#endif
 }
+#endif
 
 public void OnClientPostAdminCheck(int client)
 {
@@ -460,7 +455,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	}
 	else Format(sName, sizeof(sName), "%s{teamcolor}%s%s", sNameTag, sNameColor, name);
 	
-	ReplaceColors(sName, sizeof(sName), author);
+	//ReplaceColors(sName, sizeof(sName), author);
 
 	strcopy(name, MAXLENGTH_NAME, sName);
 
@@ -469,7 +464,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		char sMessage[MAXLENGTH_BUFFER];
 		strcopy(sMessage, sizeof(sMessage), message);
 		Format(message, MAXLENGTH_BUFFER, "%s%s", g_sMessageColors[Store_GetDataIndex(iEquippedMsgColor)], sMessage);
-		ReplaceColors(message, MAXLENGTH_BUFFER, author);
+		//ReplaceColors(message, MAXLENGTH_BUFFER, author);
 	}
 
 	return Plugin_Changed;
@@ -535,33 +530,37 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	int temp = GetClientTeam(client);
 	switch(temp)
 	{
-		case 2:
+		/*case 2:
 		{
 			FormatEx(Buffer, sizeof(Buffer), "{orange}%s :", clientname);
 		}
 		case 3:
 		{
 			FormatEx(Buffer, sizeof(Buffer), "{bluegrey}%s :", clientname);
-		}
+		}*/
+		case  3: Format(STRING(Buffer), "\x0B%s :", clientname);
+        case  2: Format(STRING(Buffer), "\x05%s :", clientname);
+        default: Format(STRING(Buffer), "\x01%s :", clientname);
 	}
+	
 	
 	if(StrEqual(type, "nametag"))
 	{
-		FormatEx(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
+		Format(PreviewBuffer, sizeof(PreviewBuffer), "{default}%t", "This is the preview text");
 		CPrintToChat(client, "%t", "CP Preview", g_sNameTags[index], Buffer, PreviewBuffer);
 		//CPrintToChat(client, "test");
 	}
 	else if(StrEqual(type, "namecolor"))
 	{
-		FormatEx(sBuffer, sizeof(sBuffer), "%s%s :", g_sNameColors[index], clientname);
-		FormatEx(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
+		Format(sBuffer, sizeof(sBuffer), "%s%s :{default}", g_sNameColors[index], clientname);
+		Format(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
 		CPrintToChat(client, "%t", "CP Preview", " ", sBuffer, PreviewBuffer);
 	}
 	else if(StrEqual(type, "msgcolor"))
 	{
 		//FormatEx(Buffer, sizeof(Buffer), "{teamcolor}%s :", clientname);
-		FormatEx(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
-		FormatEx(sBuffer, sizeof(sBuffer), " %s%s", g_sMessageColors[index], PreviewBuffer);
+		Format(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
+		Format(sBuffer, sizeof(sBuffer), " %s%s", g_sMessageColors[index], PreviewBuffer);
 		CPrintToChat(client, "%t", "CP Preview", " ", Buffer, sBuffer);
 	}
 	else return;
@@ -578,7 +577,7 @@ stock bool IsValidClient(int client)
 	return IsClientInGame(client);
 }
 
-public void Store_SetClientClanTag(client)
+public void Store_SetClientClanTag(int client)
 {
 	int iEquippedScoreboardTag = Store_GetEquippedItem(client, "scoreboardtag");
 

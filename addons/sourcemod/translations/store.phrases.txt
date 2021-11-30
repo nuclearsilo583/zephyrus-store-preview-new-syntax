@@ -789,7 +789,7 @@
 
 	"This is the preview text"
 	{
-		"en"		" {default}This is the preview text."
+		"en"		" This is the preview text."
 	}
 	
 	"Spawn Preview"
