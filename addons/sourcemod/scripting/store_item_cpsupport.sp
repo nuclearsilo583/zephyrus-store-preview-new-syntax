@@ -55,7 +55,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.1", 
+	version = "2.2", 
 	url = ""
 };
 
@@ -161,7 +161,7 @@ public void SQL_FetchUser_CB(Database db, DBResultSet results, const char[] erro
 	}
 	else 
 	{
-		if(!IsFakeClient(iClient) && IsValidClient(iClient))
+		if(IsValidClient(iClient))
 			SQL_RegisterPerks(iClient);
 	}
 }

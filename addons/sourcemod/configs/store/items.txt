@@ -5,7 +5,7 @@
 		"Shop Toplists"
 		{
 			"type"							"link"
-			"command"						"sm_storetop"
+			"command"						"sm_toplists" // put the top list command here. This is a command executed via store menu.
 			"unique_id"						"uid_toplists_toplists"
 		}
 	}

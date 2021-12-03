@@ -5,13 +5,13 @@
 - TF2: now supported
 
 # Newly added
-- After 7 months since this Repo created. The store can only compile in SM 1.10 due to array-based enum struct syntax. But now today (10/9/2021), the store is rewritten for new enum struct syntax and can compile in SM 1.11 without any errors/warning.
+- Update (10/9/2021), the store is rewritten for new enum struct syntax and can compile in SM 1.11 without any errors/warning.
 [image](https://user-images.githubusercontent.com/58926275/136654734-1741fedc-c541-4e5a-bc4f-ad0283750240.png)
 
 # zephyrus-store (support SM 1.10 and SM 1.11).
 My rewritten zephyrus store
 
-Store system for CS:GO.
+Store system is mainly support for CS:GO.
 
 P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have some module that need to rework to be able to use. I will rework any that needed and will store in `<game_name>_modules` folders. Check for it (if you see no item that store in that folder, which mean you need to install any you wish from the main scripting folder and test run if you may find any error.)
 
@@ -46,15 +46,16 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Case opening system (lootbox) [youtube](https://www.youtube.com/watch?v=akGObAWnRqk)
 - "description" key value
 - Store's search for item function ([youtube](https://www.youtube.com/watch?v=xZyDtC6PDQM))
-- Store Logging for module (To find out errors. Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
+- Store Logging for module (To find out errors. Both SQL and SQLite are supported)
 ![log](https://user-images.githubusercontent.com/58926275/125444645-8c83105f-cc83-411d-bab9-a9e5689af9d9.png)
-- Store Voucher system module generating code, redeem, check, and buy. Build 5.5.4_voucher_v2 no sqlite support, build 5.5.6 is now has sqlite support)
+- Store Voucher system module generating code, redeem, check, and buy. Both SQL and SQLite are supported)
 ![voucher](https://user-images.githubusercontent.com/58926275/125775715-a282139a-7b71-4b76-9dc6-b3c686459a07.png)
 - Store Give away (v1.0)
 - Store Math credits
 - Store Top list
-- Support for in-game reload items.txt config without having restart server. (You need to change or reload map or may get some bugs).
+- Support for in-game reload items.txt config without having restart server. (You need to change or reload map or may get some bugs). Note this option only work for testing stuff. You still need a full restart on some items.
 - Store Earning credits (Warning: This modules only supported for csgo. If you're using the 2009 source engine. Dont use this. If you're using csgo please disable all the earning method of the core store.sp in the cfg file)
+- Added custom name tag color for client who bought the name tag.
 
 # Important links
 Contact me via steam for bug report:
