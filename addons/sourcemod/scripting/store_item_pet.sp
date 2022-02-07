@@ -380,10 +380,10 @@ public void PetThink(int client)
 	}
 
 	// Set new location data
-	if (pos[0] < clientPos[0])pos[0] += speed;
-	if (pos[0] > clientPos[0])pos[0] -= speed;
-	if (pos[1] < clientPos[1])pos[1] += speed;
-	if (pos[1] > clientPos[1])pos[1] -= speed;
+	if (pos[0] < (clientPos[0]+g_fPosition[iIndex][0]))pos[0] += speed;
+	if (pos[0] > (clientPos[0]-g_fPosition[iIndex][0]))pos[0] -= speed;
+	if (pos[1] < (clientPos[1]+g_fPosition[iIndex][1]))pos[1] += speed;
+	if (pos[1] > (clientPos[1]-g_fPosition[iIndex][1]))pos[1] -= speed;
 
 	// Height
 	int selectedPet = g_iSelectedPet[client];
