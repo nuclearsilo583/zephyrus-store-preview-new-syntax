@@ -516,7 +516,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+	//int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
 	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
 	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
 	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);

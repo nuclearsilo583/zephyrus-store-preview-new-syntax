@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.3"
+#define PLUGIN_VERSION "6.4"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -486,6 +486,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	MarkNativeAsOptional("ZR_SelectClientClass");
 	MarkNativeAsOptional("HideTrails_ShouldHide");
 #endif
+
+	//RegPluginLibrary("store");
+
 	return APLRes_Success;
 } 
 
@@ -2165,7 +2168,7 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 					if(!g_eItems[i].bBuyable && !g_eItems[i].bPreview)
 						m_iStyle = ITEMDRAW_DISABLED;
 						
-					if(!g_eItems[i].bPreview && g_eClients[target].iCredits<m_iPrice)
+					if(!g_eItems[i].bPreview && g_eClients[target].iCredits<m_iPrice && g_eItems[i].iPlans==0)
 						m_iStyle = ITEMDRAW_DISABLED;
 
 					if(g_eItems[i].iPlans==0)
@@ -3294,6 +3297,13 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < CURDATE()-%i", g_eCvars[g_cvarLogLast].aCache);
 				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
 				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_logs WHERE `date` < CURDATE()-%i", g_eCvars[g_cvarLogLast].aCache);
+				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+			}
+			else
+			{
+				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
+				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
 				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
 			}
 		}
