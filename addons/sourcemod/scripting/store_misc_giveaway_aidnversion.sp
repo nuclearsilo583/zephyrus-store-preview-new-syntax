@@ -177,6 +177,8 @@ public Action CommandGiveaway(int client, int args)
 		else CPrintToChat(client, "%s%t", g_sChatPrefix, "No have flag");
 	}
 	else CPrintToChat(client, "%s%t", g_sChatPrefix, "Now run a giveaway");
+	
+	return Plugin_Handled;
 }
 
 public Action TimerGiveaway(Handle timer, any client)
