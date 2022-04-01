@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.4"
+#define PLUGIN_VERSION "6.5"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -3900,6 +3900,8 @@ public Action Command_ReloadConfig(int client, int args)
 		Store_ReloadConfig();
 		ReplyToCommand(client, "%s %s", g_sChatPrefix, "Config reloaded. Please restart or change map");
 	}
+	
+	return Plugin_Handled;
 }
 
 public void FakeMenuHandler_StoreReloadConfig(Handle menu, MenuAction action, int client,int param2)
