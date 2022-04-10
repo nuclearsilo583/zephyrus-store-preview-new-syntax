@@ -69,7 +69,7 @@ public Plugin myinfo =
 	name = "Store - Particle item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -86,6 +86,7 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 	HookEvent("bullet_impact", Event_BulletImpact);
+	HookEvent("player_team", Event_PlayerTeam);
 
 	g_hHideCookie = RegClientCookie("Particle_Hide_Cookie", "Cookie to check if Particles are blocked", CookieAccess_Private);
 	
@@ -313,6 +314,17 @@ public int UnEquip_Particle(int client, int itemid)
 	return g_iType[itemid];
 }
 
+
+public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int team = GetEventInt(event, "team");
+	if(team==1)
+	{
+		Remove_Particle(client, AURA);
+		Remove_Particle(client, TRAIL);
+	}
+}
 
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
