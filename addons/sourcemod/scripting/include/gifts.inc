@@ -42,6 +42,6 @@ native any Gifts_RegisterPlugin(Function callback);
 native any Gifts_RemovePlugin();
 native any Gifts_SetClientCondition(int client, GiftConditions clientState);
 native any Gifts_GetClientCondition(int client);
-native any Gifts_SpawnGift(Function callback, const char[] model, float lifetime, float[3] position,any data,int owner=0);
+native any Gifts_SpawnGift(Function callback, const char[] model, float lifetime, float position[3], any data, int owner=0);
 
 forward void Gifts_OnGiftSpawned(any entity);
