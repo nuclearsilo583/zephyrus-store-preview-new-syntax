@@ -100,7 +100,7 @@ public Plugin myinfo =
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "2.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -332,7 +332,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	return Plugin_Continue;
 }
 
-public int SteamWorks_OnClientGroupStatus(int authid, int groupAccountID, bool isMember, bool isOfficer)
+public void SteamWorks_OnClientGroupStatus(int authid, int groupAccountID, bool isMember, bool isOfficer)
 {
 	int client = GetClientOfAuthID(authid);
 	if (client != -1 && isMember)
