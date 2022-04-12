@@ -37,7 +37,7 @@
 #include <store> //https://raw.githubusercontent.com/shanapu/Store/master/scripting/include/Store.inc
 //#include <zephstocks>
 
-#include <colors> //https://raw.githubusercontent.com/shanapu/Store/master/scripting/include/colors.inc
+#include <multicolors> //https://raw.githubusercontent.com/shanapu/Store/master/scripting/include/colors.inc
 #include <smartdm> //https://forums.alliedmods.net/attachment.php?attachmentid=136152&d=1406298576
 
 #define AURA 0
@@ -69,7 +69,7 @@ public Plugin myinfo =
 	name = "Store - Particle item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

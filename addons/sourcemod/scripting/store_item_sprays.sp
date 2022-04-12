@@ -5,7 +5,7 @@
 #include <store>
 #include <zephstocks>
 
-#include <colors>
+#include <multicolors>
 
 char g_szSprays[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
 int g_iSprayPrecache[STORE_MAX_ITEMS] = {-1,...};

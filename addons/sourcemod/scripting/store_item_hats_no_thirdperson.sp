@@ -5,7 +5,7 @@
 #include <zephstocks>
 
 #include <sdkhooks>
-#include <colors>
+#include <multicolors>
 
 
 #pragma newdecls required
@@ -44,6 +44,15 @@ Handle g_hTimerPreview[MAXPLAYERS + 1];
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
 char g_sChatPrefix[128];
+
+public Plugin myinfo = 
+{
+	name = "Store - Hats Module [No ThirdPerson Plugin]",
+	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	description = "",
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	url = ""
+}
 
 public void OnPluginStart()
 {

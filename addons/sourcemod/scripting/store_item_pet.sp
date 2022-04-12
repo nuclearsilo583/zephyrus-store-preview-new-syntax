@@ -7,7 +7,7 @@
 #include <store> 
 #include <zephstocks>
 
-#include <colors> 
+#include <multicolors> 
 //#include <smartdm>
 
 #pragma semicolon 1
@@ -43,7 +43,7 @@ public Plugin myinfo =
 	name = "Store - Pet item module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

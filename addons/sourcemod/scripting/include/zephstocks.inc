@@ -1,3 +1,5 @@
+// INC version after 1.11 update: 1.1
+
 #include <regex>
 #include <sdktools>
 
@@ -226,7 +228,7 @@ stock int RegisterConVar(char[] name, char[] value, char[] description, any type
 	return g_iCvars++;
 }
 
-public int GlobalConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
+public void GlobalConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	for(int i=0;i<g_iCvars;++i)
 		if(g_eCvars[i].hCvar==convar)
@@ -300,7 +302,7 @@ stock int GetClientBySteamID(char[] steamid)
 	return 0;
 }
 
-stock void GetClientSightEnd(int client, float[3] out)
+stock void GetClientSightEnd(int client, float out[3])
 {
 	float m_fEyes[3];
 	float m_fAngles[3];
@@ -313,7 +315,7 @@ stock void GetClientSightEnd(int client, float[3] out)
 
 stock int GetClientByIP(char[] ip)
 {
-	char[16] client_ip;
+	char client_ip[16];
 	for(int i=1;i<=MaxClients;++i)
 	{
 		if(!IsClientInGame(i))
@@ -354,18 +356,19 @@ stock bool GetCommunityID(char[] AuthID, char[] FriendID, any size)
 	return true;
 }
 
-stock void CloseClientMenu(int client)
+/*stock void CloseClientMenu(int client)
 {
-	Handle m_hMenu = CreateMenu(MenuHandler_CloseClientMenu);
-	SetMenuTitle(m_hMenu, "Empty menu");
-	DisplayMenu(m_hMenu, client, 1);
+	Menu m_hMenu = new Menu(MenuHandler_CloseClientMenu);
+	m_hMenu.SetTitle("Empty menu");
+	m_hMenu.Display(client, 1);
 }
 
-public void MenuHandler_CloseClientMenu(Handle menu, MenuAction action,int client,int param2)
+public int MenuHandler_CloseClientMenu(Menu menu, MenuAction action, int client,int param2)
 {
 	if (action == MenuAction_End)
-		CloseHandle(menu);
-}
+		delete menu;
+
+}*/
 
 public bool TraceRayDontHitSelf(any entity,any mask, any data)
 {
@@ -450,7 +453,7 @@ stock bool AddMenuItemEx(Handle menu,any style, char[] info, char[] display, any
 
 stock void SetPanelTitleEx(Handle menu, char[] display, any ...)
 {
-	char[] m_display[256];
+	char m_display[256];
 	VFormat(m_display, sizeof(m_display), display, 3);
 	SetPanelTitle(menu, m_display);
 }

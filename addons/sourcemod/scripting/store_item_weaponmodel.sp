@@ -5,7 +5,7 @@
 #include <store> 
 #include <zephstocks> 
 #include <fpvm_interface>
-#include <colors>
+#include <multicolors>
 
 #pragma newdecls required
 enum struct CustomModel
@@ -32,7 +32,7 @@ public Plugin myinfo =
 	name = "Store Custom Weapon Models",
 	author = "Mr.Derp & Franc1sco franug | Zephyrus Store Module & bbs.93x.net",
 	description = "Custom Knife Models",
-	version = "3.0",
+	version = "3.1",
 	url = "http://bbs.93x.net"
 }
 

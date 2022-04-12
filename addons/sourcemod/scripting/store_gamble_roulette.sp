@@ -38,7 +38,7 @@
 #include <store>
 #include <zephstocks>
 
-#include <colors> //https://raw.githubusercontent.com/shanapu/MyStore/master/scripting/include/colors.inc
+#include <multicolors> //https://raw.githubusercontent.com/shanapu/MyStore/master/scripting/include/colors.inc
 
 #include <autoexecconfig> //https://raw.githubusercontent.com/Impact123/AutoExecConfig/development/autoexecconfig.inc
 
@@ -67,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Roulette gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

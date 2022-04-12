@@ -1,7 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
 
-#include <colors>
+#include <multicolors>
 
 #include <store>
 #include <zephstocks>
@@ -38,7 +38,7 @@ public Plugin myinfo =
 	name = "Store Grenade Skin",
 	author = "zephyrus, nuclear silo",
 	description = "change grenade model",
-	version = "1.0",
+	version = "1.1",
 	url = ""
 }
 

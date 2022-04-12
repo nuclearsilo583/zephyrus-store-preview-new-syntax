@@ -196,7 +196,7 @@ native void TF2Util_UpdatePlayerSpeed(int client, bool immediate = false);
  *                             the position is in an active spawn room.  Has no effect if no
  *                             entity is provided.
  */
-native bool TF2Util_IsPointInRespawnRoom(const float[3] position,
+native bool TF2Util_IsPointInRespawnRoom(const float position[3],
 		int entity = INVALID_ENT_REFERENCE, bool bRestrictToSameTeam = false);
 
 // compile-time compatibility shim for tf2wearables natives

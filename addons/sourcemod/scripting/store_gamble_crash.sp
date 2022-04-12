@@ -1,4 +1,4 @@
-#include <colors>
+#include <multicolors>
 #include <sourcemod>
 #include <sdktools>
 #include <store>
@@ -21,7 +21,7 @@ public Plugin myinfo =
 	name = "Store - Crash gamble module",
 	author = "Emur, AiDN™, nuclear silo",
 	description = "Crash game Zephyrus's , nuclear silo's edited store",
-	version = "2.3"
+	version = "2.4"
 };
 
 //CVars
