@@ -34,9 +34,9 @@
 
 #include <store> 
 
-#include <colors> //https://raw.githubusercontent.com/shanapu/Store/master/scripting/include/colors.inc
-#include <smartdm> //https://forums.alliedmods.net/attachment.php?attachmentid=136152&d=1406298576
-#include <autoexecconfig> //https://raw.githubusercontent.com/Impact123/AutoExecConfig/development/autoexecconfig.inc
+#include <multicolors>
+#include <smartdm>
+#include <autoexecconfig>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -80,7 +80,7 @@ int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 bool roundend = false;
 bool mapend = false;
 
-int m_iOpenProp[MAXPLAYERS+1] = -1;
+int m_iOpenProp[MAXPLAYERS+1] = {-1, ...};
 
 Handle gf_hPreviewItem;
 
@@ -89,7 +89,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.8", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -315,7 +315,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 		kv.GetString(NULL_STRING, g_sLootboxItems[g_iBoxCount][g_iItemLevelCount[g_iBoxCount][lvlindex]][lvlindex], PLATFORM_MAX_PATH);
 		g_iItemLevelCount[g_iBoxCount][lvlindex]++;
 	}
-	while kv.GotoNextKey(false);
+	while (kv.GotoNextKey(false));
 
 	kv.GoBack();
 	kv.GoBack();
@@ -847,4 +847,13 @@ stock int GetPlayerFromOpenEntity(int entity)
 	}
 
 	return -1;
+}
+
+stock bool IsValidClient(int client, bool nobots = true)
+{ 
+    if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
+    {
+        return false; 
+    }
+    return IsClientInGame(client); 
 }

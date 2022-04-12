@@ -79,7 +79,7 @@ int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 
 bool mapend = false;
 
-int m_iOpenProp[MAXPLAYERS+1] = -1;
+int m_iOpenProp[MAXPLAYERS+1] = {-1, ...};
 
 Handle gf_hPreviewItem;
 
@@ -88,7 +88,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module [L4D2:Modules]",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -290,7 +290,7 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 		kv.GetString(NULL_STRING, g_sLootboxItems[g_iBoxCount][g_iItemLevelCount[g_iBoxCount][lvlindex]][lvlindex], PLATFORM_MAX_PATH);
 		g_iItemLevelCount[g_iBoxCount][lvlindex]++;
 	}
-	while kv.GotoNextKey(false);
+	while (kv.GotoNextKey(false));
 
 	kv.GoBack();
 	kv.GoBack();
@@ -770,4 +770,13 @@ stock int GetPlayerFromOpenEntity(int entity)
 	}
 
 	return -1;
+}
+
+stock bool IsValidClient(int client, bool nobots = true)
+{ 
+    if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
+    {
+        return false; 
+    }
+    return IsClientInGame(client); 
 }

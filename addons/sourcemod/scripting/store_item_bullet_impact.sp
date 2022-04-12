@@ -33,13 +33,13 @@
 
 #include <store> 
 
-#include <colors> //https://raw.githubusercontent.com/shanapu/Store/master/scripting/include/colors.inc
-#include <smartdm> //https://forums.alliedmods.net/attachment.php?attachmentid=136152&d=1406298576
+#include <multicolors>
+#include <smartdm>
 
 #pragma semicolon 1
 #pragma newdecls required
 
-bool g_bEquipt[MAXPLAYERS + 1] = false;
+bool g_bEquipt[MAXPLAYERS + 1] = {false, ...};
 
 char g_sPaintballDecals[STORE_MAX_ITEMS][32][PLATFORM_MAX_PATH];
 
@@ -60,7 +60,7 @@ public Plugin myinfo =
 	name = "Store - Bullet impact item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = "github.com/shanapu/Store"
 };
 
@@ -196,7 +196,7 @@ public bool Paintball_Config(KeyValues &kv, int itemid)
 		kv.GetString("material", g_sPaintballDecals[g_iCount][g_iPaintballDecals[g_iCount]], PLATFORM_MAX_PATH);
 		g_iPaintballDecals[g_iCount]++;
 	}
-	while kv.GotoNextKey();
+	while (kv.GotoNextKey());
 
 	kv.GoBack();
 	kv.GoBack();

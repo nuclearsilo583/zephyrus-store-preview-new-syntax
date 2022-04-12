@@ -2,7 +2,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <colors>
+#include <multicolors>
 //#include <cstrike>
 
 #include <store>
@@ -263,7 +263,6 @@ void Store_SetClientModel(int client, const char[] model, const int skin=0, cons
 {
 
 	SetEntityModel(client, model);
-	//SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
 	if (arms[0] == 0)
 		return;
 
@@ -275,8 +274,6 @@ void Store_SetClientModel(int client, const char[] model, const int skin=0, cons
 		SetEntProp(client, Prop_Send, "m_nBody", body);
     }
 	
-	//CreateTimer(0.15, Timer_RemovePlayerWeapon, GetClientUserId(client));
-	//RemoveClientGloves(client, index);
 	if(GAME_CSGO & arms[0]!=0)
 	{
 		SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
@@ -316,21 +313,6 @@ public Action Timer_GivePlayerWeapon(Handle timer, DataPack pack)
 	delete pack;
 
 	return Plugin_Stop;
-}
-
-
-void RemoveClientGloves(int client, int index = -1)
-{
-	if (index == -1 && GetEquippedSkin(client) <= 0)
-		return;
-	
-	if(!IsClientInGame(client) && GetEquippedSkin(client) <= 0)
-		return;
-	int gloves = GetEntPropEnt(client, Prop_Send, "m_hMyWearables");
-	if (gloves != -1)
-	{
-		AcceptEntityInput(gloves, "KillHierarchy");
-	}
 }
 
 int GetEquippedSkin(int client)

@@ -4,7 +4,7 @@
 
 #undef REQUIRE_PLUGIN
 #undef REQUIRE_EXTENSIONS
-#include <colors>
+#include <multicolors>
 #include <autoexecconfig>
 #include <store>
 
@@ -58,7 +58,7 @@ public Plugin myinfo =
 	name = "Blackjack",
 	author = "HerrMagic and Originalz ft. Jannik, AiDN™, nuclear silo",
 	description = "Blackjack game Zephyrus's , nuclear silo's edited store",
-	version = "1.2"
+	version = "1.4"
 }
 
 public OnPluginStart()

@@ -37,7 +37,7 @@
 #include <store>
 #include <zephstocks>
 
-#include <colors>
+#include <multicolors>
 
 #include <autoexecconfig>
 
@@ -66,7 +66,7 @@ public Plugin myinfo =
 	name = "Store - Teambet gamble module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compatible with Zephyrus Store, bugfix by AiDN™",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

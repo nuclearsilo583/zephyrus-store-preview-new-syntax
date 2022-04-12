@@ -4,7 +4,7 @@
 #include <store>
 #include <zephstocks>
 
-#include <colors>
+#include <multicolors>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -31,7 +31,7 @@ char g_sMenuItem[64];
 char g_sMenuExit[64];
 
 Handle gf_hPreviewItem;
-Handle g_hTimerInput[MAXPLAYERS+1] = null;
+Handle g_hTimerInput[MAXPLAYERS+1] = {null, ...};
 
 int g_iTempAmount[MAXPLAYERS + 1] = {0, ...};
 int g_iCreateNum[MAXPLAYERS + 1] = {0, ...};
@@ -48,7 +48,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

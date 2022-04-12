@@ -9,6 +9,7 @@
 [image](https://user-images.githubusercontent.com/58926275/136654734-1741fedc-c541-4e5a-bc4f-ad0283750240.png)
 
 # zephyrus-store (support SM 1.10 and SM 1.11).
+WARNING: THERE ARE MANY WARNING ABOUT RETURN VALUE IN NEWEST 1.11 COMPILER AND YOU CAN IGNORE THOSE.
 My rewritten zephyrus store
 
 Store system is mainly support for CS:GO.

@@ -1,6 +1,3 @@
-#pragma semicolon 1
-#pragma newdecls required
-
 //////////////////////////////
 //		DEFINITIONS			//
 //////////////////////////////
@@ -8,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.5"
+#define PLUGIN_VERSION "6.6"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -38,6 +35,9 @@
 #include <thirdperson>
 #include <saxtonhale>
 #endif
+
+#pragma semicolon 1
+#pragma newdecls required
 
 //////////////////////////////
 //			ENUMS			//
@@ -110,6 +110,7 @@ int g_cvarAdminFlag = -1;
 int g_cvarSaveOnDeath = -1;
 int g_cvarCreditMessages = -1;
 int g_cvarShowVIP = -1;
+int g_cvarShowSTEAM = -1;
 int g_cvarLogging = -1;
 int g_cvarLogLast = -1;
 int g_cvarPluginsLogging = -1;							  
@@ -292,13 +293,14 @@ public void OnPluginStart()
 	g_cvarCreditGiftEnabled = RegisterConVar("sm_store_enable_credit_gifting", "1", "Enable/disable gifting of credits.", TYPE_INT);
 	g_cvarSellRatio = RegisterConVar("sm_store_sell_ratio", "0.60", "Ratio of the original price to get for selling an item.", TYPE_FLOAT);
 	g_cvarConfirmation = RegisterConVar("sm_store_confirmation_windows", "1", "Enable/disable confirmation windows.", TYPE_INT);
-	g_cvarPreview = RegisterConVar("sm_store_preview_enable", "1", "Enable/disable confirmation windows.", TYPE_INT);
+	g_cvarPreview = RegisterConVar("sm_store_preview_enable", "1", "Enable/disable preview button.", TYPE_INT);
 	g_cvarSaveOnDeath = RegisterConVar("sm_store_save_on_death", "0", "Enable/disable client data saving on client death.", TYPE_INT);
 	g_cvarCreditMessages = RegisterConVar("sm_store_credit_messages", "1", "Enable/disable messages when a player earns credits.", TYPE_INT);
 	
 	g_cvarChatTag = RegisterConVar("sm_store_chat_tag", "[Store] ", "The chat tag to use for displaying messages.", TYPE_STRING);
 	g_cvarChatTag2 = CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");
 
+	g_cvarShowSTEAM = RegisterConVar("sm_store_show_steam_items", "0", "If you enable this STEAM items will be shown in grey.", TYPE_INT);
 	g_cvarShowVIP = RegisterConVar("sm_store_show_vip_items", "0", "If you enable this VIP items will be shown in grey.", TYPE_INT);
 	g_cvarLogging = RegisterConVar("sm_store_logging", "0", "Set this to 1 for file logging and 2 to SQL logging (only MySQL). Leaving on 0 means disabled.", TYPE_INT);
 	g_cvarLogLast = RegisterConVar("sm_store_log_last", "7", "How many day to delete data log since the log created in database. Leaving on 0 means no delete.", TYPE_INT);
@@ -1038,10 +1040,10 @@ public int Native_GetHandler(Handle plugin,int numParams)
 
 public int Native_GetClientItem(Handle plugin,int numParams)
 {
-	new client = GetNativeCell(1);
-	new itemid = GetNativeCell(2);
+	int client = GetNativeCell(1);
+	int itemid = GetNativeCell(2);
 
-	new uid = Store_GetClientItemId(client, itemid);
+	int uid = Store_GetClientItemId(client, itemid);
 	if(uid<0)
 		return 0;
 
@@ -2109,7 +2111,9 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 	
 	for(int i=0;i<g_iItems;++i)
 	{
-		if(g_eItems[i].iParent==parent && (g_eCvars[g_cvarShowVIP].aCache == 0 && GetClientPrivilege(target, g_eItems[i].iFlagBits, m_iFlags) || g_eCvars[g_cvarShowVIP].aCache))
+		if(g_eItems[i].iParent==parent && 
+			(g_eCvars[g_cvarShowVIP].aCache == 0 && GetClientPrivilege(target, g_eItems[i].iFlagBits, m_iFlags) || g_eCvars[g_cvarShowVIP].aCache) &&
+			(g_eCvars[g_cvarShowSTEAM].aCache == 0 && CheckSteamAuth(target, g_eItems[i].szSteam) || g_eCvars[g_cvarShowSTEAM].aCache))
 		{
 			int m_iPrice = Store_GetLowestPrice(i);
 			//bool reduced = false;
@@ -2162,7 +2166,7 @@ void DisplayStoreMenu(int client,int parent=-1,int last=-1)
 					//if((g_eItems[i][iPlans]==0 && g_eClients[target][iCredits]<m_iPrice && !g_eItems[i][bPreview]) || (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i][iFlagBits], m_iFlags) || !CheckSteamAuth(target, g_eItems[i][szSteam])))
 					//	m_iStyle = ITEMDRAW_DISABLED;
 					
-					if((!g_eItems[i].bPreview) && (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i].iFlagBits, m_iFlags) || !CheckSteamAuth(target, g_eItems[i].szSteam)))
+					if((!g_eItems[i].bPreview) && (g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(target, g_eItems[i].iFlagBits, m_iFlags) || (g_eCvars[g_cvarShowSTEAM].aCache && !CheckSteamAuth(target, g_eItems[i].szSteam))))
 						m_iStyle = ITEMDRAW_DISABLED;
 					
 					if(!g_eItems[i].bBuyable && !g_eItems[i].bPreview)
@@ -4233,8 +4237,11 @@ bool Store_PackageHasClientItem(int client,int packageid, bool invmode=false)
 	int m_iFlags = GetUserFlagBits(client);
 	if(!g_eCvars[g_cvarShowVIP].aCache && !GetClientPrivilege(client, g_eItems[packageid].iFlagBits, m_iFlags))
 		return false;
+		
+	if(!g_eCvars[g_cvarShowSTEAM].aCache && !CheckSteamAuth(client, g_eItems[packageid].szSteam))
+		return false;
 	for(int i=0;i<g_iItems;++i)
-		if(g_eItems[i].iParent == packageid && (g_eCvars[g_cvarShowVIP].aCache || GetClientPrivilege(client, g_eItems[i].iFlagBits, m_iFlags)) && (invmode && Store_HasClientItem(client, i) || !invmode))
+		if(g_eItems[i].iParent == packageid && (g_eCvars[g_cvarShowVIP].aCache || GetClientPrivilege(client, g_eItems[i].iFlagBits, m_iFlags)) && (g_eCvars[g_cvarShowSTEAM].aCache || CheckSteamAuth(client, g_eItems[i].szSteam)) && (invmode && Store_HasClientItem(client, i) || !invmode))
 			if((g_eItems[i].iHandler == g_iPackageHandler && Store_PackageHasClientItem(client, i, invmode)) || g_eItems[i].iHandler != g_iPackageHandler)
 				return true;
 	return false;
