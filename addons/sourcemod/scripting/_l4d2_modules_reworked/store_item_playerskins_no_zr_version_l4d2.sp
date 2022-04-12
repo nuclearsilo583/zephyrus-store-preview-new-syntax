@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name = "Store - Player Skin Module (No ZR version)",
 	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -85,7 +85,6 @@ public void OnPluginStart()
 	
 	// Supress warnings about unused variables.....
 	if(GAME_TF2){}
-	if(RemoveClientGloves){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
@@ -313,11 +312,6 @@ public Action Timer_GivePlayerWeapon(Handle timer, DataPack pack)
 	delete pack;
 
 	return Plugin_Stop;
-}
-
-int GetEquippedSkin(int client)
-{
-	return Store_GetEquippedItem(client, "playerskin", GetClientTeam(client)-2);
 }
 
 /*
