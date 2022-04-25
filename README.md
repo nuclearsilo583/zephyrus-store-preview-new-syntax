@@ -5,11 +5,12 @@
 - TF2: now supported
 
 # Newly added
-- Update (10/9/2021), the store is rewritten for new enum struct syntax and can compile in SM 1.11 without any errors/warning.
-[image](https://user-images.githubusercontent.com/58926275/136654734-1741fedc-c541-4e5a-bc4f-ad0283750240.png)
+~~- Update (10/9/2021), the store is rewritten for new enum struct syntax and can compile in SM 1.11 without any errors/warning.~~
+~~[image](https://user-images.githubusercontent.com/58926275/136654734-1741fedc-c541-4e5a-bc4f-ad0283750240.png)~~
 
 # zephyrus-store (support SM 1.10 and SM 1.11).
 WARNING: THERE ARE MANY WARNING ABOUT RETURN VALUE IN NEWEST 1.11 COMPILER AND YOU CAN IGNORE THOSE.
+
 My rewritten zephyrus store
 
 Store system is mainly support for CS:GO.
@@ -31,7 +32,7 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Sprays
 - Say sound
 - Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
-	(Please uncomment //#define WEAPONS_KNIVES at line #202 to enable this module)
+	(Please uncomment //#define WEAPONS_KNIVES to enable this module)
 - Name tag, name and message color.
 - more will be supported
 # Modules has no preview support:
