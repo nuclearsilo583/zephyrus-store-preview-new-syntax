@@ -212,7 +212,7 @@ enum EGCResults
 };
 
 native bool SteamWorks_IsVACEnabled();
-native bool SteamWorks_GetPublicIP(ipaddr[4]);
+native bool SteamWorks_GetPublicIP(int ipaddr[4]);
 native int SteamWorks_GetPublicIPCell();
 native bool SteamWorks_IsLoaded();
 native bool SteamWorks_SetGameDescription(const char[] sDesc);
