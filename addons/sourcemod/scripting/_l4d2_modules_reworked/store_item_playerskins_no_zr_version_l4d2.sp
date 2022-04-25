@@ -49,9 +49,9 @@ char g_sChatPrefix[128];
 public Plugin myinfo = 
 {
 	name = "Store - Player Skin Module (No ZR version)",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -82,6 +82,9 @@ public void OnPluginStart()
 	//HookEvent("player_death", PlayerSkins_PlayerDeath);
 
 	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
+	
+	// Supress warnings about unused variables.....
+	if(GAME_TF2){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
@@ -139,7 +142,7 @@ public int PlayerSkins_Equip(int client, int id)
 	{
 		if(IsPlayerAlive(client) && IsValidClient(client, true) && GetClientTeam(client)==g_ePlayerSkins[m_iData].iTeam)
 		{
-			Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
+			Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms);
 		}
 		/*else
 		{
@@ -242,7 +245,7 @@ public Action PlayerSkins_PlayerSpawnPost(Handle timer, any userid)
 	if(m_iEquipped >= 0)
 	{
 		int m_iData = Store_GetDataIndex(m_iEquipped);
-		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
+		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms);
 	}
 	/*else if(g_eCvars[g_cvarSkinForceChange].aCache)
 	{
@@ -255,7 +258,7 @@ public Action PlayerSkins_PlayerSpawnPost(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-void Store_SetClientModel(int client, const char[] model, const int skin=0, const int body=0, const char[] arms="", int index)
+void Store_SetClientModel(int client, const char[] model, const int skin=0, const int body=0, const char[] arms="")
 {
 
 	SetEntityModel(client, model);
@@ -309,11 +312,6 @@ public Action Timer_GivePlayerWeapon(Handle timer, DataPack pack)
 	delete pack;
 
 	return Plugin_Stop;
-}
-
-int GetEquippedSkin(int client)
-{
-	return Store_GetEquippedItem(client, "playerskin", GetClientTeam(client)-2);
 }
 
 /*
