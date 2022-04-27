@@ -1550,7 +1550,7 @@ public Action OnClientChangeName(Handle event, const char[] name, bool dontBroad
 		
 		char query[10000];
 		{
-			Format(query, sizeof(query), "UPDATE `store_players` SET name='%s' WHERE steam = '%s';", Eclientnewname, g_eClients[client].szAuthId);
+			Format(query, sizeof(query), "UPDATE `store_players` SET name='%s' WHERE authid = '%s';", Eclientnewname, g_eClients[client].szAuthId);
 			
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, query);
 		}

@@ -48,7 +48,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -101,48 +101,7 @@ public void Store_OnConfigExecuted(char[] prefix)
 	SQL_TConnect(SQLCallback_Connect, buffer);
 
 }
-/*
-char m_szVoucherCreateTableQuery[2048];
-	Store_SQLQuery("CREATE TABLE if NOT EXISTS `store_voucher` (\
-										  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
-										  name_of_create varchar(64) NOT NULL default '',\
-										  steam_of_create varchar(64) NOT NULL default '',\
-										  credits INT NOT NULL default 0,\
-										  item varchar(64) NOT NULL default '',\
-										  date_of_create INT NOT NULL default 0,\
-										  date_of_redeem INT NOT NULL default 0,\
-										  name_of_redeem varchar(64) NOT NULL default '',\
-										  steam_of_redeem TEXT NOT NULL,\
-										  unlimited TINYINT NOT NULL default 0,\
-										  date_of_expiration INT NOT NULL default 0,\
-										  item_expiration INT default NULL);",
-										SQLCallback_VoidVoucher, 0);
-										
-	Format(m_szVoucherCreateTableQuery, sizeof(m_szVoucherCreateTableQuery), "CREATE TABLE if NOT EXISTS `store_voucher` (\
-										  `voucher` varchar(64) NOT NULL,\
-										  `name_of_create` varchar(64) NOT NULL,\
-										  `steam_of_create` varchar(64) NOT NULL,\
-										  `credits` INT NOT NULL default '0',\
-										  `item` varchar(64),\
-										  `date_of_create` INT NOT NULL default '0',\
-										  `date_of_redeem` INT NOT NULL default '0',\
-										  `name_of_redeem` varchar(64),\
-										  `steam_of_redeem` TEXT,\
-										  `unlimited` TINYINT NOT NULL default '0',\
-										  `date_of_expiration` INT NOT NULL default '0',\
-										  `item_expiration` INT default NULL);");							
-	Store_SQLQuery(m_szVoucherCreateTableQuery ,SQLCallback_VoidVoucher, 0);
-	
-	//Do some housekeeping
-	char m_szVoucherQuery[2048];
-	Format(m_szVoucherQuery, sizeof(m_szVoucherQuery), "UPDATE store_voucher SET"
-									... " name_of_redeem = \"voucher's item expired\","
-									... " date_of_redeem = %d,"
-									... " steam_of_redeem = \"voucher's item expired\","
-									... " item_expiration = 0 "
-									... "WHERE item_expiration <> 0 AND item_expiration < %d", GetTime(), GetTime());
-	Store_SQLQuery(m_szVoucherQuery, SQLCallback_VoidVoucher, 0);
-*/
+
 public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, any data)
 {
 	if(hndl==INVALID_HANDLE)
@@ -173,7 +132,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `steam_of_redeem` varchar(64) NOT NULL,\
 										  `unlimited` TINYINT NOT NULL default '0',\
 										  `date_of_expiration` INT NOT NULL default '0',\
-										  `item_expiration` INT default NULL);");							
+										  `item_expiration` INT default NULL) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");							
 			//Store_SQLQuery(m_szVoucherCreateTableQuery ,SQLCallback_VoidVoucher, 0);
 			SQL_TVoid(g_hDatabase, m_szVoucherCreateTableQuery);
 			
@@ -183,6 +142,9 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN steam_of_create varchar(64) NOT NULL DEFAULT ' '");
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN name_of_redeem varchar(64) NOT NULL DEFAULT ' '");
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN steam_of_redeem varchar(64) NOT NULL DEFAULT ' '");
+			
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE `store_voucher` CHANGE COLUMN `name_of_create` `name_of_create` VARCHAR(64) CHARACTER SET 'utf8' NOT NULL");
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE `store_voucher` CHANGE COLUMN `name_of_redeem` `name_of_redeem` VARCHAR(64) CHARACTER SET 'utf8' NOT NULL");
 		}
 		else
 		{
@@ -222,6 +184,11 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										... "WHERE date_of_expiration < %d", GetTime(), GetTime());
 		//Store_SQLQuery(m_szVoucherQuery, SQLCallback_VoidVoucher, 0);
 		SQL_TVoid(g_hDatabase, m_szVoucherQuery);
+		
+		if(!SQL_SetCharset(g_hDatabase, "utf8mb4"))
+		{
+			SQL_SetCharset(g_hDatabase, "utf8");
+		}
 	}
 }
 
