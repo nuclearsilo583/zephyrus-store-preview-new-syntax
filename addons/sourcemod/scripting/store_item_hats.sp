@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name = "Store - Hats Module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -407,16 +407,20 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
-	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
-	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
-	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
+	//Only CSGO support for GLOWING preview model
+	if(GAME_CSGO)
+	{
+		int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+		SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
+		SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+		SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
-	//Miku Green
-	SetEntData(iPreview, offset, 57, _, true);
-	SetEntData(iPreview, offset + 1, 197, _, true);
-	SetEntData(iPreview, offset + 2, 187, _, true);
-	SetEntData(iPreview, offset + 3, 155, _, true);
+		//Miku Green
+		SetEntData(iPreview, offset, 57, _, true);
+		SetEntData(iPreview, offset + 1, 197, _, true);
+		SetEntData(iPreview, offset + 2, 187, _, true);
+		SetEntData(iPreview, offset + 3, 155, _, true);
+	}
 
 	float fOri[3];
 	float fAng[3];

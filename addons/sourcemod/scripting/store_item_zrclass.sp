@@ -47,25 +47,33 @@ int g_iZRClasses = 0;
 Handle g_hTimerPreview[MAXPLAYERS + 1];
 int g_bSkinEnable;
 
+bool GAME_CSGO = false;
+
 public Plugin myinfo = 
 {
 	name = "Store - Zombie:Reloaded Player Classes Module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
 public void OnPluginStart()
 {
+	char g_szGameDir[64];
+	GetGameFolderName(STRING(g_szGameDir));
+	
+	if(strcmp(g_szGameDir, "csgo")==0)
+		GAME_CSGO = true;
+	
 	Store_RegisterHandler("zrclass", "class", ZRClass_OnMapStart, ZRClass_Reset, ZRClass_Config, ZRClass_Equip, ZRClass_Remove, true);
 		
 	g_cvarDefaultHumanClass = RegisterConVar("sm_store_zrclass_default_human", "Normal Human", "Name of the default human class.", TYPE_STRING);
 	g_cvarDefaultZombieClass = RegisterConVar("sm_store_zrclass_default_zombie", "Classic", "Name of the default zombie class.", TYPE_STRING);
 	g_bSkinEnable = RegisterConVar("sm_store_zrclass_enable", "1", "Enable the player skin module", TYPE_INT);
-	LoadTranslations("store.phrases");
 	
-	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
+	LoadTranslations("store.phrases");
+
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
@@ -188,11 +196,11 @@ public int ZR_OnClientHumanPost(int client, bool respawn, bool protect)
 
 public void Store_OnPreviewItem(int client, char[] type, int index)
 {
-	/*
 	if (g_hTimerPreview[client] != null)
 	{
 		TriggerTimer(g_hTimerPreview[client], false);
-	}*/
+	}
+	
 	if (!StrEqual(type, "zrclass"))
 		return;
 		
@@ -207,8 +215,6 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	
 	DispatchKeyValue(iPreview, "spawnflags", "64");
 	DispatchKeyValue(iPreview, "model", g_sModel[index]);
-	//DispatchKeyValue(iPreview, "m_nSkin", g_iSkin[index]);
-	//DispatchKeyValue(iPreview, "m_nSkin", "2");
 
 	DispatchSpawn(iPreview);
 
@@ -216,19 +222,23 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
-	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
-	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+
 	SetEntProp(iPreview, Prop_Send, "m_nSkin", g_eZRClasses[index].skin);
 	SetEntProp(iPreview, Prop_Send, "m_nBody", g_eZRClasses[index].body);
-	//SetEntProp(iPreview, Prop_Send, "m_nSkin", 2);
-	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
+	
+	//Only CSGO support for GLOWING preview model
+	if(GAME_CSGO)
+	{
+		int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+		SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
+		SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+		SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
-
-	SetEntData(iPreview, offset, 57, _, true);
-	SetEntData(iPreview, offset + 1, 197, _, true);
-	SetEntData(iPreview, offset + 2, 187, _, true);
-	SetEntData(iPreview, offset + 3, 155, _, true);
+		SetEntData(iPreview, offset, 57, _, true);
+		SetEntData(iPreview, offset + 1, 197, _, true);
+		SetEntData(iPreview, offset + 2, 187, _, true);
+		SetEntData(iPreview, offset + 3, 155, _, true);
+	}
 
 	float fOrigin[3], fAngles[3], fRad[2], fPosition[3];
 

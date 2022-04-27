@@ -38,12 +38,14 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 bool g_bHide[MAXPLAYERS + 1];
 Handle g_hHideCookie = INVALID_HANDLE;
 
+bool GAME_CSGO = false;
+
 public Plugin myinfo = 
 {
 	name = "Store - Pet item module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -52,6 +54,12 @@ public void OnPluginStart()
 	Store_RegisterHandler("pet", "model", Pets_OnMapStart, Pets_Reset, Pets_Config, Pets_Equip, Pets_Remove, true);
 
 	LoadTranslations("store.phrases");
+	
+	char g_szGameDir[64];
+	GetGameFolderName(STRING(g_szGameDir));
+	
+	if(strcmp(g_szGameDir, "csgo")==0)
+		GAME_CSGO = true;
 
 	RegConsoleCmd("sm_hidepet", Command_Hide, "Hides the Pets");
 	RegConsoleCmd("sm_hidepets", Command_Hide, "Hides the Pets");
@@ -516,17 +524,21 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	//int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
-	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
-	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
-	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
+	//Only CSGO support for GLOWING preview model
+	if(GAME_CSGO)
+	{
+		int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+		SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
+		SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+		SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
-	//Miku Green
-	//SetEntData(iPreview, offset, 57, _, true);
-	//SetEntData(iPreview, offset + 1, 197, _, true);
-	//SetEntData(iPreview, offset + 2, 187, _, true);
-	//SetEntData(iPreview, offset + 3, 155, _, true);
-
+		//Miku Green
+		SetEntData(iPreview, offset, 57, _, true);
+		SetEntData(iPreview, offset + 1, 197, _, true);
+		SetEntData(iPreview, offset + 2, 187, _, true);
+		SetEntData(iPreview, offset + 3, 155, _, true);
+	}
+	
 	float fOri[3];
 	float fAng[3];
 	float fRad[2];

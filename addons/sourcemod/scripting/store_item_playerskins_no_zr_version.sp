@@ -45,8 +45,6 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
 char g_sChatPrefix[128];
 
-char g_szGameDir[64];
-
 bool GAME_CSGO = false;
 
 public Plugin myinfo = 
@@ -54,7 +52,7 @@ public Plugin myinfo =
 	name = "Store - Player Skin Module (No ZR version)",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -62,9 +60,9 @@ public void OnPluginStart()
 {	
 	LoadTranslations("store.phrases");
 	
+	char g_szGameDir[64];
 	GetGameFolderName(STRING(g_szGameDir));
 	
-
 	if(strcmp(g_szGameDir, "csgo")==0)
 		GAME_CSGO = true;
 	
@@ -384,6 +382,9 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 {
 	if (!StrEqual(type, "playerskin"))
 		return;
+		
+	if(g_hTimerPreview[client] != null) 
+		TriggerTimer(g_hTimerPreview[client], false);
 
 	int iPreview = CreateEntityByName("prop_dynamic_override"); //prop_physics_multiplayer
 	
@@ -402,21 +403,26 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
-	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
-	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
 	SetEntProp(iPreview, Prop_Send, "m_nSkin", g_ePlayerSkins[index].iSkin);
 	if (g_ePlayerSkins[index].iBody > 0)
 	{
 		SetEntProp(iPreview, Prop_Send, "m_nBody", g_ePlayerSkins[index].iBody);
 	}
-	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
+	
+	//Only CSGO support for GLOWING preview model
+	if(GAME_CSGO)
+	{
+		int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+		SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
+		SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+		SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
-
-	SetEntData(iPreview, offset, 57, _, true);
-	SetEntData(iPreview, offset + 1, 197, _, true);
-	SetEntData(iPreview, offset + 2, 187, _, true);
-	SetEntData(iPreview, offset + 3, 155, _, true);
+		// Miku green
+		SetEntData(iPreview, offset, 57, _, true);
+		SetEntData(iPreview, offset + 1, 197, _, true);
+		SetEntData(iPreview, offset + 2, 187, _, true);
+		SetEntData(iPreview, offset + 3, 155, _, true);
+	}
 
 	float fOrigin[3], fAngles[3], fRad[2], fPosition[3];
 

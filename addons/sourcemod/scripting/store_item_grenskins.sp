@@ -11,6 +11,7 @@
 #pragma newdecls required
 
 bool GAME_TF2 = false;
+bool GAME_CSGO = false;
 
 char g_sChatPrefix[128];
 
@@ -38,7 +39,7 @@ public Plugin myinfo =
 	name = "Store Grenade Skin",
 	author = "zephyrus, nuclear silo",
 	description = "change grenade model",
-	version = "1.1",
+	version = "1.2",
 	url = ""
 }
 
@@ -57,6 +58,9 @@ public void OnPluginStart()
 	
 	if(strcmp(m_szGameDir, "tf")==0)
 		GAME_TF2 = true;
+	else if(strcmp(m_szGameDir, "csgo")==0)
+		GAME_CSGO = true;
+		
 	LoadTranslations("store.phrases");
 	
 	Store_RegisterHandler("grenadeskin", "model", GrenadeSkins_OnMapStart, GrenadeSkins_Reset, GrenadeSkins_Config, GrenadeSkins_Equip, GrenadeSkins_Remove, true);
@@ -186,16 +190,19 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	//int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
-	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
-	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
-	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
+	if(GAME_CSGO)
+	{
+		int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+		SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
+		SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+		SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
-	//Miku Green
-	//SetEntData(iPreview, offset, 57, _, true);
-	//SetEntData(iPreview, offset + 1, 197, _, true);
-	//SetEntData(iPreview, offset + 2, 187, _, true);
-	//SetEntData(iPreview, offset + 3, 155, _, true);
+		//Miku Green
+		SetEntData(iPreview, offset, 57, _, true);
+		SetEntData(iPreview, offset + 1, 197, _, true);
+		SetEntData(iPreview, offset + 2, 187, _, true);
+		SetEntData(iPreview, offset + 3, 155, _, true);
+	}
 
 	float fOri[3];
 	float fAng[3];

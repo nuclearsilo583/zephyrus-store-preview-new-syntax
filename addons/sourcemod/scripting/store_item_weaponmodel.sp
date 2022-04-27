@@ -27,20 +27,30 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
 char g_sChatPrefix[128];
 
+bool GAME_CSGO = false;
+
 public Plugin myinfo =
 {
 	name = "Store Custom Weapon Models",
 	author = "Mr.Derp & Franc1sco franug | Zephyrus Store Module & bbs.93x.net",
 	description = "Custom Knife Models",
-	version = "3.1",
+	version = "3.2",
 	url = "http://bbs.93x.net"
 }
 
 public void OnPluginStart() 
 {
+	char g_szGameDir[64];
+	GetGameFolderName(STRING(g_szGameDir));
+
+	if(strcmp(g_szGameDir, "csgo")==0)
+		GAME_CSGO = true;
+	else SetFailState("[Store] This modules only supported for CS:GO. The plugin will be disabled.");
+	
 	Store_RegisterHandler("CustomModel", "model", CustomModelOnMapStart, CustomModelReset, CustomModelConfig, CustomModelEquip, CustomModelRemove, true); 
 	LoadTranslations("store.phrases");
-
+	
+	if(GAME_CSGO){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
@@ -219,9 +229,9 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	AcceptEntityInput(iPreview, "Enable");
 
 	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
-	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
-	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
-	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
+	SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
 
 	SetEntData(iPreview, offset, 57, _, true);

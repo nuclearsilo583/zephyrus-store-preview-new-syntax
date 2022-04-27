@@ -8,7 +8,7 @@
 
 #include <store>
 #include <zephstocks>
-//#pragma newdecls required
+#pragma newdecls required
 //new GAME_TF2 = false;
 
 //native bool:ZR_IsClientZombie(client);
@@ -47,18 +47,26 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
 char g_sChatPrefix[128];
 
+bool GAME_CSGO = false;
+
 public Plugin myinfo = 
 {
 	name = "Store - Player Skin Module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
-public OnPluginStart()
+public void OnPluginStart()
 {	
-	LoadTranslations("store.phrases");
+	char g_szGameDir[64];
+	
+	// Identify the game
+	GetGameFolderName(STRING(g_szGameDir));
+	
+	if(strcmp(g_szGameDir, "csgo")==0)
+		GAME_CSGO = true;
 	
 	Store_RegisterHandler("playerskin", "model", PlayerSkins_OnMapStart, PlayerSkins_Reset, PlayerSkins_Config, PlayerSkins_Equip, PlayerSkins_Remove, true);
 	//Store_RegisterHandler("playerskin_temp", "model", PlayerSkins_OnMapStart, PlayerSkins_Reset, PlayerSkins_Config, PlayerSkins_Equip, PlayerSkins_Remove, false);
@@ -71,11 +79,12 @@ public OnPluginStart()
 	g_bSkinEnable = RegisterConVar("sm_store_playerskin_enable", "1", "Enable the player skin module", TYPE_INT);
 	//g_cvarSkinChangeInstant = RegisterConVar("sm_store_playerskin_instant", "1", "Defines whether the skin should be changed instantly or on next spawn.", TYPE_INT);
 	
-	
 	HookEvent("player_spawn", PlayerSkins_PlayerSpawn);
 	//HookEvent("player_death", PlayerSkins_PlayerDeath);
 
 	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
+	
+	LoadTranslations("store.phrases");
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
@@ -83,7 +92,7 @@ public void Store_OnConfigExecuted(char[] prefix)
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
-public PlayerSkins_OnMapStart()
+public void PlayerSkins_OnMapStart()
 {
 	for(int i=0;i<g_iPlayerSkins;++i)
 	{
@@ -98,12 +107,12 @@ public PlayerSkins_OnMapStart()
 	}
 }
 
-public PlayerSkins_Reset()
+public int PlayerSkins_Reset()
 {
 	g_iPlayerSkins = 0;
 }
 
-public PlayerSkins_Config(&Handle:kv, itemid)
+public bool PlayerSkins_Config(Handle &kv, int itemid)
 {
 	Store_SetDataIndex(itemid, g_iPlayerSkins);
 	
@@ -123,7 +132,7 @@ public PlayerSkins_Config(&Handle:kv, itemid)
 	return false;
 }
 
-public PlayerSkins_Equip(client, int id)
+public int PlayerSkins_Equip(int client, int id)
 {
 	int m_iData = Store_GetDataIndex(id);
 	//int iIndex =  Store_GetDataIndex(id);
@@ -153,7 +162,7 @@ public PlayerSkins_Equip(client, int id)
 	return (g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2;
 }
 
-public PlayerSkins_Remove(client, id)
+public int PlayerSkins_Remove(int client, int id)
 {
 	/*if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant].aCache)
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "PlayerSkins Settings Changed");*/
@@ -172,7 +181,7 @@ public PlayerSkins_Remove(client, id)
 	return ((g_ePlayerSkins[Store_GetDataIndex(id)].iTeam)-2);
 }
 
-public void PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBroadcast)
+public Action PlayerSkins_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (g_eCvars[g_bSkinEnable].aCache == 1)
@@ -189,7 +198,7 @@ public void PlayerSkins_PlayerSpawn(Event event,const char[] name,bool dontBroad
 	//return Plugin_Continue;
 }
 
-public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
+public Action PlayerSkins_PlayerSpawnPost(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	//int iIndex =  Store_GetDataIndex(id);
@@ -203,7 +212,7 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 		if (!ZR_IsClientHuman(client))
 			return Plugin_Stop;
 	
-	new m_iEquipped = Store_GetEquippedItem(client, "playerskin", 2);
+	int m_iEquipped = Store_GetEquippedItem(client, "playerskin", 2);
 	if(m_iEquipped < 0)
 		m_iEquipped = Store_GetEquippedItem(client, "playerskin", GetClientTeam(client)-2);
 	if(m_iEquipped >= 0)
@@ -227,7 +236,7 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 	return Plugin_Stop;
 }
 
-Store_SetClientModel(client, const String:model[], const skin=0, const body=0, const String:arms[]="", int index)
+void Store_SetClientModel(int client, const char[] model, const int skin=0, const int body=0, const char[] arms = "", int index)
 {
 
 	SetEntityModel(client, model);
@@ -306,18 +315,14 @@ int GetEquippedSkin(int client)
 	return Store_GetEquippedItem(client, "playerskin", GetClientTeam(client)-2);
 }
 
-/*
-public Action:PlayerSkins_PlayerDeath(Handle:event,const String:name[],bool:dontBroadcast)
-{
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	g_iTempSkins[client] = -1;
-	return Plugin_Continue;
-}*/
 
 public void Store_OnPreviewItem(int client, char[] type, int index)
 {
 	if (!StrEqual(type, "playerskin"))
 		return;
+	
+	if(g_hTimerPreview[client] != null) 
+		TriggerTimer(g_hTimerPreview[client], false);
 
 	int iPreview = CreateEntityByName("prop_dynamic_override"); //prop_physics_multiplayer
 	
@@ -336,21 +341,25 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	AcceptEntityInput(iPreview, "Enable");
 
-	int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
-	//SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
-	//SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
 	SetEntProp(iPreview, Prop_Send, "m_nSkin", g_ePlayerSkins[index].iSkin);
 	if (g_ePlayerSkins[index].iBody > 0)
 	{
 		SetEntProp(iPreview, Prop_Send, "m_nBody", g_ePlayerSkins[index].iBody);
 	}
-	//SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
+	
+	//Only CSGO support for GLOWING preview model
+	if(GAME_CSGO)
+	{
+		int offset = GetEntSendPropOffs(iPreview, "m_clrGlow");
+		SetEntProp(iPreview, Prop_Send, "m_bShouldGlow", true, true);
+		SetEntProp(iPreview, Prop_Send, "m_nGlowStyle", 0);
+		SetEntPropFloat(iPreview, Prop_Send, "m_flGlowMaxDist", 2000.0);
 
-
-	SetEntData(iPreview, offset, 57, _, true);
-	SetEntData(iPreview, offset + 1, 197, _, true);
-	SetEntData(iPreview, offset + 2, 187, _, true);
-	SetEntData(iPreview, offset + 3, 155, _, true);
+		SetEntData(iPreview, offset, 57, _, true);
+		SetEntData(iPreview, offset + 1, 197, _, true);
+		SetEntData(iPreview, offset + 2, 187, _, true);
+		SetEntData(iPreview, offset + 3, 155, _, true);
+	}
 
 	float fOrigin[3], fAngles[3], fRad[2], fPosition[3];
 
@@ -421,7 +430,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 	return Plugin_Stop;
 }
 
-stock bool IsValidClient(client, bool nobots = true)
+stock bool IsValidClient(int client, bool nobots = true)
 { 
     if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
     {
