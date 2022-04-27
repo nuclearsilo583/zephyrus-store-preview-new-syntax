@@ -3250,6 +3250,9 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_items ADD COLUMN price_of_purchase int(11)");
 			// Edit exist date column
 			SQL_TQuery(g_hDatabase, SQLCallback_CheckError, "ALTER TABLE store_logs MODIFY COLUMN date TIMESTAMP NOT NULL");
+			
+			SQL_TQuery(g_hDatabase, SQLCallback_CheckError, "ALTER TABLE `store_players` CHANGE COLUMN `name` `name` VARCHAR(64) CHARACTER SET 'utf8' NOT NULL");
+			SQL_TQuery(g_hDatabase, SQLCallback_CheckError, "ALTER TABLE `store_plugin_logs` CHANGE COLUMN `name` `name` VARCHAR(64) CHARACTER SET 'utf8' NOT NULL");
 			char m_szQuery[512];
 			Format(STRING(m_szQuery), "CREATE TABLE IF NOT EXISTS `%s` (\
 										  `id` int(11) NOT NULL AUTO_INCREMENT,\
