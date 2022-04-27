@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.6"
+#define PLUGIN_VERSION "6.7"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -333,6 +333,7 @@ public void OnPluginStart()
 	// Hook events
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEventEx("player_changename", OnClientChangeName, EventHookMode_Pre);
 	
 	// Load the translations file
 	LoadTranslations("store.phrases");
@@ -1532,6 +1533,28 @@ public Action Event_PlayerSpawn(Event event, char[] name, bool dontBroadcast)
 	//Health_OnPlayerSpawn(client);
 #endif
 		
+	return Plugin_Continue;
+}
+
+public Action OnClientChangeName(Handle event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (!IsClientConnected(client) || IsFakeClient(client))
+		return Plugin_Continue;
+	if (IsClientConnected(client))
+	{
+		char clientnewname[MAX_NAME_LENGTH];
+		GetEventString(event, "newname", clientnewname, sizeof(clientnewname));
+		char Eclientnewname[MAX_NAME_LENGTH * 2 + 1];
+		SQL_EscapeString(g_hDatabase, clientnewname, Eclientnewname, sizeof(Eclientnewname));
+		
+		char query[10000];
+		{
+			Format(query, sizeof(query), "UPDATE `store_players` SET name='%s' WHERE steam = '%s';", Eclientnewname, g_eClients[client].szAuthId);
+			
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, query);
+		}
+	}
 	return Plugin_Continue;
 }
 
@@ -3154,10 +3177,11 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 		// If it's already connected we are good to go
 		if(g_hDatabase != INVALID_HANDLE)
 			return;
-			
+
 		g_hDatabase = hndl;
 		char m_szDriver[2];
 		SQL_ReadDriver(g_hDatabase, STRING(m_szDriver));
+
 		if(m_szDriver[0] == 'm')
 		{
 			g_bMySQL = true;
@@ -3171,7 +3195,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  PRIMARY KEY (`id`),\
 										  UNIQUE KEY `id` (`id`),\
 										  UNIQUE KEY `authid` (`authid`)\
-										)");
+										) ENGINE=InnoDB AUTO_INCREMENT=0 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_items` (\
 										  `id` int(11) NOT NULL AUTO_INCREMENT,\
 										  `player_id` int(11) NOT NULL,\
@@ -3180,13 +3204,13 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `date_of_purchase` int(11) NOT NULL,\
 										  `date_of_expiration` int(11) NOT NULL,\
 										  PRIMARY KEY (`id`)\
-										)");
+										) ENGINE=InnoDB AUTO_INCREMENT=0 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_equipment` (\
 										  `player_id` int(11) NOT NULL,\
 										  `type` varchar(16) NOT NULL,\
 										  `unique_id` varchar(256) NOT NULL,\
 										  `slot` int(11) NOT NULL\
-										)");
+										) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_logs` (\
 										  `id` int(11) NOT NULL AUTO_INCREMENT,\
 										  `player_id` int(11) NOT NULL,\
@@ -3194,7 +3218,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `reason` varchar(256) NOT NULL,\
 										  `date` timestamp NOT NULL,\
 										  PRIMARY KEY (`id`)\
-										)");
+										) ENGINE=InnoDB AUTO_INCREMENT=0 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
 			SQL_TVoid(g_hDatabase, "CREATE TABLE IF NOT EXISTS `store_plugin_logs` (\
 										  `id` int(11) NOT NULL AUTO_INCREMENT,\
@@ -3206,7 +3230,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `date` timestamp NOT NULL,\
 										  PRIMARY KEY (`id`),\
 										  UNIQUE KEY `id` (`id`)\
-										)");
+										) ENGINE=InnoDB AUTO_INCREMENT=0 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
 			/*SQL_TVoid(g_hDatabase, "CREATE TABLE if NOT EXISTS store_voucher (\
 										  voucher varchar(64) NOT NULL PRIMARY KEY default '',\
@@ -3238,7 +3262,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 										  `item_status` tinyint(1) NOT NULL,\
 										  `supported_game` varchar(64) NOT NULL,\
 										  PRIMARY KEY (`id`)\
-										)", g_eCvars[g_cvarItemsTable].sCache);
+										) ENGINE=InnoDB AUTO_INCREMENT=0 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", g_eCvars[g_cvarItemsTable].sCache);
 			SQL_TVoid(g_hDatabase, m_szQuery);
 		}
 		else
@@ -3310,6 +3334,10 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 				Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
 				SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
 			}
+		}
+		
+		if(!SQL_SetCharset(g_hDatabase, "utf8mb4")){
+			SQL_SetCharset(g_hDatabase, "utf8");
 		}
 	}
 }
