@@ -1,11 +1,13 @@
 #include <sourcemod>
+#include <clientprefs>
 #include <sdktools>
 #include <sdkhooks>
 #include <multicolors>
 #include <cstrike>
-
 #include <store>
 #include <zephstocks>
+
+//#include <gloves>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -13,6 +15,10 @@
 //new GAME_TF2 = false;
 native bool ZR_IsClientZombie(int client);
 bool g_bZombieMode = false;
+
+native void Gloves_SetArmsModel(int client, const char[] armsModel);
+native void Gloves_RegisterCustomArms(int client, const char[] armsModel);
+bool g_bGlovesPluginEnable = false;
 
 enum struct PlayerSkin
 {
@@ -42,21 +48,20 @@ bool g_bTForcedSkin = false;
 bool g_bCTForcedSkin = false;
 
 Handle g_hTimerPreview[MAXPLAYERS + 1];
-
 int g_bSkinEnable;
-
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
-
 char g_sChatPrefix[128];
-
 bool GAME_CSGO = false;
+
+bool g_bHide[MAXPLAYERS + 1];
+Handle g_hHideCookie = INVALID_HANDLE;
 
 public Plugin myinfo = 
 {
-	name = "Store - Player Skin Module (No ZR + ZR suport)",
+	name = "Store - Player Skin Module (No ZR + ZR, gloves support)",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -85,16 +90,93 @@ public void OnPluginStart()
 	
 	g_cvarSkinChangeInstant = RegisterConVar("sm_store_playerskin_instant", "1", "Defines whether the skin should be changed instantly or on next spawn.", TYPE_INT);
 	
+	g_hHideCookie = RegClientCookie("PlayerSkin_Hide_Gloves_Cookie", "Cookie to check if Gloves are blocked", CookieAccess_Private);
+	SetCookieMenuItem(PrefMenu, 0, "");
 	
 	HookEvent("player_spawn", PlayerSkins_PlayerSpawn);
 	//HookEvent("player_death", PlayerSkins_PlayerDeath);
 
-	g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
+	if(FindPluginByFile("zombiereloaded.smx")==INVALID_HANDLE)
+	{
+		g_bZombieMode = false;
+		PrintToServer("No Zombie:Reloaded plugin detected");
+	}
+	else
+	{
+		g_bZombieMode = true;
+		PrintToServer("Zombie:Reloaded plugin detected");
+	}
+	
+	if(FindPluginByFile("gloves.smx")==INVALID_HANDLE)
+	{
+		g_bGlovesPluginEnable = false;
+		PrintToServer("No gloves plugin detected");
+	}
+	else 
+	{
+		g_bGlovesPluginEnable = true;
+		PrintToServer("Gloves plugin detected");
+	}
+}
+
+public void OnClientCookiesCached(int client)
+{
+	char sValue[8];
+	GetClientCookie(client, g_hHideCookie, sValue, sizeof(sValue));
+	
+
+	g_bHide[client] = (sValue[0] != '\0' && StringToInt(sValue));
+}
+
+
+public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
+{
+	if (actions == CookieMenuAction_DisplayOption)
+	{
+		switch(g_bHide[client])
+		{
+			case false: FormatEx(buffer, maxlen, "Hide Gloves: Disabled");
+			case true: FormatEx(buffer, maxlen, "Hide Gloves: Enabled");
+		}
+	}
+
+	if (actions == CookieMenuAction_SelectOption)
+	{
+		//ClientCommand(client, "sm_hidepet");
+		CMD_Hide(client);
+		ShowCookieMenu(client);
+	}
+}
+
+void CMD_Hide(int client)
+{
+	char sCookieValue[8];
+
+	switch(g_bHide[client])
+	{
+		case false:
+		{
+			g_bHide[client] = true;
+			IntToString(1, sCookieValue, sizeof(sCookieValue));
+			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "gloves");
+
+		}
+		case true:
+		{
+			g_bHide[client] = false;
+			IntToString(0, sCookieValue, sizeof(sCookieValue));
+			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "gloves");
+		}
+	}
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	MarkNativeAsOptional("ZR_IsClientZombie");
+	MarkNativeAsOptional("Gloves_SetArmsModel");
+	MarkNativeAsOptional("Gloves_RegisterCustomArms");
 	return APLRes_Success;
 } 
 
@@ -313,10 +395,24 @@ void Store_SetClientModel(int client, const char[] model, const int skin=0, cons
     }
 	
 	//CreateTimer(0.15, Timer_RemovePlayerWeapon, GetClientUserId(client));
-	RemoveClientGloves(client, index);
+	
 	if(GAME_CSGO && arms[0]!=0)
 	{
-		SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
+		if(!g_bGlovesPluginEnable)
+		{
+			SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
+		}
+		else 
+		{
+			Gloves_RegisterCustomArms(client, arms);
+			Gloves_SetArmsModel(client, arms);
+		}
+		
+		if(g_bHide[client])
+		{
+			RemoveClientGloves(client, index);
+			SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
+		}
 	}
 }
 
