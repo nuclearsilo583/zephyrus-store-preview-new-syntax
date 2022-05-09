@@ -1,5 +1,10 @@
 ﻿"Phrases"
 {	
+	"CP Changed color"
+	{
+		"en"		"You changed your color to: "
+	}
+
 	"CP Disabled Color"
 	{
 		"en" "Custom tag color disabled."
@@ -802,6 +807,11 @@
 	{
 		"en"		"Playing preview sound for you."
 		"chi"		"为你播放预览声音。"
+	}
+
+	"CP Scoreboard Preview"
+	{
+		"en"		"Showing preview scoreboard tag, press TAB."
 	}
 
 	"Parachute Reloaded"
