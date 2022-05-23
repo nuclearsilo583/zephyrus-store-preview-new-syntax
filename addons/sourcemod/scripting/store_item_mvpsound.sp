@@ -32,6 +32,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <clientprefs>
 
 #include <store>
 #include <zephstocks>
