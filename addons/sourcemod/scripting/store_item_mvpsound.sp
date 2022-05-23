@@ -41,6 +41,13 @@
 #pragma semicolon 1
 //#pragma newdecls required
 
+/*
+ * The percentage step between volume choices in the cookie menu (!settings).
+ * 1.0 represent 100% volume and 0.0 represents 0% volume. Thus, 0.2 is a 20% step.
+ * It is recommended to keep a value that allows the player to set their max volume to 0.0 (so they can mute MVP Sounds if they want to).
+ */
+#define VOLUME_COOKIE_STEP 0.2 
+
 char g_sSound[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
 float g_fVolume[STORE_MAX_ITEMS];
 int g_iEquipt[MAXPLAYERS + 1] = {-1, ...};
@@ -49,19 +56,24 @@ char g_sChatPrefix[128];
 
 int g_iCount = 0;
 
+float g_fPlayerVolume[MAXPLAYERS + 1] = {1.0, ...};
+Cookie g_hHideCookie;
+
 public Plugin myinfo = 
 {
 	name = "Store - MVP sound item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
-	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
-	url = ""
+	description = "Allows players to buy custom MVP sounds. Original code from Shanapu, edited to be compatible with Zephyrus Store",
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	url = "github.com/nuclearsilo583/zephyrus-store-preview-new-syntax"
 };
 
 public void OnPluginStart()
 {
-	Store_RegisterHandler("mvp_sound","sound", MVPSounds_OnMapStart, MVPSounds_Reset, MVPSounds_Config, MVPSounds_Equip, MVPSounds_Remove, true);
+	Store_RegisterHandler("mvp_sound", "sound", MVPSounds_OnMapStart, MVPSounds_Reset, MVPSounds_Config, MVPSounds_Equip, MVPSounds_Remove, true);
 	
+	g_hHideCookie = new Cookie("MVPSound_Volume_Cookie", "Cookie to set the volume of MVP sounds", CookieAccess_Private);
+	SetCookieMenuItem(PrefMenu, 0, "");
 
 	LoadTranslations("store.phrases");
 
@@ -71,6 +83,44 @@ public void OnPluginStart()
 public void Store_OnConfigExecuted(char[] prefix)
 {
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+}
+
+public void OnClientCookiesCached(int client)
+{
+	char sValue[8];
+	g_hHideCookie.Get(client, sValue, sizeof(sValue));
+	
+	g_fPlayerVolume[client] = StringToFloat(sValue);
+}
+
+public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
+{
+	if (actions == CookieMenuAction_DisplayOption)
+	{
+		FormatEx(buffer, maxlen, "MVP Volume: %i", RoundToCeil(g_fPlayerVolume[client] * 100)); // Rounding because we never know
+	}
+	else if (actions == CookieMenuAction_SelectOption)
+	{
+		CMD_Volume(client);
+		ShowCookieMenu(client);
+	}
+}
+
+void CMD_Volume(int client)
+{
+	char sCookieValue[8];
+	
+	g_fPlayerVolume[client] = g_fPlayerVolume[client] - VOLUME_COOKIE_STEP;
+	
+	if (g_fPlayerVolume[client] < 0.0)
+		g_fPlayerVolume[client] = 1.0;
+	
+	FloatToString(g_fPlayerVolume[client], sCookieValue, sizeof(sCookieValue));
+	g_hHideCookie.Set(client, sCookieValue);
+	
+	char buffer[20];
+	FormatEx(buffer, sizeof(buffer), "%i%%%%", RoundToCeil(g_fPlayerVolume[client] * 100));
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Volume set", "MVP", buffer);
 }
 
 public void MVPSounds_OnMapStart()
@@ -155,7 +205,7 @@ public void Event_RoundMVP(Event event, char[] name, bool dontBroadcast)
 
 		ClientCommand(i, "playgamesound Music.StopAllMusic");
 
-		EmitSoundToClient(i, g_sSound[g_iEquipt[client]], SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NONE, _, g_fVolume[g_iEquipt[client]]);
+		EmitSoundToClient(i, g_sSound[g_iEquipt[client]], SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NONE, _, g_fVolume[g_iEquipt[client]] * g_fPlayerVolume[i]);
 	}
 }
 
@@ -164,7 +214,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	if (!StrEqual(type, "mvp_sound"))
 		return;
 
-	EmitSoundToClient(client, g_sSound[index], client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[index] / 2);
+	EmitSoundToClient(client, g_sSound[index], client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, (g_fVolume[index] * g_fPlayerVolume[client]) / 2);
 
 	CPrintToChat(client, "%s%t", g_sChatPrefix, "Play Preview", client);
 }
