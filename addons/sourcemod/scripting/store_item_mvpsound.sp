@@ -219,7 +219,10 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	if (!StrEqual(type, "mvp_sound"))
 		return;
 
-	EmitSoundToClient(client, g_sSound[index], client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, (g_fVolume[index] * g_fPlayerVolume[client]) / 2);
+	if (RoundToNearest(g_fPlayerVolume[client] * 100) != 0) // Rounded because computers struggle with floats and precise values
+		EmitSoundToClient(client, g_sSound[index], client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[index] * g_fPlayerVolume[client]);
+	else
+		EmitSoundToClient(client, g_sSound[index], client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[index] * VOLUME_COOKIE_STEP); // Set to the step right above 0%
 
 	CPrintToChat(client, "%s%t", g_sChatPrefix, "Play Preview", client);
 }
