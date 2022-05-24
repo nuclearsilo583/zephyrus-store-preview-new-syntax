@@ -227,7 +227,7 @@ public RemoveTrail(client, slot)
 		if(strcmp("env_spritetrail", m_szClassname)==0)
 		{
 			SDKUnhook(g_iClientTrails[client][slot], SDKHook_SetTransmit, Hook_TrailSetTransmit);
-			AcceptEntityInput(g_iClientTrails[client][slot], "Kill");
+			RemoveEntity(g_iClientTrails[client][slot]);
 		}
 	}
 	g_iClientTrails[client][slot]=0;

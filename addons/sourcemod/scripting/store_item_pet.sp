@@ -43,9 +43,9 @@ bool GAME_CSGO = false;
 public Plugin myinfo = 
 {
 	name = "Store - Pet item module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -107,23 +107,19 @@ public void OnClientCookiesCached(int client)
 
 void CMD_Hide(int client)
 {
-	char sCookieValue[8];
-
 	switch(g_bHide[client])
 	{
 		case false:
 		{
 			g_bHide[client] = true;
-			IntToString(1, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			SetClientCookie(client, g_hHideCookie, "1");
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "pet");
 
 		}
 		case true:
 		{
 			g_bHide[client] = false;
-			IntToString(0, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			SetClientCookie(client, g_hHideCookie, "0");
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "pet");
 		}
 	}
@@ -419,7 +415,7 @@ void ResetPet(int client)
 	if (iEntity == INVALID_ENT_REFERENCE)
 		return;
 
-	AcceptEntityInput(iEntity, "Kill");
+	RemoveEntity(iEntity);
 	SDKUnhook(iEntity, SDKHook_SetTransmit, Hook_SetTransmit);
 }
 
@@ -603,7 +599,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			AcceptEntityInput(entity, "Kill");
+			RemoveEntity(entity);
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

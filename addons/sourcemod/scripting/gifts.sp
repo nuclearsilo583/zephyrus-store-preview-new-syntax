@@ -8,8 +8,6 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION "3.0"
-
 enum struct Module
 {
 	Handle hPlugin_Module;
@@ -43,10 +41,10 @@ SpawnedGift g_eSpawnedGifts[2048];
 
 public Plugin myinfo =
 {
-	name = "[ANY] Gifts",
-	author = "Zephyrus, nuclear silo",
-	description = "Gifts :333",
-	version = PLUGIN_VERSION,
+	name = "Store - Gifts module",
+	author = "Zephyrus, nuclear silo, AiDN™",
+	description = "",
+	version = "3.1",
 	url = ""
 }
 
@@ -327,7 +325,7 @@ public Action OnStartTouch(int m_iGift, int client)
 
 	int m_iRotator = GetEntPropEnt(m_iGift, Prop_Send, "m_hEffectEntity");
 	if(m_iRotator && IsValidEdict(m_iRotator))
-		AcceptEntityInput(m_iRotator, "Kill");
+		RemoveEntity(m_iRotator);
 	CreateTimer(0.0, RemoveEntityGift, m_iGift);
 
 	if(g_eSpawnedGifts[m_iGift].hPlugin != INVALID_HANDLE)
@@ -356,6 +354,6 @@ public Action OnStartTouch(int m_iGift, int client)
 public Action RemoveEntityGift(Handle timer, int m_iGift)
 {
 	if(IsValidEntity(m_iGift))
-		AcceptEntityInput(m_iGift, "Kill");
+		RemoveEntity(m_iGift);
 	return Plugin_Stop;
 }

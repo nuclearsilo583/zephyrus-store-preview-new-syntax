@@ -30,9 +30,9 @@ char g_sChatPrefix[128];
 public Plugin myinfo = 
 {
 	name = "Store - Tracers Module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -88,22 +88,18 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 
 void CMD_Hide(int client)
 {
-	char sCookieValue[8];
-
 	switch(g_bHide[client])
 	{
 		case false:
 		{
 			g_bHide[client] = true;
-			IntToString(1, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			SetClientCookie(client, g_hHideCookie, "1");
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "tracer");
 		}
 		case true:
 		{
 			g_bHide[client] = false;
-			IntToString(0, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
+			SetClientCookie(client, g_hHideCookie, "0");
 			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "tracer");
 		}
 	}

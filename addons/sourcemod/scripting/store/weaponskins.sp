@@ -178,7 +178,7 @@ public Action ApplySkin(Handle timer, any pack)
 			Clip2 = GetEntProp(ent, Prop_Send, "m_iClip1");
 
 		RemovePlayerItem(client, ent);
-		AcceptEntityInput(ent, "Kill");
+		RemoveEntity(ent);
 
 		m_nEnt = GivePlayerItem(client, classname);
 		PushArrayCell(g_hWeaponEnts, m_nEnt);

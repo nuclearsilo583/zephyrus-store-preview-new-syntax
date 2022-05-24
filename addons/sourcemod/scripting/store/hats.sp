@@ -300,7 +300,7 @@ public void RemoveHat(int client,int slot)
 		char m_szClassname[64];
 		GetEdictClassname(g_iClientHats[client][slot], STRING(m_szClassname));
 		if(strcmp("prop_dynamic", m_szClassname)==0)
-			AcceptEntityInput(g_iClientHats[client][slot], "Kill");
+			RemoveEntity(g_iClientHats[client][slot]);
 	}
 	g_iClientHats[client][slot]=0;
 

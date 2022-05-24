@@ -67,9 +67,9 @@ int g_iIndexType[STORE_MAX_ITEMS];
 public Plugin myinfo = 
 {
 	name = "Store - Particle item module",
-	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -129,23 +129,19 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 
 void CMD_Hide(int client)
 {
-	char sCookieValue[8];
-
 	switch(g_bHide[client])
 	{
 		case false:
 		{
 			g_bHide[client] = true;
-			IntToString(1, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "particle");
+			SetClientCookie(client, g_hHideCookie, "1");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "particle");
 		}
 		case true:
 		{
 			g_bHide[client] = false;
-			IntToString(0, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "particle");
+			SetClientCookie(client, g_hHideCookie, "0");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "particle");
 		}
 	}
 }
@@ -497,7 +493,7 @@ void Remove_Particle(int client, int slot)
 			if (IsValidEdict(g_iEntity[slot][client]))
 			{
 				SDKUnhook(g_iEntity[slot][client], SDKHook_SetTransmit, Hook_SetTransmit);
-				AcceptEntityInput(g_iEntity[slot][client], "Kill");
+				RemoveEntity(g_iEntity[slot][client],);
 			}
 		}
 		g_iEntity[slot][client] = 0;
@@ -510,7 +506,7 @@ public Action Timer_ClearParticle(Handle timer, int reference)
 
 	if (entity > 0 && IsValidEdict(entity))
 	{
-		AcceptEntityInput(entity, "Kill");
+		RemoveEntity(entity);
 	}
 }
 
@@ -621,7 +617,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			AcceptEntityInput(entity, "Kill");
+			RemoveEntity(entity);
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

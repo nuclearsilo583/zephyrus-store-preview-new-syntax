@@ -27,9 +27,9 @@ int g_iCount;
 public Plugin myinfo = 
 {
 	name = "Store - Dosh money module",
-	author = "shanapu, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -203,7 +203,7 @@ public Action Timer_Remove(Handle timer, int reference)
 	int entity = EntRefToEntIndex(reference);
 	if ((entity != INVALID_ENT_REFERENCE) && IsValidEntity(entity))
 	{
-		AcceptEntityInput(entity, "Kill");
+		RemoveEntity(entity);
 		g_iCount--;
 
 		int dropper = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
@@ -242,7 +242,7 @@ void PickUpMoney(int client, int entity)
 	Store_SQLLogMessage(client, LOG_EVENT, "%s picked up %i credits", client, value);
 
 	EmitSoundToAll("ui/item_paper_pickup.wav", entity);
-	AcceptEntityInput(entity, "Kill");
+	RemoveEntity(entity);
 
 	g_iCount--;
 

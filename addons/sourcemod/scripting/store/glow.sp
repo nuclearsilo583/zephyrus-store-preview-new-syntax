@@ -176,5 +176,5 @@ public ResetGlow(client)
 	if(m_unEnt == INVALID_ENT_REFERENCE)
 		return;
 
-	AcceptEntityInput(m_unEnt, "Kill");
+	RemoveEntity(m_unEnt);
 }

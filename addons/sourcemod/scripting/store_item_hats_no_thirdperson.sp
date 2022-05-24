@@ -48,9 +48,9 @@ char g_sChatPrefix[128];
 public Plugin myinfo = 
 {
 	name = "Store - Hats Module [No ThirdPerson Plugin]",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -299,7 +299,7 @@ public void RemoveHat(int client,int slot)
 		char m_szClassname[64];
 		GetEdictClassname(g_iClientHats[client][slot], STRING(m_szClassname));
 		if(strcmp("prop_dynamic", m_szClassname)==0)
-			AcceptEntityInput(g_iClientHats[client][slot], "Kill");
+			RemoveEntity(g_iClientHats[client][slot]);
 	}
 	g_iClientHats[client][slot]=0;
 
@@ -482,7 +482,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			AcceptEntityInput(entity, "Kill");
+			RemoveEntity(entity);
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;

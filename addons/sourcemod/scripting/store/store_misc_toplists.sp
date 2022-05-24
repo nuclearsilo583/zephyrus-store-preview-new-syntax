@@ -93,6 +93,14 @@ public int Handler_TopLists(Menu menu, MenuAction action, int client, int param2
 {
 	if (action == MenuAction_Select)
 	{
+		if(param2 == 0)
+			g_iList[client] = TL_CREDITS;
+		else if(param2 == 1)
+			g_iList[client] = TL_ITEMS;
+		else if(param2 == 2)
+			g_iList[client] = TL_INV;
+		else if(param2 == 3)
+			g_iList[client] = TL_INV_CREDITS;
 		Panel_Credits(client, param2);
 	}
 	else if (action == MenuAction_Cancel)
@@ -288,8 +296,8 @@ void Panel_Credits(int client, int type)
 {
 	Panel panel = new Panel();
 
-	char sName[64];
-	char sBuffer[64];
+	char sName[256];
+	char sBuffer[256], sBuffer2[256];
 
 	int i_Credits = g_eClients[client][iCredits]; // Get credits
 
@@ -322,11 +330,14 @@ void Panel_Credits(int client, int type)
 			case TL_INV, TL_INV_CREDITS:
 			{
 				int items = pack.ReadCell();
-				Format(sBuffer, sizeof(sBuffer), "    %i. %s:   %i %s (%i items)", i + 1, sName, credits, g_sCreditsName, items);
+				Format(sBuffer, sizeof(sBuffer), "%t", "items");
+				Format(sBuffer, sizeof(sBuffer), "%t", "inv and inv credits", i + 1, sName, credits, g_sCreditsName, items, sBuffer);
 			}
 			case TL_CREDITS, TL_ITEMS:
 			{
-				Format(sBuffer, sizeof(sBuffer), "    %i. %s:   %i %s", i + 1, sName, credits, type == TL_CREDITS ? g_sCreditsName : "Items");
+				Format(sBuffer, sizeof(sBuffer), "%t", "items");
+				Format(sBuffer2, sizeof(sBuffer2), "%t", "creditstoplist", g_sCreditsName);
+				Format(sBuffer, sizeof(sBuffer), "    %i. %s:   %i %s", i + 1, sName, credits, type == TL_CREDITS ? sBuffer2 : sBuffer);
 			}
 		}
 		panel.DrawText(sBuffer);
@@ -347,7 +358,7 @@ void Panel_Credits(int client, int type)
 	else
 	{
 		SecToTime(GetTime() - g_iUpdateTime, sBuffer, sizeof(sBuffer));
-		Format(sBuffer, sizeof(sBuffer), "    %s %s ago", "last update", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%t", "last update", sBuffer);
 		panel.DrawText(sBuffer);
 
 		//When last update older than "mystore_toplist_update_interval"
@@ -428,14 +439,14 @@ int SecToTime(int time, char[] buffer, int size)
 
 	if (iHours >= 1)
 	{
-		Format(buffer, size, "%t", "x hours, x minutes, x seconds", iHours, iMinutes, iSeconds);
+		Format(buffer, size, "%t", "x hours, x minutes, x seconds toplist", iHours, iMinutes, iSeconds);
 	}
 	else if (iMinutes >= 1)
 	{
-		Format(buffer, size, "%t", "x minutes, x seconds", iMinutes, iSeconds);
+		Format(buffer, size, "%t", "x minutes, x seconds toplist", iMinutes, iSeconds);
 	}
 	else
 	{
-		Format(buffer, size, "%t", "x seconds", iSeconds);
+		Format(buffer, size, "%t", "x seconds toplist", iSeconds);
 	}
 }
