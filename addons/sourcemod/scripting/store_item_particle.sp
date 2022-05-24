@@ -493,7 +493,7 @@ void Remove_Particle(int client, int slot)
 			if (IsValidEdict(g_iEntity[slot][client]))
 			{
 				SDKUnhook(g_iEntity[slot][client], SDKHook_SetTransmit, Hook_SetTransmit);
-				RemoveEntity(g_iEntity[slot][client],);
+				RemoveEntity(g_iEntity[slot][client]);
 			}
 		}
 		g_iEntity[slot][client] = 0;

@@ -110,6 +110,9 @@ public OnPluginStart()
 	HookEvent("player_upgradedobject",	TFHat_UpgradeObject);
 	HookEvent("player_dropobject", 		TFHat_DropObject);
 	HookEvent("player_carryobject",		TFHat_PickupObject);
+	
+	// Suppress warnings about unused variables.....
+	if(g_hSdkEquipWearable){}
 }
 
 public void TFSupport_OnMapStart()

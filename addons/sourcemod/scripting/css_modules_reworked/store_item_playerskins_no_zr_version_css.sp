@@ -82,6 +82,9 @@ public void OnPluginStart()
 	//HookEvent("player_death", PlayerSkins_PlayerDeath);
 
 	//g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
+	
+	// Suppress warnings about unused variables.....
+	if(GAME_TF2){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)

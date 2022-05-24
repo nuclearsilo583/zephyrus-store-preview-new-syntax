@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.3", 
+	version = "2.4", 
 	url = ""
 };
 
@@ -71,7 +71,7 @@ public void OnPluginStart()
 	PrintToServer("CS:GO, CSS detected as a game engine. The scoreboard tag module will be enabled.");
 	
 	#else 
-	PrintToServer("Can not detecte CS:GO, CSS as a game engine. The scoreboard tag module will be disabled.");
+	PrintToServer("Can not detected CS:GO, CSS as a game engine. The scoreboard tag module will be disabled.");
 	#endif
 	
 	HookEvent("player_team", PlayerTeam_Callback);
@@ -610,7 +610,9 @@ public void Store_SetClientClanTag(int client)
 	CS_SetClientClanTag(client, sBuffer);
 	#endif
 }
+#if defined csgo_css
 public Action Clantag(Handle timer, int client)
 {
 	CS_SetClientClanTag(client, g_sPreviewClantag[client]);
 }
+#endif
