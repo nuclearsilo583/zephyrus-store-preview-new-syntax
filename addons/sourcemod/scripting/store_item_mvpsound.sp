@@ -90,6 +90,8 @@ public void OnClientCookiesCached(int client)
 {
 	char sValue[8];
 	g_hHideCookie.Get(client, sValue, sizeof(sValue));
+	if (sValue[0] == '\0') // If the string is empty, it means that the user has not changed their volume. Don't do anything.
+		return;
 	
 	g_fPlayerVolume[client] = StringToFloat(sValue);
 }
@@ -98,7 +100,7 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 {
 	if (actions == CookieMenuAction_DisplayOption)
 	{
-		FormatEx(buffer, maxlen, "MVP Volume: %i", RoundToCeil(g_fPlayerVolume[client] * 100)); // Rounding because we never know
+		FormatEx(buffer, maxlen, "MVP Volume: %i%%", RoundToNearest(g_fPlayerVolume[client] * 100)); // Rounding because we never know
 	}
 	else if (actions == CookieMenuAction_SelectOption)
 	{
@@ -120,7 +122,7 @@ void CMD_Volume(int client)
 	g_hHideCookie.Set(client, sCookieValue);
 	
 	char buffer[20];
-	FormatEx(buffer, sizeof(buffer), "%i%%%%", RoundToCeil(g_fPlayerVolume[client] * 100));
+	FormatEx(buffer, sizeof(buffer), "%i%%", RoundToNearest(g_fPlayerVolume[client] * 100));
 	CPrintToChat(client, "%s%t", g_sChatPrefix, "Volume set", "MVP", buffer);
 }
 
@@ -184,6 +186,7 @@ public int MVPSounds_Remove(int client, int itemid)
 public void OnClientDisconnect(int client)
 {
 	g_iEquipt[client] = -1;
+	g_fPlayerVolume[client] = 1.0;
 }
 
 
@@ -206,7 +209,8 @@ public void Event_RoundMVP(Event event, char[] name, bool dontBroadcast)
 
 		ClientCommand(i, "playgamesound Music.StopAllMusic");
 
-		EmitSoundToClient(i, g_sSound[g_iEquipt[client]], SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NONE, _, g_fVolume[g_iEquipt[client]] * g_fPlayerVolume[i]);
+		if (RoundToNearest(g_fPlayerVolume[i] * 100) != 0) // Rounded because computers struggle with floats and precise values
+			EmitSoundToClient(i, g_sSound[g_iEquipt[client]], SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NONE, _, g_fVolume[g_iEquipt[client]] * g_fPlayerVolume[i]);
 	}
 }
 
