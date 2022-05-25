@@ -18,6 +18,7 @@
 		"price" "100"
 		"material"		"particle/particle_smokegrenade1.vmt"	// string. The particle materials use for smoke. This is default value (You can change to custom one).
 		"type" "ColoredSmoke"
+		"preview"	"1"
 	}
 	
 	"Ny Rainbow"
@@ -38,5 +39,6 @@
 		"price" "100"
 		"material"		"aif/sprites/nydancerainbow.vmt"	// string. The particle materials use for smoke.
 		"type" "ColoredSmoke"
+		"preview"	"1"
 	}
 }

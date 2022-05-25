@@ -34,14 +34,15 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
 	(Please uncomment //#define WEAPONS_KNIVES to enable this module)
 - Name tag, name and message color.
+- Scoreboard tag
+- Colored Smoke ported from SHOP. ([youtube](https://www.youtube.com/watch?v=cTyMnAmgixI))
 - more will be supported
 # Modules has no preview support:
 - PaintBall Effects (by shanapu)
 - Bullet Spark (by shanapu)
 - Grenade trail (by zephyrus)
 - Laser sight (by zephyrus)
-- Colored Smoke ported from SHOP. ([youtube](https://www.youtube.com/watch?v=cTyMnAmgixI))
-	(You can change smoke color or change smoke particle's material to custom material. Current no preview support. Preview will support in 1.1 version)
+
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)

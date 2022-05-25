@@ -814,6 +814,12 @@
 		"en"		"Showing preview scoreboard tag, press TAB."
 	}
 
+	"Spawn Preview - Colored smoke"
+	{
+		"#format"	"{1:.0f}"
+		"en"		"Spawned a preview. Preview will disappear in {1} seconds."
+	}
+
 	"Parachute Reloaded"
 	{
 		"en"		"Parachute Reloaded"
