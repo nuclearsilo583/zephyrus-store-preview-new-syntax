@@ -1,5 +1,12 @@
 ﻿"Phrases"
-{	
+{
+	"Volume set"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{green}{1} {default}volume set to {purple}{2}"
+		"fr"		"Volume {green}{1} {default}réglé à {purple}{2}"
+	}
+	
 	"CP Disabled Color"
 	{
 		"en" "Custom tag color disabled."
