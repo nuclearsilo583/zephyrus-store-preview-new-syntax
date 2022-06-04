@@ -1,0 +1,20 @@
+"Pets"
+{
+	"Pet HK416"
+	{	
+		"model" "models/player/neru/pets/gf_hk416_scaled.mdl"
+		"position" "25.0 -20.0 0.0" // I can't help much at this config. You need to config by yourself and test ingame
+		"angles" "0.0 340.0 0.0" // I can't help much at this config. You need to config by yourself and test ingame
+		"idle" "ACT_IDLE" // Please use model viewer for the sequence name
+		"idle2" "ACT_IDLE_RARE" // Please use model viewer for the sequence name
+		"run" "ACT_RUN" // Please use model viewer for the sequence name
+		"spawn" "ACT_DOTA_SPAWN" // Please use model viewer for the sequence name
+		"death" "ACT_DOTA_DEATH" // Please use model viewer for the sequence name
+		"spawn_delay" "2.0" // How long the spawn animation will play (if spawn animation specified)
+		"scale" "1.0" // Scale up the prop (sometime not work and may become glitchy if value is too high. Please use with ease)
+		"preview"					"1"
+		"type" "pet"
+		"unique_id"					"uid_pet_hk416"
+		"price" "100"
+	}
+}
