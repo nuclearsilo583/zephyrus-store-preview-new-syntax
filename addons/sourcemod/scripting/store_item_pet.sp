@@ -47,9 +47,9 @@ bool GAME_CSGO = false;
 public Plugin myinfo = 
 {
 	name = "Store - Pet item module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -98,11 +98,6 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 		CMD_Hide(client);
 		ShowCookieMenu(client);
 	}
-}
-
- 
-public void OnPlayerPreThink()
-{
 }
 
 public void OnClientCookiesCached(int client)
@@ -335,7 +330,7 @@ public void Hook_OnAnimationDone(const char[] output, int caller, int activator,
                 g_iClientPet[owner] = INVALID_ENT_REFERENCE;
     }
 
-    AcceptEntityInput(caller, "Kill");
+    RemoveEntity(caller);
 }
 
 void CreatePet(int client)
@@ -493,7 +488,7 @@ void ResetPet(int client)
 	if (iEntity == INVALID_ENT_REFERENCE)
 		return;
 
-	AcceptEntityInput(iEntity, "Kill");
+	RemoveEntity(iEntity);
 	SDKUnhook(iEntity, SDKHook_SetTransmit, Hook_SetTransmit);
 }
 
@@ -677,7 +672,7 @@ public Action Timer_KillPreview(Handle timer, int client)
 		if (entity > 0 && IsValidEdict(entity))
 		{
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
-			AcceptEntityInput(entity, "Kill");
+			RemoveEntity(entity);
 		}
 	}
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
