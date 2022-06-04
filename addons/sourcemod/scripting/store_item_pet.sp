@@ -1,7 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <cstrike>
+//#include <cstrike>
 #include <clientprefs>
 
 #include <store> 
@@ -17,8 +17,12 @@ char g_sModel[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
 char g_sRun[STORE_MAX_ITEMS][64];
 char g_sIdle[STORE_MAX_ITEMS][64];
 char g_sIdle2[STORE_MAX_ITEMS][64];
+char g_sSpawn[STORE_MAX_ITEMS][64];
+char g_sDeath[STORE_MAX_ITEMS][64];
 float g_fPosition[STORE_MAX_ITEMS][3];
 float g_fAngles[STORE_MAX_ITEMS][3];
+float g_fScale[STORE_MAX_ITEMS];
+float g_fSpawnTimeDelay[STORE_MAX_ITEMS];
 
 char g_sChatPrefix[128];
 
@@ -38,14 +42,14 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 bool g_bHide[MAXPLAYERS + 1];
 Handle g_hHideCookie = INVALID_HANDLE;
 
-bool GAME_CSGO = false;
-
+bool GAME_CSGO = false;	
+			   
 public Plugin myinfo = 
 {
 	name = "Store - Pet item module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -94,6 +98,11 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 		CMD_Hide(client);
 		ShowCookieMenu(client);
 	}
+}
+
+ 
+public void OnPlayerPreThink()
+{
 }
 
 public void OnClientCookiesCached(int client)
@@ -169,8 +178,13 @@ public bool Pets_Config(KeyValues &kv, int itemid)
 	kv.GetString("idle", g_sIdle[g_iCount], 64);
 	kv.GetString("idle2", g_sIdle2[g_iCount], 64);
 	kv.GetString("run", g_sRun[g_iCount], 64);
+	kv.GetString("spawn", g_sSpawn[g_iCount], 64);
+	kv.GetString("death", g_sDeath[g_iCount], 64);
 	kv.GetVector("position", g_fPosition[g_iCount]);
 	kv.GetVector("angles", g_fAngles[g_iCount]);
+	g_fScale[g_iCount] = kv.GetFloat("scale", 1.0);
+	g_fSpawnTimeDelay[g_iCount] = kv.GetFloat("spawn_delay", 1.0);
+	
 	g_iCount++;
 
 	return true;
@@ -203,7 +217,7 @@ public void OnClientConnected(int client)
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	if (!client || !IsPlayerAlive(client) || !(CS_TEAM_T <= GetClientTeam(client) <= CS_TEAM_CT))
+	if (!client || !IsPlayerAlive(client) || !(2 <= GetClientTeam(client) <= 3))
 		return;
 
 	ResetPet(client);
@@ -216,7 +230,8 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 	if (!client)
 		return;
 
-	ResetPet(client);
+	//ResetPet(client);
+	Store_ClientDeathPet(client);
 	
 }
 
@@ -231,9 +246,11 @@ public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client) || g_iClientPet[client] == INVALID_ENT_REFERENCE)
+	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client) || g_iClientPet[client] == INVALID_ENT_REFERENCE || tickcount % 5 != 0)
 		return Plugin_Continue;
 	int time = GetTime();
+	if (time < g_iLastSpawnTime[client])
+        return Plugin_Continue;
 	
 	if (tickcount % 5 == 0 && EntRefToEntIndex(g_iClientPet[client]) != -1)
 	{
@@ -273,6 +290,54 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	return Plugin_Continue;
 }
 
+void Store_ClientDeathPet(int client)
+{
+	//for(int i = 0; i < STORE_MAX_SLOTS; ++i)
+	DeathPet(client);
+}
+
+void DeathPet(int client)
+{
+    if(g_iClientPet[client] == INVALID_ENT_REFERENCE)
+        return;
+
+    int entity = EntRefToEntIndex(g_iClientPet[client]);
+
+    if(!IsValidEdict(entity))
+        return;
+    
+    int m_iData = Store_GetDataIndex(Store_GetEquippedItem(client, "pet"));
+    
+    if(g_sDeath[m_iData][0] == '\0')
+    {
+        ResetPet(client);
+        return;
+    }
+    
+    SetVariantString(g_sDeath[m_iData]);
+    AcceptEntityInput(EntRefToEntIndex(g_iClientPet[client]), "SetAnimation");
+    g_iLastAnimation[client] = 3;
+    HookSingleEntityOutput(entity, "OnAnimationDone", Hook_OnAnimationDone, true);
+}
+
+public void Hook_OnAnimationDone(const char[] output, int caller, int activator, float delay)
+{
+    if(!IsValidEdict(caller))
+        return;
+
+    int owner = GetEntPropEnt(caller, Prop_Send, "m_hOwnerEntity");
+
+    if(1 <= owner <= MaxClients && IsClientInGame(owner))
+    {
+        int iRef = EntIndexToEntRef(caller);
+        for(int slot = 0; slot < STORE_MAX_SLOTS; ++slot)
+            if(g_iClientPet[owner] == iRef)
+                g_iClientPet[owner] = INVALID_ENT_REFERENCE;
+    }
+
+    AcceptEntityInput(caller, "Kill");
+}
+
 void CreatePet(int client)
 {
 
@@ -282,7 +347,7 @@ void CreatePet(int client)
 	if (g_iSelectedPet[client] == -1)
 		return;
 
-	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !(CS_TEAM_T <= GetClientTeam(client) <= CS_TEAM_CT))
+	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !(2 <= GetClientTeam(client) <= 3))
 		return;
 
 	int iIndex = g_iSelectedPet[client];
@@ -318,6 +383,9 @@ void CreatePet(int client)
 		DispatchKeyValue(iEntity, "spawnflags", "256");
 		DispatchKeyValue(iEntity, "solid", "0");
 		SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", client);
+		
+		 // scale
+		SetEntPropFloat(iEntity, Prop_Send, "m_flModelScale", g_fScale[iIndex]); 
 
 		DispatchSpawn(iEntity);
 		AcceptEntityInput(iEntity, "TurnOn", iEntity, iEntity, 0);
@@ -328,12 +396,18 @@ void CreatePet(int client)
 		SDKHook(client, SDKHook_PreThink, PetThink);
 		g_iClientPet[client] = EntIndexToEntRef(iEntity);
 		g_iLastAnimation[client] = -1;
-
+		
 		Set_EdictFlags(iEntity);
 
 		SDKHook(iEntity, SDKHook_SetTransmit, Hook_SetTransmit);
 		
-		
+		if (g_sSpawn[iIndex][0])
+	    {
+	    	g_iLastSpawnTime[client] = GetTime() + view_as<int>(RoundToCeil(g_fSpawnTimeDelay[iIndex]));
+	        SetVariantString(g_sSpawn[iIndex]);
+	        AcceptEntityInput(EntRefToEntIndex(g_iClientPet[client]), "SetAnimation");
+	        //PrintToChatAll("pet spawn");
+	    }
 	}
 }
 
@@ -538,7 +612,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 		SetEntData(iPreview, offset + 2, 187, _, true);
 		SetEntData(iPreview, offset + 3, 155, _, true);
 	}
-	
+
 	float fOri[3];
 	float fAng[3];
 	float fRad[2];
