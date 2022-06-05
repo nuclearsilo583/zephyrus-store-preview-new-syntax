@@ -6,12 +6,13 @@
 		"en"		"{green}{1} {default}volume set to {purple}{2}"
 		"fr"		"Volume {green}{1} {default}réglé à {purple}{2}"
 	}
+	
 	"CP Disabled Color"
 	{
 		"en" "Custom tag color disabled."
 	}
 	
-  "CP Changed color"
+	"CP Changed color"
 	{
 		"en"		"You changed your color to: "
 	}
@@ -3078,5 +3079,10 @@
 	{
 		"en" "Custom Weapon Model:"
 		"chi" "自定义武器模型:"
+	}
+	
+	"gloves"
+	{
+		"en"	"gloves"
 	}
 }
