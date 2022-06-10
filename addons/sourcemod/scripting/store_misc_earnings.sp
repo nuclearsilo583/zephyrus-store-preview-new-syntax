@@ -75,10 +75,17 @@ char g_sSteam[256];
 bool g_bGroupMember[MAXPLAYERS + 1];
 bool gp_bSteamWorks;
 
-ConVar gc_bFFA;
+ConVar  gc_bFFA,
+		gc_sDB;
 
-Handle 	g_cDate,
+Cookie  g_cDate,
 		g_cDay;
+
+Database g_hDB;
+char g_sDBBuffer[400];
+int g_iDailyDate[MAXPLAYERS + 1];
+int g_iDailyDay[MAXPLAYERS + 1];
+bool g_bDailyCached[MAXPLAYERS + 1];
 
 int g_iActive[MAXPLAYERS + 1];
 int g_iCount;
@@ -98,9 +105,9 @@ bool GAME_CSS = false;
 public Plugin myinfo = 
 {
 	name = "Store - Earnings module",
-	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, AiDN™, nuclear silo, azalty", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -123,7 +130,7 @@ public void OnPluginStart()
 		SetFailState("This game is not be supported. Please contact the author for support.");
 	}
 
-	RegConsoleCmd("sm_daily", Command_Daily, "Recieve your daily credits");
+	RegConsoleCmd("sm_daily", Command_Daily, "Receive your daily credits");
 
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
 	HookEvent("round_mvp", Event_MVP);
@@ -141,64 +148,164 @@ public void OnPluginStart()
 	g_hSnipers.SetValue("g3sg1", 1);
 	g_hSnipers.SetValue("scar20", 1);
 
-	g_cDate = RegClientCookie("store_date", "Store Daily Date", CookieAccess_Public);
-	g_cDay = RegClientCookie("store_day", "Store Daily Day", CookieAccess_Public);
+	g_cDate = new Cookie("store_date", "Store Daily Date", CookieAccess_Protected);
+	g_cDay = new Cookie("store_day", "Store Daily Day", CookieAccess_Protected);
 
-	Warmup_Enable = CreateConVar("sm_store_earning_enable_warmup", "1", "Wheither to enable earning credits while in warmup");
+	Warmup_Enable = CreateConVar("sm_store_earning_enable_warmup", "1", "Whether to enable earning credits while in warmup");
+	gc_sDB = CreateConVar("sm_store_earning_database", "", "The database config name that will be used for daily credits\nKeep empty to use local storage (clientprefs)\nSpecify a MySQL database to sync daily rewards across all your servers");
 	
 	AutoExecConfig(true, "earnings", "sourcemod/store")
 
 	LoadConfig();
 }
 
-public Action Command_Daily(int client, int args)
+public void OnConfigsExecuted()
+{
+	static bConfigExecuted;
+	
+	if (bConfigExecuted)
+		return;
+		
+	char buffer[60];
+	gc_sDB.GetString(buffer, sizeof(buffer));
+	if (buffer[0] == '\0') // if the string is empty
+	{
+		// Mid-game load support for Daily Rewards
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (!IsClientInGame(i) || !AreClientCookiesCached(i))
+				continue;
+			OnClientCookiesCached(i);
+		}
+		
+		bConfigExecuted = true;
+		return;
+	}
+	
+	if (!SQL_CheckConfig(buffer))
+	{
+		LogError("The database config name '%s' doesn't exist, check the cvar sm_store_earning_database");
+		return;
+	}
+	
+	Database.Connect(OnSQLConnect, buffer);
+	bConfigExecuted = true;
+}
+
+void OnSQLConnect(Database db, const char[] error, any data)
+{
+	if (!db)
+	{
+		LogError("Couldn't connect to the database: %s", error);
+		return;
+	}
+	g_hDB = db;
+	
+	// Mid-game load support for Daily Rewards
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || !AreClientCookiesCached(i))
+			continue;
+		GetDailyVarsFromDB(i);
+	}
+}
+
+public void OnClientCookiesCached(int client)
+{
+	if (g_hDB)
+		return;
+	
+	char sBuffer[16];
+	
+	g_cDate.Get(client, sBuffer, sizeof(sBuffer));
+	g_iDailyDate[client] = StringToInt(sBuffer);
+	
+	g_cDay.Get(client, sBuffer, sizeof(sBuffer));
+	g_iDailyDay[client] = StringToInt(sBuffer);
+	
+	g_bDailyCached[client] = true;
+}
+
+Action Command_Daily(int client, int args)
 {
 	if (g_iDaily[g_iActive[client]][0] == -1 || !CheckSteamAuth(client, g_sSteam[client]))
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "You dont have permission");
 		return Plugin_Handled;
 	}
-
+	
+	if (!g_bDailyCached[client])
+		return Plugin_Handled;
+	
 	char sBuffer[64];
-	GetClientCookie(client, g_cDate, sBuffer, sizeof(sBuffer));
-	int iDate = StringToInt(sBuffer);
-	GetClientCookie(client, g_cDay, sBuffer, sizeof(sBuffer));
-	int iDay = StringToInt(sBuffer);
-	int iNow = GetTime();
-
-	if (DAY_IN_SECONDS + iDate > iNow)
+	if (!g_hDB)
 	{
-		SecToTime(iDate + DAY_IN_SECONDS - iNow, sBuffer, sizeof(sBuffer));
+		if (!AreClientCookiesCached(client))
+			return Plugin_Handled;
+		
+		g_cDate.Get(client, sBuffer, sizeof(sBuffer));
+		g_iDailyDate[client] = StringToInt(sBuffer);
+		g_cDay.Get(client, sBuffer, sizeof(sBuffer));
+		g_iDailyDay[client] = StringToInt(sBuffer);
+	}
+	else
+	{
+		
+	}
+	int iNow = GetTime();
+	
+	
+	if (DAY_IN_SECONDS + g_iDailyDate[client] > iNow)
+	{
+		SecToTime(g_iDailyDate[client] + DAY_IN_SECONDS - iNow, sBuffer, sizeof(sBuffer));
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Wait until next daily", sBuffer);
 	}
 	else
 	{
-		if (DAY_IN_SECONDS * 2 + iDate < iNow || iDay < 1)
+		if (DAY_IN_SECONDS * 2 + g_iDailyDate[client] < iNow || g_iDailyDay[client] < 1)
 		{
-			iDay = 1;
+			g_iDailyDay[client] = 1;
 		}
 
-		Store_SetClientCredits(client, Store_GetClientCredits(client) + g_iDaily[g_iActive[client]][iDay - 1]);
+		Store_SetClientCredits(client, Store_GetClientCredits(client) + g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1]);
 
-		switch(iDay)
+		switch(g_iDailyDay[client])
 		{
-			case 2, 3, 4, 5, 6: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][iDay - 1], g_sCreditsName, "playing x on our server in row", iDay);
+			case 2, 3, 4, 5, 6: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1], g_sCreditsName, "playing x on our server in row", g_iDailyDay[client]);
 			case 7:
 			{
-				CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][iDay - 1], g_sCreditsName, "playing x on our server in row", iDay);
+				CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1], g_sCreditsName, "playing x on our server in row", g_iDailyDay[client]);
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "You mastered the daily challange");
-				Store_SQLLogMessage(client, LOG_EVENT, "Mastered the daily challange (7days) for %i credits'", g_iDaily[g_iActive[client]][iDay - 1]);
-				iDay = 0;
+				Store_SQLLogMessage(client, LOG_EVENT, "Mastered the daily challange (7days) for %i credits'", g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1]);
+				g_iDailyDay[client] = 0;
 			}
 			default: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][0], g_sCreditsName, "start daily challange");
 		}
 
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "You'll earn x Credits tomorrow", g_iDaily[g_iActive[client]][iDay], g_sCreditsName);
-
-		IntToString(iDay + 1, sBuffer, sizeof(sBuffer));
-		SetClientCookie(client, g_cDay, sBuffer);
-		IntToString(iNow, sBuffer, sizeof(sBuffer));
-		SetClientCookie(client, g_cDate, sBuffer);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "You'll earn x Credits tomorrow", g_iDaily[g_iActive[client]][g_iDailyDay[client]], g_sCreditsName);
+		
+		// Update cookies/database data
+		if (!g_hDB)
+		{
+			IntToString(g_iDailyDay[client] + 1, sBuffer, sizeof(sBuffer));
+			g_cDay.Set(client, sBuffer);
+			
+			IntToString(iNow, sBuffer, sizeof(sBuffer));
+			g_cDate.Set(client, sBuffer);
+		}
+		else
+		{
+			char steamid[32];
+			GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+			
+			FormatEx(g_sDBBuffer, sizeof(g_sDBBuffer), "REPLACE INTO store_daily_rewards(steamid, store_date, store_day) VALUES('%s', %i, %i);",
+														steamid, iNow, g_iDailyDay[client] + 1);
+			g_hDB.Query(SQL_NullCallback, g_sDBBuffer);
+		}
+		
+		// Now, update cached variables
+		g_iDailyDay[client] += 1
+		g_iDailyDate[client] = iNow;
 	}
 
 	return Plugin_Handled;
@@ -272,9 +379,42 @@ public void OnClientPostAdminCheck(int client)
 
 	delete g_hSum[client];
 	g_hSum[client] = new StringMap();
+	
+	if (g_hDB && !g_bDailyCached[client])
+		GetDailyVarsFromDB(client);
 }
 
-public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], const float damagePosition[3])
+void GetDailyVarsFromDB(int client)
+{
+	char steamid[32];
+	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+	FormatEx(g_sDBBuffer, sizeof(g_sDBBuffer), "SELECT store_date, store_day FROM store_daily_rewards WHERE steamid = '%s'", steamid);
+	g_hDB.Query(OnDailyRewardsLoaded, g_sDBBuffer, GetClientUserId(client));
+}
+
+void OnDailyRewardsLoaded(Database db, DBResultSet results, const char[] error, any data)
+{
+	if (!results)
+	{
+		LogError("OnDailyRewardsLoaded query failure: %s", error);
+		return;
+	}
+	
+	int client = GetClientOfUserId(data);
+	if (!client) // Verify if the client disconnected during the query
+		return;
+	
+	if (results.FetchRow()) // Verify if a row was found
+	{
+		g_iDailyDate[client] = results.FetchInt(0);
+		g_iDailyDay[client] = results.FetchInt(1);
+	}
+	// If a row wasn't found, don't change anything since the value is reset on client disconnect anyway
+	
+	g_bDailyCached[client] = true;
+}
+
+Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], const float damagePosition[3])
 {
 	char Buffer[255];
 	
@@ -369,6 +509,10 @@ public void OnClientDisconnect(int client)
 	g_bGroupMember[client] = false;
 	
 	ConnectTime[client] = 0;
+	
+	g_iDailyDate[client] = 0;
+	g_iDailyDay[client] = 0;
+	g_bDailyCached[client] = false;
 }
 
 void GiveCredits(int client, int credits, char[] reason, any ...)
@@ -417,7 +561,7 @@ void GiveCredits(int client, int credits, char[] reason, any ...)
 	}
 }
 
-public Action Timer_Timer(Handle timer)
+Action Timer_Timer(Handle timer)
 {
 	char Buffer[255];
 	int count = PlayerCount();
@@ -1137,4 +1281,10 @@ int SecToTime(int time, char[] buffer, int size)
 	{
 		Format(buffer, size, "%t", "x seconds", iSeconds);
 	}
+}
+
+void SQL_NullCallback(Database db, DBResultSet results, const char[] error, any data)
+{
+	if (!results)
+		LogError("Query failure: %s", error);
 }
