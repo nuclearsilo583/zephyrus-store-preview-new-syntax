@@ -1,5 +1,15 @@
 ﻿"Phrases"
 {
+	"arms"
+	{
+		"en" "arms"
+	}
+	
+	"gloves"
+	{
+		"en" "gloves"
+	}
+	
 	"Volume set"
 	{
 		"#format"	"{1:s},{2:s}"
