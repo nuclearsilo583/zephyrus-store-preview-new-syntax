@@ -201,6 +201,11 @@ void OnSQLConnect(Database db, const char[] error, any data)
 	}
 	g_hDB = db;
 	
+	g_hDB.Query(SQL_NullCallback, "CREATE TABLE IF NOT EXISTS store_daily_rewards("
+				... "steamid varchar(32) PRIMARY KEY NOT NULL, "
+				... "store_date INTEGER, "
+				... "store_day INTEGER);")
+	
 	// Mid-game load support for Daily Rewards
 	for (int i = 1; i <= MaxClients; i++)
 	{
