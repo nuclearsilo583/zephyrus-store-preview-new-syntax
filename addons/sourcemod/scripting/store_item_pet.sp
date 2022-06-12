@@ -126,10 +126,6 @@ Action Command_Hide(int client, int args)
 	return Plugin_Handled;
 }
 
-public void OnPlayerPreThink()
-{
-}
-
 public void Pets_OnMapStart()
 {
 	for (int i = 0; i < g_iCount; i++)
