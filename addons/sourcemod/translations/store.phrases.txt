@@ -1,73 +1,73 @@
 ﻿"Phrases"
 {
-	"Enable trails"
+	"Show trails"
 	{
-		"en"		"Enable trails [now: disabled]"
+		"en"		"Show trails"
 	}
 
-	"Disable trails"
+	"Hide trails"
 	{
-		"en"		"Disable trails [now: enabled]"
+		"en"		"Hide trails"
 	}
 
-	"Enable bullet tracer"
+	"Show bullet tracer"
 	{
-		"en"		"Enable bullet tracers [now: disabled]"
+		"en"		"Show bullet tracers"
 	}
 
-	"Disable bullet tracer"
+	"Hide bullet tracer"
 	{
-		"en"		"Disable bullet tracers [now: enabled]"
+		"en"		"Hide bullet tracers"
 	}
 
-	"Enable gloves"
+	"Show gloves"
 	{
-		"en"		"Enable gloves [now: disabled]"
+		"en"		"Show gloves"
 	}
 
-	"Disable gloves"
+	"Hide gloves"
 	{
-		"en"		"Disable gloves [now: enabled]"
+		"en"		"Hide gloves"
 	}
 
-	"Enable pets"
+	"Show pets"
 	{
-		"en"		"Enable pets [now: disabled]"
+		"en"		"Show pets"
 	}
 
-	"Disable pets"
+	"Hide pets"
 	{
-		"en"		"Disable pets [now: enabled]"
+		"en"		"Hide pets"
 	}
 
-	"Enable bullet sparks
+	"Show bullet sparks
 	{
-		"en"		"Enable bullet sparks [now: disabled]"
+		"en"		"Show bullet sparks"
 	}
 
-	"Disable bullet sparks"
+	"Hide bullet sparks"
 	{
-		"en"		"Disable bullet sparks [now: enabled]"
+		"en"		"Hide bullet sparks"
 	}
 
-	"Enable paintball"
+	"Show paintball"
 	{
-		"en"		"Enable paintballs [now: disabled]"
+		"en"		"Show paintballs"
 	}
 
-	"Disable paintball"
+	"Hide paintball"
 	{
-		"en"		"Disable paintballs [now: enabled]"
+		"en"		"Hide paintballs"
 	}
 
-	"Enable particles"
+	"Show particles"
 	{
-		"en"		"Enable particles [now: disabled]"
+		"en"		"Show particles"
 	}
 
-	"Disable particles"
+	"Hide particles"
 	{
-		"en"		"Disable particles [now: enabled]"
+		"en"		"Hide particles"
 	}
 
 	"arms"

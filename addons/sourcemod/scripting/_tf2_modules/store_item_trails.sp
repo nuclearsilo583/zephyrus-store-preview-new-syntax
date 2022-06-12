@@ -100,19 +100,30 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 	if (actions == CookieMenuAction_DisplayOption)
 	{
 		if (g_bHide[client])
-			FormatEx(buffer, maxlen, "%T", "Enable trails", client);
+			FormatEx(buffer, maxlen, "%T", "Show trails", client);
 		else
-			FormatEx(buffer, maxlen, "%T", "Disable trails", client);
+			FormatEx(buffer, maxlen, "%T", "Hide trails", client);
 	}
 
 	if (actions == CookieMenuAction_SelectOption)
 	{
-		CMD_Hide(client);
+		Command_Hide(client, 0);
 		ShowCookieMenu(client);
 	}
 }
 
-void CMD_Hide(int client)
+public void OnClientCookiesCached(int client)
+{
+	char sValue[4];
+	g_hHideCookie.Get(client, sValue, sizeof(sValue));
+
+	if (sValue[0] == '\0' || sValue[0] == '0')
+		g_bHide[client] = false;
+	else
+		g_bHide[client] = true;
+}
+
+Action Command_Hide(int client, int args)
 {
 	g_bHide[client] = !g_bHide[client];
 	if (g_bHide[client])
@@ -125,22 +136,6 @@ void CMD_Hide(int client)
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "trail");
 		g_hHideCookie.Set(client, "0");
 	}
-}
-
-public void OnClientCookiesCached(int client)
-{
-	char sValue[4];
-	g_hHideCookie.Get(client, sValue, sizeof(sValue));
-
-	if (sValue[0] == '\0' || StrEqual(sValue[0], "1"))
-		g_bHide[client] = false;
-	else
-		g_bHide[client] = true;
-}
-
-Action Command_Hide(int client, int args)
-{
-	CMD_Hide(client);
 
 	return Plugin_Handled;
 }
