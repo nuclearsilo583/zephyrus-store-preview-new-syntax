@@ -1,5 +1,75 @@
 ﻿"Phrases"
 {
+	"Enable trails"
+	{
+		"en"		"Enable trails [now: disabled]"
+	}
+
+	"Disable trails"
+	{
+		"en"		"Disable trails [now: enabled]"
+	}
+
+	"Enable bullet tracer"
+	{
+		"en"		"Enable bullet tracers [now: disabled]"
+	}
+
+	"Disable bullet tracer"
+	{
+		"en"		"Disable bullet tracers [now: enabled]"
+	}
+
+	"Enable gloves"
+	{
+		"en"		"Enable gloves [now: disabled]"
+	}
+
+	"Disable gloves"
+	{
+		"en"		"Disable gloves [now: enabled]"
+	}
+
+	"Enable pets"
+	{
+		"en"		"Enable pets [now: disabled]"
+	}
+
+	"Disable pets"
+	{
+		"en"		"Disable pets [now: enabled]"
+	}
+
+	"Enable bullet sparks
+	{
+		"en"		"Enable bullet sparks [now: disabled]"
+	}
+
+	"Disable bullet sparks"
+	{
+		"en"		"Disable bullet sparks [now: enabled]"
+	}
+
+	"Enable paintball"
+	{
+		"en"		"Enable paintballs [now: disabled]"
+	}
+
+	"Disable paintball"
+	{
+		"en"		"Disable paintballs [now: enabled]"
+	}
+
+	"Enable particles"
+	{
+		"en"		"Enable particles [now: disabled]"
+	}
+
+	"Disable particles"
+	{
+		"en"		"Disable particles [now: enabled]"
+	}
+
 	"arms"
 	{
 		"en" "arms"

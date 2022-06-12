@@ -40,16 +40,16 @@ Handle g_hTimerPreview[MAXPLAYERS + 1];
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
 bool g_bHide[MAXPLAYERS + 1];
-Handle g_hHideCookie = INVALID_HANDLE;
+Cookie g_hHideCookie;
 
 bool GAME_CSGO = false;	
 			   
 public Plugin myinfo = 
 {
 	name = "Store - Pet item module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -72,7 +72,7 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_team", Event_PlayerTeam);
 
-	g_hHideCookie = RegClientCookie("Pets_Hide_Cookie", "Cookie to check if Pets are blocked", CookieAccess_Private);
+	g_hHideCookie = new Cookie("Pets_Hide_Cookie", "Cookie to check if Pets are blocked", CookieAccess_Private);
 	SetCookieMenuItem(PrefMenu, 0, "");
 }
 
@@ -85,74 +85,58 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 {
 	if (actions == CookieMenuAction_DisplayOption)
 	{
-		switch(g_bHide[client])
+		if (g_bHide[client])
 		{
-			case false: FormatEx(buffer, maxlen, "Hide Pets: Disabled");
-			case true: FormatEx(buffer, maxlen, "Hide Pets: Enabled");
+			FormatEx(buffer, maxlen, "%T", "Enable pets", client);
+		}
+		else
+		{
+			FormatEx(buffer, maxlen, "%T", "Disable pets", client);
 		}
 	}
 
 	if (actions == CookieMenuAction_SelectOption)
 	{
-		//ClientCommand(client, "sm_hidepet");
 		CMD_Hide(client);
 		ShowCookieMenu(client);
 	}
 }
 
- 
-public void OnPlayerPreThink()
-{
-}
-
-public void OnClientCookiesCached(int client)
-{
-	char sValue[8];
-	GetClientCookie(client, g_hHideCookie, sValue, sizeof(sValue));
-	
-
-	g_bHide[client] = (sValue[0] != '\0' && StringToInt(sValue));
-}
-
 void CMD_Hide(int client)
-{
-	char sCookieValue[8];
-
-	switch(g_bHide[client])
-	{
-		case false:
-		{
-			g_bHide[client] = true;
-			IntToString(1, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "pet");
-
-		}
-		case true:
-		{
-			g_bHide[client] = false;
-			IntToString(0, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "pet");
-		}
-	}
-}
-
-public Action Command_Hide(int client, int args)
 {
 	g_bHide[client] = !g_bHide[client];
 	if (g_bHide[client])
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "pet");
-		SetClientCookie(client, g_hHideCookie, "1");
+		g_hHideCookie.Set(client, "1");
 	}
 	else
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "pet");
-		SetClientCookie(client, g_hHideCookie, "0");
+		g_hHideCookie.Set(client, "0");
 	}
+}
+
+public void OnClientCookiesCached(int client)
+{
+	char sValue[4];
+	g_hHideCookie.Get(client, sValue, sizeof(sValue));
+
+	if (sValue[0] == '\0' || StrEqual(sValue[0], "1"))
+		g_bHide[client] = false;
+	else
+		g_bHide[client] = true;
+}
+
+Action Command_Hide(int client, int args)
+{
+	CMD_Hide(client);
 
 	return Plugin_Handled;
+}
+
+public void OnPlayerPreThink()
+{
 }
 
 public void Pets_OnMapStart()

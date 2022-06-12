@@ -43,14 +43,14 @@ char g_sChatPrefix[128];
 bool g_bEquipt[MAXPLAYERS + 1] = {false, ...};
 
 bool g_bHide[MAXPLAYERS + 1];
-Handle g_hHideCookie;
+Cookie g_hHideCookie;
 
 public Plugin myinfo = 
 {
 	name = "Store - Bulletsparks item module",
-	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -65,7 +65,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_hidebulletspark", Command_Hide, "Hide the Tracer");
 	RegConsoleCmd("sm_hidebulletsparks", Command_Hide, "Hide the Tracer");
 	
-	g_hHideCookie = RegClientCookie("Hide_Bullet_Spark", "Hide Bullet Spark", CookieAccess_Protected);
+	g_hHideCookie = new Cookie("Hide_Bullet_Spark", "Hide Bullet Spark", CookieAccess_Protected);
 	
 	SetCookieMenuItem(PrefMenu, 0, "");
 	
@@ -77,16 +77,18 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 {
 	if (actions == CookieMenuAction_DisplayOption)
 	{
-		switch(g_bHide[client])
+		if (g_bHide[client])
 		{
-			case false: FormatEx(buffer, maxlen, "Hide Bullet Spark: Disabled");
-			case true: FormatEx(buffer, maxlen, "Hide Bullet Spark: Enabled");
+			FormatEx(buffer, maxlen, "%T", "Enable bullet sparks", client);
+		}
+		else
+		{
+			FormatEx(buffer, maxlen, "%T", "Disable bullet sparks", client);
 		}
 	}
 
 	if (actions == CookieMenuAction_SelectOption)
 	{
-		//ClientCommand(client, "sm_hidebulletspark");
 		CMD_Hide(client);
 		ShowCookieMenu(client);
 	}
@@ -94,48 +96,33 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 
 void CMD_Hide(int client)
 {
-	char sCookieValue[8];
-
-	switch(g_bHide[client])
+	g_bHide[client] = !g_bHide[client];
+	if (g_bHide[client])
 	{
-		case false:
-		{
-			g_bHide[client] = true;
-			IntToString(1, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "bulletsparks");
-		}
-		case true:
-		{
-			g_bHide[client] = false;
-			IntToString(0, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "bulletsparks");
-		}
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "bulletsparks");
+		g_hHideCookie.Set(client, "1");
+	}
+	else
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "bulletsparks");
+		g_hHideCookie.Set(client, "0");
 	}
 }
 
 public void OnClientCookiesCached(int client)
 {
-	char sValue[8];
-	GetClientCookie(client, g_hHideCookie, sValue, sizeof(sValue));
+	char sValue[4];
+	g_hHideCookie.Get(client, sValue, sizeof(sValue));
 
-	g_bHide[client] = (sValue[0] && StringToInt(sValue));
+	if (sValue[0] == '\0' || StrEqual(sValue[0], "1"))
+		g_bHide[client] = false;
+	else
+		g_bHide[client] = true;
 }
 
-public Action Command_Hide(int client, int args)
+Action Command_Hide(int client, int args)
 {
-	g_bHide[client] = !g_bHide[client];
-	if (g_bHide[client])
-	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "bulletsparks");
-		SetClientCookie(client, g_hHideCookie, "1");
-	}
-	else
-	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "bulletsparks");
-		SetClientCookie(client, g_hHideCookie, "0");
-	}
+	CMD_Hide(client);
 
 	return Plugin_Handled;
 }
