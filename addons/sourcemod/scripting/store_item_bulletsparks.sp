@@ -78,13 +78,9 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 	if (actions == CookieMenuAction_DisplayOption)
 	{
 		if (g_bHide[client])
-		{
 			FormatEx(buffer, maxlen, "%T", "Enable bullet sparks", client);
-		}
 		else
-		{
 			FormatEx(buffer, maxlen, "%T", "Disable bullet sparks", client);
-		}
 	}
 
 	if (actions == CookieMenuAction_SelectOption)

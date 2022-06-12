@@ -113,13 +113,9 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 	if (actions == CookieMenuAction_DisplayOption)
 	{
 		if (g_bHide[client])
-		{
 			FormatEx(buffer, maxlen, "%T", "Enable particles", client);
-		}
 		else
-		{
 			FormatEx(buffer, maxlen, "%T", "Disable particles", client);
-		}
 	}
 
 	if (actions == CookieMenuAction_SelectOption)
