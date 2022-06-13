@@ -87,6 +87,16 @@
 		"fr"		"Volume {green}{1} {default}réglé à {purple}{2}"
 	}
 	
+	"CP Changed color"
+	{
+		"en"		"You changed your color to: "
+	}
+	
+	"CP Scoreboard Preview"
+	{
+		"en"		"Showing preview scoreboard tag, please press TAB button."
+	}
+	
 	"CP Disabled Color"
 	{
 		"en" "Custom tag color disabled."
@@ -889,6 +899,12 @@
 	{
 		"en"		"Playing preview sound for you."
 		"chi"		"为你播放预览声音。"
+	}
+
+	"Spawn Preview - Colored smoke"
+	{
+		"#format"	"{1:.0f}"
+		"en"		"Spawned a preview. Preview will disappear in {1} seconds."
 	}
 
 	"Parachute Reloaded"
@@ -2237,7 +2253,7 @@
 
 	"inv and inv credits"
 	{
-		"#format"	"{1:i},{2:s},{3:i},{4:s},{5:i},{6:s},"
+		"#format"	"{1:i},{2:s},{3:i},{4:s},{5:i},{6:s}"
 		"en"		"    {1}. {2}:   {3} {4} ({5} {6})"
 	}
 	

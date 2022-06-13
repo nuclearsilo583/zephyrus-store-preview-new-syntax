@@ -4,11 +4,11 @@
 #include <sdkhooks>
 #include <multicolors>
 #include <cstrike>
-#include <zombiereloaded>
 
 #include <store>
 #include <zephstocks>
 #pragma newdecls required
+#pragma tabsize 0
 
 char gBuff[256];
 
@@ -36,12 +36,15 @@ int g_iColoredSmoke = 0;
 
 char g_sChatPrefix[128];
 
+Handle g_hTimerPreview[MAXPLAYERS + 1];
+int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
+
 public Plugin myinfo = 
 {
 	name = "Store - Colored Smoke Module",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.05", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -215,3 +218,114 @@ public Action Timer_SmokeRemove(Handle timer, int entity)
 	
 	return Plugin_Stop;
 }
+
+public void Store_OnPreviewItem(int client, char[] type, int index)
+{
+	if (g_hTimerPreview[client] != null)
+	{
+		TriggerTimer(g_hTimerPreview[client], false);
+	}
+
+	if (!StrEqual(type, "ColoredSmoke"))
+		return;
+
+		int SmokeEnt = CreateEntityByName("env_smokestack");
+
+		float location[3];
+		GetClientAbsOrigin(client, location);
+
+		char originData[PLATFORM_MAX_PATH];
+		Format(originData, sizeof(originData), "%f %f %f", location[0], location[1], location[2]);
+
+		if(SmokeEnt)
+		{
+			// Create the Smoke
+			DispatchKeyValue(SmokeEnt, "origin", originData); 
+
+			DispatchKeyValue(SmokeEnt, "BaseSpread", g_eColoredSmoke[index].iBaseSpread);
+
+			Format(gBuff, sizeof(gBuff), "smokestack_%i", SmokeEnt);
+			DispatchKeyValue(SmokeEnt, "targetname", gBuff);
+
+			DispatchKeyValue(SmokeEnt, "SpreadSpeed", g_eColoredSmoke[index].iSpreadSpeed);
+
+			DispatchKeyValue(SmokeEnt, "Speed", g_eColoredSmoke[index].iSpeed);
+
+			DispatchKeyValue(SmokeEnt, "StartSize", g_eColoredSmoke[index].iStart_Size);
+
+			DispatchKeyValue(SmokeEnt, "EndSize", g_eColoredSmoke[index].iEnd_Size);
+
+			DispatchKeyValue(SmokeEnt, "Rate", g_eColoredSmoke[index].iRate);
+
+			DispatchKeyValue(SmokeEnt, "JetLength", g_eColoredSmoke[index].iJetLength);
+
+			DispatchKeyValue(SmokeEnt, "Twist", g_eColoredSmoke[index].iTwist);
+
+			DispatchKeyValue(SmokeEnt, "RenderColor", g_eColoredSmoke[index].RGB);
+
+			DispatchKeyValue(SmokeEnt, "RenderAmt", g_eColoredSmoke[index].iDensity);	
+
+			DispatchKeyValue(SmokeEnt, "SmokeMaterial", g_eColoredSmoke[index].szMaterials);
+
+			DispatchSpawn(SmokeEnt);
+			AcceptEntityInput(SmokeEnt, "TurnOn");
+		}
+
+	g_iPreviewEntity[client] = EntIndexToEntRef(SmokeEnt);
+
+	SDKHook(SmokeEnt, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
+
+	float lifetime = g_eColoredSmoke[index].iLife;
+	if(lifetime)
+	{
+		FormatEx(gBuff, sizeof(gBuff), "OnUser2 !self:TurnOff::%f:1", lifetime);
+		SetVariantString(gBuff);
+
+		AcceptEntityInput(SmokeEnt, "AddOutput");
+		AcceptEntityInput(SmokeEnt, "FireUser2");
+
+		g_hTimerPreview[client] =  CreateTimer(lifetime, Timer_KillPreview, TIMER_FLAG_NO_MAPCHANGE);
+	}
+
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Spawn Preview - Colored smoke", lifetime);
+}
+
+public Action Hook_SetTransmit_Preview(int ent, int client)
+{
+	if (g_iPreviewEntity[client] == INVALID_ENT_REFERENCE)
+		return Plugin_Handled;
+
+	if (ent == EntRefToEntIndex(g_iPreviewEntity[client]))
+		return Plugin_Continue;
+
+	return Plugin_Handled;
+}
+
+public Action Timer_KillPreview(Handle timer, int client)
+{	
+	g_hTimerPreview[client] = null;
+
+	if (g_iPreviewEntity[client] != INVALID_ENT_REFERENCE)
+	{
+		int entity = EntRefToEntIndex(g_iPreviewEntity[client]);
+
+		if (entity > 0 && IsValidEdict(entity))
+		{
+			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
+			AcceptEntityInput(entity, "TurnOff");
+
+			float longerdelay = 5.0;
+
+			CreateTimer(longerdelay, Timer_StopSmoke, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
+		}
+	}
+	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
+}
+
+public Action Timer_StopSmoke(Handle timer, int SmokeEnt)
+{	
+	if (IsValidEntity(SmokeEnt))
+	{
+		RemoveEntity(SmokeEnt);
+	}
+} 

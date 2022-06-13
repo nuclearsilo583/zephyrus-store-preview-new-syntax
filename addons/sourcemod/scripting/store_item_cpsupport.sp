@@ -1,5 +1,3 @@
-
-
 #include <sourcemod>
 #include <sdktools>
 #include <colorvariables>
@@ -48,6 +46,7 @@ char g_szColors[MAXPLAYERS + 1][16];
 char g_szAuth[MAXPLAYERS + 1][32];
 #if defined csgo_css
 char g_sTempClanTag[MAXPLAYERS + 1][32];
+char g_sPreviewClantag[MAXPLAYERS + 1][32];
 #endif
 
 public Plugin myinfo = 
@@ -55,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.2", 
+	version = "2.3", 
 	url = ""
 };
 
@@ -72,7 +71,7 @@ public void OnPluginStart()
 	PrintToServer("CS:GO, CSS detected as a game engine. The scoreboard tag module will be enabled.");
 	
 	#else 
-	PrintToServer("Can not detecte CS:GO, CSS as a game engine. The scoreboard tag module will be disabled.");
+	PrintToServer("Can not detected CS:GO, CSS as a game engine. The scoreboard tag module will be disabled.");
 	#endif
 	
 	HookEvent("player_team", PlayerTeam_Callback);
@@ -325,7 +324,7 @@ public int MenuHandler_Shop(Menu menu, MenuAction action, int client, int item)
 			kvtShop.GetString("color", sItem, sizeof(sItem));
 
 			strcopy(g_szColors[client], sizeof(g_szColors), sItem);
-			CPrintToChat(client, "%s You changed your color to: %s%s.", g_sChatPrefix, sItem, name);
+			CPrintToChat(client, "%s%t%s%s.", g_sChatPrefix, "CP Changed color", sItem, name);
 			SQL_UpdatePerk(client, sItem);
 		}
 	}
@@ -563,6 +562,18 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 		Format(sBuffer, sizeof(sBuffer), " %s%s", g_sMessageColors[index], PreviewBuffer);
 		CPrintToChat(client, "%t", "CP Preview", " ", Buffer, sBuffer);
 	}
+	#if defined csgo_css
+	else if(StrEqual(type, "scoreboardtag"))
+	{
+		CS_GetClientClanTag(client, g_sPreviewClantag[client], 32);
+
+		CS_SetClientClanTag(client, g_sScoreboardTags[index]);
+
+		CreateTimer(15.0, Clantag, client);
+
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "CP Scoreboard Preview");
+	}
+	#endif
 	else return;
 }
 
@@ -599,3 +610,10 @@ public void Store_SetClientClanTag(int client)
 	CS_SetClientClanTag(client, sBuffer);
 	#endif
 }
+
+#if defined csgo_css
+public Action Clantag(Handle timer, int client)
+{
+	CS_SetClientClanTag(client, g_sPreviewClantag[client]);
+}
+#endif

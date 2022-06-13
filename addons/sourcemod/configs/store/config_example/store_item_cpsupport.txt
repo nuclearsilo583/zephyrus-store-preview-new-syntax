@@ -68,6 +68,7 @@
 			"price" "100"
 			"type" "scoreboardtag"
 			"unique_id" "uid_scoreboardtag_j1bros"
+			"preview" "1"
        		 }
 	}
 }
