@@ -64,14 +64,14 @@ char g_sChatPrefix[128];
 bool GAME_CSGO = false;
 
 bool g_bHide[MAXPLAYERS + 1];
-Handle g_hHideCookie = INVALID_HANDLE;
+Cookie g_hHideCookie;
 
 public Plugin myinfo = 
 {
 	name = "Store - Player Skin Module (No ZR + ZR, gloves support)",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.8", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -88,6 +88,8 @@ public void OnPluginStart()
 	Store_RegisterHandler("playerskin", "model", PlayerSkins_OnMapStart, PlayerSkins_Reset, PlayerSkins_Config, PlayerSkins_Equip, PlayerSkins_Remove, true);
 	Store_RegisterHandler("arms", "model", Arms_OnMapStart, Arms_Reset, Arms_Config, Arms_Equip, Arms_Remove, true);
 	
+	RegConsoleCmd("sm_hidegloves", Command_Hide, "Hides the Gloves");
+	
 	g_cvarSkinForceChange = RegisterConVar("sm_store_playerskin_force_default", "0", "If it's set to 1, default skins will be enforced.", TYPE_INT);
 	
 	g_cvarSkinForceChangeCT = RegisterConVar("sm_store_playerskin_default_ct", "models/player/custom_player/legacy/ctm_sas_variant_classic.mdl", "Path of the default CT skin.", TYPE_STRING);
@@ -101,7 +103,7 @@ public void OnPluginStart()
 	
 	g_cvarSkinChangeInstant = RegisterConVar("sm_store_playerskin_instant", "1", "Defines whether the skin should be changed instantly or on next spawn.", TYPE_INT);
 	
-	g_hHideCookie = RegClientCookie("PlayerSkin_Hide_Gloves_Cookie", "Cookie to check if Gloves are blocked", CookieAccess_Private);
+	g_hHideCookie = new Cookie("PlayerSkin_Hide_Gloves_Cookie", "Cookie to check if Gloves are blocked", CookieAccess_Private);
 	SetCookieMenuItem(PrefMenu, 0, "");
 	
 	HookEvent("player_spawn", PlayerSkins_PlayerSpawn);
@@ -130,57 +132,49 @@ public void OnPluginStart()
 	}
 }
 
-public void OnClientCookiesCached(int client)
-{
-	char sValue[8];
-	GetClientCookie(client, g_hHideCookie, sValue, sizeof(sValue));
-	
-
-	g_bHide[client] = (sValue[0] != '\0' && StringToInt(sValue));
-}
-
-
 public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
 {
 	if (actions == CookieMenuAction_DisplayOption)
 	{
-		switch(g_bHide[client])
-		{
-			case false: FormatEx(buffer, maxlen, "Hide Gloves: Disabled");
-			case true: FormatEx(buffer, maxlen, "Hide Gloves: Enabled");
-		}
+		if (g_bHide[client])
+			FormatEx(buffer, maxlen, "%T", "Show gloves", client);
+		else
+			FormatEx(buffer, maxlen, "%T", "Hide gloves", client);
 	}
 
 	if (actions == CookieMenuAction_SelectOption)
 	{
-		//ClientCommand(client, "sm_hidepet");
-		CMD_Hide(client);
+		Command_Hide(client, 0);
 		ShowCookieMenu(client);
 	}
 }
 
-void CMD_Hide(int client)
+public void OnClientCookiesCached(int client)
 {
-	char sCookieValue[8];
+	char sValue[4];
+	g_hHideCookie.Get(client, sValue, sizeof(sValue));
 
-	switch(g_bHide[client])
+	if (sValue[0] == '\0' || sValue[0] == '0')
+		g_bHide[client] = false;
+	else
+		g_bHide[client] = true;
+}
+
+Action Command_Hide(int client, int args)
+{
+	g_bHide[client] = !g_bHide[client];
+	if (g_bHide[client])
 	{
-		case false:
-		{
-			g_bHide[client] = true;
-			IntToString(1, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "gloves");
-
-		}
-		case true:
-		{
-			g_bHide[client] = false;
-			IntToString(0, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "gloves");
-		}
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "gloves");
+		g_hHideCookie.Set(client, "1");
 	}
+	else
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "gloves");
+		g_hHideCookie.Set(client, "0");
+	}
+
+	return Plugin_Handled;
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -472,6 +466,7 @@ public Action PlayerSkins_PlayerSpawnPost(Handle timer, any userid)
 
 void Store_SetClientArmsModel(int client, const char[] model, int index)
 {
+	if(index){}
 	SetEntPropString(client, Prop_Send, "m_szArmsModel", model);
 }
 

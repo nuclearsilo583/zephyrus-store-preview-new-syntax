@@ -43,7 +43,7 @@ int g_iTrailOwners[2048]={-1};
 char g_sChatPrefix[128];
 
 bool g_bHide[MAXPLAYERS + 1];
-Handle g_hHideCookie = INVALID_HANDLE;
+Cookie g_hHideCookie;
 
 Handle g_hTimerPreview[MAXPLAYERS + 1];
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
@@ -51,9 +51,9 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 public Plugin myinfo = 
 {
 	name = "Store - Trail Module [TF2:Modules]",
-	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -83,7 +83,7 @@ public void OnPluginStart()
 	
 	AutoExecConfig(true, "plugin.store");
 	
-	g_hHideCookie = RegClientCookie("Trails_Hide_Cookie", "Cookie to check if Trails are blocked", CookieAccess_Private);
+	g_hHideCookie = new Cookie("Trails_Hide_Cookie", "Cookie to check if Trails are blocked", CookieAccess_Private);
 	SetCookieMenuItem(PrefMenu, 0, "");
 	
 	for (int i = 1; i <= MaxClients; i++)
@@ -99,73 +99,50 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 {
 	if (actions == CookieMenuAction_DisplayOption)
 	{
-		switch(g_bHide[client])
-		{
-			case false: FormatEx(buffer, maxlen, "Hide Trail: Disabled");
-			case true: FormatEx(buffer, maxlen, "Hide Trail: Enabled");
-		}
+		if (g_bHide[client])
+			FormatEx(buffer, maxlen, "%T", "Show trails", client);
+		else
+			FormatEx(buffer, maxlen, "%T", "Hide trails", client);
 	}
 
 	if (actions == CookieMenuAction_SelectOption)
 	{
-		//ClientCommand(client, "sm_hidetrail");
-		CMD_Hide(client);
+		Command_Hide(client, 0);
 		ShowCookieMenu(client);
 	}
 }
 
-void CMD_Hide(int client)
-{
-	char sCookieValue[8];
-
-	switch(g_bHide[client])
-	{
-		case false:
-		{
-			g_bHide[client] = true;
-			IntToString(1, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "trail");
-		}
-		case true:
-		{
-			g_bHide[client] = false;
-			IntToString(0, sCookieValue, sizeof(sCookieValue));
-			SetClientCookie(client, g_hHideCookie, sCookieValue);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "trail");
-		}
-	}
-}
-
-public void Store_OnConfigExecuted(char[] prefix)
-{
-	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
-}
-
-
 public void OnClientCookiesCached(int client)
 {
-	char sValue[8];
-	GetClientCookie(client, g_hHideCookie, sValue, sizeof(sValue));
+	char sValue[4];
+	g_hHideCookie.Get(client, sValue, sizeof(sValue));
 
-	g_bHide[client] = (sValue[0] && StringToInt(sValue));
+	if (sValue[0] == '\0' || sValue[0] == '0')
+		g_bHide[client] = false;
+	else
+		g_bHide[client] = true;
 }
 
-public Action Command_Hide(int client, int args)
+Action Command_Hide(int client, int args)
 {
 	g_bHide[client] = !g_bHide[client];
 	if (g_bHide[client])
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "trail");
-		SetClientCookie(client, g_hHideCookie, "1");
+		g_hHideCookie.Set(client, "1");
 	}
 	else
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "trail");
-		SetClientCookie(client, g_hHideCookie, "0");
+		g_hHideCookie.Set(client, "0");
 	}
 
 	return Plugin_Handled;
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public void OnClientDisconnect(int client)
