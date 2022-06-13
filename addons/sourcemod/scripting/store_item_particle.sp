@@ -69,7 +69,7 @@ public Plugin myinfo =
 	name = "Store - Particle item module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -570,6 +570,8 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 	g_iPreviewEntity[client] = EntIndexToEntRef(iPreview);
 
+	Set_EdictFlags(iPreview);
+	
 	SDKHook(iPreview, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
 
 	g_hTimerPreview[client] = CreateTimer(45.0, Timer_KillPreview, client);
@@ -579,6 +581,8 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 public Action Hook_SetTransmit_Preview(int ent, int client)
 {
+	Set_EdictFlags(iPreview);
+	
 	if (g_iPreviewEntity[client] == INVALID_ENT_REFERENCE)
 		return Plugin_Handled;
 	
