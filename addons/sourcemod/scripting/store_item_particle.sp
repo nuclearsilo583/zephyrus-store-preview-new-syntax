@@ -581,7 +581,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 
 public Action Hook_SetTransmit_Preview(int ent, int client)
 {
-	Set_EdictFlags(iPreview);
+	Set_EdictFlags(ent);
 	
 	if (g_iPreviewEntity[client] == INVALID_ENT_REFERENCE)
 		return Plugin_Handled;
