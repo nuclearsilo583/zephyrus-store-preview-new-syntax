@@ -219,9 +219,17 @@ public Action Timer_SmokeRemove(Handle timer, int entity)
 	return Plugin_Stop;
 }
 
+public void OnMapEnd()
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		delete g_hTimerPreview[i];
+	}
+}
+
 public void Store_OnPreviewItem(int client, char[] type, int index)
 {
-	if (g_hTimerPreview[client] != null)
+	if (g_hTimerPreview[client])
 	{
 		TriggerTimer(g_hTimerPreview[client], false);
 	}
@@ -284,7 +292,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 		AcceptEntityInput(SmokeEnt, "AddOutput");
 		AcceptEntityInput(SmokeEnt, "FireUser2");
 
-		g_hTimerPreview[client] =  CreateTimer(lifetime, Timer_KillPreview, TIMER_FLAG_NO_MAPCHANGE);
+		g_hTimerPreview[client] = CreateTimer(lifetime, Timer_KillPreview, client);
 	}
 
 	CPrintToChat(client, "%s%t", g_sChatPrefix, "Spawn Preview - Colored smoke", lifetime);
@@ -302,7 +310,8 @@ public Action Hook_SetTransmit_Preview(int ent, int client)
 }
 
 public Action Timer_KillPreview(Handle timer, int client)
-{	
+{
+	// No need for a disconnection check because it doesn't do anything to the client, and this timer must be ran even if the client DCs.
 	g_hTimerPreview[client] = null;
 
 	if (g_iPreviewEntity[client] != INVALID_ENT_REFERENCE)
@@ -314,18 +323,19 @@ public Action Timer_KillPreview(Handle timer, int client)
 			SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmit_Preview);
 			AcceptEntityInput(entity, "TurnOff");
 
-			float longerdelay = 5.0;
-
-			CreateTimer(longerdelay, Timer_StopSmoke, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
+			CreateTimer(5.0, Timer_StopSmoke, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
 		}
+		g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
 	}
-	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
+	
+	return Plugin_Stop;
 }
 
 public Action Timer_StopSmoke(Handle timer, int SmokeEnt)
-{	
+{
 	if (IsValidEntity(SmokeEnt))
 	{
 		RemoveEntity(SmokeEnt);
 	}
-} 
+	return Plugin_Stop;
+}
