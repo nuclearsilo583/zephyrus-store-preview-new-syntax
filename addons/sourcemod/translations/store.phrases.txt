@@ -1,5 +1,85 @@
 ﻿"Phrases"
 {
+	"Show trails"
+	{
+		"en"		"Show trails"
+	}
+
+	"Hide trails"
+	{
+		"en"		"Hide trails"
+	}
+
+	"Show bullet tracer"
+	{
+		"en"		"Show bullet tracers"
+	}
+
+	"Hide bullet tracer"
+	{
+		"en"		"Hide bullet tracers"
+	}
+
+	"Show gloves"
+	{
+		"en"		"Show gloves"
+	}
+
+	"Hide gloves"
+	{
+		"en"		"Hide gloves"
+	}
+
+	"Show pets"
+	{
+		"en"		"Show pets"
+	}
+
+	"Hide pets"
+	{
+		"en"		"Hide pets"
+	}
+
+	"Show bullet sparks
+	{
+		"en"		"Show bullet sparks"
+	}
+
+	"Hide bullet sparks"
+	{
+		"en"		"Hide bullet sparks"
+	}
+
+	"Show paintball"
+	{
+		"en"		"Show paintballs"
+	}
+
+	"Hide paintball"
+	{
+		"en"		"Hide paintballs"
+	}
+
+	"Show particles"
+	{
+		"en"		"Show particles"
+	}
+
+	"Hide particles"
+	{
+		"en"		"Hide particles"
+	}
+
+	"arms"
+	{
+		"en" "arms"
+	}
+	
+	"gloves"
+	{
+		"en" "gloves"
+	}
+	
 	"Volume set"
 	{
 		"#format"	"{1:s},{2:s}"
