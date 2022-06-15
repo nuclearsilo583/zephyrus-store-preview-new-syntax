@@ -59,6 +59,27 @@
 			"type" "msgcolor"
 			"preview" "1"
 		}
+		"Rainbow"
+		{
+			"color" "rainbow"
+			"unique_id" "uid_msgcolor_rainbow"
+			"Plans"
+			{
+				"7 days"
+				{
+					"price" "3000"
+					"time" "604800"
+				}
+				
+				"30 days"
+				{
+					"price" "18000"
+					"time" "2592000"
+				}
+			}
+			"type" "msgcolor"
+			"preview" "1"
+		}
 	}
    	 "Scoreboard Tag"
   	  {
