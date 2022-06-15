@@ -17,6 +17,7 @@
 
 #pragma semicolon 1
 #pragma newdecls required
+#pragma tabsize 0
 
 char g_sChatPrefix[128];
 
@@ -53,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.3", 
+	version = "2.4", 
 	url = ""
 };
 
@@ -439,28 +440,57 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	if (iEquippedNameColor >= 0)
 	{
 		int m_iData = Store_GetDataIndex(iEquippedNameColor);
-		strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[m_iData]);
-	}
-	
-	if(!StrEqual(g_szColors[author], "disabled", true))
-	{
-		//if(StrContains(sNameTag, "}", true))
-		if(/*slited != 0 || */sNameTag2[1][0] != '\0')
+		if(StrEqual(g_sNameColors[m_iData], "rainbow"))
 		{
-			//PrintToChat(author, "have }");
-			Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag2[1], sNameColor, name);
+            String_Rainbow(name, sNameColor, sizeof(sNameColor));
+            
+            if(!StrEqual(g_szColors[author], "disabled", true))
+			{
+				//if(StrContains(sNameTag, "}", true))
+				if(/*slited != 0 || */sNameTag2[1][0] != '\0')
+				{
+					//PrintToChat(author, "have }");
+					Format(sName, sizeof(sName), "%s%s%s", g_szColors[author], sNameTag2[1], sNameColor);
+				}
+				else 
+				{
+					//PrintToChat(author, "no have }");
+					Format(sName, sizeof(sName), "%s%s%s", g_szColors[author], sNameTag, sNameColor);
+				}
+			}
+			else Format(sName, sizeof(sName), "%s%s", sNameTag, sNameColor);
+			
+			//ReplaceColors(sName, sizeof(sName), author);
+		
+			strcopy(name, MAXLENGTH_NAME, sName);
 		}
-		else 
+		else
 		{
-			//PrintToChat(author, "no have }");
-			Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag, sNameColor, name);
+			strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[m_iData]);
+			if(!StrEqual(g_szColors[author], "disabled", true))
+			{
+				//if(StrContains(sNameTag, "}", true))
+				if(/*slited != 0 || */sNameTag2[1][0] != '\0')
+				{
+					//PrintToChat(author, "have }");
+					Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag2[1], sNameColor, name);
+				}
+				else 
+				{
+					//PrintToChat(author, "no have }");
+					Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag, sNameColor, name);
+				}
+			}
+			else Format(sName, sizeof(sName), "%s{teamcolor}%s%s", sNameTag, sNameColor, name);
+			
+			//ReplaceColors(sName, sizeof(sName), author);
+		
+			strcopy(name, MAXLENGTH_NAME, sName);		
 		}
+		
+		/*int m_iData = Store_GetDataIndex(iEquippedNameColor);
+		strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[m_iData]);*/
 	}
-	else Format(sName, sizeof(sName), "%s{teamcolor}%s%s", sNameTag, sNameColor, name);
-	
-	//ReplaceColors(sName, sizeof(sName), author);
-
-	strcopy(name, MAXLENGTH_NAME, sName);
 
 	if (iEquippedMsgColor >= 0)
     {
