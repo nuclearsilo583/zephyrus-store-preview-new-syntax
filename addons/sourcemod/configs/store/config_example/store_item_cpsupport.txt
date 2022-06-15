@@ -34,6 +34,27 @@
 			"type" "namecolor"
 			"preview" "1"
 		}
+		"Rainbow"
+		{
+			"color" "rainbow"
+			"unique_id" "uid_namecolor_rainbow"
+			"Plans"
+			{
+				"7 days"
+				{
+					"price" "2000"
+					"time" "604800"
+				}
+				
+				"30 days"
+				{
+					"price" "15000"
+					"time" "2592000"
+				}
+			}
+			"type" "namecolor"
+			"preview" "1"
+		}
 	}
 				
 	"Message Color"
