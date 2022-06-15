@@ -87,6 +87,16 @@
 		"fr"		"Volume {green}{1} {default}réglé à {purple}{2}"
 	}
 	
+	"CP Chat Tag Color Option"
+	{
+		"en"	"Chat tag color option"
+	}
+
+	"CP Disable color - Menu"
+	{
+		"en"	"Disable color"
+	}
+
 	"CP Changed color"
 	{
 		"en"		"You changed your color to: "
