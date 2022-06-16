@@ -593,7 +593,14 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	}
 	else if(StrEqual(type, "namecolor"))
 	{
-		Format(sBuffer, sizeof(sBuffer), "%s%s :{default}", g_sNameColors[index], clientname);
+		if(StrEqual(g_sNameColors[index], "rainbow"))
+		{
+			String_Rainbow(clientname, sBuffer, sizeof(sBuffer));
+			Format(sBuffer, sizeof(sBuffer), "%s :{default}", sBuffer);
+		}
+		else
+			Format(sBuffer, sizeof(sBuffer), "%s%s :{default}", g_sNameColors[index], clientname);
+			
 		Format(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
 		CPrintToChat(client, "%t", "CP Preview", " ", sBuffer, PreviewBuffer);
 	}
