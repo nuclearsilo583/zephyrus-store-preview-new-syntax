@@ -92,7 +92,7 @@
 		"en"	"Chat tag color option"
 	}
 
-	"CP Disable color - Menu"
+	"CP Disable Color - Menu"
 	{
 		"en"	"Disable color"
 	}
