@@ -229,7 +229,7 @@ public Action Trails_PlayerSpawn(Handle event, const char[] name, bool dontBroad
 public Action Trails_PlayerDeath(Handle event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsPlayerAlive(client))
+	if(client && !IsPlayerAlive(client))
 		for(int i=0;i<STORE_MAX_SLOTS;++i)
 			RemoveTrail(client, i);
 	return Plugin_Continue;
