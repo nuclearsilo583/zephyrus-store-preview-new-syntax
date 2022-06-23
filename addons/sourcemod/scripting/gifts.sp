@@ -4,11 +4,11 @@
 #include <gifts>
 #include <zephstocks>
 
+#define PLUGIN_VERSION "3.1"
+
 //Pragma
 #pragma semicolon 1
 #pragma newdecls required
-
-#define PLUGIN_VERSION "3.0"
 
 enum struct Module
 {
@@ -25,6 +25,7 @@ enum struct SpawnedGift
 	bool bStay;
 	int iData;
 	int iOwner;
+	int iDieTimestamp;
 }
 
 int g_cvarChance = -1;
@@ -41,11 +42,16 @@ GiftConditions g_eConditions[MAXPLAYERS+1];
 SpawnedGift g_eSpawnedGiftsTemp[2048];
 SpawnedGift g_eSpawnedGifts[2048];
 
+ConVar g_cvarSize;
+
+Handle gF_OnClientGrabGift;
+
+
 public Plugin myinfo =
 {
 	name = "[ANY] Gifts",
-	author = "Zephyrus, nuclear silo",
-	description = "Gifts :333",
+	author = "Zephyrus, nuclear silo, azalty, AiDN™",
+	description = "Gifts :333 - modified by azalty'",
 	version = PLUGIN_VERSION,
 	url = ""
 }
@@ -57,13 +63,13 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("round_start", Event_RoundStart);
 	
-	g_cvarChance = RegisterConVar("sm_gifts_chance", "0.60", "Chance that a gift will be spawned upon player death.", TYPE_FLOAT, INVALID_FUNCTION, 0, true, 0.0, true, 1.0);
+	g_cvarChance = RegisterConVar("sm_gifts_chance", "0.00", "Chance that a gift will be spawned upon player death.", TYPE_FLOAT, INVALID_FUNCTION, 0, true, 0.0, true, 1.0);
 	g_cvarLifetime = RegisterConVar("sm_gifts_lifetime", "10.0", "Lifetime of the gift.", TYPE_FLOAT);
 
 	char m_szGameDir[64];
 	GetGameFolderName(STRING(m_szGameDir));
 	
-	if(strcmp(m_szGameDir, "cstrike")==0)
+	if(strcmp(m_szGameDir, "cstrike")==0 || strcmp(m_szGameDir, "csgo")==0)
 		g_cvarModel = RegisterConVar("sm_gifts_model", "models/items/cs_gift.mdl", "Model file for the gift", TYPE_STRING);
 	else if(strcmp(m_szGameDir, "dod")==0)
 		g_cvarModel = RegisterConVar("sm_gifts_model", "models/items/dod_gift.mdl", "Model file for the gift", TYPE_STRING);
@@ -71,6 +77,8 @@ public void OnPluginStart()
 		g_cvarModel = RegisterConVar("sm_gifts_model", "models/items/tf_gift.mdl", "Model file for the gift", TYPE_STRING);
 	else
 		g_cvarModel = RegisterConVar("sm_gifts_model", "<you should set some gift model>", "Model file for the gift", TYPE_STRING);
+	
+	g_cvarSize = CreateConVar("sm_gifts_size", "0", "Size of the gift collision box in hammer/csgo units.");
 
 	AutoExecConfig();
 
@@ -105,6 +113,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("Gifts_SetClientCondition", Native_SetClientCondition);
 	CreateNative("Gifts_GetClientCondition", Native_GetClientCondition);
 	CreateNative("Gifts_SpawnGift", Native_SpawnGift);
+	
+	gF_OnClientGrabGift = CreateGlobalForward("Gifts_OnClientGrabGift", ET_Event, Param_Cell, Param_Cell);
+	
+	RegPluginLibrary("gifts");
 
 	return APLRes_Success;
 }
@@ -205,15 +217,27 @@ public Action Event_PlayerDeath(Handle event, const char[] name, bool dontBroadc
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
+	int curTime = GetTime();
+	
 	for(int i=0;i<2048;++i)
 		if(g_eSpawnedGifts[i].hPlugin)
 		{
+			// Remove gifts that expired (not grabbed)
+			if (g_eSpawnedGifts[i].iDieTimestamp < curTime)
+			{
+				g_eSpawnedGifts[i].hPlugin = INVALID_HANDLE;
+				g_eSpawnedGifts[i].fnCallback = INVALID_FUNCTION;
+				continue;
+			}
+			
 			// ugh......
 			float m_fPosition[3];
 			m_fPosition[0] = g_eSpawnedGifts[i].fPosition[0];
 			m_fPosition[1] = g_eSpawnedGifts[i].fPosition[1];
 			m_fPosition[2] = g_eSpawnedGifts[i].fPosition[2];
-			int m_iIndex = Stock_SpawnGift(m_fPosition, g_eSpawnedGifts[i].szModel, 0.0);
+			
+			int m_iIndex = Stock_SpawnGift(m_fPosition, g_eSpawnedGifts[i].szModel, view_as<float>(g_eSpawnedGifts[i].iDieTimestamp - curTime));
+			// logmessage("Event_RoundStart gift spawn @ %f %f %f - lifetime: %f - %f %f %f", m_fPosition[0], m_fPosition[1], m_fPosition[2], float(g_eSpawnedGifts[i][iDieTimestamp] - curTime), g_eSpawnedGifts[i][fPosition][0], g_eSpawnedGifts[i][fPosition][1], g_eSpawnedGifts[i][fPosition][2]);
 
 			if(m_iIndex != -1)
 			{
@@ -221,10 +245,15 @@ public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadca
 				g_eSpawnedGiftsTemp[m_iIndex].fnCallback = g_eSpawnedGifts[i].fnCallback;
 				g_eSpawnedGiftsTemp[m_iIndex].iData = g_eSpawnedGifts[i].iData;
 				g_eSpawnedGiftsTemp[m_iIndex].iOwner = g_eSpawnedGifts[i].iOwner;
-				g_eSpawnedGiftsTemp[m_iIndex].fPosition = g_eSpawnedGifts[i].fPosition;
+				g_eSpawnedGiftsTemp[m_iIndex].fPosition[0] = g_eSpawnedGifts[i].fPosition[0];
+				g_eSpawnedGiftsTemp[m_iIndex].fPosition[1] = g_eSpawnedGifts[i].fPosition[1];
+				g_eSpawnedGiftsTemp[m_iIndex].fPosition[2] = g_eSpawnedGifts[i].fPosition[2];
 				g_eSpawnedGiftsTemp[m_iIndex].bStay = g_eSpawnedGifts[i].bStay;
+				g_eSpawnedGiftsTemp[m_iIndex].iDieTimestamp = g_eSpawnedGifts[i].iDieTimestamp;
 				strcopy(g_eSpawnedGiftsTemp[m_iIndex].szModel, PLATFORM_MAX_PATH, g_eSpawnedGifts[i].szModel);
 			}
+			else
+				LogError("m_iIndex == 1");
 		}
 	for(int i=0;i<2048;++i)
 	{
@@ -234,9 +263,17 @@ public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadca
 			g_eSpawnedGifts[i].fnCallback = g_eSpawnedGiftsTemp[i].fnCallback;
 			g_eSpawnedGifts[i].iData = g_eSpawnedGiftsTemp[i].iData;
 			g_eSpawnedGifts[i].iOwner = g_eSpawnedGiftsTemp[i].iOwner;
-			g_eSpawnedGifts[i].fPosition = g_eSpawnedGiftsTemp[i].fPosition;
+			g_eSpawnedGifts[i].fPosition[0] = g_eSpawnedGiftsTemp[i].fPosition[0];
+			g_eSpawnedGifts[i].fPosition[1] = g_eSpawnedGiftsTemp[i].fPosition[1];
+			g_eSpawnedGifts[i].fPosition[2] = g_eSpawnedGiftsTemp[i].fPosition[2];
+			// logmessage("Post object: %f %f %f - From temp: %f %f %f", g_eSpawnedGifts[i][fPosition][0], g_eSpawnedGifts[i][fPosition][1], g_eSpawnedGifts[i][fPosition][2], g_eSpawnedGiftsTemp[i][fPosition][0], g_eSpawnedGiftsTemp[i][fPosition][1], g_eSpawnedGiftsTemp[i][fPosition][2]);
 			g_eSpawnedGifts[i].bStay = g_eSpawnedGiftsTemp[i].bStay;
+			g_eSpawnedGifts[i].iDieTimestamp = g_eSpawnedGiftsTemp[i].iDieTimestamp;
 			strcopy(g_eSpawnedGifts[i].szModel, PLATFORM_MAX_PATH, g_eSpawnedGiftsTemp[i].szModel);
+			
+			// Avoids duplicating gifts
+			g_eSpawnedGiftsTemp[i].hPlugin = INVALID_HANDLE;
+			g_eSpawnedGiftsTemp[i].fnCallback = INVALID_FUNCTION;
 		}
 		else
 		{
@@ -252,20 +289,37 @@ stock int Stock_SpawnGift(float position[3], const char[] model, float lifetime)
 {
 	int m_iGift;
 
-	if((m_iGift = CreateEntityByName("prop_physics_override")) != -1)
+	if((m_iGift = CreateEntityByName("prop_dynamic_override")) != -1)
 	{
 		char targetname[100], m_szModule[256];
 
 		Format(STRING(targetname), "gift_%i", m_iGift);
 
 		DispatchKeyValue(m_iGift, "model", model);
-		DispatchKeyValue(m_iGift, "physicsmode", "2");
-		DispatchKeyValue(m_iGift, "massScale", "1.0");
+		// DispatchKeyValue(m_iGift, "physicsmode", "2");
+		// DispatchKeyValue(m_iGift, "massScale", "1.0");
 		DispatchKeyValue(m_iGift, "targetname", targetname);
 		DispatchSpawn(m_iGift);
 		
-		SetEntProp(m_iGift, Prop_Send, "m_usSolidFlags", 8);
+		SetEntProp(m_iGift, Prop_Send, "m_usSolidFlags", 12); // old: 8 - changed to 12 to prevent solid errors, and added a collision fix below
 		SetEntProp(m_iGift, Prop_Send, "m_CollisionGroup", 1);
+		
+		// collision fix by azalty
+		SetEntProp(m_iGift, Prop_Send, "m_nSolidType", 2); // Bounding Box
+		float halfSize = g_cvarSize.FloatValue / 2.0;
+		// 0 = center
+		// as this is a box or a rectangle, we can set for example {-10.0, -10.0, -10.0} and {10.0, 10.0, 10.0} to make a total size of 20.
+		float minbounds[3];
+		minbounds[0] = -halfSize;
+		minbounds[1] = -halfSize;
+		minbounds[2] = -halfSize;
+		float maxbounds[3];
+		maxbounds[0] = halfSize;
+		maxbounds[1] = halfSize;
+		maxbounds[2] = halfSize;
+		SetEntPropVector(m_iGift, Prop_Send, "m_vecMins", minbounds);
+		SetEntPropVector(m_iGift, Prop_Send, "m_vecMaxs", maxbounds);
+		// -- end of collision fix --
 		
 		if(lifetime > 0.0)
 		{
@@ -324,6 +378,14 @@ public Action OnStartTouch(int m_iGift, int client)
 	if(g_eSpawnedGifts[m_iGift].hPlugin != INVALID_HANDLE)
 		if(g_eSpawnedGifts[m_iGift].iOwner == client)
 			return;
+	
+	Action result = Plugin_Continue;
+	Call_StartForward(gF_OnClientGrabGift);
+	Call_PushCell(client);
+	Call_PushCell(m_iGift);
+	Call_Finish(result);
+	if (result >= Plugin_Handled)
+		return;
 
 	int m_iRotator = GetEntPropEnt(m_iGift, Prop_Send, "m_hEffectEntity");
 	if(m_iRotator && IsValidEdict(m_iRotator))
