@@ -63,7 +63,7 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("round_start", Event_RoundStart);
 	
-	g_cvarChance = RegisterConVar("sm_gifts_chance", "0.00", "Chance that a gift will be spawned upon player death.", TYPE_FLOAT, INVALID_FUNCTION, 0, true, 0.0, true, 1.0);
+	g_cvarChance = RegisterConVar("sm_gifts_chance", "0.60", "Chance that a gift will be spawned upon player death.", TYPE_FLOAT, INVALID_FUNCTION, 0, true, 0.0, true, 1.0);
 	g_cvarLifetime = RegisterConVar("sm_gifts_lifetime", "10.0", "Lifetime of the gift.", TYPE_FLOAT);
 
 	char m_szGameDir[64];
