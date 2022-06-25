@@ -45,3 +45,13 @@ native any Gifts_GetClientCondition(int client);
 native any Gifts_SpawnGift(Function callback, const char[] model, float lifetime, float position[3], any data, int owner=0);
 
 forward void Gifts_OnGiftSpawned(any entity);
+
+/**
+ * Called when a client tries to grab a gift.
+ *
+ * @param client        The client index.
+ * @param entity        The gift entity index.
+ * @return                        Return Plugin_Handled to block the grabbing & Plugin_Continue to let the client grab.
+ *                                        If any plugin returns Plugin_Handled, the client won't be able to grab.
+ */
+forward Action Gifts_OnClientGrabGift(int client, int entity);
