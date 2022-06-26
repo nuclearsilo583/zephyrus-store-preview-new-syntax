@@ -89,7 +89,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.8", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.9", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -539,19 +539,37 @@ public Action Timer_Open(Handle timer, int client)
 		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+			{
+				if(item.iPlans!=0)
+				{
+					Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 2);
+				}
+				else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+			}
 			else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 1);
 		}
 		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + time, item.iPrice);
+			{
+				if(item.iPlans!=0)
+				{
+					Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 2);
+				}
+				else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+			}
 			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
 		}
 		else 
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, _, item.iPrice);
+			{
+				if(item.iPlans!=0)
+				{
+					Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 2);
+				}
+				else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+			}
 			else Store_GiveItem(client, itemid, _, _, 1);
 		}
 		char sBuffer[128];
