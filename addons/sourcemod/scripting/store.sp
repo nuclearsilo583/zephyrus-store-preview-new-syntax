@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.7"
+#define PLUGIN_VERSION "6.8"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -472,6 +472,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	CreateNative("Store_IsInRecurringMenu", Native_IsInRecurringMenu);
 	CreateNative("Store_SetClientRecurringMenu", Native_SetClientRecurringMenu);
 	
+	CreateNative("Store_GetPlansPrice", Native_GetPlansPrice);
+	
 	CreateNative("Store_SQLEscape", Native_SQLEscape);
 	CreateNative("Store_SQLQuery", Native_SQLQuery);
 	CreateNative("Store_SQLLogMessage", Native_LogMessage);	
@@ -822,6 +824,14 @@ public void OnEntityCreated(int entity, const char[] classname)
 //////////////////////////////
 //			NATIVES			//
 //////////////////////////////
+
+public int Native_GetPlansPrice(Handle plugin,int numParams)
+{
+	int itemid = GetNativeCell(1);
+	int highest = GetNativeCell(2);
+	
+	return highest ? Store_GetHighestPrice(itemid) : Store_GetLowestPrice(itemid);
+}
 
 public int Native_RegisterHandler(Handle plugin,int numParams)
 {
@@ -1752,7 +1762,8 @@ public int Store_ItemNameMenu_Handler(Menu hEdictMenu, MenuAction hAction, int c
 			//int iReceiver = GetClientOfUserId(StringToInt(Explode_sParam[1]));
 			
 			g_iMenuBack[client]=g_eItems[StringToInt(sSelected)].iParent;
-			
+			g_iMenuClient[client]=client;
+
 			if(g_eItems[StringToInt(sSelected)].iHandler == g_iPackageHandler)
 				DisplayStoreMenu(client, g_iSelectedItem[client]);
 			else 
@@ -3669,8 +3680,8 @@ public void Store_SaveClientInventory(int client)
 	if(g_eClients[client].iCredits==-1 && g_eClients[client].iItems==-1)
 		return;
 	
-	char m_szQuery[256];
-	char m_szType[16];
+	char m_szQuery[2048];
+	char m_szType[32];
 	char m_szUniqueId[PLATFORM_MAX_PATH];
 	
 	for(int i=0;i<g_eClients[client].iItems;++i)
@@ -4309,6 +4320,20 @@ int Store_GetLowestPrice(int itemid)
 			m_iLowest = g_ePlans[itemid][i].iPrice_Plan;
 	}
 	return m_iLowest;
+}
+
+int Store_GetHighestPrice(int itemid)
+{
+	if(g_eItems[itemid].iPlans==0)
+		return g_eItems[itemid].iPrice;
+
+	int m_iHighest=g_ePlans[itemid][0].iPrice_Plan;
+	for(int i=1;i<g_eItems[itemid].iPlans;++i)
+	{
+		if(m_iHighest<g_ePlans[itemid][i].iPrice_Plan)
+			m_iHighest = g_ePlans[itemid][i].iPrice_Plan;
+	}
+	return m_iHighest;
 }
 
 int Store_GetClientItemPrice(int client,int itemid)

@@ -95,6 +95,8 @@ native bool Store_HasClientItem(int client, int itemid);
 native int Store_IterateEquippedItems(int client,int &start, bool attributes=false);
 native int Store_GetItemIdbyUniqueId(char[] unique_id);
 
+native int Store_GetPlansPrice(int itemid, int highest = 0);
+
 native int Store_SQLEscape(char[] escapeString);
 native int Store_SQLQuery(char[] query, SQLQueryCallback callback, any data);
 native int Store_SQLTransaction(Transaction tnx, SQLTxnSuccess callback, any data);
