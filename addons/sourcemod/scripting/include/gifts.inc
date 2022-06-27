@@ -5,7 +5,7 @@
 
 public SharedPlugin __pl_gifts = 
 {
-	name = "[ANY] Gifts",
+	name = "gifts",
 	file = "gifts.smx",
 #if defined REQUIRE_PLUGIN
 	required = 1
