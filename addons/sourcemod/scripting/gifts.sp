@@ -78,7 +78,7 @@ public void OnPluginStart()
 	else
 		g_cvarModel = RegisterConVar("sm_gifts_model", "<you should set some gift model>", "Model file for the gift", TYPE_STRING);
 	
-	g_cvarSize = CreateConVar("sm_gifts_size", "0", "Size of the gift collision box in hammer/csgo units.");
+	g_cvarSize = CreateConVar("sm_gifts_size", "0", "0 = Normal collision\nany integer = Size of the gift collision box in hammer/csgo units (collision fix)\nTry default collision, and use the fix if needed.\nFor csgo, this should be set to 20.", _, true, 0.0);
 
 	AutoExecConfig();
 
@@ -289,37 +289,51 @@ stock int Stock_SpawnGift(float position[3], const char[] model, float lifetime)
 {
 	int m_iGift;
 
-	if((m_iGift = CreateEntityByName("prop_dynamic_override")) != -1)
+	if ( (!g_cvarSize.BoolValue && (m_iGift = CreateEntityByName("prop_physics_override")) != -1) ||
+		 (g_cvarSize.BoolValue && (m_iGift = CreateEntityByName("prop_dynamic_override")) != -1)   )
 	{
 		char targetname[100], m_szModule[256];
 
 		Format(STRING(targetname), "gift_%i", m_iGift);
 
 		DispatchKeyValue(m_iGift, "model", model);
-		// DispatchKeyValue(m_iGift, "physicsmode", "2");
-		// DispatchKeyValue(m_iGift, "massScale", "1.0");
+		if (!g_cvarSize.BoolValue)
+		{
+			DispatchKeyValue(m_iGift, "physicsmode", "2");
+			DispatchKeyValue(m_iGift, "massScale", "1.0");
+		}
 		DispatchKeyValue(m_iGift, "targetname", targetname);
 		DispatchSpawn(m_iGift);
 		
-		SetEntProp(m_iGift, Prop_Send, "m_usSolidFlags", 12); // old: 8 - changed to 12 to prevent solid errors, and added a collision fix below
 		SetEntProp(m_iGift, Prop_Send, "m_CollisionGroup", 1);
 		
-		// collision fix by azalty
-		SetEntProp(m_iGift, Prop_Send, "m_nSolidType", 2); // Bounding Box
-		float halfSize = g_cvarSize.FloatValue / 2.0;
-		// 0 = center
-		// as this is a box or a rectangle, we can set for example {-10.0, -10.0, -10.0} and {10.0, 10.0, 10.0} to make a total size of 20.
-		float minbounds[3];
-		minbounds[0] = -halfSize;
-		minbounds[1] = -halfSize;
-		minbounds[2] = -halfSize;
-		float maxbounds[3];
-		maxbounds[0] = halfSize;
-		maxbounds[1] = halfSize;
-		maxbounds[2] = halfSize;
-		SetEntPropVector(m_iGift, Prop_Send, "m_vecMins", minbounds);
-		SetEntPropVector(m_iGift, Prop_Send, "m_vecMaxs", maxbounds);
-		// -- end of collision fix --
+		if (g_cvarSize.BoolValue)
+		{
+			// Custom parameters
+			SetEntProp(m_iGift, Prop_Send, "m_usSolidFlags", 12); // old: 8 - changed to 12 to prevent solid errors, and added a collision fix below
+			
+			// collision fix by azalty
+			SetEntProp(m_iGift, Prop_Send, "m_nSolidType", 2); // Bounding Box
+			float halfSize = g_cvarSize.FloatValue / 2.0;
+			// 0 = center
+			// as this is a box or a rectangle, we can set for example {-10.0, -10.0, -10.0} and {10.0, 10.0, 10.0} to make a total size of 20.
+			float minbounds[3];
+			minbounds[0] = -halfSize;
+			minbounds[1] = -halfSize;
+			minbounds[2] = -halfSize;
+			float maxbounds[3];
+			maxbounds[0] = halfSize;
+			maxbounds[1] = halfSize;
+			maxbounds[2] = halfSize;
+			SetEntPropVector(m_iGift, Prop_Send, "m_vecMins", minbounds);
+			SetEntPropVector(m_iGift, Prop_Send, "m_vecMaxs", maxbounds);
+			// -- end of collision fix --
+		}
+		else
+		{
+			// Default collision and parameters
+			SetEntProp(m_iGift, Prop_Send, "m_usSolidFlags", 8);
+		}
 		
 		if(lifetime > 0.0)
 		{
@@ -389,7 +403,7 @@ public Action OnStartTouch(int m_iGift, int client)
 
 	int m_iRotator = GetEntPropEnt(m_iGift, Prop_Send, "m_hEffectEntity");
 	if(m_iRotator && IsValidEdict(m_iRotator))
-		AcceptEntityInput(m_iRotator, "Kill");
+		RemoveEntity(m_iRotator);
 	CreateTimer(0.0, RemoveEntityGift, m_iGift);
 
 	if(g_eSpawnedGifts[m_iGift].hPlugin != INVALID_HANDLE)
@@ -415,9 +429,9 @@ public Action OnStartTouch(int m_iGift, int client)
 	}
 }
 
-public Action RemoveEntityGift(Handle timer, int m_iGift)
+Action RemoveEntityGift(Handle timer, int m_iGift)
 {
 	if(IsValidEntity(m_iGift))
-		AcceptEntityInput(m_iGift, "Kill");
+		RemoveEntity(m_iGift);
 	return Plugin_Stop;
 }
