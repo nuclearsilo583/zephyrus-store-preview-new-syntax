@@ -5,12 +5,9 @@
 - TF2: now supported
 
 # Newly added
-~~- Update (10/9/2021), the store is rewritten for new enum struct syntax and can compile in SM 1.11 without any errors/warning.~~
-~~[image](https://user-images.githubusercontent.com/58926275/136654734-1741fedc-c541-4e5a-bc4f-ad0283750240.png)~~
+- Update syntax to stable SM 1.11 (since SM 1.11 is now the stable branch for sourcemod. Any error that cause with SM 1.10 will be no longer supported).
 
-# zephyrus-store (support SM 1.10 and SM 1.11).
-WARNING: THERE ARE MANY WARNING ABOUT RETURN VALUE IN NEWEST 1.11 COMPILER AND YOU CAN IGNORE THOSE.
-
+# zephyrus-store (compatible with SM 1.11).
 My rewritten zephyrus store
 
 Store system is mainly support for CS:GO.
@@ -19,6 +16,8 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 
 # Modules that has preview support:
 - Player Skin (by zephyrus) [youtube](https://www.youtube.com/watch?v=pzkwoiB-jlo)
+  
+  P/S: You may get script executed timeout if you add too many model and the precache sometime get bugged and cause server to crash. Please use [these](https://forums.alliedmods.net/showthread.php?p=602270) [plugin](https://forums.alliedmods.net/showthread.php?t=269792) to precache and add all the required file to the download table.
 - Custom weapon Model Skin  (by bbs.93x.net) [youtube](https://www.youtube.com/watch?v=TT7CwhIIPEc)
 - Life live pet (with idle2 animation config - Rare idle animation => Support for spawn and death animation soon) by Totenfluch [youtube](https://www.youtube.com/watch?v=Fn-_MbWzL_Q)
 - Custom MVP music (by kento and shanapu)
