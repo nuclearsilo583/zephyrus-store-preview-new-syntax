@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "6.8"
+#define PLUGIN_VERSION "7.0 Stable SM 1.11"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -431,6 +431,8 @@ public Action LoadConfig(Handle timer, any data)
 {
 	// Load the config file
 	Store_ReloadConfig();
+	
+	return Plugin_Continue;
 }
 
 public void OnPluginEnd()
@@ -634,6 +636,8 @@ public int MenuHandler_ResetPlayer(Handle menu, MenuAction action,int client,int
 	}
 	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 		RedisplayAdminMenu(g_hAdminMenu, client);
+		
+	return 0;
 }
 
 //////////////////////////////
@@ -678,7 +682,7 @@ public int MenuHandler_GiveCredits(Handle menu, MenuAction action,int client,int
 		if(target == 0)
 		{
 			AdminMenu_GiveCredits(g_hAdminMenu, TopMenuAction_SelectOption, g_eStoreAdmin, client, "", 0);
-			return;
+			return 0;
 		}
 
 		SetMenuTitle(m_hMenu, "Choose the amount of credits\n%N - %d credits", target, g_eClients[target].iCredits);
@@ -693,6 +697,8 @@ public int MenuHandler_GiveCredits(Handle menu, MenuAction action,int client,int
 	}
 	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 		RedisplayAdminMenu(g_hAdminMenu, client);
+		
+	return 0;
 }
 
 public int MenuHandler_GiveCredits2(Handle menu, MenuAction action,int client,int param2)
@@ -708,6 +714,8 @@ public int MenuHandler_GiveCredits2(Handle menu, MenuAction action,int client,in
 	}
 	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 		AdminMenu_GiveCredits(g_hAdminMenu, TopMenuAction_SelectOption, g_eStoreAdmin, client, "", 0);
+		
+	return 0;
 }
 
 //////////////////////////////
@@ -749,7 +757,7 @@ public int MenuHandler_ViewInventory(Handle menu, MenuAction action,int client,i
 		if(target == 0)
 		{
 			AdminMenu_ViewInventory(g_hAdminMenu, TopMenuAction_SelectOption, g_eStoreAdmin, client, "", 0);
-			return;
+			return 0;
 		}
 
 		g_bInvMode[client]=true;
@@ -758,6 +766,8 @@ public int MenuHandler_ViewInventory(Handle menu, MenuAction action,int client,i
 	}
 	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
 		RedisplayAdminMenu(g_hAdminMenu, client);
+		
+	return 0;
 }
 
 //////////////////////////////////////
@@ -895,11 +905,15 @@ public int Native_IsInRecurringMenu(Handle plugin, int numParams)
 public int Native_SetClientRecurringMenu(Handle plugin, int numParams)
 {
 	g_bIsInRecurringMenu[GetNativeCell(1)] = view_as<bool>(GetNativeCell(2));
+	
+	return 0;
 }
 
 public any Native_SetDataIndex(Handle plugin,int numParams)
 {
 	g_eItems[GetNativeCell(1)].iData = GetNativeCell(2);
+	
+	return 0;
 }
 
 public any Native_GetDataIndex(Handle plugin,int numParams)
@@ -939,11 +953,15 @@ public any Native_DisplayPreviousMenu(Handle plugin,int numParams)
 		DisplayPlanMenu(client, g_iSelectedItem[client]);
 	else if(g_iMenuNum[client] == 0)
 		RedisplayAdminMenu(g_hAdminMenu, client);
+		
+	return 0;
 }
 
 public any Native_SetClientMenu(Handle plugin,int numParams)
 {
 	g_iMenuNum[GetNativeCell(1)] = GetNativeCell(2);
+	
+	return 0;
 }
 
 public any Native_GetClientCredits(Handle plugin,int numParams)
@@ -1018,6 +1036,8 @@ public int Native_DisplayConfirmMenu(Handle plugin, int numParams)
 
 	menu.ExitButton = false;
 	menu.Display(client, MENU_TIME_FOREVER);
+	
+	return 0;
 }
 
 public int Native_ShouldConfirm(Handle plugin,int numParams)
@@ -1028,6 +1048,8 @@ public int Native_ShouldConfirm(Handle plugin,int numParams)
 public int Native_GetItem(Handle plugin,int numParams)
 {
 	SetNativeArray(2, view_as<int>(g_eItems[GetNativeCell(1)]), sizeof(g_eItems[])); 
+	
+	return 0;
 }
 
 public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
@@ -1047,6 +1069,8 @@ public int Native_GetItemIdbyUniqueId(Handle plugin, int numParams)
 public int Native_GetHandler(Handle plugin,int numParams)
 {
 	SetNativeArray(2, view_as<int>(g_eTypeHandlers[GetNativeCell(1)]), sizeof(g_eTypeHandlers[])); 
+	
+	return 0;
 }
 
 public int Native_GetClientItem(Handle plugin,int numParams)
@@ -1086,6 +1110,8 @@ public int Native_GiveItem(Handle plugin,int numParams)
 	Store_SaveClientData(client);
 	Store_SaveClientInventory(client);
 	Store_SaveClientEquipment(client);
+	
+	return 0;
 }
 
 public int Native_RemoveItem(Handle plugin,int numParams)
@@ -1109,6 +1135,8 @@ public int Native_RemoveItem(Handle plugin,int numParams)
 	Store_SaveClientData(client);
 	Store_SaveClientInventory(client);
 	Store_SaveClientEquipment(client);
+	
+	return 0;
 }
 
 public int Native_GetClientTarget(Handle plugin,int numParams)
@@ -1328,6 +1356,8 @@ public int Native_LogMessage(Handle plugin, int numParams)
 	Format(sBuffer, sizeof(sBuffer), "Plugin: %s - %s", sPlugin, sBuffer);
 
 	StoreLogMessage(client, level, sBuffer);
+	
+	return 0;
 }
 
 void StoreLogMessage(int client = 0, int level, char[] message, any ...)
@@ -1790,6 +1820,8 @@ public int Store_ItemNameMenu_Handler(Menu hEdictMenu, MenuAction hAction, int c
 			}
 		}
 	}
+	
+	return 0;
 }
 
 
@@ -2284,7 +2316,7 @@ public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param
 					char m_szTitle[128];
 					Format(STRING(m_szTitle), "%t", "Confirm_Sell", g_eItems[g_iSelectedItem[client]].szName, g_eTypeHandlers[g_eItems[g_iSelectedItem[client]].iHandler].szType, RoundToFloor(g_eItems[g_iSelectedItem[client]].iPrice*view_as<float>(g_eCvars[g_cvarSellRatio].aCache)));
 					Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Store, 1);
-					return;
+					return 0;
 				}
 				else
 				{
@@ -2324,7 +2356,7 @@ public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param
 				if (g_eItems[m_iId].bPreview && !Store_HasClientItem(target, m_iId) && g_eItems[m_iId].iPrice != -1 && g_eItems[m_iId].iPlans == 0)
 				{
 					DisplayPreviewMenu(client, m_iId);
-					return;
+					return 0;
 				}
 				else 
 				//if((g_eClients[target][iCredits]>=g_eItems[m_iId][iPrice] || g_eItems[m_iId][iPlans]>0 && g_eClients[target][iCredits]>=Store_GetLowestPrice(m_iId)) && !Store_HasClientItem(target, m_iId) && g_eItems[m_iId][iPrice] != -1)				
@@ -2334,7 +2366,7 @@ public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param
 					if(g_eItems[m_iId].iPlans > 0)
 					{
 						DisplayPlanMenu(client, m_iId);
-						return;
+						return 0;
 					}
 					else
 						if(g_eCvars[g_cvarConfirmation].aCache)
@@ -2342,7 +2374,7 @@ public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param
 							char m_szTitle[128];
 							Format(STRING(m_szTitle), "%t", "Confirm_Buy", g_eItems[m_iId].szName, g_eTypeHandlers[g_eItems[m_iId].iHandler].szType);
 							Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Store, 0);
-							return;
+							return 0;
 						}
 						else
 							Store_BuyItem(target, m_iId);
@@ -2378,6 +2410,8 @@ public int MenuHandler_Store(Handle menu, MenuAction action,int client,int param
 	else if(action==MenuAction_Cancel)
 		if (param2 == MenuCancel_ExitBack)
 			Store_DisplayPreviousMenu(client);
+			
+	return 0;
 }
 
 public void DisplayItemMenu(int client,int itemid)
@@ -2598,7 +2632,7 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 				//g_eItems[g_iSelectedItem[client]][szName], g_eTypeHandlers[g_eItems[g_iSelectedItem[client]][iHandler]][szType]
 				Format(sTitle, sizeof(sTitle), "%t", "Confirm_Buy", g_eItems[g_iSelectedItem[client]].szName, g_eTypeHandlers[g_eItems[g_iSelectedItem[client]].iHandler].szType);
 				Store_DisplayConfirmMenu(client, sTitle, MenuHandler_Store, 0);
-				return;
+				return 0;
 			}
 			else
 			{
@@ -2655,7 +2689,7 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 			{
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "Must be Alive");
 				DisplayPreviewMenu(client, itemid);
-				return;
+				return 0;
 			}
 			if (g_eCvars[g_cvarPreview].aCache)
 			{
@@ -2711,6 +2745,8 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 			Store_DisplayPreviousMenu(client);
 		}
 	}
+	
+	return 0;
 }
 
 public void DisplayPlanMenu(int client, int itemid)
@@ -2801,7 +2837,7 @@ public int MenuHandler_Plan(Menu menu, MenuAction action, int client, int param2
 				CPrintToChat(client, "%s%s", g_sChatPrefix, " Preview disabled");
 				DisplayPlanMenu(client, itemid);
 			}
-			return;
+			return 0;
 		}
 
 		g_iSelectedPlan[client] = param2;
@@ -2831,6 +2867,8 @@ public int MenuHandler_Plan(Menu menu, MenuAction action, int client, int param2
 			Store_DisplayPreviousMenu(client);
 		}
 	}
+	
+	return 0;
 }
 
 public int MenuHandler_Item(Handle menu, MenuAction action,int client,int param2)
@@ -2953,6 +2991,8 @@ public int MenuHandler_Item(Handle menu, MenuAction action,int client,int param2
 	else if(action==MenuAction_Cancel)
 		if (param2 == MenuCancel_ExitBack)
 			Store_DisplayPreviousMenu(client);
+			
+	return 0;
 }
 
 public void DisplayPlayerMenu(int client)
@@ -3008,7 +3048,7 @@ public int MenuHandler_Gift(Handle menu, MenuAction action,int client,int param2
 			if(!m_iReceiver)
 			{
 				Chat(client, "%t", "Gift Player Left");
-				return;
+				return 0;
 			}
 			Store_GiftItem(target, m_iReceiver, m_iItem);
 			g_iMenuNum[client] = 1;
@@ -3024,7 +3064,7 @@ public int MenuHandler_Gift(Handle menu, MenuAction action,int client,int param2
 			if(!m_iReceiver)
 			{
 				Chat(client, "%t", "Gift Player Left");
-				return;
+				return 0;
 			}
 				
 			m_iItem = Store_GetClientItemId(target, g_iSelectedItem[client]);
@@ -3034,7 +3074,7 @@ public int MenuHandler_Gift(Handle menu, MenuAction action,int client,int param2
 				char m_szTitle[128];
 				Format(STRING(m_szTitle), "%t", "Confirm_Gift", g_eItems[g_iSelectedItem[client]].szName, g_eTypeHandlers[g_eItems[g_iSelectedItem[client]].iHandler].szType, g_eClients[m_iReceiver].szName_Client);
 				Store_DisplayConfirmMenu(client, m_szTitle, MenuHandler_Gift, m_iId);
-				return;
+				return 0;
 			}
 			else
 				Store_GiftItem(target, m_iReceiver, m_iItem);
@@ -3044,6 +3084,8 @@ public int MenuHandler_Gift(Handle menu, MenuAction action,int client,int param2
 	else if(action==MenuAction_Cancel)
 		if (param2 == MenuCancel_ExitBack)
 			DisplayItemMenu(client, g_iSelectedItem[client]);
+			
+	return 0;
 }
 
 public int MenuHandler_Confirm(Menu menu, MenuAction action, int client, int param2)
@@ -3085,6 +3127,8 @@ public int MenuHandler_Confirm(Menu menu, MenuAction action, int client, int par
 			Store_DisplayPreviousMenu(client);
 		}
 	}
+	
+	return 0;
 }
 
 //////////////////////////////
@@ -4003,6 +4047,8 @@ public Action Timer_ReloadConfig(Handle timer, DataPack pack)
 		Store_ReloadConfig();
 		ServerCommand("sm_map %s", map);
 	}
+	
+	return Plugin_Continue;
 }
 
 public void Store_ReloadConfig()
@@ -4230,7 +4276,7 @@ any Store_UseItem(int client,int itemid, bool synced=false,int slot=0)
 	return 0;
 }
 
-any Store_UnequipItem(int client,int itemid, bool fn=true)
+void Store_UnequipItem(int client,int itemid, bool fn=true)
 {
 	int m_iSlot = 0;
 	if(fn && itemid > 0 && g_eTypeHandlers[g_eItems[itemid].iHandler].fnRemove != INVALID_FUNCTION)
