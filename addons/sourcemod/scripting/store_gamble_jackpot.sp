@@ -67,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Jackpot gamble module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -276,6 +276,8 @@ public int PanelHandler_Info(Handle menu, MenuAction action, int client, int par
 	}
 
 	delete menu;
+	
+	return 0;
 }
 
 public Action Command_JackPot(int client, int args)
@@ -505,7 +507,7 @@ void Reset_JackPot()
 	g_iPause = gc_iPause.IntValue + GetTime();
 }
 
-int SecToTime(int time, char[] buffer, int size)
+void SecToTime(int time, char[] buffer, int size)
 {
 	int iHours = 0;
 	int iMinutes = 0;

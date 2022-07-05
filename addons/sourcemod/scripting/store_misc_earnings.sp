@@ -107,7 +107,7 @@ public Plugin myinfo =
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo, azalty", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "2.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -1180,7 +1180,7 @@ void GoThroughConfig(KeyValues &kv)
 				g_iDaily[g_iCount][5] = kv.GetNum("6", 0);
 				g_iDaily[g_iCount][6] = kv.GetNum("7", 0);
 			}
-			while kv.GotoNextKey();
+			while (kv.GotoNextKey());
 
 			kv.GoBack();
 		}
@@ -1188,7 +1188,7 @@ void GoThroughConfig(KeyValues &kv)
 		g_iCount++;
 
 	}
-	while kv.GotoNextKey();
+	while (kv.GotoNextKey());
 }
 
 bool CheckFlagBits(int client, int flagsNeed, int flags = -1)
@@ -1257,7 +1257,7 @@ bool IsValidClient(int client, bool bots = true, bool dead = true)
 	return true;
 }
 
-int SecToTime(int time, char[] buffer, int size)
+void SecToTime(int time, char[] buffer, int size)
 {
 	int iHours = 0;
 	int iMinutes = 0;

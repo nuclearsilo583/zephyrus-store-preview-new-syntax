@@ -146,6 +146,8 @@ public Action OnLogAction(Handle source, Identity ident,int client,int target, c
 		}
 		mapend = true;
 	}
+	
+	return Plugin_Continue;
 }
 
 public void OnClientDisconnect(int client)
@@ -561,6 +563,8 @@ public Action Timer_RemoveEfx(Handle timer, int reference)
 	{
 		AcceptEntityInput(iEnt, "kill");
 	}
+	
+	return Plugin_Continue;
 }
 
 int PrecacheParticleSystem(const char[] particleSystem)

@@ -9,7 +9,7 @@ public Plugin myinfo =
 	name = "Store - Admin / Vip Flags Fore Store",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -88,4 +88,5 @@ public int AdminGroup_Equip(int client,int id)
 
 public int AdminGroup_Remove(int client,int id)
 {
+	return 0;
 }

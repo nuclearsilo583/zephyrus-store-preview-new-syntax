@@ -14,7 +14,7 @@ char g_sMenuExit[64];
 
 int g_iRand1, g_iRand2;
 int timeleft;
-int g_iManualAmount[MAXPLAYERS + 1] = 100;
+int g_iManualAmount[MAXPLAYERS + 1] = {100, ...};
 ConVar	g_cvMinAmount,
 		g_cvMaxAmount,
 		g_cvMinNumber,
@@ -30,9 +30,9 @@ float timepassed;
 public Plugin myinfo = 
 {
 	name = "High or Low",
-	author = "SheriF & AiDN™",
+	author = "SheriF & AiDN™, nuclear silo",
 	description = "Higher & Lower Gamble for Zephyrus's store by SheriF, for nuclear silo's edited store by AiDN™",
-	version = "1.1"
+	version = "1.2"
 };
 
 public void OnPluginStart()
@@ -104,6 +104,8 @@ public int menuHandler_HolMenu(Menu menu, MenuAction action, int client, int ite
 			case 3:	Panel_GameInfo(client);
 		}
 	}
+	
+	return 0;
 }
 
 void StartGame(int client)
@@ -212,6 +214,8 @@ public int menuHandler_HolMenu1 (Menu menu, MenuAction action, int client, int I
 			}
 		}
 	}
+	
+	return 0;
 }
 
 
@@ -298,6 +302,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 void ReadCoreCFG()

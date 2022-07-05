@@ -24,7 +24,7 @@ public Plugin myinfo = {
 	name = "Store Giveaway",
 	author = "nuclear silo",
 	description = "Giveaway plugin compatible with zephyrus store.",
-	version = "1.4",
+	version = "1.5",
 	url = ""
 }
 
@@ -193,7 +193,7 @@ public Action Repeater(Handle timer)
 			KillTimer(timers);
 			timers = INVALID_HANDLE;
 		}
-		return;
+		return Plugin_Stop;
 	}
 	/*if (number >=7)
 	{
@@ -206,6 +206,7 @@ public Action Repeater(Handle timer)
 		Format(sBuffer, sizeof(sBuffer), "%t" , "Giveaway remaining time", number);
 		PrintCenterTextAll(sBuffer);
 	}
+	return Plugin_Continue;
 }
 
 stock int GetRandomPlayer()

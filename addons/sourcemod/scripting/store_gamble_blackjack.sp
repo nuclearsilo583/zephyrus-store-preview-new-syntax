@@ -58,7 +58,7 @@ public Plugin myinfo =
 	name = "Blackjack",
 	author = "HerrMagic and Originalz ft. Jannik, AiDN™, nuclear silo",
 	description = "Blackjack game Zephyrus's , nuclear silo's edited store",
-	version = "1.4"
+	version = "1.5"
 }
 
 public OnPluginStart()
@@ -790,6 +790,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 public Action Timer_DealerThink(Handle timer, any userid)

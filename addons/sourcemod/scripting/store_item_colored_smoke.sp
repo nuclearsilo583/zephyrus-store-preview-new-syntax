@@ -30,7 +30,7 @@ enum struct ColoredSmoke
 
 ColoredSmoke g_eColoredSmoke[STORE_MAX_ITEMS];
 
-bool g_bEquipt[MAXPLAYERS + 1] = false;
+bool g_bEquipt[MAXPLAYERS + 1] = {false, ...};
 
 int g_iColoredSmoke = 0;
 
@@ -44,7 +44,7 @@ public Plugin myinfo =
 	name = "Store - Colored Smoke Module",
 	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -71,9 +71,10 @@ public void ColoredSmoke_OnMapStart()
 	}
 }
 
-public int ColoredSmoke_Reset()
+public void ColoredSmoke_Reset()
 {
 	g_iColoredSmoke = 0;
+	
 }
 
 public bool ColoredSmoke_Config(Handle &kv,int itemid)

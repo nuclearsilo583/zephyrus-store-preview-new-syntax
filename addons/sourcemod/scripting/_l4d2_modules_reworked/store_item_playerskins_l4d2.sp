@@ -48,10 +48,10 @@ char g_sChatPrefix[128];
 
 public Plugin myinfo = 
 {
-	name = "Store - Player Skin Module (No ZR version)",
+	name = "Store - Player Skin Module",
 	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -109,7 +109,7 @@ public void PlayerSkins_OnMapStart()
 	}
 }
 
-public int PlayerSkins_Reset()
+public void PlayerSkins_Reset()
 {
 	g_iPlayerSkins = 0;
 }

@@ -48,7 +48,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.8", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -598,6 +598,8 @@ public int Handler_Voucher(Menu menu, MenuAction action, int client, int itemNum
 	{
 		delete menu;
 	}
+	
+	return 0;
 }
 
 void Menu_CreateVoucherLimit(int client)
@@ -651,6 +653,8 @@ public int Handler_Createunlimited(Menu menu, MenuAction action, int client, int
 	{
 		delete menu;
 	}
+	
+	return 0;
 }
 
 /******************************************************************************
@@ -861,10 +865,10 @@ public int Handler_NullCancelInput(Handle menu, MenuAction action, int client, i
 		delete g_hTimerInput[client];
 		g_iChatType[client] = -1;
 		EmitSoundToClient(client, g_sMenuExit);
-		return;
+		//return;
 	}
 
-	return;
+	return 0;
 }
 
 // Menu Handler for Panels
@@ -877,12 +881,12 @@ public int Handler_NullCancel(Handle menu, MenuAction action, int param1, int pa
 			default: // cancel
 			{
 				delete g_hTimerInput[param1];
-				return;
+				//return;
 			}
 		}
 	}
 
-	return;
+	return 0;
 }
 
 
@@ -899,12 +903,12 @@ public int Handler_NullCancelVoucher(Handle menu, MenuAction action, int client,
 				Menu_Voucher(client);
 				
 				EmitSoundToClient(client, g_sMenuExit);
-				return;
+				//return;
 			}
 		}
 	}
 
-	return;
+	return 0;
 }
 
 public Action Timer_Input2Late(Handle tmr, int userid)
@@ -991,6 +995,8 @@ public int noMenuHandler(Handle menu, MenuAction action, int client, int param2)
 	else if(action==MenuAction_Cancel)
 		if (param2 == MenuCancel_ExitBack)
 			Menu_Voucher(client);
+			
+	return 0;
 }
 /******************************************************************************
                   End

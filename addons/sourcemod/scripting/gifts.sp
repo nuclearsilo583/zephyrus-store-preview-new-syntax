@@ -4,11 +4,12 @@
 #include <gifts>
 #include <zephstocks>
 
-#define PLUGIN_VERSION "3.1"
+#define PLUGIN_VERSION "3.2"
 
 //Pragma
 #pragma semicolon 1
 #pragma newdecls required
+#pragma dynamic 131072 
 
 enum struct Module
 {
@@ -384,14 +385,14 @@ stock int Stock_SpawnGift(float position[3], const char[] model, float lifetime)
 public Action OnStartTouch(int m_iGift, int client)
 {
 	if(!(0<client<=MaxClients))
-		return;
+		return Plugin_Handled;
 
 	if(g_eConditions[client]==Condition_InCondition)
-		return;
+		return Plugin_Handled;
 
 	if(g_eSpawnedGifts[m_iGift].hPlugin != INVALID_HANDLE)
 		if(g_eSpawnedGifts[m_iGift].iOwner == client)
-			return;
+			return Plugin_Handled;
 	
 	Action result = Plugin_Continue;
 	Call_StartForward(gF_OnClientGrabGift);
@@ -399,7 +400,7 @@ public Action OnStartTouch(int m_iGift, int client)
 	Call_PushCell(m_iGift);
 	Call_Finish(result);
 	if (result >= Plugin_Handled)
-		return;
+		return Plugin_Handled;
 
 	int m_iRotator = GetEntPropEnt(m_iGift, Prop_Send, "m_hEffectEntity");
 	if(m_iRotator && IsValidEdict(m_iRotator))
@@ -427,6 +428,8 @@ public Action OnStartTouch(int m_iGift, int client)
 		Call_PushCell(m_iGift);
 		Call_Finish();
 	}
+	
+	return Plugin_Continue;
 }
 
 Action RemoveEntityGift(Handle timer, int m_iGift)

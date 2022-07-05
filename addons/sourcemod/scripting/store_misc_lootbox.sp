@@ -89,7 +89,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.9", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -153,6 +153,8 @@ public Action OnLogAction(Handle source, Identity ident,int client,int target, c
 		}
 		mapend = true;
 	}
+	
+	return Plugin_Continue;
 }
 
 public void Event_End(Event event, const char[] name, bool dontBroadcast)
@@ -612,6 +614,8 @@ public Action Timer_RemoveEfx(Handle timer, int reference)
 	{
 		AcceptEntityInput(iEnt, "kill");
 	}
+	
+	return Plugin_Continue;
 }
 
 int PrecacheParticleSystem(const char[] particleSystem)

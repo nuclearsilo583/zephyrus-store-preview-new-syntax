@@ -32,7 +32,7 @@ public Plugin myinfo =
 	name = "Store - Tracers Module",
 	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -171,7 +171,7 @@ public Action Tracers_BulletImpact(Handle event,const char[] name, bool dontBroa
 	}
 	
 	if (numClients < 1)
-		return;
+		return Plugin_Handled;
 	
 	if(m_iEquipped >= 0)
 	{
@@ -194,5 +194,5 @@ public Action Tracers_BulletImpact(Handle event,const char[] name, bool dontBroa
 		TE_Send(clients, numClients, 0.0);
 	}
 
-	//return Plugin_Continue;
+	return Plugin_Continue;
 }

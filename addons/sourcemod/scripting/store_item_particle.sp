@@ -69,7 +69,7 @@ public Plugin myinfo =
 	name = "Store - Particle item module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -449,6 +449,8 @@ public Action Timer_Enable_Particle(Handle tmr, int ent)
 
 		SDKHook(ent, SDKHook_SetTransmit, Hook_SetTransmit);
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action Hook_SetTransmit(int entity, int client)
@@ -490,6 +492,8 @@ public Action Timer_ClearParticle(Handle timer, int reference)
 	{
 		AcceptEntityInput(entity, "Kill");
 	}
+	
+	return Plugin_Continue;
 }
 
 int PrecacheParticleSystem(const char[] particleSystem)

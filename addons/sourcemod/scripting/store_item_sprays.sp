@@ -22,6 +22,15 @@ Handle g_hTimerPreview[MAXPLAYERS + 1];
 int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 char g_sChatPrefix[128];
 
+public Plugin myinfo = 
+{
+	name = "Store - Item Sprays",
+	author = "zephyrus, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	description = "",
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	url = ""
+};
+
 public void OnPluginStart()
 {
 	g_cvarSprayLimit = RegisterConVar("sm_store_spray_limit", "30", "Number of seconds between two sprays", TYPE_INT);
@@ -76,6 +85,8 @@ public Action OnPlayerRunCmd(int client,int &buttons)
 	{
 		Sprays_Create(client);
 	}
+	
+	return Plugin_Continue;
 }
 
 public void Sprays_Reset()

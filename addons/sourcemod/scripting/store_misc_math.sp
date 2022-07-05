@@ -39,9 +39,9 @@ ConVar MinimumPlayers;
 public Plugin myinfo =
 {
 	name = "Math Quiz",
-	author = "Arkarr & Simon & AiDN™",
+	author = "Arkarr & Simon & AiDN™, nuclear silo",
 	description = "Give credits on correct math answer, to nuclear silo's edited store by AiDN™.",
-	version = "1.2",
+	version = "1.3",
 	url = ""
 };
  
@@ -103,6 +103,8 @@ public void OnConfigsExecuted()
 public Action EndQuestion(Handle timer, any data)
 {
 	SendEndQuestion(-1);
+	
+	return Plugin_Continue;
 }
 
 public int PlayerCount()
@@ -164,6 +166,8 @@ public Action CreateQuestion(Handle timer, any data)
 	else
 	{
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action Command_Say(int client, const char[] command, int args)
@@ -241,6 +245,8 @@ public Action AnswerQuestion(Handle timer, Handle pack)
 	else {
 		CPrintToChatAll(str);
 	}
+	
+	return Plugin_Continue;
 }
 
 void ReadCoreCFG()

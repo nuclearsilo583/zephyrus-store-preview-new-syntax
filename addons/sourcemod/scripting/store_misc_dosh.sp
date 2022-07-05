@@ -27,9 +27,9 @@ int g_iCount;
 public Plugin myinfo = 
 {
 	name = "Store - Dosh money module",
-	author = "shanapu, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "shanapu, AiDN™, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -196,6 +196,8 @@ public Action Timer_Money(Handle timer, int reference)
 
 		CreateTimer(0.2, Timer_Money, EntIndexToEntRef(entity));
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action Timer_Remove(Handle timer, int reference)
@@ -222,6 +224,8 @@ public Action Timer_Remove(Handle timer, int reference)
 			}
 		}
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action OnUse(int entity, int pusher)
@@ -230,6 +234,8 @@ public Action OnUse(int entity, int pusher)
 	{
 		PickUpMoney(pusher, entity);
 	}
+	
+	return Plugin_Handled;
 }
 
 void PickUpMoney(int client, int entity)

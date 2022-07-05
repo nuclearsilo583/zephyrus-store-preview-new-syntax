@@ -11,6 +11,7 @@
 
 #pragma semicolon 1
 #pragma newdecls required
+#pragma dynamic 131072
 
 //new GAME_TF2 = false;
 native bool ZR_IsClientZombie(int client);
@@ -71,7 +72,7 @@ public Plugin myinfo =
 	name = "Store - Player Skin Module (No ZR + ZR, gloves support)",
 	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.8", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.9", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -239,7 +240,7 @@ public void PlayerSkins_OnMapStart()
 		g_bCTForcedSkin = false;
 }
 
-public int PlayerSkins_Reset()
+public void PlayerSkins_Reset()
 {
 	g_iPlayerSkins = 0;
 }
@@ -330,7 +331,7 @@ public void Arms_OnMapStart()
 	}
 }
 
-public int Arms_Reset()
+public void Arms_Reset()
 {
 	g_iPlayerArms = 0;
 }

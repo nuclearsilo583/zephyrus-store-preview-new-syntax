@@ -71,7 +71,7 @@ public Plugin myinfo =
 	name = "Store - Crowns gamble module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -305,6 +305,8 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 void Start_Crowns(int client)
@@ -577,6 +579,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 /******************************************************************************

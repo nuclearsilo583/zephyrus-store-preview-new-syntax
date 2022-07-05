@@ -21,7 +21,7 @@ public Plugin myinfo =
 	name = "Store - Crash gamble module",
 	author = "Emur, AiDN™, nuclear silo",
 	description = "Crash game Zephyrus's , nuclear silo's edited store",
-	version = "2.4"
+	version = "2.5"
 };
 
 //CVars
@@ -380,6 +380,8 @@ public Action resettimer(Handle timer)
 	}
 	seconds = GetConVarInt(gc_iStart);
 	isstarted = 0;
+	
+	return Plugin_Continue;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////		PANELS		//////////////////////////////////////////////////////////////////
@@ -706,6 +708,8 @@ public int crashmenu_go_handler(Menu menu, MenuAction action, int param1, int it
 	else if(action == MenuAction_Cancel)
 	{
 	}
+	
+	return 0;
 }
 
 public int crashmenu_handler(Menu menu, MenuAction action, int param1, int itemNum)
@@ -788,6 +792,8 @@ public int crashmenu_handler(Menu menu, MenuAction action, int param1, int itemN
 	else if(action == MenuAction_Cancel)
 	{    
 	}
+	
+	return 0;
 }
 
 
@@ -855,6 +861,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -66,7 +66,7 @@ public Plugin myinfo =
 	name = "Store - Teambet gamble module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compatible with Zephyrus Store, bugfix by AiDN™",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -430,6 +430,8 @@ public int Handler_TeamBet(Menu panel, MenuAction action, int client, int itemNu
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 // Open the choose color panel
@@ -563,6 +565,8 @@ public int Handler_ChooseTeam(Menu panel, MenuAction action, int client, int ite
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 public Action TeamBet_RoundStart(Event event, const char[] name, bool dontBroadcast)
@@ -707,6 +711,8 @@ public int Handler_WheelRun(Menu panel, MenuAction action, int client, int itemN
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 void ReadCoreCFG()

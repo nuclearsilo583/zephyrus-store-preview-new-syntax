@@ -45,7 +45,7 @@ public Plugin myinfo =
 	name = "Store - Info panel item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -108,4 +108,6 @@ public int PanelHandler_Info(Handle menu, MenuAction action, int client, int par
 			Store_DisplayPreviousMenu(client);
 		}
 	}
+	
+	return 0;
 }

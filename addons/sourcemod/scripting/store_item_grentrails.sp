@@ -28,7 +28,7 @@ public Plugin myinfo =
 	name = "Store Grenade Trail",
 	author = "zephyrus, nuclear silo",
 	description = "add grenade trail",
-	version = "1.0",
+	version = "1.1",
 	url = ""
 }
 
@@ -55,7 +55,7 @@ public void GrenadeTrails_OnMapStart()
 	}
 }
 
-public int GrenadeTrails_Reset()
+public void GrenadeTrails_Reset()
 {
 	g_iGrenadeTrails = 0;
 }

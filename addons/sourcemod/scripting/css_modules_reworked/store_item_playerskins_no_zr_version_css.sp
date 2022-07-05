@@ -8,7 +8,7 @@
 #include <store>
 #include <zephstocks>
 //#pragma newdecls required
-new GAME_TF2 = false;
+//new GAME_TF2 = false;
 new GAME_CSGO = false;
 
 enum struct PlayerSkin
@@ -61,9 +61,7 @@ public void OnPluginStart()
 	
 	GetGameFolderName(m_szGameDir, sizeof(m_szGameDir));
 	
-	if(strcmp(m_szGameDir, "tf")==0)
-		GAME_TF2 = true;
-	else if(strcmp(m_szGameDir, "csgo")==0)
+	if(strcmp(m_szGameDir, "csgo")==0)
 		GAME_CSGO = true;
 	
 	Store_RegisterHandler("playerskin", "model", PlayerSkins_OnMapStart, PlayerSkins_Reset, PlayerSkins_Config, PlayerSkins_Equip, PlayerSkins_Remove, true);
@@ -104,7 +102,7 @@ public void PlayerSkins_OnMapStart()
 	}
 }
 
-public int PlayerSkins_Reset()
+public void PlayerSkins_Reset()
 {
 	g_iPlayerSkins = 0;
 }

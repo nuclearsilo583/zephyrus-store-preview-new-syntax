@@ -24,7 +24,7 @@ public Plugin myinfo =
 	name = "Store - Laser sight item module",
 	author = "zephyrus, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -66,7 +66,7 @@ public void LaserSight_OnMapStart()
 	g_iLaserDot = PrecacheModel2(g_eCvars[g_cvarLaserDotMaterial].sCache, true);
 }
 
-public int LaserSight_Reset()
+public void LaserSight_Reset()
 {
 	g_iLaserColors = 0;
 }
@@ -91,6 +91,7 @@ public int LaserSight_Equip(int client,int id)
 
 public int LaserSight_Remove(int client,int id)
 {
+	return 0;
 }
 
 

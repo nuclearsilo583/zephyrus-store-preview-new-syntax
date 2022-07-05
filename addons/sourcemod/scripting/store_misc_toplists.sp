@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <cstrike>
+//#include <cstrike>
 
 #include <store>
 #include <zephstocks>
@@ -40,7 +40,7 @@ public Plugin myinfo =
 	name = "Store - Toplists module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -124,6 +124,8 @@ public int Handler_TopLists(Menu menu, MenuAction action, int client, int param2
 	{
 		delete menu;
 	}
+	
+	return 0;
 }
 
 public Action Command_TopLists(int client, int args)
@@ -427,6 +429,8 @@ public int Handler_Credits(Menu panel, MenuAction action, int client, int itemNu
 	}
 
 	delete panel;
+		
+	return 0;
 }
 
 //Call for the menu sounds from sourcemods core.cfg for the panel keys
@@ -469,7 +473,7 @@ public SMCResult Callback_CoreConfig(Handle parser, char[] key, char[] value, bo
 }
 
 //Format integer of N seconds into string of n hours, n minutes & n seconds
-int SecToTime(int time, char[] buffer, int size)
+void SecToTime(int time, char[] buffer, int size)
 {
 	int iHours = 0;
 	int iMinutes = 0;

@@ -65,7 +65,7 @@ public Plugin myinfo =
 	name = "Store - Coinflip gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -391,6 +391,8 @@ public int Handler_CoinFlip(Menu panel, MenuAction action, int client, int itemN
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 // Open the choose color panel
@@ -509,6 +511,8 @@ public int Handler_PlaceColor(Menu panel, MenuAction action, int client, int ite
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 void Start_CoinFlip(int client)
@@ -731,6 +735,8 @@ public int Handler_RunWin(Menu panel, MenuAction action, int client, int itemNum
 	}
 
 	delete panel;
+	
+	return 0;
 }
 
 // Inject the coin into panels

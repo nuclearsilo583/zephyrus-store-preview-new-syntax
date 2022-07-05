@@ -259,10 +259,10 @@ stock void Client_SetObserverMode(int client, Obs_Mode mode, bool updateMoveType
 		if (mp_forcecamera != INVALID_HANDLE) {
 			switch (mp_forcecamera.IntValue)
 			{
-				case OBS_ALLOW_TEAM: {
+				case 1: {
 					mode = OBS_MODE_IN_EYE;
 				}
-				case OBS_ALLOW_NONE: {
+				case 2: {
 					mode = OBS_MODE_FIXED; // don't allow anything
 				}
 			}
@@ -715,7 +715,7 @@ stock int Client_GetScore(int client)
  * @param value				Score.
  * @noreturn
  */
-stock int Client_SetScore(int client, int value)
+stock void Client_SetScore(int client, int value)
 {
 	SetEntProp(client, Prop_Data, "m_iFrags", value);
 }

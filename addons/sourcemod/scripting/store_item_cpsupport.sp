@@ -1,16 +1,16 @@
 #include <sourcemod>
 #include <sdktools>
-#include <colorvariables>
+//#include <colorvariables>
 
 #include <store>
 #include <zephstocks>
 
-//#include <multicolors> 
+#include <multicolors> 
 #include <chat-processor> 
 
 
 //Uncomment this line if your game is csgo or css.
-//#define csgo_css
+#define csgo_css
 #if defined csgo_css
 #include <cstrike>
 #endif
@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.4", 
+	version = "2.5", 
 	url = ""
 };
 
@@ -313,15 +313,17 @@ public int MenuHandler_Shop(Menu menu, MenuAction action, int client, int item)
 				CPrintToChat(client, "%s%t", g_sChatPrefix, "CP Disabled Color", client);
 				strcopy(g_szColors[client], sizeof(g_szColors), "disabled");
 
-				return;
+				//return;
 			}
 			
-			char configfile[PLATFORM_MAX_PATH];
-			configfile = g_sEliShop;
+			//char configfile[PLATFORM_MAX_PATH];
+			//configfile = g_sEliShop;
 			
 			kvtShop.Rewind();
 			if (!kvtShop.JumpToKey(info))
-				return;
+			{
+				return 0;
+			}
 			
 			//Main functions
 			char sItem[50], name[50];
@@ -333,6 +335,8 @@ public int MenuHandler_Shop(Menu menu, MenuAction action, int client, int item)
 			SQL_UpdatePerk(client, sItem);
 		}
 	}
+	
+	return 0;
 }
 
 
@@ -667,6 +671,8 @@ public void Store_SetClientClanTag(int client)
 public Action Clantag(Handle timer, int client)
 {
 	CS_SetClientClanTag(client, g_sTempClanTag[client]);
+	
+	return Plugin_Handled;
 }
 #endif
 

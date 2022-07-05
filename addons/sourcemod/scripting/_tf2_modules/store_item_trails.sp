@@ -53,7 +53,7 @@ public Plugin myinfo =
 	name = "Store - Trail Module [TF2:Modules]",
 	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -163,7 +163,7 @@ public void Trails_OnMapStart()
 	}
 }
 
-public int Trails_Reset()
+public void Trails_Reset()
 {
 	g_iTrails = 0;
 }
@@ -319,6 +319,8 @@ public int RemoveTrail(int client,int slot)
 		}
 	}
 	g_iClientTrails[client][slot]=0;
+	
+	return 0;
 }
 
 public void AttachTrail(int ent,int client,int current,int num)

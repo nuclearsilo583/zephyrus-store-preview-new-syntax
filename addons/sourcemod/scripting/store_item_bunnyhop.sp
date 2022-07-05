@@ -12,7 +12,7 @@ public Plugin myinfo =
 	name = "Store - Bunny module",
 	author = "nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -48,6 +48,7 @@ public int Bunnyhop_Equip(int client,int id)
 
 public int Bunnyhop_Remove(int client,int id)
 {
+	return 0;
 }
 
 public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon)

@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "Store - Trade System"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo"
 #define PLUGIN_DESCRIPTION "A trade system for the Store plugin."
-#define PLUGIN_VERSION "2.0"
+#define PLUGIN_VERSION "2.1"
 #define PLUGIN_URL ""
 
 #define STORE_TRADE_MAX_OFFERS 16 // Usermessage may not be able to hold more at a time
@@ -223,7 +223,7 @@ public int MenuHandler_SelectPlayer(Handle menu, MenuAction action, int client, 
 		{
 			Chat(client, "%t", "Player left");
 			Command_Trade(client, 0);
-			return;
+			//return;
 		}
 
 		g_iTradeCooldown[client] = GetTime() + g_eCvars[g_cvarTradeCooldown].aCache;
@@ -237,6 +237,8 @@ public int MenuHandler_SelectPlayer(Handle menu, MenuAction action, int client, 
 		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "no",  "%t", "Confirm_No");
 		DisplayMenu(m_hMenu, target, 30);
 	}
+	
+	return 0;
 }
 
 public int MenuHandler_InitTrade(Handle menu, MenuAction action, int client, int param2)
@@ -251,7 +253,7 @@ public int MenuHandler_InitTrade(Handle menu, MenuAction action, int client, int
 			{
 				Chat(i, "%t", "Trade Refused", client);
 				g_iTraders[i] = 0;
-				return;
+				//return;
 			}
 		}
 	}
@@ -268,18 +270,18 @@ public int MenuHandler_InitTrade(Handle menu, MenuAction action, int client, int
 		}
 
 		if(target == 0)
-			return;
+			return 0;
 
 		if(param2 == 1)
 		{
 			Chat(target, "%t", "Trade Refused", client);
-			return;
+			return 0;
 		}
 
 		if(!target)
 		{
 			Chat(client, "%t", "Player left");
-			return;
+			return 0;
 		}
 
 		g_iTraders[client] = GetClientUserId(target);
@@ -290,6 +292,8 @@ public int MenuHandler_InitTrade(Handle menu, MenuAction action, int client, int
 		DisplayTradeMenu(client);
 		DisplayTradeMenu(target);
 	}
+	
+	return 0;
 }
 
 public void DisplayTradeMenu(int client)
@@ -449,6 +453,8 @@ public int MenuHandler_Trade(Handle menu, MenuAction action, int client, int par
 			DisplayTradeMenu(client);
 		}
 	}
+	
+	return 0;
 }
 
 public Action Timer_ReadyTimer(Handle timer, any data)
@@ -512,13 +518,15 @@ public int MenuHandler_Cancel(Handle menu, MenuAction action, int client, int pa
 			ResetTrade(client);
 			int target = GetClientOfUserId(g_iTraders[client]);
 			if(!target || !IsClientInGame(target))
-				return;
+				return 0;
 			ResetTrade(target);
 			Chat(target, "%t", "Trade Cancelled");
 		}
 		else
 			DisplayTradeMenu(client);
 	}
+	
+	return 0;
 }
 
 //////////////////////////////
@@ -593,6 +601,8 @@ public int Trade_MenuHandler(Handle menu, MenuAction action, int client, int par
 			DisplayTradeMenu(target);
 		}
 	}
+	
+	return 0;
 }
 
 public int Trade_ConfirmTradeHandler(Handle menu, MenuAction action, int client, int param2)
@@ -605,4 +615,6 @@ public int Trade_ConfirmTradeHandler(Handle menu, MenuAction action, int client,
 			Command_Trade(client, 0);
 		}
 	}
+	
+	return 0;
 }
