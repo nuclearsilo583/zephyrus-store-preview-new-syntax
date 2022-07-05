@@ -1,16 +1,16 @@
 #include <sourcemod>
 #include <sdktools>
-//#include <colorvariables>
+#include <colorvariables>
 
 #include <store>
 #include <zephstocks>
 
-#include <multicolors> 
+//#include <multicolors> 
 #include <chat-processor> 
 
 
 //Uncomment this line if your game is csgo or css.
-#define csgo_css
+//#define csgo_css
 #if defined csgo_css
 #include <cstrike>
 #endif
@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.5", 
+	version = "2.6", 
 	url = ""
 };
 
@@ -443,75 +443,64 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 
 	if (iEquippedNameColor >= 0)
 	{
-		int m_iData = Store_GetDataIndex(iEquippedNameColor);
-		if(StrEqual(g_sNameColors[m_iData], "rainbow"))
+		int iNameColor = Store_GetDataIndex(iEquippedNameColor);
+		if(StrEqual(g_sNameColors[iNameColor], "rainbow"))
 		{
             String_Rainbow(name, sNameColor, sizeof(sNameColor));
-            
-            if(!StrEqual(g_szColors[author], "disabled", true))
-			{
-				//if(StrContains(sNameTag, "}", true))
-				if(/*slited != 0 || */sNameTag2[1][0] != '\0')
-				{
-					//PrintToChat(author, "have }");
-					Format(sName, sizeof(sName), "%s%s%s", g_szColors[author], sNameTag2[1], sNameColor);
-				}
-				else 
-				{
-					//PrintToChat(author, "no have }");
-					Format(sName, sizeof(sName), "%s%s%s", g_szColors[author], sNameTag, sNameColor);
-				}
-			}
-			else Format(sName, sizeof(sName), "%s%s", sNameTag, sNameColor);
-			
-			//ReplaceColors(sName, sizeof(sName), author);
-		
-			strcopy(name, MAXLENGTH_NAME, sName);
+			//strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[iNameColor]);
 		}
-		else
-		{
-			strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[m_iData]);
-			if(!StrEqual(g_szColors[author], "disabled", true))
-			{
-				//if(StrContains(sNameTag, "}", true))
-				if(/*slited != 0 || */sNameTag2[1][0] != '\0')
-				{
-					//PrintToChat(author, "have }");
-					Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag2[1], sNameColor, name);
-				}
-				else 
-				{
-					//PrintToChat(author, "no have }");
-					Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag, sNameColor, name);
-				}
-			}
-			else Format(sName, sizeof(sName), "%s{teamcolor}%s%s", sNameTag, sNameColor, name);
-			
-			//ReplaceColors(sName, sizeof(sName), author);
-		
-			strcopy(name, MAXLENGTH_NAME, sName);		
-		}
-		
-		/*int m_iData = Store_GetDataIndex(iEquippedNameColor);
-		strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[m_iData]);*/
+		else strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[iNameColor]);
 	}
+	
+	if(!StrEqual(g_szColors[author], "disabled", true))
+	{
+		int iNameColor;
+		if (iEquippedNameColor >= 0)
+		{
+			iNameColor = Store_GetDataIndex(iEquippedNameColor);
+		}
+		
+		//if(StrContains(sNameTag, "}", true))
+		if(sNameTag2[1][0] != '\0')
+		{
+			//PrintToChat(author, "have }");
+			if(iEquippedNameColor>=0 && StrEqual(g_sNameColors[iNameColor], "rainbow"))
+			{
+				Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
+			}
+			else Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag2[1], sNameColor, name);
+		}
+		else 
+		{
+			//PrintToChat(author, "no have }");
+			if(iEquippedNameColor>=0 && StrEqual(g_sNameColors[iNameColor], "rainbow"))
+			{
+				Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
+			}
+			else Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag, sNameColor, name);
+		}
+	}
+	else Format(sName, sizeof(sName), "%s{teamcolor}%s%s", sNameTag, sNameColor, name);
+	
+	//ReplaceColors(sName, sizeof(sName), author);
+
+	strcopy(name, MAXLENGTH_NAME, sName);
 
 	if (iEquippedMsgColor >= 0)
-    {
-        int m_iData = Store_GetDataIndex(iEquippedMsgColor);
-        if(StrEqual(g_sMessageColors[m_iData], "rainbow"))
+	{
+		char sMessage[MAXLENGTH_BUFFER];
+		int m_iData = Store_GetDataIndex(iEquippedMsgColor);
+		strcopy(sMessage, sizeof(sMessage), message);
+		if(StrEqual(g_sMessageColors[m_iData], "rainbow"))
         {
             char sBuffer[256];
             String_Rainbow(message, sBuffer, sizeof(sBuffer));
             strcopy(message, MAXLENGTH_MESSAGE, sBuffer);
         }
-        else
-        {
-            Format(message, MAXLENGTH_MESSAGE, "%s%s", g_sMessageColors[Store_GetDataIndex(iEquippedMsgColor)], message);
-        }
-        //ReplaceColors(message, MAXLENGTH_BUFFER, author);
-    }
-	
+		else Format(message, MAXLENGTH_BUFFER, "%s%s", g_sMessageColors[Store_GetDataIndex(iEquippedMsgColor)], sMessage);
+		//ReplaceColors(message, MAXLENGTH_BUFFER, author);
+	}
+
 	return Plugin_Changed;
 }
 
