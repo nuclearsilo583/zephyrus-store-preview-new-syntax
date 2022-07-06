@@ -556,9 +556,9 @@ public Action Timer_Open(Handle timer, int client)
 			{
 				if(item.iPlans!=0)
 				{
-					Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 2);
+					Store_GiveItem(client, itemid, _, GetTime() + time, 2);
 				}
-				else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+				else Store_GiveItem(client, itemid, _, GetTime() + time, item.iPrice);
 			}
 			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
 		}
@@ -568,9 +568,9 @@ public Action Timer_Open(Handle timer, int client)
 			{
 				if(item.iPlans!=0)
 				{
-					Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 2);
+					Store_GiveItem(client, itemid, _, _, 2);
 				}
-				else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+				else Store_GiveItem(client, itemid, _, _, item.iPrice);
 			}
 			else Store_GiveItem(client, itemid, _, _, 1);
 		}
