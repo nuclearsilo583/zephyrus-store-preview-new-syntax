@@ -21,7 +21,7 @@
 #include <smlib>
 
 
-#define DATA "3.2"
+#define DATA "3.3"
 
 Handle trie_weapons[MAXPLAYERS+1];
 
@@ -32,7 +32,7 @@ Handle OnClientView, OnClientWorld, OnClientDrop;
 new OldSequence[MAXPLAYERS+1];
 new Float:OldCycle[MAXPLAYERS+1];
 
-char g_classname[MAXPLAYERS+1][64];
+char g_classname[MAXPLAYERS+1][PLATFORM_MAX_PATH];
 
 bool hook[MAXPLAYERS+1];
 
@@ -177,49 +177,49 @@ public Action Hook_WeaponDrop(int client, int wpnid)
 {
 	if(wpnid < 1)
 	{
-		return;
+		return Plugin_Handled;
 	}
 	
 	CreateTimer(0.0, SetWorldModel, EntIndexToEntRef(wpnid));
+	
+	return Plugin_Continue;
 }
 
 public Action SetWorldModel(Handle tmr, any ref)
 {
 	new wpnid = EntRefToEntIndex(ref);
 	
-	if(wpnid == INVALID_ENT_REFERENCE || !IsValidEntity(wpnid) || !IsValidEdict(wpnid)) return;
+	if(wpnid == INVALID_ENT_REFERENCE || !IsValidEntity(wpnid) || !IsValidEdict(wpnid)) return Plugin_Stop;
 	
-	char globalName[64];
+	char globalName[PLATFORM_MAX_PATH];
 	Entity_GetGlobalName(wpnid, globalName, sizeof(globalName));
 	if(StrContains(globalName, "custom", false) != 0)
 	{
-		return;
+		return Plugin_Stop;
 	}
 	
 	ReplaceString(globalName, 64, "custom", "");
 
-	decl String:bit[2][128];
+	decl String:bit[2][PLATFORM_MAX_PATH];
 
 	ExplodeString(globalName, ";", bit, sizeof bit, sizeof bit[]);
 
 	if(!StrEqual(bit[1], "none") && strlen(bit[1]) > 2 && FileExists(bit[1]) && IsModelPrecached(bit[1])) SetEntityModel(wpnid, bit[1]);
-	//SetEntProp(wpnid, Prop_Send, "m_hPrevOwner", -1);
-	//if(!StrEqual(bit[1], "none")) SetEntProp(wpnid, Prop_Send, "m_iWorldDroppedModelIndex", PrecacheModel(bit[1])); 
-	//if(!StrEqual(bit[1], "none")) SetEntPropString(wpnid, Prop_Data, "m_ModelName", bit[1]);
-	//PrintToChatAll("model dado %s", bit[1]);	
+
+	return Plugin_Continue
 }
 
-public Action:OnPostWeaponEquip(client, weapon)
+public void OnPostWeaponEquip(client, weapon)
 {
 	if(weapon < 1 || !IsValidEdict(weapon) || !IsValidEntity(weapon)) return;
 	
 	if (GetEntProp(weapon, Prop_Send, "m_hPrevOwner") > 0)
 		return;
 		
-	decl String:classname[64];
+	decl String:classname[PLATFORM_MAX_PATH];
 	if(!GetEdictClassname(weapon, classname, 64)) return;
 	
-	char globalName[64];
+	char globalName[PLATFORM_MAX_PATH];
 	Entity_GetGlobalName(weapon, globalName, sizeof(globalName));
 	if(StrContains(globalName, "custom", false) == 0)
 	{
@@ -235,9 +235,10 @@ public Action:OnPostWeaponEquip(client, weapon)
 		case 61: strcopy(classname, 64, "weapon_usp_silencer");
 		case 63: strcopy(classname, 64, "weapon_cz75a");
 		case 64: strcopy(classname, 64, "weapon_revolver");
+		case 23: strcopy(classname, 64, "weapon_mp5sd");										  
 	}
 	
-	char classname_world[64];
+	char classname_world[PLATFORM_MAX_PATH];
 	Format(classname_world, sizeof(classname_world), "%s_world", classname);
 	new model_world;
 	if(GetTrieValue(trie_weapons[client], classname_world, model_world) && model_world != -1)
@@ -250,10 +251,10 @@ public Action:OnPostWeaponEquip(client, weapon)
 		}
 	}
 	
-	char classname_drop[64];
+	char classname_drop[PLATFORM_MAX_PATH];
 	Format(classname_drop, sizeof(classname_world), "%s_drop", classname);
-	char model_drop[128];
-	if(GetTrieString(trie_weapons[client], classname_drop, model_drop, 128) && !StrEqual(model_drop, "none"))
+	char model_drop[PLATFORM_MAX_PATH];
+	if(GetTrieString(trie_weapons[client], classname_drop, model_drop, PLATFORM_MAX_PATH) && !StrEqual(model_drop, "none"))
 	{
 		if(!IsModelPrecached(model_drop)) PrecacheModel(model_drop);
 		
@@ -269,6 +270,8 @@ public Action:OnPostWeaponEquip(client, weapon)
 	
 	
 	Entity_SetGlobalName(weapon, "custom%i;%s", model_index,model_drop);
+	
+	//return Plugin_Continue;
 }
 
 public void OnClientPutInServer(int client)
@@ -295,6 +298,8 @@ public Action PlayerDeath(Handle event, char[] name, bool dontBroadcast)
 		SDKUnhook(client, SDKHook_PostThinkPost, OnPostThinkPostAnimationFix);
 		hook[client] = false;
 	}
+	
+	return Plugin_Continue;
 }
 
 public void OnClientWeaponSwitch(int client, int wpnid) 
@@ -313,7 +318,7 @@ public void OnClientWeaponSwitchPost(int client, int wpnid)
 	{
 		return;
 	}
-	char classname[64];
+	char classname[PLATFORM_MAX_PATH];
 	
 	if(!GetEdictClassname(wpnid, classname, sizeof(classname)))
 	{
@@ -323,7 +328,7 @@ public void OnClientWeaponSwitchPost(int client, int wpnid)
 	if(StrContains(classname, "item", false) == 0) return;
 	
 	new model_index;
-	char globalName[64];
+	char globalName[PLATFORM_MAX_PATH];
 	Entity_GetGlobalName(wpnid, globalName, sizeof(globalName));
 	if(StrContains(globalName, "custom", false) != 0)
 	{
@@ -362,6 +367,7 @@ public void OnClientWeaponSwitchPost(int client, int wpnid)
 		case 61: strcopy(classname, 64, "weapon_usp_silencer");
 		case 63: strcopy(classname, 64, "weapon_cz75a");
 		case 64: strcopy(classname, 64, "weapon_revolver");
+		case 23: strcopy(classname, 64, "weapon_mp5sd");										  
 	}
 	
 	Format(g_classname[client], 64, classname);
@@ -377,7 +383,7 @@ public void OnClientDisconnect(int client)
 
 public Native_AddViewWeapon(Handle:plugin, argc)
 {  
-	char name[64];
+	char name[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
@@ -399,7 +405,7 @@ public Native_AddViewWeapon(Handle:plugin, argc)
 
 public Native_AddWorldWeapon(Handle:plugin, argc)
 {  
-	char name[64], world[64];
+	char name[PLATFORM_MAX_PATH], world[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
@@ -424,13 +430,13 @@ public Native_AddWorldWeapon(Handle:plugin, argc)
 
 public Native_AddDropWeapon(Handle:plugin, argc)
 {  
-	char name[64], drop[64];
+	char name[PLATFORM_MAX_PATH], drop[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
 	
-	char model_drop[128]
-	GetNativeString(3, model_drop, 64);
+	char model_drop[PLATFORM_MAX_PATH]
+	GetNativeString(3, model_drop, PLATFORM_MAX_PATH);
 	
 	
 	Format(drop, 64, "%s_drop", name);
@@ -451,7 +457,7 @@ public Native_AddDropWeapon(Handle:plugin, argc)
 
 public int Native_GetWeaponView(Handle:plugin, argc)
 {  
-	char name[64];
+	char name[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
@@ -470,7 +476,7 @@ public int Native_GetWeaponView(Handle:plugin, argc)
 
 public int Native_GetWeaponWorld(Handle:plugin, argc)
 {  
-	char name[64];
+	char name[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
@@ -490,7 +496,7 @@ public int Native_GetWeaponWorld(Handle:plugin, argc)
 
 public void Native_GetWeaponDrop(Handle:plugin, argc)
 {  
-	char name[64];
+	char name[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
@@ -510,14 +516,14 @@ public void Native_GetWeaponDrop(Handle:plugin, argc)
 
 public Native_SetWeapon(Handle:plugin, argc)
 {  
-	char name[64], world[64], drop[64];
+	char name[PLATFORM_MAX_PATH], world[PLATFORM_MAX_PATH], drop[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
 	int model_index = GetNativeCell(3);
 	int model_world = GetNativeCell(4);
-	char model_drop[128];
-	GetNativeString(5, model_drop, 128);
+	char model_drop[PLATFORM_MAX_PATH];
+	GetNativeString(5, model_drop, PLATFORM_MAX_PATH);
 	Format(world, 64, "%s_world", name);
 	Format(drop, 64, "%s_drop", name);
 	
@@ -552,7 +558,7 @@ public Native_SetWeapon(Handle:plugin, argc)
 
 public Native_RemoveViewWeapon(Handle:plugin, argc)
 {  
-	char name[64];
+	char name[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
@@ -571,7 +577,7 @@ public Native_RemoveViewWeapon(Handle:plugin, argc)
 
 public Native_RemoveWorldWeapon(Handle:plugin, argc)
 {  
-	char name[64], world[64];
+	char name[PLATFORM_MAX_PATH], world[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);
@@ -591,7 +597,7 @@ public Native_RemoveWorldWeapon(Handle:plugin, argc)
 
 public Native_RemoveDropWeapon(Handle:plugin, argc)
 {  
-	char name[64], drop[64];
+	char name[PLATFORM_MAX_PATH], drop[PLATFORM_MAX_PATH];
 	
 	int client = GetNativeCell(1);
 	GetNativeString(2, name, 64);

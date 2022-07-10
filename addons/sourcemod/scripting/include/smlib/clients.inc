@@ -257,12 +257,12 @@ stock void Client_SetObserverMode(int client, Obs_Mode mode, bool updateMoveType
 		ConVar mp_forcecamera = FindConVar("mp_forcecamera");
 
 		if (mp_forcecamera != INVALID_HANDLE) {
-			switch (mp_forcecamera.IntValue)
+			switch (view_as<Obs_Allow>(mp_forcecamera.IntValue))
 			{
-				case 1: {
+				case OBS_ALLOW_TEAM: {
 					mode = OBS_MODE_IN_EYE;
 				}
-				case 2: {
+				case OBS_ALLOW_NONE: {
 					mode = OBS_MODE_FIXED; // don't allow anything
 				}
 			}

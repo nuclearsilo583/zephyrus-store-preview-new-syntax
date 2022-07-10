@@ -12,6 +12,7 @@
 
 #pragma semicolon 1
 #pragma newdecls required
+#pragma dynamic 131072
 
 char g_sModel[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
 char g_sRun[STORE_MAX_ITEMS][64];
