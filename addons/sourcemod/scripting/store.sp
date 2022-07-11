@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.0 Stable SM 1.11"
+#define PLUGIN_VERSION "7.0.1"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -337,6 +337,7 @@ public void OnPluginStart()
 	
 	// Load the translations file
 	LoadTranslations("store.phrases");
+	LoadTranslations("common.phrases");
 
 	// Initiaze the fake package handler
 	g_iPackageHandler = Store_RegisterHandler("package", "", _, _, _, _, _);
@@ -1902,9 +1903,10 @@ public Action Command_GiveCredits(int client,int params)
 		Chat(client, "%t", "You dont have permission");
 		return Plugin_Handled;
 	}
-	
+
 	char m_szTmp[64];
-	GetCmdArg(2, STRING(m_szTmp));
+	if(!GetCmdArg(2, STRING(m_szTmp)))
+		CPrintToChat(client, "%s Usage: sm_givecredits <target> <credits>", g_sChatPrefix);
 	
 	int m_iCredits = StringToInt(m_szTmp);
 
@@ -1932,20 +1934,32 @@ public Action Command_GiveCredits(int client,int params)
 			ChatAll("%t", "Credits Given", m_szTmp[8], m_iCredits);
 			m_iReceiver = -1;
 		}
-	} else if(strcmp(m_szTmp, "@all")==0)
+	} 
+	else if(strcmp(m_szTmp, "@all")==0)
 	{
 		LoopIngamePlayers(i)
-			FakeClientCommandEx(client, "sm_givecredits \"%N\" %d", i, m_iCredits);
-	} else if(strcmp(m_szTmp, "@t")==0 || strcmp(m_szTmp, "@red")==0)
+		{
+			//FakeClientCommandEx(client, "sm_givecredits \"%N\" %d", i, m_iCredits);
+			AdminGiveCredits(i, m_iCredits);
+		}
+	} 
+	else if(strcmp(m_szTmp, "@t")==0 || strcmp(m_szTmp, "@red")==0)
 	{
 		LoopIngamePlayers(i)
 			if(GetClientTeam(i)==2)
-				FakeClientCommandEx(client, "sm_givecredits \"%N\" %d", i, m_iCredits);
-	} else if(strcmp(m_szTmp, "@ct")==0 || strcmp(m_szTmp, "@blu")==0)
+			{
+				//FakeClientCommandEx(client, "sm_givecredits \"%N\" %d", i, m_iCredits);
+				AdminGiveCredits(i, m_iCredits);
+			}
+	} 
+	else if(strcmp(m_szTmp, "@ct")==0 || strcmp(m_szTmp, "@blu")==0)
 	{
 		LoopIngamePlayers(i)
 			if(GetClientTeam(i)==3)
-				FakeClientCommandEx(client, "sm_givecredits \"%N\" %d", i, m_iCredits);
+			{
+				//FakeClientCommandEx(client, "sm_givecredits \"%N\" %d", i, m_iCredits);
+				AdminGiveCredits(i, m_iCredits);
+			}
 	}
 	else
 	{
@@ -4451,4 +4465,22 @@ public void SQLCallback_Void_Error(Handle owner, Handle hndl, const char[] error
 	{
 		StoreLogMessage(0, LOG_ERROR, "SQLCallback_Void_Error: %s", error);
 	}
-}	
+}
+
+stock void AdminGiveCredits(int client, int m_iCredits)
+{
+	g_eClients[client].iCredits += m_iCredits;
+	if(g_eCvars[g_cvarSilent].aCache == 1)
+	{
+		if(client)
+			Chat(client, "%t", "Credits Given", g_eClients[client].szName_Client, m_iCredits);
+		else
+			ReplyToCommand(client, "%t", "Credits Given", g_eClients[client].szName_Client, m_iCredits);
+		Chat(client, "%t", "Credits Given", g_eClients[client].szName_Client, m_iCredits);
+	}
+	else if(g_eCvars[g_cvarSilent].aCache == 0)
+		ChatAll("%t", "Credits Given", g_eClients[client].szName_Client, m_iCredits);
+	Store_SaveClientData(client);
+	Store_SaveClientInventory(client);
+	Store_SaveClientEquipment(client);
+}

@@ -19,7 +19,7 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
   
   P/S: You may get script executed timeout if you add too many model and the precache sometime get bugged and cause server to crash. Please use [these](https://forums.alliedmods.net/showthread.php?p=602270) [plugin](https://forums.alliedmods.net/showthread.php?t=269792) to precache and add all the required file to the download table.
 - Custom weapon Model Skin  (by bbs.93x.net) [youtube](https://www.youtube.com/watch?v=TT7CwhIIPEc)
-- Life live pet (with idle2 animation config - Rare idle animation => Support for spawn and death animation soon) by Totenfluch [youtube](https://www.youtube.com/watch?v=Fn-_MbWzL_Q)
+- Life live pet (with idle, idle2, spawn, death animation support) by Totenfluch [youtube](https://www.youtube.com/watch?v=Fn-_MbWzL_Q)
 - Custom MVP music (by kento and shanapu)
 - Zombie reloaded playerclasses (original by zephyrus) [youtube](https://www.youtube.com/watch?v=NUZu5MEvvXk)
 - Hats preview (original by zephyrus)
