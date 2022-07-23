@@ -7,6 +7,7 @@
 #include <sdkhooks>
 
 #pragma newdecls required
+#pragma dynamic 131072
 
 enum struct GrenadeTrail
 {
@@ -28,7 +29,7 @@ public Plugin myinfo =
 	name = "Store Grenade Trail",
 	author = "zephyrus, nuclear silo",
 	description = "add grenade trail",
-	version = "1.1",
+	version = "1.2",
 	url = ""
 }
 

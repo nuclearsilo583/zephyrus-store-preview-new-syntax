@@ -9,6 +9,7 @@
 #include <sdkhooks>
 
 #pragma newdecls required
+#pragma dynamic 131072
 
 bool GAME_TF2 = false;
 bool GAME_CSGO = false;
@@ -39,7 +40,7 @@ public Plugin myinfo =
 	name = "Store Grenade Skin",
 	author = "zephyrus, nuclear silo",
 	description = "change grenade model",
-	version = "1.2",
+	version = "1.3",
 	url = ""
 }
 

@@ -40,7 +40,7 @@
 		"en"		"Hide pets"
 	}
 
-	"Show bullet sparks
+	"Show bullet sparks"
 	{
 		"en"		"Show bullet sparks"
 	}
@@ -557,7 +557,7 @@
 	"Crash Already Start"
 	{
 		"en"        "Crash game is currently in progress. Please wait next game."
-		"hu"        "A Crash még jelenleg tart. Kérlek várd meg a következő játékot.
+		"hu"        "A Crash még jelenleg tart. Kérlek várd meg a következő játékot."
 	}
 
 	"Cash out"
@@ -595,7 +595,7 @@
 	{
 		"#format"   "{1:d}"
 		"en"        "{green}{1} minute(s) {default}before crash starts."
-		"hu"        "{green}{1} perc {default}mielőtt elkezdődik a crash.
+		"hu"        "{green}{1} perc {default}mielőtt elkezdődik a crash."
 	}
 
 	"Last x secs"
@@ -825,8 +825,8 @@
 	"Search Info Title"
 	{
 		"#format"	"{1:s}"
-		"en"		"-------------- Store Search Menu Suggestion --------------\n -All related items will be listed here\n - Your current search string: '{1}'"
-		"chi"		"-------------- 商店搜索菜单建议 --------------\n -所有相关的物品会在此处列出\n - 你当前搜索的内容: '{1}'"
+		"en"		"-------------- Store Search Menu Suggestion --------------\n -All related items will be listed here\n - Your current search string: \"{1}\""
+		"chi"		"-------------- 商店搜索菜单建议 --------------\n -所有相关的物品会在此处列出\n - 你当前搜索的内容: \"{1}\""
 	}
 
 	"Price"
@@ -2562,9 +2562,9 @@
 	"Credit Gift Sent"
 	{
 		"#format" "{1:d},{2:s}"
-		"en" "You have sent {HIGHLIGHT}{1}{NORMAL} credits to {HIGHLIGHT}{2}{NORMAL}.
+		"en" "You have sent {HIGHLIGHT}{1}{NORMAL} credits to {HIGHLIGHT}{2}{NORMAL}."
 		"hu" "{HIGHLIGHT}{1}{NORMAL} kreditet küldtél neki: {HIGHLIGHT}{2}{NORMAL}."
-		"chi" "你已经发送 {HIGHLIGHT}{1}{NORMAL} credits积分给 {HIGHLIGHT}{2}{NORMAL}.
+		"chi" "你已经发送 {HIGHLIGHT}{1}{NORMAL} credits积分给 {HIGHLIGHT}{2}{NORMAL}."
 	}
 
 	"Credit Gift Received"

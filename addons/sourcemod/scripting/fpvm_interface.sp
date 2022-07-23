@@ -39,7 +39,7 @@ bool hook[MAXPLAYERS+1];
 public Plugin myinfo = 
 {
 	name = "SM First Person View Models Interface",
-	author = "Franc1sco franug",
+	author = "Franc1sco franug, nuclear silo",
 	description = "",
 	version = DATA,
 	url = "http://steamcommunity.com/id/franug"

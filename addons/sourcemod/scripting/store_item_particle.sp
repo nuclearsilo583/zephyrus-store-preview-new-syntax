@@ -28,6 +28,7 @@
  */
 
 #pragma semicolon 1
+#pragma dynamic 131072
 
 #include <sourcemod>
 #include <sdktools>
@@ -69,7 +70,7 @@ public Plugin myinfo =
 	name = "Store - Particle item module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.8", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

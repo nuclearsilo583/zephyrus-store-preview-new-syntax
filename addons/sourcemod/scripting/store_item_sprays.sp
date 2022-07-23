@@ -7,6 +7,10 @@
 
 #include <multicolors>
 
+#pragma semicolon 1
+#pragma newdecls required
+#pragma dynamic 131072
+
 char g_szSprays[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
 int g_iSprayPrecache[STORE_MAX_ITEMS] = {-1,...};
 int g_iSprayCache[MAXPLAYERS+1] = {-1,...};
@@ -27,7 +31,7 @@ public Plugin myinfo =
 	name = "Store - Item Sprays",
 	author = "zephyrus, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 

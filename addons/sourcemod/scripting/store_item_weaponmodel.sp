@@ -1,4 +1,3 @@
-#pragma semicolon 1
 #include <sourcemod> 
 #include <sdktools>
 #include <sdkhooks>
@@ -7,7 +6,10 @@
 #include <fpvm_interface>
 #include <multicolors>
 
+#pragma semicolon 1
 #pragma newdecls required
+#pragma dynamic 131072
+
 enum struct CustomModel
 {
 	char szModel[PLATFORM_MAX_PATH];
