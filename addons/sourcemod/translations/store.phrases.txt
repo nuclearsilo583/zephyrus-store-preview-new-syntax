@@ -745,6 +745,31 @@
 		"en" "All generated and valid voucher are:\n "
 		"chi" "所有生成的有效的代金券是：\n "
 	}
+	
+	"Create Item Voucher"
+	{
+		"en" "Create an Items Voucher (Admin Only)"
+	}
+	
+	"Title Admin Voucher Menu"
+	{
+		"en" "Admin item Voucher Creator Menu"
+	}
+	
+	"Title Admin Voucher Duration Menu"
+	{
+		"en" "Admin item Voucher Creator Menu.\n \nChoose the item duration."
+	}
+	
+	"Enter Admin Item Voucher Expiration"
+	{
+		"en"		"Please enter the expiration time (in seconds) for the item in the chat!"
+	}
+	
+	"Enter Admin Item Voucher Expiration Error"
+	{
+		"en"		"Invalid number format. Please try again."
+	}
 
 	"Check All Voucher"
 	{

@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview rewritten compilable with SM 1.10 new syntax"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.0.2"
+#define PLUGIN_VERSION "7.0.3"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -477,6 +477,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 	
 	CreateNative("Store_GetPlansPrice", Native_GetPlansPrice);
 	
+	CreateNative("Store_GetStoreItemsCount", Native_GetStoreItemsCount);
+	
 	CreateNative("Store_SQLEscape", Native_SQLEscape);
 	CreateNative("Store_SQLQuery", Native_SQLQuery);
 	CreateNative("Store_SQLLogMessage", Native_LogMessage);	
@@ -835,6 +837,11 @@ public void OnEntityCreated(int entity, const char[] classname)
 //////////////////////////////
 //			NATIVES			//
 //////////////////////////////
+
+public int Native_GetStoreItemsCount(Handle plugin,int numParams)
+{
+	return g_iItems;
+}
 
 public int Native_GetPlansPrice(Handle plugin,int numParams)
 {
@@ -1360,6 +1367,10 @@ public int Native_LogMessage(Handle plugin, int numParams)
 	
 	return 0;
 }
+
+//////////////////////////////////////
+//			END OF NATIVES			//
+//////////////////////////////////////
 
 void StoreLogMessage(int client = 0, int level, char[] message, any ...)
 {

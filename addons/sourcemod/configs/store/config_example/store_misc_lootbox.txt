@@ -41,3 +41,10 @@
 		}
 	}
 }
+
+// IF you are upgrade voucher module from version 1.8 to 2.0 please execute these query to your database
+ALTER TABLE store_voucher MODIFY COLUMN voucher varchar(64) NOT NULL DEFAULT ' '
+ALTER TABLE store_voucher MODIFY COLUMN name_of_create varchar(64) NOT NULL DEFAULT ' '
+ALTER TABLE store_voucher MODIFY COLUMN steam_of_create varchar(64) NOT NULL DEFAULT ' '
+ALTER TABLE store_voucher MODIFY COLUMN name_of_redeem varchar(64) NOT NULL DEFAULT ' '
+ALTER TABLE store_voucher MODIFY COLUMN steam_of_redeem varchar(64) NOT NULL DEFAULT ' '
