@@ -58,6 +58,9 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Store Earning credits (Warning: This modules only supported for csgo. If you're using the 2009 source engine. Dont use this. If you're using csgo please disable all the earning method of the core store.sp in the cfg file)
 - Added custom name tag color for client who bought the name tag.
 
+# Private Modules
+- Custom Weapon Model with shooting sound support (Contact me for more info). ([Preview video](https://youtu.be/iixbG1SIuJA)).
+
 # Important links
 Contact me via steam for bug report:
 https://steamcommunity.com/id/nuclearsilo/

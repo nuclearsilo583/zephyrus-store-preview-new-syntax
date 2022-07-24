@@ -274,7 +274,7 @@ public int PlayerSkins_Equip(int client, int id)
 		// NON-ZR MODE
 		if(!g_bZombieMode)
 		{
-			if (g_eCvars[g_cvarSkinChangeInstant].aCache && g_ePlayerSkins[m_iData].iTeam == 4 && g_eCvars[g_cvarSkinChangeInstant].aCache)
+			if (g_eCvars[g_cvarSkinChangeInstant].aCache && g_ePlayerSkins[m_iData].iTeam == 4)
 			{
 				Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 			}
