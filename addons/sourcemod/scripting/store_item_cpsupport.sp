@@ -214,6 +214,10 @@ public Action Command_TGS(int client, int args)
 
 public void Store_OnConfigExecuted(char[] prefix)
 {
+	// If it's already connected we are good to go
+	if(g_hDatabase != INVALID_HANDLE)
+		return;
+	
 	g_cvDatabaseEntry = FindConVar("sm_store_database");
 	
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
