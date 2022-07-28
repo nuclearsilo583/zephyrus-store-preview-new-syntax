@@ -98,6 +98,10 @@ public void OnAllPluginsLoaded()
 
 public void Store_OnConfigExecuted(char[] prefix)
 {
+	// If it's already connected we are good to go
+	if(g_hDatabase != INVALID_HANDLE)
+		return;
+	
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 
 	ReadCoreCFG();
