@@ -107,7 +107,7 @@ public Plugin myinfo =
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo, azalty", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "2.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -445,7 +445,7 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 
 	char sWeapon[32];
 	GetClientWeapon(attacker, sWeapon, sizeof(sWeapon));
-	if (StrContains(sWeapon, "knife") != -1 || StrContains(sWeapon, "bayonet") != -1)
+	if (StrContains(sWeapon, "knife") != -1 || StrContains(sWeapon, "bayonet") != -1 || StrContains(sWeapon, "karambit") !=-1)
 	{
 		if (damage > 99.0)
 		{
@@ -469,8 +469,11 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 		}
 		else if (damage > GetClientHealth(victim))
 		{
-			Format(Buffer, sizeof(Buffer), "%s", "knife kill")
-			GiveCredits(attacker, g_iKnife[g_iActive[attacker]], Buffer);
+			if(gc_bFFA.BoolValue || GetClientTeam(attacker) != GetClientTeam(victim))
+			{
+				Format(Buffer, sizeof(Buffer), "%s", "knife kill")
+				GiveCredits(attacker, g_iKnife[g_iActive[attacker]], Buffer);
+			}
 		}
 	}
 
