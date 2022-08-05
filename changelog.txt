@@ -8,7 +8,16 @@
 ================================================================================================================================
 
 ##########
-Update 8/5/2022 : Fix sprays item can be used for free (issue [#92](https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/issues/92))
+Update 6/8/2022
+- Fix grenade model crash
+- Fix core database character set with special character (thanks to 1MaaaaaacK)
+##########
+Files changes:
+- store.sp
+- store_item_grenskins.sp
+
+##########
+Update 5/8/2022 : Fix sprays item can be used for free (issue [#92](https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/issues/92))
 ##########
 Files changes:
 - store_item_sprays.sp 
