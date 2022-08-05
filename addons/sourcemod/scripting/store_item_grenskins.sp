@@ -40,8 +40,8 @@ public Plugin myinfo =
 	name = "Store Grenade Skin",
 	author = "zephyrus, nuclear silo",
 	description = "change grenade model",
-	version = "1.3",
-	url = ""
+	version = "1.4",
+	url = "github.com/nuclearsilo583/zephyrus-store-preview-new-syntax"
 }
 
 public void OnPluginStart()
@@ -97,7 +97,11 @@ public bool GrenadeSkins_Config(Handle &kv,int itemid)
 	
 	if(!(FileExists(g_eGrenadeSkins[g_iGrenadeSkins].szModel_Grenade, true)))
 		return false;
-		
+	
+	// Precache to prevent crashes on the initial loading (OnMapStart would be called on the next map because this function call is delayed by a query)
+	PrecacheModel2(g_eGrenadeSkins[i].szModel_Grenade);
+	Downloader_AddFileToDownloadsTable(g_eGrenadeSkins[i].szModel_Grenade);
+	
 	++g_iGrenadeSkins;
 	return true;
 }
