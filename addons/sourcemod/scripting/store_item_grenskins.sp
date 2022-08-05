@@ -99,8 +99,8 @@ public bool GrenadeSkins_Config(Handle &kv,int itemid)
 		return false;
 	
 	// Precache to prevent crashes on the initial loading (OnMapStart would be called on the next map because this function call is delayed by a query)
-	PrecacheModel2(g_eGrenadeSkins[i].szModel_Grenade);
-	Downloader_AddFileToDownloadsTable(g_eGrenadeSkins[i].szModel_Grenade);
+	PrecacheModel2(g_eGrenadeSkins[g_iGrenadeSkins].szModel_Grenade);
+	Downloader_AddFileToDownloadsTable(g_eGrenadeSkins[g_iGrenadeSkins].szModel_Grenade);
 	
 	++g_iGrenadeSkins;
 	return true;
