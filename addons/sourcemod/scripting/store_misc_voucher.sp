@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "2.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -98,19 +98,17 @@ public void OnAllPluginsLoaded()
 
 public void Store_OnConfigExecuted(char[] prefix)
 {
-	// If it's already connected we are good to go
-	if(g_hDatabase != INVALID_HANDLE)
-		return;
-	
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 
 	ReadCoreCFG();
 	
-	g_cvDatabaseEntry = FindConVar("sm_store_database");
-	char buffer[128];
-	g_cvDatabaseEntry.GetString(buffer, 128);
-	SQL_TConnect(SQLCallback_Connect, buffer);
-
+	if (!g_hDatabase) // If it's already connected we are good to go
+	{
+		g_cvDatabaseEntry = FindConVar("sm_store_database");
+		char buffer[128];
+		g_cvDatabaseEntry.GetString(buffer, 128);
+		SQL_TConnect(SQLCallback_Connect, buffer);
+	}
 }
 
 public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, any data)
