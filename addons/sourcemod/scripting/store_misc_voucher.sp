@@ -152,8 +152,7 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 			//SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN name_of_redeem varchar(64) NOT NULL DEFAULT ' '");
 			//SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE store_voucher MODIFY COLUMN steam_of_redeem varchar(64) NOT NULL DEFAULT ' '");
 			
-			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE `store_voucher` CHANGE COLUMN `name_of_create` `name_of_create` VARCHAR(64) CHARACTER SET 'utf8' NOT NULL DEFAULT ' '");
-			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE `store_voucher` CHANGE COLUMN `name_of_redeem` `name_of_redeem` VARCHAR(64) CHARACTER SET 'utf8' NOT NULL DEFAULT ' '");
+			SQL_TQuery(g_hDatabase, SQLCallback_NoError, "ALTER TABLE `store_voucher` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
 		}
 		else
 		{
