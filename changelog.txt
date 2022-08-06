@@ -1,6 +1,6 @@
 ================================================================================================================================
 ================================================================================================================================
-=======================					What updates/files change will be listed here			================================
+=======================			What updates/files change will be listed here		================================
 ================================================================================================================================
 ================================================================================================================================
 
@@ -11,10 +11,14 @@
 Update 6/8/2022
 - Fix grenade model crash
 - Fix core database character set with special character (thanks to 1MaaaaaacK)
+- Fix OnConfigExecuted not execute on map change (cpsupport and voucher)
+- Fix voucher table for special character symbol
 ##########
 Files changes:
-- store.sp
-- store_item_grenskins.sp
+- store.sp (v7.0.3 --> v7.0.4)
+- store_item_grenskins.sp (v1.3 --> v1.4)
+- store_item_cpsupport.sp (v2.7 --> v2.8)
+- store_misc_voucher.sp (v2.0 --> v2.1)
 
 ##########
 Update 5/8/2022 : Fix sprays item can be used for free (issue [#92](https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/issues/92))
