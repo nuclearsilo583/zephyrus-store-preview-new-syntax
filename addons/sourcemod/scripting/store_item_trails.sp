@@ -52,10 +52,10 @@ int g_iPreviewEntity[MAXPLAYERS + 1] = {INVALID_ENT_REFERENCE, ...};
 
 public Plugin myinfo = 
 {
-	name = "Store - Tracers Module",
+	name = "Store - Trail Module",
 	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -102,9 +102,9 @@ public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buff
 	if (actions == CookieMenuAction_DisplayOption)
 	{
 		if (g_bHide[client])
-			FormatEx(buffer, maxlen, "%T", "Enable trails", client);
+			FormatEx(buffer, maxlen, "%T", "Show trails", client);
 		else
-			FormatEx(buffer, maxlen, "%T", "Disable trails", client);
+			FormatEx(buffer, maxlen, "%T", "Hide trails", client);
 	}
 
 	if (actions == CookieMenuAction_SelectOption)

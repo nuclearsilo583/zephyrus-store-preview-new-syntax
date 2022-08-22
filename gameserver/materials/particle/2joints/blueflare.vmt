@@ -1,6 +1,0 @@
-UnlitGeneric
-{
-$basetexture "particle/2joints/blueflare"
-$additive 1
-$vertexcolor 1
-}

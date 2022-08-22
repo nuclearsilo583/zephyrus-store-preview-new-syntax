@@ -61,9 +61,34 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 # Private Modules
 - Custom Weapon Model with shooting sound support (Contact me for more info). ([Preview video](https://youtu.be/iixbG1SIuJA)).
 
+### How to install
+* Download latest release or (green) Code button -> Download Zip.
+* Extract all files on disk.
+* Upload to server following folders (replace all the files): 
+  * addons
+  * cfg (You don't need to replace these .cfg but they list new cvar for the store.)
+  * models ( optional )
+  * materials ( optional )
+  * particles ( optional )
+  * sound ( optional )
+* Go to your addons/sourcemod/scripting/ folder.
+* Compile drag and drop store.sp to compile.exe
+* Find store.smx inside compiled folder which created in the same directory.
+* Drag store.smx to addons/sourcemod/plugins or addons/sourcemod/plugins/(your_new_sub_folder_for_store) (optional)
+* Do the same way with module store_item_, store_gamble_, store_misc_ (Some module cannot work for some game please head to the <game_name>_modules in the same directory)
+* Drag the compiled .smx module to the plugins/ folder
+* Edit addons/sourcemod/configs/store/items.txt for your store items/menu.
+* Run the server and check for error logs.
+
+
 # Important links
-Contact me via steam for bug report:
+- Contact me via steam for bug report:
 https://steamcommunity.com/id/nuclearsilo/
+
+- Resource for download:
+https://drive.google.com/drive/folders/1Eol0XG_H2Ofuyx3K-TFJ-6j8DUKz0Df8?usp=sharing
+
+
 
 # Special Thank
 Original store by Zephyrus, Preview system by Kxnrl, Some code from Shanapu's MyStore (gamble)
