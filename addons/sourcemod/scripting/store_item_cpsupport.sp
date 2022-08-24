@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.8", 
+	version = "2.9", 
 	url = ""
 };
 
@@ -584,9 +584,9 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 		{
 			FormatEx(Buffer, sizeof(Buffer), "{bluegrey}%s :", clientname);
 		}*/
-		case  3: Format(STRING(Buffer), "\x0B%s :", clientname);
-        case  2: Format(STRING(Buffer), "\x05%s :", clientname);
-        default: Format(STRING(Buffer), "\x01%s :", clientname);
+		case  3: Format(STRING(Buffer), "{steelblue}%s :", clientname);
+        case  2: Format(STRING(Buffer), "{yellow}%s :", clientname);
+        default: Format(STRING(Buffer), "{engine 3}%s :", clientname);
 	}
 	
 	

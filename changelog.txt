@@ -7,22 +7,58 @@
 #Format rules: since I live in Viet Nam so the date format in here is DD/MM/YYYY not MM/DD/YYYY
 ================================================================================================================================
 
-##########
+################################################################################################
+Update 24/8/2022
+- Update Core plugin to compatible with latest chat-processor
+- Update chat-processor to latest version (https://github.com/drixevel-dev/chat-processor)
+- Update Chat module to latest cp support
+- Update Color Variable include
+- Update store.inc and zephstocks.inc using <autoexecconfig>
+- Remove old Core plugin chat tag cvar
+- Update translations files using chat-processor format
+################################################################################################
+Files changes:
+- store.sp (v7.0.4 --> v7.0.5)
+- store_item_cpsupport.sp (v2.8 --> v2.9)
+- store_misc_giveaway.sp (using new store tag cvar)
+- store_misc_giveaway_aidnversion.sp (using new store tag cvar)
+
+- store.inc (remove old chat tag cvar)
+- zephstocks.inc (change CreateConVar to AutoExecConfig_CreateConVar)
+- colorvariables.inc (from decrypt to traditional syntax)
+- chat-processor.inc (to latest version from github)
+
+- store.phrases.txt (update translation using chat-processor format)
+
+Which files you should update/compile/replace:
+- store.inc (optional)
+- zephstocks.inc (optional. AutoExecConfig_CreateConVar will write and renew your cfg every time map has loaded. Recommend to replace this.)
+- colorvariables.inc (MUST)
+- chat-processor.inc (optional. But you should if you have any 3rd plugin using latest chat-processor include file).
+
+- store.sp (MUST. if you want to use the store with latest chat-processor. Copy/Replace both store.sp and zephstocks.inc. Then recompile store.sp)
+- store_misc_giveaway.sp (installing new store.sp above will cause missing chat tag. If you using this with old version of store.sp and upgrade store.sp. You must recompile/install this.)
+- store_misc_giveaway_aidnversion.sp (installing new store.sp above will cause missing chat tag. If you using this with old version of store.sp and upgrade store.sp. You must recompile/install this.)
+
+- store.phrases.txt (MUST if you install new version of store and chat-processor)
+
+################################################################################################
 Update 6/8/2022
 - Fix grenade model crash
 - Fix core database character set with special character (thanks to 1MaaaaaacK)
 - Fix OnConfigExecuted not execute on map change (cpsupport and voucher)
 - Fix voucher table for special character symbol
-##########
+################################################################################################
 Files changes:
 - store.sp (v7.0.3 --> v7.0.4)
 - store_item_grenskins.sp (v1.3 --> v1.4)
 - store_item_cpsupport.sp (v2.7 --> v2.8)
 - store_misc_voucher.sp (v2.0 --> v2.1)
 
-##########
-Update 5/8/2022 : Fix sprays item can be used for free (issue [#92](https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/issues/92))
-##########
+################################################################################################
+Update 5/8/2022 :
+- Fix sprays item can be used for free (issue [#92](https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/issues/92))
+################################################################################################
 Files changes:
 - store_item_sprays.sp 
 	-> Change Sprays_OnClientConnected to OnClientConnected

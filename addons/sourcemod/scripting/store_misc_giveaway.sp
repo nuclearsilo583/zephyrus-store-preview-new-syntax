@@ -11,7 +11,6 @@ ConVar gc_iMinPlayer;
 ConVar gc_iTimeInfo;
 ConVar gc_bAdmin;
 
-ConVar gc_sTag;
 char g_sChatPrefix[128];
 
 //char g_sTag[32];
@@ -24,7 +23,7 @@ public Plugin myinfo = {
 	name = "Store Giveaway",
 	author = "nuclear silo",
 	description = "Giveaway plugin compatible with zephyrus store.",
-	version = "1.5",
+	version = "1.6",
 	url = ""
 }
 
@@ -46,10 +45,9 @@ public void OnPluginStart()
 	if(g_cvarChatTag){}
 }
 
-public void OnConfigsExecuted()
+public void Store_OnConfigExecuted(char[] prefix)
 {
-	gc_sTag = FindConVar("sm_store_chat_tag");
-	gc_sTag.GetString(g_sChatPrefix, sizeof(g_sChatPrefix));
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public int PlayerCount()

@@ -3,8 +3,8 @@
 #endif
 #define _store_included
 
-int g_cvarChatTag = -1;
-#define CHAT_TAG g_eCvars[g_cvarChatTag].sCache
+//int g_cvarChatTag = -1;
+//#define CHAT_TAG g_eCvars[g_cvarChatTag].sCache
 
 #define LOG_ERROR 0
 #define LOG_CREDITS 1

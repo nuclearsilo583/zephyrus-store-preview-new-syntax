@@ -4,31 +4,25 @@
 #define _colorvariables_included "1.3"
 
 // Author: Raska aka KissLick
-// Syntax update: Keith Warren (Drixevel) (redwerewolf on Allied Mods)
+// Syntax update: Drixevel
 
 // ----------------------------------------------------------------------------------------
 #define _CV_MAX_MESSAGE_LENGTH 		1024
 #define _CV_MAX_VARIABLE_REDIRECTS 	10
 #define _CV_CONFIG_DIRECTORY 		"configs/colorvariables"
 
-static bool g_bInit = false;
-static Handle g_hColors = INVALID_HANDLE;
+static bool g_bInit;
+static StringMap g_hColors;
 static char g_sConfigGlobal[PLATFORM_MAX_PATH];
 static char g_sConfig[PLATFORM_MAX_PATH];
-static char g_sChatPrefix[64] = "";
+static char g_sChatPrefix[64];
 
-static bool g_bIgnorePrefix = false;
-static int g_iAuthor;
-static bool g_bSkipPlayers[MAXPLAYERS + 1] = {false, ...};
+static bool g_bIgnorePrefix;
+static int g_author;
+static bool g_bSkipPlayers[MAXPLAYERS + 1];
 
-static Handle g_hForwardedVariable;
+static GlobalForward g_hForwardedVariable;
 
-enum triple {
-	unknown = -1,
-	yes = true,
-	no = false
-};
-static triple g_IsSource2009 = unknown;
 // ----------------------------------------------------------------------------------------
 
 forward void COnForwardedVariable(char[] sCode, char[] sData, int iDataSize, char[] sColor, int iColorSize);
@@ -51,35 +45,35 @@ stock void CSkipNextPrefix()
 	g_bIgnorePrefix = true;
 }
 
-stock void CSetNextAuthor(int iClient)
+stock void CSetNextAuthor(int client)
 {
-	if (iClient < 1 || iClient > MaxClients || !IsClientInGame(iClient)) {
-		ThrowError("Invalid client index %i", iClient);
+	if (client < 0 || client > MaxClients || !IsClientInGame(client)) {
+		ThrowError("Invalid client index %i", client);
 	}
-	g_iAuthor = iClient;
+	g_author = client;
 }
 
-stock void CSkipNextClient(int iClient)
+stock void CSkipNextClient(int client)
 {
-	if (iClient < 1 || iClient > MaxClients) {
-		ThrowError("Invalid client index %i", iClient);
+	if (client < 0 || client > MaxClients) {
+		ThrowError("Invalid client index %i", client);
 	}
-	g_bSkipPlayers[iClient] = true;
+	g_bSkipPlayers[client] = true;
 }
 
-stock void CPrintToChat(int iClient, const char[] sMessage, any ...)
+stock void CPrintToChat(int client, const char[] message, any ...)
 {
-	if (iClient < 1 || iClient > MaxClients) {
-		ThrowError("Invalid client index %d", iClient);
+	if (client < 0 || client > MaxClients) {
+		ThrowError("Invalid client index %d", client);
 	}
 
-	if (!IsClientInGame(iClient)) {
-		ThrowError("Client %d is not in game", iClient);
+	if (!IsClientInGame(client)) {
+		ThrowError("Client %d is not in game", client);
 	}
 
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH];
-	SetGlobalTransTarget(iClient);
-	VFormat(sBuffer, sizeof(sBuffer), sMessage, 3);
+	SetGlobalTransTarget(client);
+	VFormat(sBuffer, sizeof(sBuffer), message, 3);
 
 	AddPrefixAndDefaultColor(sBuffer, sizeof(sBuffer));
 	g_bIgnorePrefix = false;
@@ -87,22 +81,22 @@ stock void CPrintToChat(int iClient, const char[] sMessage, any ...)
 	CProcessVariables(sBuffer, sizeof(sBuffer));
 	CAddWhiteSpace(sBuffer, sizeof(sBuffer));
 
-	SendPlayerMessage(iClient, sBuffer, g_iAuthor);
-	g_iAuthor = 0;
+	SendPlayerMessage(client, sBuffer, g_author);
+	g_author = 0;
 }
 
-stock void CPrintToChatAll(const char[] sMessage, any ...)
+stock void CPrintToChatAll(const char[] message, any ...)
 {
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH];
 
-	for (int iClient = 1; iClient <= MaxClients; iClient++) {
-		if (!IsClientInGame(iClient) || g_bSkipPlayers[iClient]) {
-			g_bSkipPlayers[iClient] = false;
+	for (int client = 1; client <= MaxClients; client++) {
+		if (!IsClientInGame(client) || g_bSkipPlayers[client]) {
+			g_bSkipPlayers[client] = false;
 			continue;
 		}
 
-		SetGlobalTransTarget(iClient);
-		VFormat(sBuffer, sizeof(sBuffer), sMessage, 2);
+		SetGlobalTransTarget(client);
+		VFormat(sBuffer, sizeof(sBuffer), message, 2);
 
 		AddPrefixAndDefaultColor(sBuffer, sizeof(sBuffer));
 		g_bIgnorePrefix = false;
@@ -110,23 +104,23 @@ stock void CPrintToChatAll(const char[] sMessage, any ...)
 		CProcessVariables(sBuffer, sizeof(sBuffer));
 		CAddWhiteSpace(sBuffer, sizeof(sBuffer));
 
-		SendPlayerMessage(iClient, sBuffer, g_iAuthor);
+		SendPlayerMessage(client, sBuffer, g_author);
 	}
-	g_iAuthor = 0;
+	g_author = 0;
 }
 
-stock void CPrintToChatTeam(int iTeam, const char[] sMessage, any ...)
+stock void CPrintToChatTeam(int team, const char[] message, any ...)
 {
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH];
 
-	for (int iClient = 1; iClient <= MaxClients; iClient++) {
-		if (!IsClientInGame(iClient) || GetClientTeam(iClient) != iTeam || g_bSkipPlayers[iClient]) {
-			g_bSkipPlayers[iClient] = false;
+	for (int client = 1; client <= MaxClients; client++) {
+		if (!IsClientInGame(client) || GetClientTeam(client) != team || g_bSkipPlayers[client]) {
+			g_bSkipPlayers[client] = false;
 			continue;
 		}
 
-		SetGlobalTransTarget(iClient);
-		VFormat(sBuffer, sizeof(sBuffer), sMessage, 3);
+		SetGlobalTransTarget(client);
+		VFormat(sBuffer, sizeof(sBuffer), message, 3);
 
 		AddPrefixAndDefaultColor(sBuffer, sizeof(sBuffer));
 		g_bIgnorePrefix = false;
@@ -134,29 +128,29 @@ stock void CPrintToChatTeam(int iTeam, const char[] sMessage, any ...)
 		CProcessVariables(sBuffer, sizeof(sBuffer));
 		CAddWhiteSpace(sBuffer, sizeof(sBuffer));
 
-		SendPlayerMessage(iClient, sBuffer, g_iAuthor);
+		SendPlayerMessage(client, sBuffer, g_author);
 	}
-	g_iAuthor = 0;
+	g_author = 0;
 }
 
-stock void CPrintToChatAdmins(int iBitFlags, const char[] sMessage, any ...)
+stock void CPrintToChatAdmins(int iBitFlags, const char[] message, any ...)
 {
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH];
 	AdminId iAdminID;
 
-	for (int iClient = 1; iClient <= MaxClients; iClient++) {
-		if (!IsClientInGame(iClient) || g_bSkipPlayers[iClient]) {
-			g_bSkipPlayers[iClient] = false;
+	for (int client = 1; client <= MaxClients; client++) {
+		if (!IsClientInGame(client) || g_bSkipPlayers[client]) {
+			g_bSkipPlayers[client] = false;
 			continue;
 		}
 
-		iAdminID = GetUserAdmin(iClient);
+		iAdminID = GetUserAdmin(client);
 		if (iAdminID == INVALID_ADMIN_ID || !(GetAdminFlags(iAdminID, Access_Effective) & iBitFlags)) {
 			continue;
 		}
 
-		SetGlobalTransTarget(iClient);
-		VFormat(sBuffer, sizeof(sBuffer), sMessage, 3);
+		SetGlobalTransTarget(client);
+		VFormat(sBuffer, sizeof(sBuffer), message, 3);
 
 		AddPrefixAndDefaultColor(sBuffer, sizeof(sBuffer));
 		g_bIgnorePrefix = false;
@@ -164,69 +158,69 @@ stock void CPrintToChatAdmins(int iBitFlags, const char[] sMessage, any ...)
 		CProcessVariables(sBuffer, sizeof(sBuffer));
 		CAddWhiteSpace(sBuffer, sizeof(sBuffer));
 
-		SendPlayerMessage(iClient, sBuffer, g_iAuthor);
+		SendPlayerMessage(client, sBuffer, g_author);
 	}
-	g_iAuthor = 0;
+	g_author = 0;
 }
 
-stock void CReplyToCommand(int iClient, const char[] sMessage, any ...)
+stock void CReplyToCommand(int client, const char[] message, any ...)
 {
-	if (iClient < 0 || iClient > MaxClients) {
-		ThrowError("Invalid client index %d", iClient);
+	if (client < 0 || client > MaxClients) {
+		ThrowError("Invalid client index %d", client);
 	}
 
-	if (iClient != 0 && !IsClientInGame(iClient)) {
-		ThrowError("Client %d is not in game", iClient);
+	if (client != 0 && !IsClientInGame(client)) {
+		ThrowError("Client %d is not in game", client);
 	}
 
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH];
-	SetGlobalTransTarget(iClient);
-	VFormat(sBuffer, sizeof(sBuffer), sMessage, 3);
+	SetGlobalTransTarget(client);
+	VFormat(sBuffer, sizeof(sBuffer), message, 3);
 
 	AddPrefixAndDefaultColor(sBuffer, sizeof(sBuffer), "reply2cmd");
 	g_bIgnorePrefix = false;
 
 	if (GetCmdReplySource() == SM_REPLY_TO_CONSOLE) {
 		CRemoveColors(sBuffer, sizeof(sBuffer));
-		PrintToConsole(iClient, "%s", sBuffer);
+		PrintToConsole(client, "%s", sBuffer);
 	} else {
-		CPrintToChat(iClient, "%s", sBuffer);
+		CPrintToChat(client, "%s", sBuffer);
 	}
 }
 
-stock void CShowActivity(int iClient, const char[] sMessage, any ...)
+stock void CShowActivity(int client, const char[] message, any ...)
 {
-	if (iClient < 0 || iClient > MaxClients) {
-		ThrowError("Invalid client index %d", iClient);
+	if (client < 0 || client > MaxClients) {
+		ThrowError("Invalid client index %d", client);
 	}
 
-	if (iClient != 0 && !IsClientInGame(iClient)) {
-		ThrowError("Client %d is not in game", iClient);
+	if (client != 0 && !IsClientInGame(client)) {
+		ThrowError("Client %d is not in game", client);
 	}
 
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH];
-	SetGlobalTransTarget(iClient);
-	VFormat(sBuffer, sizeof(sBuffer), sMessage, 3);
+	SetGlobalTransTarget(client);
+	VFormat(sBuffer, sizeof(sBuffer), message, 3);
 	Format(sBuffer, sizeof(sBuffer), "{showactivity}%s", sBuffer);
 	CProcessVariables(sBuffer, sizeof(sBuffer));
 	CAddWhiteSpace(sBuffer, sizeof(sBuffer));
 
-	ShowActivity(iClient, "%s", sBuffer);
+	ShowActivity(client, "%s", sBuffer);
 }
 
-stock void CShowActivityEx(int iClient, const char[] sTag, const char[] sMessage, any ...)
+stock void CShowActivityEx(int client, const char[] sTag, const char[] message, any ...)
 {
-	if (iClient < 0 || iClient > MaxClients) {
-		ThrowError("Invalid client index %d", iClient);
+	if (client < 0 || client > MaxClients) {
+		ThrowError("Invalid client index %d", client);
 	}
 
-	if (iClient != 0 && !IsClientInGame(iClient)) {
-		ThrowError("Client %d is not in game", iClient);
+	if (client != 0 && !IsClientInGame(client)) {
+		ThrowError("Client %d is not in game", client);
 	}
 
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH]; char sBufferTag[_CV_MAX_MESSAGE_LENGTH];
-	SetGlobalTransTarget(iClient);
-	VFormat(sBuffer, sizeof(sBuffer), sMessage, 4);
+	SetGlobalTransTarget(client);
+	VFormat(sBuffer, sizeof(sBuffer), message, 4);
 	Format(sBuffer, sizeof(sBuffer), "{showactivity}%s", sBuffer);
 	CProcessVariables(sBuffer, sizeof(sBuffer));
 	Format(sBufferTag, sizeof(sBufferTag), "{prefix}%s", sTag);
@@ -234,22 +228,22 @@ stock void CShowActivityEx(int iClient, const char[] sTag, const char[] sMessage
 	CAddWhiteSpace(sBuffer, sizeof(sBuffer));
 	CAddWhiteSpace(sBufferTag, sizeof(sBufferTag));
 
-	ShowActivityEx(iClient, sBufferTag, " %s", sBuffer);
+	ShowActivityEx(client, sBufferTag, " %s", sBuffer);
 }
 
-stock void CShowActivity2(int iClient, const char[] sTag, const char[] sMessage, any ...)
+stock void CShowActivity2(int client, const char[] sTag, const char[] message, any ...)
 {
-	if (iClient < 0 || iClient > MaxClients) {
-		ThrowError("Invalid client index %d", iClient);
+	if (client < 0 || client > MaxClients) {
+		ThrowError("Invalid client index %d", client);
 	}
 
-	if (iClient != 0 && !IsClientInGame(iClient)) {
-		ThrowError("Client %d is not in game", iClient);
+	if (client != 0 && !IsClientInGame(client)) {
+		ThrowError("Client %d is not in game", client);
 	}
 
 	char sBuffer[_CV_MAX_MESSAGE_LENGTH]; char sBufferTag[_CV_MAX_MESSAGE_LENGTH];
-	SetGlobalTransTarget(iClient);
-	VFormat(sBuffer, sizeof(sBuffer), sMessage, 4);
+	SetGlobalTransTarget(client);
+	VFormat(sBuffer, sizeof(sBuffer), message, 4);
 	Format(sBuffer, sizeof(sBuffer), "{showactivity}%s", sBuffer);
 	CProcessVariables(sBuffer, sizeof(sBuffer));
 	Format(sBufferTag, sizeof(sBufferTag), "{prefix}%s", sTag);
@@ -257,42 +251,42 @@ stock void CShowActivity2(int iClient, const char[] sTag, const char[] sMessage,
 	CAddWhiteSpace(sBuffer, sizeof(sBuffer));
 	CAddWhiteSpace(sBufferTag, sizeof(sBufferTag));
 
-	ShowActivityEx(iClient, sBufferTag, " %s", sBuffer);
+	ShowActivityEx(client, sBufferTag, " %s", sBuffer);
 }
 
 stock void CAddVariable(char[] sName, char[] sValue, bool bOnlySaveToConfig = false)
 {
-	if (Init()) {
-		if (!FileExists(g_sConfig)) {
-			LogError("Cannot add color variable to '%s' - file doesn't exist!", g_sConfig);
-			return;
-		}
-
-		Handle hKV = CreateKeyValues("colorvariables");
-
-		if (!FileToKeyValues(hKV, g_sConfig)) {
-			CloseHandle(hKV);
-			LogError("Cannot open file (for adding color variable) '%s' !", g_sConfig);
-			return;
-		}
-
-		if (!KvJumpToKey(hKV, sName)) {
-			StringToLower(sName);
-			KvSetString(hKV, sName, sValue);
-
-			if (!bOnlySaveToConfig) {
-				Handle hRedirect = CreateArray(64);
-				PushArrayString(hRedirect, sName);
-				SetTrieString(g_hColors, sName, sValue);
-				SolveRedirects(g_hColors, hRedirect);
-				CloseHandle(hRedirect);
-			}
-		}
-
-		KvRewind(hKV);
-		KeyValuesToFile(hKV, g_sConfig);
-		CloseHandle(hKV);
+	if (!Init()) {
+		return;
 	}
+
+	if (!FileExists(g_sConfig)) {
+		ThrowError("Cannot add color variable to '%s' - file doesn't exist!", g_sConfig);
+	}
+
+	KeyValues hKV = new KeyValues("colorvariables");
+
+	if (!hKV.ImportFromFile(g_sConfig)) {
+		delete hKV;
+		ThrowError("Cannot open file (for adding color variable) '%s' !", g_sConfig);
+	}
+
+	if (!hKV.JumpToKey(sName)) {
+		StringToLower(sName);
+		hKV.SetString(sName, sValue);
+
+		if (!bOnlySaveToConfig) {
+			ArrayList hRedirect = new ArrayList(64);
+			hRedirect.PushString(sName);
+			g_hColors.SetString(sName, sValue);
+			SolveRedirects(g_hColors, hRedirect);
+			delete hRedirect;
+		}
+	}
+
+	hKV.Rewind();
+	hKV.ExportToFile(g_sConfig);
+	delete hKV;
 }
 
 stock void CLoadPluginConfig(const char[] sPluginName, bool bAllowPrefix = true)
@@ -308,10 +302,10 @@ stock void CLoadPluginConfig(const char[] sPluginName, bool bAllowPrefix = true)
 			return;
 		}
 
-		Handle hRedirect = CreateArray(64);
+		ArrayList hRedirect = new ArrayList(64);
 		LoadConfigFile(g_hColors, sConfig, hRedirect, bAllowPrefix);
 		SolveRedirects(g_hColors, hRedirect);
-		CloseHandle(hRedirect);
+		delete hRedirect;
 	}
 }
 
@@ -328,11 +322,11 @@ stock void CLoadPluginVariables(const char[] sPluginName, const char[][] sVariab
 			return;
 		}
 
-		Handle hVariables = CreateTrie();
-		Handle hRedirect = CreateArray(64);
+		StringMap hVariables = new StringMap();
+		ArrayList hRedirect = new ArrayList(64);
 		LoadConfigFile(hVariables, sConfig, hRedirect, bAllowPrefix);
 		SolveRedirects(hVariables, hRedirect);
-		ClearArray(hRedirect);
+		hRedirect.Clear();
 
 		char sCode[64]; char sColor[64];
 
@@ -340,15 +334,16 @@ stock void CLoadPluginVariables(const char[] sPluginName, const char[][] sVariab
 			strcopy(sCode, sizeof(sCode), sVariables[i]);
 			StringToLower(sCode);
 
-			if (GetTrieString(hVariables, sCode, sColor, sizeof(sColor))) {
-				SetTrieString(g_hColors, sCode, sColor);
-				PushArrayString(hRedirect, sCode);
+			if (hVariables.GetString(sCode, sColor, sizeof(sColor))) {
+				g_hColors.SetString(sCode, sColor);
+				hRedirect.PushString(sCode);
 			}
 		}
 
 		SolveRedirects(g_hColors, hRedirect);
-		CloseHandle(hRedirect);
-		CloseHandle(hVariables);
+
+		delete hRedirect;
+		delete hVariables;
 	}
 }
 
@@ -445,23 +440,29 @@ stock bool CGetColor(const char[] sName, char[] sColor, int iColorSize)
 			return true;
 		}
 	} else if (StrContains(sName, "player ", false) == 0 && strlen(sName) > 7) {
-		int iClient = StringToInt(sName[7]);
+		int client = StringToInt(sName[7]);
 
-		if (iClient < 1 || iClient > MaxClients || !IsClientInGame(iClient)) {
+		if (client < 0 || client > MaxClients || !IsClientInGame(client)) {
 			strcopy(sColor, iColorSize, "\x01");
-			LogError("Invalid client index %d", iClient);
+			LogError("Invalid client index %d", client);
 			return false;
 		}
 
 		strcopy(sColor, iColorSize, "\x01");
-		switch (GetClientTeam(iClient)) {
-			case 1: {GetTrieString(g_hColors, "team0", sColor, iColorSize);}
-			case 2: {GetTrieString(g_hColors, "team1", sColor, iColorSize);}
-			case 3: {GetTrieString(g_hColors, "team2", sColor, iColorSize);}
+		switch (GetClientTeam(client)) {
+			case 1: {
+				g_hColors.GetString("team0", sColor, iColorSize);
+			}
+			case 2: {
+				g_hColors.GetString("team1", sColor, iColorSize);
+			}
+			case 3: {
+				g_hColors.GetString("team2", sColor, iColorSize);
+			}
 		}
 		return true;
 	} else {
-		return GetTrieString(g_hColors, sName, sColor, iColorSize);
+		return g_hColors.GetString(sName, sColor, iColorSize);
 	}
 
 	return false;
@@ -473,33 +474,14 @@ stock bool CExistColor(const char[] sName)
 		return false;
 
 	char sColor[64];
-	return GetTrieString(g_hColors, sName, sColor, sizeof(sColor));
-}
-
-stock void CSayText2(int iClient, char[] sMessage, int iAuthor, bool bChat = true)
-{
-	Handle hMsg = StartMessageOne("SayText2", iClient, USERMSG_RELIABLE|USERMSG_BLOCKHOOKS);
-	if(GetFeatureStatus(FeatureType_Native, "GetUserMessageType") == FeatureStatus_Available && GetUserMessageType() == UM_Protobuf) {
-		PbSetInt(hMsg, "ent_idx", iAuthor);
-		PbSetBool(hMsg, "chat", bChat);
-		PbSetString(hMsg, "msg_name", sMessage);
-		PbAddString(hMsg, "params", "");
-		PbAddString(hMsg, "params", "");
-		PbAddString(hMsg, "params", "");
-		PbAddString(hMsg, "params", "");
-	} else {
-		BfWriteByte(hMsg, iAuthor);
-		BfWriteByte(hMsg, true);
-		BfWriteString(hMsg, sMessage);
-	}
-	EndMessage();
+	return g_hColors.GetString(sName, sColor, sizeof(sColor));
 }
 
 stock void CAddWhiteSpace(char[] sBuffer, int iSize)
 {
 	EngineVersion iEngineVersion = GetEngineVersion();
 
-	if (!IsSource2009() && !(iEngineVersion == Engine_Left4Dead) && !(iEngineVersion == Engine_Left4Dead2)) {
+	if (!SupportsColorCodes() && !(iEngineVersion == Engine_Left4Dead) && !(iEngineVersion == Engine_Left4Dead2)) {
 		Format(sBuffer, iSize, " %s", sBuffer);
 	}
 }
@@ -517,8 +499,8 @@ stock bool Init()
 
 	char sPluginName[PLATFORM_MAX_PATH];
 	char sDirectoryPath[PLATFORM_MAX_PATH];
-	Handle hConfig = INVALID_HANDLE;
-	GetPluginFilename(INVALID_HANDLE, sPluginName, sizeof(sPluginName));
+	Handle hConfig;
+	GetPluginFilename(null, sPluginName, sizeof(sPluginName));
 	ReplaceStringEx(sPluginName, sizeof(sPluginName), "\\", "/");
 	int iSlash = FindCharInString(sPluginName, '/', true);
 	if (iSlash > -1) {
@@ -548,7 +530,7 @@ stock bool Init()
 		{"team2",		 "{engine 11}"}
 	};
 
-	if (IsSource2009()) {
+	if (SupportsColorCodes()) {
 		strcopy(sGlobalVariableList[12][1], 64, "{#cccccc}");
 		strcopy(sGlobalVariableList[13][1], 64, "{#ff4040}");
 		strcopy(sGlobalVariableList[14][1], 64, "{#4d7942}");
@@ -557,7 +539,7 @@ stock bool Init()
 	BuildPath(Path_SM, g_sConfigGlobal, sizeof(g_sConfigGlobal), "%s/global.cfg", _CV_CONFIG_DIRECTORY);
 	if (!FileExists(g_sConfigGlobal)) {
 		hConfig = OpenFile(g_sConfigGlobal, "w");
-		if (hConfig == INVALID_HANDLE) {
+		if (hConfig == null) {
 			LogError("Cannot create file '%s' !", g_sConfigGlobal);
 			return false;
 		}
@@ -574,27 +556,26 @@ stock bool Init()
 		}
 		WriteFileLine(hConfig, "}");
 
-		CloseHandle(hConfig);
-		hConfig = INVALID_HANDLE;
+		delete hConfig;
 	} else {
 		hConfig = OpenFile(g_sConfigGlobal, "r");
-		if (hConfig == INVALID_HANDLE) {
+		if (hConfig == null) {
 			LogError("Cannot read from file '%s' !", g_sConfigGlobal);
 			return false;
 		}
 
 		char sVersionLine[64];
 		ReadFileLine(hConfig, sVersionLine, sizeof(sVersionLine));
-		CloseHandle(hConfig);
+		delete hConfig;
 
 		TrimString(sVersionLine);
 		strcopy(sVersionLine, sizeof(sVersionLine), sVersionLine[FindCharInString(sVersionLine, ':') + 2]);
 
 		if (StringToFloat(sVersionLine) < StringToFloat(_colorvariables_included)) {
-			Handle hKV = CreateKeyValues("colorvariables");
+			KeyValues hKV = new KeyValues("colorvariables");
 
-			if (!FileToKeyValues(hKV, g_sConfigGlobal) || !KvGotoFirstSubKey(hKV, false)) {
-				CloseHandle(hKV);
+			if (!hKV.ImportFromFile(g_sConfigGlobal) || !hKV.GotoFirstSubKey(false)) {
+				delete hKV;
 				LogError("Cannot read variables from file '%s' !", g_sConfigGlobal);
 				return false;
 			}
@@ -603,12 +584,12 @@ stock bool Init()
 				if (sGlobalVariableList[i][0][0] == '\0')
 					continue;
 
-				if (!KvJumpToKey(hKV, sGlobalVariableList[i][0]))
-					KvSetString(hKV, sGlobalVariableList[i][0], sGlobalVariableList[i][1]);
+				if (!hKV.JumpToKey(sGlobalVariableList[i][0]))
+					hKV.SetString(sGlobalVariableList[i][0], sGlobalVariableList[i][1]);
 			}
 
 			hConfig = OpenFile(g_sConfigGlobal, "w");
-			if (hConfig == INVALID_HANDLE) {
+			if (hConfig == null) {
 				LogError("Cannot write to file '%s' !", g_sConfigGlobal);
 				return false;
 			}
@@ -619,11 +600,11 @@ stock bool Init()
 
 			char sCode[64]; char sColor[64];
 
-			KvGotoFirstSubKey(hKV, false);
+			hKV.GotoFirstSubKey(false);
 			do
 			{
-				KvGetSectionName(hKV, sCode, sizeof(sCode));
-				KvGetString(hKV, NULL_STRING, sColor, sizeof(sColor));
+				hKV.GetSectionName(sCode, sizeof(sCode));
+				hKV.GetString(NULL_STRING, sColor, sizeof(sColor));
 				StringToLower(sCode);
 				StringToLower(sColor);
 
@@ -631,30 +612,29 @@ stock bool Init()
 			} while (KvGotoNextKey(hKV, false));
 
 			WriteFileLine(hConfig, "}");
-
-			CloseHandle(hConfig);
-			CloseHandle(hKV);
+			
+			delete hConfig;
+			delete hKV;
 		}
 	}
 
 	BuildPath(Path_SM, g_sConfig, sizeof(g_sConfig), "%s/plugin.%s.cfg", _CV_CONFIG_DIRECTORY, sPluginName);
 	if (!FileExists(g_sConfig)) {
 		hConfig = OpenFile(g_sConfig, "w");
-		if (hConfig == INVALID_HANDLE) {
+		if (hConfig == null) {
 			LogError("Cannot create file '%s' !", g_sConfig);
 			return false;
 		}
 
 		WriteFileLine(hConfig, "\"colorvariables\"\n{\n}");
-		CloseHandle(hConfig);
-		hConfig = INVALID_HANDLE;
+		delete hConfig;
 	}
 
-	for (int iClient = 1; iClient <= MaxClients; iClient++) {
-		g_bSkipPlayers[iClient] = false;
+	for (int client = 1; client <= MaxClients; client++) {
+		g_bSkipPlayers[client] = false;
 	}
 
-	g_hForwardedVariable = CreateGlobalForward("COnForwardedVariable", ET_Ignore, Param_String, Param_String, Param_Cell, Param_String, Param_Cell);
+	g_hForwardedVariable = new GlobalForward("COnForwardedVariable", ET_Ignore, Param_String, Param_String, Param_Cell, Param_String, Param_Cell);
 
 	LoadColors();
 	g_bInit = true;
@@ -663,36 +643,36 @@ stock bool Init()
 
 stock void LoadColors()
 {
-	if (g_hColors == INVALID_HANDLE) {
-		g_hColors = CreateTrie();
-		Handle hRedirect = CreateArray(64);
+	if (g_hColors == null) {
+		g_hColors = new StringMap();
+		ArrayList hRedirect = new ArrayList(64);
 
 		AddColors(g_hColors);
 		LoadConfigFile(g_hColors, g_sConfigGlobal, hRedirect);
 		LoadConfigFile(g_hColors, g_sConfig, hRedirect);
 
 		SolveRedirects(g_hColors, hRedirect);
-		CloseHandle(hRedirect);
+		delete hRedirect;
 	}
 }
 
-stock void LoadConfigFile(Handle hTrie, char[] sPath, Handle hRedirect, bool bAllowPrefix = true)
+stock void LoadConfigFile(StringMap hTrie, char[] sPath, ArrayList hRedirect, bool bAllowPrefix = true)
 {
 	if (!FileExists(sPath)) {
 		LogError("Cannot load color variables from file '%s' - file doesn't exist!", sPath);
 		return;
 	}
 
-	Handle hKV = CreateKeyValues("colorvariables");
+	KeyValues hKV = new KeyValues("colorvariables");
 
-	if (!FileToKeyValues(hKV, sPath)) {
-		CloseHandle(hKV);
+	if (!hKV.ImportFromFile(sPath)) {
+		delete hKV;
 		LogError("Cannot load color variables from file '%s' !", sPath);
 		return;
 	}
 
-	if (!KvGotoFirstSubKey(hKV, false)) {
-		CloseHandle(hKV);
+	if (!hKV.GotoFirstSubKey(false)) {
+		delete hKV;
 		return;
 	}
 
@@ -700,8 +680,8 @@ stock void LoadConfigFile(Handle hTrie, char[] sPath, Handle hRedirect, bool bAl
 
 	do
 	{
-		KvGetSectionName(hKV, sCode, sizeof(sCode));
-		KvGetString(hKV, NULL_STRING, sColor, sizeof(sColor));
+		hKV.GetSectionName(sCode, sizeof(sCode));
+		hKV.GetString(NULL_STRING, sColor, sizeof(sColor));
 
 		if (bAllowPrefix && StrEqual(sCode, "&prefix", false)) {
 			CSetPrefix(sColor);
@@ -719,23 +699,23 @@ stock void LoadConfigFile(Handle hTrie, char[] sPath, Handle hRedirect, bool bAl
 			if (sColor[1] == '#') {
 				Format(sColor, sizeof(sColor), "\x07%s", sColor[1]);
 			} else {
-				PushArrayString(hRedirect, sCode);
+				hRedirect.PushString(sCode);
 			}
 		}
 
-		SetTrieString(hTrie, sCode, sColor);
+		hTrie.SetString(sCode, sColor);
 	} while (KvGotoNextKey(hKV, false));
 
-	CloseHandle(hKV);
+	delete hKV;
 }
 
-stock void SolveRedirects(Handle hTrie, Handle hRedirect)
+stock void SolveRedirects(StringMap hTrie, ArrayList hRedirect)
 {
 	char sCode[64]; char sRedirect[64]; char sColor[64]; char sFirstColor[64];
 	int iRedirectLife; bool bHasBrackets;
 
-	for (int i = 0; i < GetArraySize(hRedirect); i++) {
-		GetArrayString(hRedirect, i, sRedirect, sizeof(sRedirect));
+	for (int i = 0; i < hRedirect.Length; i++) {
+		hRedirect.GetString(i, sRedirect, sizeof(sRedirect));
 		strcopy(sCode, sizeof(sCode), sRedirect);
 		bHasBrackets = true;
 
@@ -767,7 +747,7 @@ stock void SolveRedirects(Handle hTrie, Handle hRedirect)
 
 		StringToLower(sCode);
 		StringToLower(sRedirect);
-		SetTrieString(hTrie, sCode, sRedirect);
+		hTrie.SetString(sCode, sRedirect);
 	}
 }
 
@@ -786,252 +766,271 @@ stock void StringToLower(char[] sSource)
 	}
 }
 
-stock void AddColors(Handle hTrie)
+stock void AddColors(StringMap hTrie)
 {
-	if (IsSource2009()) {
-		SetTrieString(hTrie, "default", "\x01");
-		SetTrieString(hTrie, "teamcolor", "\x03");
+	hTrie.SetString("default", "\x01");       // "\x01" "{default}"
+	hTrie.SetString("teamcolor", "\x03");     // "\x03" "{lightgreen}" "\x03" "{orange}" "\x03" "{blue}" "\x03" "{purple}"
 
-		SetTrieString(hTrie, "aliceblue", "\x07F0F8FF");
-		SetTrieString(hTrie, "allies", "\x074D7942");
-		SetTrieString(hTrie, "ancient", "\x07EB4B4B");
-		SetTrieString(hTrie, "antiquewhite", "\x07FAEBD7");
-		SetTrieString(hTrie, "aqua", "\x0700FFFF");
-		SetTrieString(hTrie, "aquamarine", "\x077FFFD4");
-		SetTrieString(hTrie, "arcana", "\x07ADE55C");
-		SetTrieString(hTrie, "axis", "\x07FF4040");
-		SetTrieString(hTrie, "azure", "\x07007FFF");
-		SetTrieString(hTrie, "beige", "\x07F5F5DC");
-		SetTrieString(hTrie, "bisque", "\x07FFE4C4");
-		SetTrieString(hTrie, "black", "\x07000000");
-		SetTrieString(hTrie, "blanchedalmond", "\x07FFEBCD");
-		SetTrieString(hTrie, "blue", "\x0799CCFF");
-		SetTrieString(hTrie, "blueviolet", "\x078A2BE2");
-		SetTrieString(hTrie, "brown", "\x07A52A2A");
-		SetTrieString(hTrie, "burlywood", "\x07DEB887");
-		SetTrieString(hTrie, "cadetblue", "\x075F9EA0");
-		SetTrieString(hTrie, "chartreuse", "\x077FFF00");
-		SetTrieString(hTrie, "chocolate", "\x07D2691E");
-		SetTrieString(hTrie, "collectors", "\x07AA0000");
-		SetTrieString(hTrie, "common", "\x07B0C3D9");
-		SetTrieString(hTrie, "community", "\x0770B04A");
-		SetTrieString(hTrie, "coral", "\x07FF7F50");
-		SetTrieString(hTrie, "cornflowerblue", "\x076495ED");
-		SetTrieString(hTrie, "cornsilk", "\x07FFF8DC");
-		SetTrieString(hTrie, "corrupted", "\x07A32C2E");
-		SetTrieString(hTrie, "crimson", "\x07DC143C");
-		SetTrieString(hTrie, "cyan", "\x0700FFFF");
-		SetTrieString(hTrie, "darkblue", "\x0700008B");
-		SetTrieString(hTrie, "darkcyan", "\x07008B8B");
-		SetTrieString(hTrie, "darkgoldenrod", "\x07B8860B");
-		SetTrieString(hTrie, "darkgray", "\x07A9A9A9");
-		SetTrieString(hTrie, "darkgrey", "\x07A9A9A9");
-		SetTrieString(hTrie, "darkgreen", "\x07006400");
-		SetTrieString(hTrie, "darkkhaki", "\x07BDB76B");
-		SetTrieString(hTrie, "darkmagenta", "\x078B008B");
-		SetTrieString(hTrie, "darkolivegreen", "\x07556B2F");
-		SetTrieString(hTrie, "darkorange", "\x07FF8C00");
-		SetTrieString(hTrie, "darkorchid", "\x079932CC");
-		SetTrieString(hTrie, "darkred", "\x078B0000");
-		SetTrieString(hTrie, "darksalmon", "\x07E9967A");
-		SetTrieString(hTrie, "darkseagreen", "\x078FBC8F");
-		SetTrieString(hTrie, "darkslateblue", "\x07483D8B");
-		SetTrieString(hTrie, "darkslategray", "\x072F4F4F");
-		SetTrieString(hTrie, "darkslategrey", "\x072F4F4F");
-		SetTrieString(hTrie, "darkturquoise", "\x0700CED1");
-		SetTrieString(hTrie, "darkviolet", "\x079400D3");
-		SetTrieString(hTrie, "deeppink", "\x07FF1493");
-		SetTrieString(hTrie, "deepskyblue", "\x0700BFFF");
-		SetTrieString(hTrie, "dimgray", "\x07696969");
-		SetTrieString(hTrie, "dimgrey", "\x07696969");
-		SetTrieString(hTrie, "dodgerblue", "\x071E90FF");
-		SetTrieString(hTrie, "exalted", "\x07CCCCCD");
-		SetTrieString(hTrie, "firebrick", "\x07B22222");
-		SetTrieString(hTrie, "floralwhite", "\x07FFFAF0");
-		SetTrieString(hTrie, "forestgreen", "\x07228B22");
-		SetTrieString(hTrie, "frozen", "\x074983B3");
-		SetTrieString(hTrie, "fuchsia", "\x07FF00FF");
-		SetTrieString(hTrie, "fullblue", "\x070000FF");
-		SetTrieString(hTrie, "fullred", "\x07FF0000");
-		SetTrieString(hTrie, "gainsboro", "\x07DCDCDC");
-		SetTrieString(hTrie, "genuine", "\x074D7455");
-		SetTrieString(hTrie, "ghostwhite", "\x07F8F8FF");
-		SetTrieString(hTrie, "gold", "\x07FFD700");
-		SetTrieString(hTrie, "goldenrod", "\x07DAA520");
-		SetTrieString(hTrie, "gray", "\x07CCCCCC");
-		SetTrieString(hTrie, "grey", "\x07CCCCCC");
-		SetTrieString(hTrie, "green", "\x073EFF3E");
-		SetTrieString(hTrie, "greenyellow", "\x07ADFF2F");
-		SetTrieString(hTrie, "haunted", "\x0738F3AB");
-		SetTrieString(hTrie, "honeydew", "\x07F0FFF0");
-		SetTrieString(hTrie, "hotpink", "\x07FF69B4");
-		SetTrieString(hTrie, "immortal", "\x07E4AE33");
-		SetTrieString(hTrie, "indianred", "\x07CD5C5C");
-		SetTrieString(hTrie, "indigo", "\x074B0082");
-		SetTrieString(hTrie, "ivory", "\x07FFFFF0");
-		SetTrieString(hTrie, "khaki", "\x07F0E68C");
-		SetTrieString(hTrie, "lavender", "\x07E6E6FA");
-		SetTrieString(hTrie, "lavenderblush", "\x07FFF0F5");
-		SetTrieString(hTrie, "lawngreen", "\x077CFC00");
-		SetTrieString(hTrie, "legendary", "\x07D32CE6");
-		SetTrieString(hTrie, "lemonchiffon", "\x07FFFACD");
-		SetTrieString(hTrie, "lightblue", "\x07ADD8E6");
-		SetTrieString(hTrie, "lightcoral", "\x07F08080");
-		SetTrieString(hTrie, "lightcyan", "\x07E0FFFF");
-		SetTrieString(hTrie, "lightgoldenrodyellow", "\x07FAFAD2");
-		SetTrieString(hTrie, "lightgray", "\x07D3D3D3");
-		SetTrieString(hTrie, "lightgrey", "\x07D3D3D3");
-		SetTrieString(hTrie, "lightgreen", "\x0799FF99");
-		SetTrieString(hTrie, "lightpink", "\x07FFB6C1");
-		SetTrieString(hTrie, "lightsalmon", "\x07FFA07A");
-		SetTrieString(hTrie, "lightseagreen", "\x0720B2AA");
-		SetTrieString(hTrie, "lightskyblue", "\x0787CEFA");
-		SetTrieString(hTrie, "lightslategray", "\x07778899");
-		SetTrieString(hTrie, "lightslategrey", "\x07778899");
-		SetTrieString(hTrie, "lightsteelblue", "\x07B0C4DE");
-		SetTrieString(hTrie, "lightyellow", "\x07FFFFE0");
-		SetTrieString(hTrie, "lime", "\x0700FF00");
-		SetTrieString(hTrie, "limegreen", "\x0732CD32");
-		SetTrieString(hTrie, "linen", "\x07FAF0E6");
-		SetTrieString(hTrie, "magenta", "\x07FF00FF");
-		SetTrieString(hTrie, "maroon", "\x07800000");
-		SetTrieString(hTrie, "mediumaquamarine", "\x0766CDAA");
-		SetTrieString(hTrie, "mediumblue", "\x070000CD");
-		SetTrieString(hTrie, "mediumorchid", "\x07BA55D3");
-		SetTrieString(hTrie, "mediumpurple", "\x079370D8");
-		SetTrieString(hTrie, "mediumseagreen", "\x073CB371");
-		SetTrieString(hTrie, "mediumslateblue", "\x077B68EE");
-		SetTrieString(hTrie, "mediumspringgreen", "\x0700FA9A");
-		SetTrieString(hTrie, "mediumturquoise", "\x0748D1CC");
-		SetTrieString(hTrie, "mediumvioletred", "\x07C71585");
-		SetTrieString(hTrie, "midnightblue", "\x07191970");
-		SetTrieString(hTrie, "mintcream", "\x07F5FFFA");
-		SetTrieString(hTrie, "mistyrose", "\x07FFE4E1");
-		SetTrieString(hTrie, "moccasin", "\x07FFE4B5");
-		SetTrieString(hTrie, "mythical", "\x078847FF");
-		SetTrieString(hTrie, "navajowhite", "\x07FFDEAD");
-		SetTrieString(hTrie, "navy", "\x07000080");
-		SetTrieString(hTrie, "normal", "\x07B2B2B2");
-		SetTrieString(hTrie, "oldlace", "\x07FDF5E6");
-		SetTrieString(hTrie, "olive", "\x079EC34F");
-		SetTrieString(hTrie, "olivedrab", "\x076B8E23");
-		SetTrieString(hTrie, "orange", "\x07FFA500");
-		SetTrieString(hTrie, "orangered", "\x07FF4500");
-		SetTrieString(hTrie, "orchid", "\x07DA70D6");
-		SetTrieString(hTrie, "palegoldenrod", "\x07EEE8AA");
-		SetTrieString(hTrie, "palegreen", "\x0798FB98");
-		SetTrieString(hTrie, "paleturquoise", "\x07AFEEEE");
-		SetTrieString(hTrie, "palevioletred", "\x07D87093");
-		SetTrieString(hTrie, "papayawhip", "\x07FFEFD5");
-		SetTrieString(hTrie, "peachpuff", "\x07FFDAB9");
-		SetTrieString(hTrie, "peru", "\x07CD853F");
-		SetTrieString(hTrie, "pink", "\x07FFC0CB");
-		SetTrieString(hTrie, "plum", "\x07DDA0DD");
-		SetTrieString(hTrie, "powderblue", "\x07B0E0E6");
-		SetTrieString(hTrie, "purple", "\x07800080");
-		SetTrieString(hTrie, "rare", "\x074B69FF");
-		SetTrieString(hTrie, "red", "\x07FF4040");
-		SetTrieString(hTrie, "rosybrown", "\x07BC8F8F");
-		SetTrieString(hTrie, "royalblue", "\x074169E1");
-		SetTrieString(hTrie, "saddlebrown", "\x078B4513");
-		SetTrieString(hTrie, "salmon", "\x07FA8072");
-		SetTrieString(hTrie, "sandybrown", "\x07F4A460");
-		SetTrieString(hTrie, "seagreen", "\x072E8B57");
-		SetTrieString(hTrie, "seashell", "\x07FFF5EE");
-		SetTrieString(hTrie, "selfmade", "\x0770B04A");
-		SetTrieString(hTrie, "sienna", "\x07A0522D");
-		SetTrieString(hTrie, "silver", "\x07C0C0C0");
-		SetTrieString(hTrie, "skyblue", "\x0787CEEB");
-		SetTrieString(hTrie, "slateblue", "\x076A5ACD");
-		SetTrieString(hTrie, "slategray", "\x07708090");
-		SetTrieString(hTrie, "slategrey", "\x07708090");
-		SetTrieString(hTrie, "snow", "\x07FFFAFA");
-		SetTrieString(hTrie, "springgreen", "\x0700FF7F");
-		SetTrieString(hTrie, "steelblue", "\x074682B4");
-		SetTrieString(hTrie, "strange", "\x07CF6A32");
-		SetTrieString(hTrie, "tan", "\x07D2B48C");
-		SetTrieString(hTrie, "teal", "\x07008080");
-		SetTrieString(hTrie, "thistle", "\x07D8BFD8");
-		SetTrieString(hTrie, "tomato", "\x07FF6347");
-		SetTrieString(hTrie, "turquoise", "\x0740E0D0");
-		SetTrieString(hTrie, "uncommon", "\x07B0C3D9");
-		SetTrieString(hTrie, "unique", "\x07FFD700");
-		SetTrieString(hTrie, "unusual", "\x078650AC");
-		SetTrieString(hTrie, "valve", "\x07A50F79");
-		SetTrieString(hTrie, "vintage", "\x07476291");
-		SetTrieString(hTrie, "violet", "\x07EE82EE");
-		SetTrieString(hTrie, "wheat", "\x07F5DEB3");
-		SetTrieString(hTrie, "white", "\x07FFFFFF");
-		SetTrieString(hTrie, "whitesmoke", "\x07F5F5F5");
-		SetTrieString(hTrie, "yellow", "\x07FFFF00");
-		SetTrieString(hTrie, "yellowgreen", "\x079ACD32");
+	if (SupportsColorCodes()) {
+		hTrie.SetString("aliceblue", "\x07F0F8FF");
+		hTrie.SetString("allies", "\x074D7942");
+		hTrie.SetString("ancient", "\x07EB4B4B");
+		hTrie.SetString("antiquewhite", "\x07FAEBD7");
+		hTrie.SetString("aqua", "\x0700FFFF");
+		hTrie.SetString("aquamarine", "\x077FFFD4");
+		hTrie.SetString("arcana", "\x07ADE55C");
+		hTrie.SetString("axis", "\x07FF4040");
+		hTrie.SetString("azure", "\x07007FFF");
+		hTrie.SetString("beige", "\x07F5F5DC");
+		hTrie.SetString("bisque", "\x07FFE4C4");
+		hTrie.SetString("black", "\x07000000");
+		hTrie.SetString("blanchedalmond", "\x07FFEBCD");
+		hTrie.SetString("blue", "\x0799CCFF");
+		hTrie.SetString("blueviolet", "\x078A2BE2");
+		hTrie.SetString("brown", "\x07A52A2A");
+		hTrie.SetString("burlywood", "\x07DEB887");
+		hTrie.SetString("cadetblue", "\x075F9EA0");
+		hTrie.SetString("chartreuse", "\x077FFF00");
+		hTrie.SetString("chocolate", "\x07D2691E");
+		hTrie.SetString("collectors", "\x07AA0000");
+		hTrie.SetString("common", "\x07B0C3D9");
+		hTrie.SetString("community", "\x0770B04A");
+		hTrie.SetString("coral", "\x07FF7F50");
+		hTrie.SetString("cornflowerblue", "\x076495ED");
+		hTrie.SetString("cornsilk", "\x07FFF8DC");
+		hTrie.SetString("corrupted", "\x07A32C2E");
+		hTrie.SetString("crimson", "\x07DC143C");
+		hTrie.SetString("cyan", "\x0700FFFF");
+		hTrie.SetString("darkblue", "\x0700008B");
+		hTrie.SetString("darkcyan", "\x07008B8B");
+		hTrie.SetString("darkgoldenrod", "\x07B8860B");
+		hTrie.SetString("darkgray", "\x07A9A9A9");
+		hTrie.SetString("darkgrey", "\x07A9A9A9");
+		hTrie.SetString("darkgreen", "\x07006400");
+		hTrie.SetString("darkkhaki", "\x07BDB76B");
+		hTrie.SetString("darkmagenta", "\x078B008B");
+		hTrie.SetString("darkolivegreen", "\x07556B2F");
+		hTrie.SetString("darkorange", "\x07FF8C00");
+		hTrie.SetString("darkorchid", "\x079932CC");
+		hTrie.SetString("darkred", "\x078B0000");
+		hTrie.SetString("darksalmon", "\x07E9967A");
+		hTrie.SetString("darkseagreen", "\x078FBC8F");
+		hTrie.SetString("darkslateblue", "\x07483D8B");
+		hTrie.SetString("darkslategray", "\x072F4F4F");
+		hTrie.SetString("darkslategrey", "\x072F4F4F");
+		hTrie.SetString("darkturquoise", "\x0700CED1");
+		hTrie.SetString("darkviolet", "\x079400D3");
+		hTrie.SetString("deeppink", "\x07FF1493");
+		hTrie.SetString("deepskyblue", "\x0700BFFF");
+		hTrie.SetString("dimgray", "\x07696969");
+		hTrie.SetString("dimgrey", "\x07696969");
+		hTrie.SetString("dodgerblue", "\x071E90FF");
+		hTrie.SetString("exalted", "\x07CCCCCD");
+		hTrie.SetString("firebrick", "\x07B22222");
+		hTrie.SetString("floralwhite", "\x07FFFAF0");
+		hTrie.SetString("forestgreen", "\x07228B22");
+		hTrie.SetString("frozen", "\x074983B3");
+		hTrie.SetString("fuchsia", "\x07FF00FF");
+		hTrie.SetString("fullblue", "\x070000FF");
+		hTrie.SetString("fullred", "\x07FF0000");
+		hTrie.SetString("gainsboro", "\x07DCDCDC");
+		hTrie.SetString("genuine", "\x074D7455");
+		hTrie.SetString("ghostwhite", "\x07F8F8FF");
+		hTrie.SetString("gold", "\x07FFD700");
+		hTrie.SetString("goldenrod", "\x07DAA520");
+		hTrie.SetString("gray", "\x07CCCCCC");
+		hTrie.SetString("grey", "\x07CCCCCC");
+		hTrie.SetString("green", "\x073EFF3E");
+		hTrie.SetString("greenyellow", "\x07ADFF2F");
+		hTrie.SetString("haunted", "\x0738F3AB");
+		hTrie.SetString("honeydew", "\x07F0FFF0");
+		hTrie.SetString("hotpink", "\x07FF69B4");
+		hTrie.SetString("immortal", "\x07E4AE33");
+		hTrie.SetString("indianred", "\x07CD5C5C");
+		hTrie.SetString("indigo", "\x074B0082");
+		hTrie.SetString("ivory", "\x07FFFFF0");
+		hTrie.SetString("khaki", "\x07F0E68C");
+		hTrie.SetString("lavender", "\x07E6E6FA");
+		hTrie.SetString("lavenderblush", "\x07FFF0F5");
+		hTrie.SetString("lawngreen", "\x077CFC00");
+		hTrie.SetString("legendary", "\x07D32CE6");
+		hTrie.SetString("lemonchiffon", "\x07FFFACD");
+		hTrie.SetString("lightblue", "\x07ADD8E6");
+		hTrie.SetString("lightcoral", "\x07F08080");
+		hTrie.SetString("lightcyan", "\x07E0FFFF");
+		hTrie.SetString("lightgoldenrodyellow", "\x07FAFAD2");
+		hTrie.SetString("lightgray", "\x07D3D3D3");
+		hTrie.SetString("lightgrey", "\x07D3D3D3");
+		hTrie.SetString("lightgreen", "\x0799FF99");
+		hTrie.SetString("lightpink", "\x07FFB6C1");
+		hTrie.SetString("lightsalmon", "\x07FFA07A");
+		hTrie.SetString("lightseagreen", "\x0720B2AA");
+		hTrie.SetString("lightskyblue", "\x0787CEFA");
+		hTrie.SetString("lightslategray", "\x07778899");
+		hTrie.SetString("lightslategrey", "\x07778899");
+		hTrie.SetString("lightsteelblue", "\x07B0C4DE");
+		hTrie.SetString("lightyellow", "\x07FFFFE0");
+		hTrie.SetString("lime", "\x0700FF00");
+		hTrie.SetString("limegreen", "\x0732CD32");
+		hTrie.SetString("linen", "\x07FAF0E6");
+		hTrie.SetString("magenta", "\x07FF00FF");
+		hTrie.SetString("maroon", "\x07800000");
+		hTrie.SetString("mediumaquamarine", "\x0766CDAA");
+		hTrie.SetString("mediumblue", "\x070000CD");
+		hTrie.SetString("mediumorchid", "\x07BA55D3");
+		hTrie.SetString("mediumpurple", "\x079370D8");
+		hTrie.SetString("mediumseagreen", "\x073CB371");
+		hTrie.SetString("mediumslateblue", "\x077B68EE");
+		hTrie.SetString("mediumspringgreen", "\x0700FA9A");
+		hTrie.SetString("mediumturquoise", "\x0748D1CC");
+		hTrie.SetString("mediumvioletred", "\x07C71585");
+		hTrie.SetString("midnightblue", "\x07191970");
+		hTrie.SetString("mintcream", "\x07F5FFFA");
+		hTrie.SetString("mistyrose", "\x07FFE4E1");
+		hTrie.SetString("moccasin", "\x07FFE4B5");
+		hTrie.SetString("mythical", "\x078847FF");
+		hTrie.SetString("navajowhite", "\x07FFDEAD");
+		hTrie.SetString("navy", "\x07000080");
+		hTrie.SetString("normal", "\x07B2B2B2");
+		hTrie.SetString("oldlace", "\x07FDF5E6");
+		hTrie.SetString("olive", "\x079EC34F");
+		hTrie.SetString("olivedrab", "\x076B8E23");
+		hTrie.SetString("orange", "\x07FFA500");
+		hTrie.SetString("orangered", "\x07FF4500");
+		hTrie.SetString("orchid", "\x07DA70D6");
+		hTrie.SetString("palegoldenrod", "\x07EEE8AA");
+		hTrie.SetString("palegreen", "\x0798FB98");
+		hTrie.SetString("paleturquoise", "\x07AFEEEE");
+		hTrie.SetString("palevioletred", "\x07D87093");
+		hTrie.SetString("papayawhip", "\x07FFEFD5");
+		hTrie.SetString("peachpuff", "\x07FFDAB9");
+		hTrie.SetString("peru", "\x07CD853F");
+		hTrie.SetString("pink", "\x07FFC0CB");
+		hTrie.SetString("plum", "\x07DDA0DD");
+		hTrie.SetString("powderblue", "\x07B0E0E6");
+		hTrie.SetString("purple", "\x07800080");
+		hTrie.SetString("rare", "\x074B69FF");
+		hTrie.SetString("red", "\x07FF4040");
+		hTrie.SetString("rosybrown", "\x07BC8F8F");
+		hTrie.SetString("royalblue", "\x074169E1");
+		hTrie.SetString("saddlebrown", "\x078B4513");
+		hTrie.SetString("salmon", "\x07FA8072");
+		hTrie.SetString("sandybrown", "\x07F4A460");
+		hTrie.SetString("seagreen", "\x072E8B57");
+		hTrie.SetString("seashell", "\x07FFF5EE");
+		hTrie.SetString("selfmade", "\x0770B04A");
+		hTrie.SetString("sienna", "\x07A0522D");
+		hTrie.SetString("silver", "\x07C0C0C0");
+		hTrie.SetString("skyblue", "\x0787CEEB");
+		hTrie.SetString("slateblue", "\x076A5ACD");
+		hTrie.SetString("slategray", "\x07708090");
+		hTrie.SetString("slategrey", "\x07708090");
+		hTrie.SetString("snow", "\x07FFFAFA");
+		hTrie.SetString("springgreen", "\x0700FF7F");
+		hTrie.SetString("steelblue", "\x074682B4");
+		hTrie.SetString("strange", "\x07CF6A32");
+		hTrie.SetString("tan", "\x07D2B48C");
+		hTrie.SetString("teal", "\x07008080");
+		hTrie.SetString("thistle", "\x07D8BFD8");
+		hTrie.SetString("tomato", "\x07FF6347");
+		hTrie.SetString("turquoise", "\x0740E0D0");
+		hTrie.SetString("uncommon", "\x07B0C3D9");
+		hTrie.SetString("unique", "\x07FFD700");
+		hTrie.SetString("unusual", "\x078650AC");
+		hTrie.SetString("valve", "\x07A50F79");
+		hTrie.SetString("vintage", "\x07476291");
+		hTrie.SetString("violet", "\x07EE82EE");
+		hTrie.SetString("wheat", "\x07F5DEB3");
+		hTrie.SetString("white", "\x07FFFFFF");
+		hTrie.SetString("whitesmoke", "\x07F5F5F5");
+		hTrie.SetString("yellow", "\x07FFFF00");
+		hTrie.SetString("yellowgreen", "\x079ACD32");
 	} else {
-		SetTrieString(hTrie, "default", "\x01");
-		SetTrieString(hTrie, "teamcolor", "\x03");
+		hTrie.SetString("red", "\x07");           // "\x07" "{red}"
+		hTrie.SetString("lightred", "\x0F");      // "\x0F" "{lightred}"
+		hTrie.SetString("darkred", "\x02");       // "\x02" "{darkred}"
+		hTrie.SetString("bluegrey", "\x0A");      // "\x0A" "{lightblue}"
+		hTrie.SetString("blue", "\x0B");          // "\x0B" "{steelblue}"
+		hTrie.SetString("darkblue", "\x0C");      // "\x0C" "{darkblue}"
+		hTrie.SetString("purple", "\x03");
+		hTrie.SetString("orchid", "\x0E");        // "\x0E" "{pink}"
+		hTrie.SetString("yellow", "\x09");        // "\x09" "{yellow}"
+		hTrie.SetString("gold", "\x10");
+		hTrie.SetString("lightgreen", "\x05");    // "\x05" "{olive}"
+		hTrie.SetString("green", "\x04");         // "\x04" "{green}"
+		hTrie.SetString("lime", "\x06");          // "\x06" "{lime}"
+		hTrie.SetString("grey", "\x08");          // "\x08" "{grey}"
+		hTrie.SetString("grey2", "\x0D");
 
-		SetTrieString(hTrie, "red", "\x07");
-		SetTrieString(hTrie, "lightred", "\x0F");
-		SetTrieString(hTrie, "darkred", "\x02");
-		SetTrieString(hTrie, "bluegrey", "\x0A");
-		SetTrieString(hTrie, "blue", "\x0B");
-		SetTrieString(hTrie, "darkblue", "\x0C");
-		SetTrieString(hTrie, "purple", "\x03");
-		SetTrieString(hTrie, "orchid", "\x0E");
-		SetTrieString(hTrie, "yellow", "\x09");
-		SetTrieString(hTrie, "gold", "\x10");
-		SetTrieString(hTrie, "lightgreen", "\x05");
-		SetTrieString(hTrie, "green", "\x04");
-		SetTrieString(hTrie, "lime", "\x06");
-		SetTrieString(hTrie, "grey", "\x08");
-		SetTrieString(hTrie, "grey2", "\x0D");
+		// Additional color names for ckSurf backwards compatibility
+		hTrie.SetString("bluegray", "\x0A"); // using bluegrey
+		hTrie.SetString("gray", "\x08"); // using gray
+		hTrie.SetString("gray2", "\x0D"); // using gray2
+		hTrie.SetString("orange", "\x10"); // using gold
+		hTrie.SetString("steelblue", "\x0D"); // using grey2
+		hTrie.SetString("pink", "\x0E"); // using orchid
+		hTrie.SetString("lightblue", "\x0A"); // using bluegrey
+		hTrie.SetString("olive", "\x05"); // using lightgreen
 	}
 
-	SetTrieString(hTrie, "engine 1", "\x01");
-	SetTrieString(hTrie, "engine 2", "\x02");
-	SetTrieString(hTrie, "engine 3", "\x03");
-	SetTrieString(hTrie, "engine 4", "\x04");
-	SetTrieString(hTrie, "engine 5", "\x05");
-	SetTrieString(hTrie, "engine 6", "\x06");
-	SetTrieString(hTrie, "engine 7", "\x07");
-	SetTrieString(hTrie, "engine 8", "\x08");
-	SetTrieString(hTrie, "engine 9", "\x09");
-	SetTrieString(hTrie, "engine 10", "\x0A");
-	SetTrieString(hTrie, "engine 11", "\x0B");
-	SetTrieString(hTrie, "engine 12", "\x0C");
-	SetTrieString(hTrie, "engine 13", "\x0D");
-	SetTrieString(hTrie, "engine 14", "\x0E");
-	SetTrieString(hTrie, "engine 15", "\x0F");
-	SetTrieString(hTrie, "engine 16", "\x10");
+	hTrie.SetString("engine 1", "\x01");
+	hTrie.SetString("engine 2", "\x02");
+	hTrie.SetString("engine 3", "\x03");
+	hTrie.SetString("engine 4", "\x04");
+	hTrie.SetString("engine 5", "\x05");
+	hTrie.SetString("engine 6", "\x06");
+	hTrie.SetString("engine 7", "\x07");
+	hTrie.SetString("engine 8", "\x08");
+	hTrie.SetString("engine 9", "\x09");
+	hTrie.SetString("engine 10", "\x0A");
+	hTrie.SetString("engine 11", "\x0B");
+	hTrie.SetString("engine 12", "\x0C");
+	hTrie.SetString("engine 13", "\x0D");
+	hTrie.SetString("engine 14", "\x0E");
+	hTrie.SetString("engine 15", "\x0F");
+	hTrie.SetString("engine 16", "\x10");
 }
 
-stock bool IsSource2009()
+stock bool SupportsColorCodes()
 {
-	if (g_IsSource2009 == unknown) {
-		EngineVersion iEngineVersion = GetEngineVersion();
-		g_IsSource2009 = (iEngineVersion == Engine_CSS || iEngineVersion == Engine_TF2 || iEngineVersion == Engine_HL2DM || iEngineVersion == Engine_DODS) ? yes : no;
-	}
-
-	return view_as<bool>(g_IsSource2009);
+	EngineVersion iEngineVersion = GetEngineVersion();
+	bool g_SupportsColorCodes = (iEngineVersion == Engine_CSS || iEngineVersion == Engine_TF2 || iEngineVersion == Engine_HL2DM || iEngineVersion == Engine_DODS) ? true : false;
+	return g_SupportsColorCodes;
 }
 
-stock void AddPrefixAndDefaultColor(char[] sMessage, int iSize, char[] sDefaultColor = "default", char[] sPrefixColor = "prefix")
+stock void AddPrefixAndDefaultColor(char[] message, int iSize, char[] sDefaultColor = "default", char[] sPrefixColor = "prefix")
 {
 	if (g_sChatPrefix[0] != '\0' && !g_bIgnorePrefix) {
-		Format(sMessage, iSize, "{%s}[%s]{%s} %s", sPrefixColor, g_sChatPrefix, sDefaultColor, sMessage);
+		Format(message, iSize, "{%s}[%s]{%s} %s", sPrefixColor, g_sChatPrefix, sDefaultColor, message);
 	} else {
-		Format(sMessage, iSize, "{%s}%s", sDefaultColor, sMessage);
+		Format(message, iSize, "{%s}%s", sDefaultColor, message);
 	}
 }
 
-stock void SendPlayerMessage(int iClient, char[] sMessage, int iAuthor  = 0)
+stock void SendPlayerMessage(int client, char[] message, int author  = 0)
 {
-	if (iAuthor < 1 || iAuthor > MaxClients || !IsClientInGame(iAuthor)) {
-		PrintToChat(iClient, sMessage);
-
-		if (iAuthor != 0) {
-			LogError("Client %d is not valid or in game", iAuthor);
-		}
+	if (author < 1 || author > MaxClients || !IsClientInGame(author)) {
+		PrintToChat(client, message);
 	} else {
-		CSayText2(iClient, sMessage, iAuthor);
+		CSayText2(client, message, author);
 	}
+}
+
+stock void CSayText2(int client, char[] message, int author, bool bChat = true)
+{
+	Handle hMsg = StartMessageOne("SayText2", client, USERMSG_RELIABLE|USERMSG_BLOCKHOOKS);
+	if(GetFeatureStatus(FeatureType_Native, "GetUserMessageType") == FeatureStatus_Available && GetUserMessageType() == UM_Protobuf) {
+		PbSetInt(hMsg, "ent_idx", author);
+		PbSetBool(hMsg, "chat", bChat);
+		PbSetString(hMsg, "msg_name", message);
+		PbAddString(hMsg, "params", "");
+		PbAddString(hMsg, "params", "");
+		PbAddString(hMsg, "params", "");
+		PbAddString(hMsg, "params", "");
+	} else {
+		BfWriteByte(hMsg, author);
+		BfWriteByte(hMsg, true);
+		BfWriteString(hMsg, message);
+	}
+	EndMessage();
 }

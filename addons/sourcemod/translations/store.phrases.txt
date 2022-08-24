@@ -184,6 +184,11 @@
 		"en" "Do you want to reset config?\nYou need to change the map to apply or may get some bugs."
 	}
 	
+	"Config reloaded. Please restart or change map"
+	{
+		"en" "Config reloaded. Please restart or change map."
+	}
+	
 	"QuizzGenerated"
     {
         "#format" "{1:i},{2:s},{3:i},{4:i},{5:s}"
@@ -2482,7 +2487,7 @@
 
 	"Title Credits"
 	{
-		"#format" "{1:d}"
+		"#format" "{1:i}"
 		"en" "Credits: {1}"
 		"hu" "Kreditek: {1}"
 		"chi" "积分：{1}"
@@ -2520,33 +2525,33 @@
 	"Chat Bought Item"
 	{
 		"#format" "{1:s},{2:t}"
-		"en" "You have bought a {HIGHLIGHT}{1} {2}{NORMAL}."
-		"hu" "A következőt vetted: {HIGHLIGHT}{1} {2}{NORMAL}."
-		"chi" "你购买了1个 {HIGHLIGHT}{1} {2}{NORMAL}."
+		"en" "You have bought a {purple}{1} {green}{2}{default}."
+		"hu" "A következőt vetted: {purple}{1} {green}{2}{default}."
+		"chi" "你购买了1个 {purple}{1} {green}{2}{default}."
 	}
 
 	"Chat Sold Item"
 	{
 		"#format" "{1:s},{2:t}"
-		"en" "You have sold a {HIGHLIGHT}{1} {2}{NORMAL}."
-		"hu" "A következőt adtad el: {HIGHLIGHT}{1} {2}{NORMAL}."
-		"chi" "你出售了 {HIGHLIGHT}{1} {2}{NORMAL}."
+		"en" "You have sold a {purple}{1} {green}{2}{default}."
+		"hu" "A következőt adtad el: {purple}{1} {green}{2}{default}."
+		"chi" "你出售了 {purple}{1} {green}{2}{default}."
 	}
 
 	"Chat Gift Item Sent"
 	{
 		"#format" "{1:s},{2:s},{3:t}"
-		"en" "You have sent {HIGHLIGHT}{1}{NORMAL} a {HIGHLIGHT}{2} {3}{NORMAL} as a gift."
-		"hu" "A következőt küldted: {HIGHLIGHT}{2} {3}{NORMAL} neki: {HIGHLIGHT}{1}{NORMAL}."
-		"chi" "你赠送了 {HIGHLIGHT}{1}{NORMAL} 个 {HIGHLIGHT}{2} {3}{NORMAL}."
+		"en" "You have sent {green}{1}{default} a {purple}{2} {green}{3}{default} as a gift."
+		"hu" "A következőt küldted: {purple}{2} {green}{3}{default} neki: {green}{1}{default}."
+		"chi" "你赠送了 {green}{1}{default} 个 {purple}{2} {green}{3}{default}."
 	}
 
 	"Chat Gift Item Received"
 	{
 		"#format" "{1:s},{2:s},{3:t}"
-		"en" "{HIGHLIGHT}{1}{NORMAL} has sent you a {HIGHLIGHT}{2} {3}{NORMAL} as a gift."
-		"hu" "{HIGHLIGHT}{1}{NORMAL} a következőt küldte neked: {HIGHLIGHT}{2} {3}{NORMAL}."
-		"chi" "{HIGHLIGHT}{1}{NORMAL} 赠送给你 {HIGHLIGHT}{2} {3}{NORMAL}."
+		"en" "{green}{1}{default} has sent you a {purple}{2} {green}{3}{default} as a gift."
+		"hu" "{green}{1}{default} a következőt küldte neked: {purple}{2} {green}{3}{default}."
+		"chi" "{green}{1}{default} 赠送给你 {purple}{2} {green}{3}{default}."
 	}
 
 	"Credit Gift Disabled"
@@ -2587,17 +2592,17 @@
 	"Credit Gift Sent"
 	{
 		"#format" "{1:d},{2:s}"
-		"en" "You have sent {HIGHLIGHT}{1}{NORMAL} credits to {HIGHLIGHT}{2}{NORMAL}."
-		"hu" "{HIGHLIGHT}{1}{NORMAL} kreditet küldtél neki: {HIGHLIGHT}{2}{NORMAL}."
-		"chi" "你已经发送 {HIGHLIGHT}{1}{NORMAL} credits积分给 {HIGHLIGHT}{2}{NORMAL}."
+		"en" "You have sent {green}{1}{default} credits to {green}{2}{default}."
+		"hu" "{green}{1}{default} kreditet küldtél neki: {green}{2}{default}."
+		"chi" "你已经发送 {green}{1}{default} credits积分给 {green}{2}{default}."
 	}
 
 	"Credit Gift Received"
 	{
 		"#format" "{1:d},{2:s}"
-		"en" "{HIGHLIGHT}{2}{NORMAL} has sent you {HIGHLIGHT}{1}{NORMAL} credits."
-		"hu" "{HIGHLIGHT}{2}{NORMAL} {HIGHLIGHT}{1}{NORMAL} kreditet küldött neked."
-		"chi" "{HIGHLIGHT}{2}{NORMAL} 给了你 {HIGHLIGHT}{1}{NORMAL} credits."
+		"en" "{green}{2}{default} has sent you {green}{1}{default} credits."
+		"hu" "{green}{2}{default} {green}{1}{default} kreditet küldött neked."
+		"chi" "{green}{2}{default} 给了你 {green}{1}{default} credits."
 	}
 
 	"Package Sell"
@@ -2752,25 +2757,25 @@
 	"Player Credits"
 	{
 		"#format" "{1:s},{2:d}"
-		"en" "{HIGHLIGHT}{1}{NORMAL} has {HIGHLIGHT}{2}{NORMAL} credits."
-		"hu" "{HIGHLIGHT}{1}{NORMAL} {HIGHLIGHT}{2}{NORMAL} kredittel rendelkezik."
-		"chi" "{HIGHLIGHT}{1}{NORMAL} 当前拥有 {HIGHLIGHT}{2}{NORMAL} credits."
+		"en" "{green}{1}{default} has {green}{2}{default} credits."
+		"hu" "{green}{1}{default} {green}{2}{default} kredittel rendelkezik."
+		"chi" "{green}{1}{default} 当前拥有 {green}{2}{default} credits."
 	}
 
 	"Credits Earned For Killing"
 	{
 		"#format" "{1:d},{2:s}"
-		"en" "You earned {HIGHLIGHT}{1}{NORMAL} credits for killing {HIGHLIGHT}{2}{NORMAL}."
-		"hu" "{HIGHLIGHT}{2}{NORMAL} megölésével {HIGHLIGHT}{1}{NORMAL} kreditet szereztél."
-		"chi" "你赚得 {HIGHLIGHT}{1}{NORMAL} Credits积分 击杀玩家 {HIGHLIGHT}{2}{NORMAL}."
+		"en" "You earned {green}{1}{default} credits for killing {green}{2}{default}."
+		"hu" "{green}{2}{default} megölésével {green}{1}{default} kreditet szereztél."
+		"chi" "你赚得 {green}{1}{default} Credits积分 击杀玩家 {green}{2}{default}."
 	}
 
 	"Credits Earned For Playing"
 	{
 		"#format" "{1:d}"
-		"en" "You earned {HIGHLIGHT}{1}{NORMAL} credits for playing on the server."
-		"hu" "{HIGHLIGHT}{1}{NORMAL} kreditet szereztél az itt töltött időért."
-		"chi" "你获得 {HIGHLIGHT}{1}{NORMAL} credits积分 来自服务器."
+		"en" "You earned {green}{1}{default} credits for playing on the server."
+		"hu" "{green}{1}{default} kreditet szereztél az itt töltött időért."
+		"chi" "你获得 {green}{1}{default} credits积分 来自服务器."
 	}
 
 	"Drop Gift"
@@ -2783,25 +2788,25 @@
 	"Gift Item Picked"
 	{
 		"#format" "{1:s},{2:t}"
-		"en" "You picked up a {HIGHLIGHT}{1} {2}{NORMAL}."
-		"hu" "A következőt vetted fel {HIGHLIGHT}{1} {2}{NORMAL}."
-		"chi" "你拾取礼物 {HIGHLIGHT}{1} {2}{NORMAL}."
+		"en" "You picked up a {purple}{1} {green}{2}{default}."
+		"hu" "A következőt vetted fel {purple}{1} {green}{2}{default}."
+		"chi" "你拾取礼物 {purple}{1} {green}{2}{default}."
 	}
 
 	"Gift Credit Picked"
 	{
 		"#format" "{1:d}"
-		"en" "You picked up {HIGHLIGHT}{1} credits{NORMAL}."
-		"hu" "{HIGHLIGHT}{1} kreditet{NORMAL} vettél fel."
-		"chi" "你拾取 {HIGHLIGHT}{1} credits{NORMAL}."
+		"en" "You picked up {green}{1} credits{default}."
+		"hu" "{green}{1} kreditet{default} vettél fel."
+		"chi" "你拾取 {green}{1} credits{default}."
 	}
 
 	"Credit Gift Dropped"
 	{
 		"#format" "{1:d}"
-		"en" "You dropped {HIGHLIGHT}{1} credits{NORMAL} as a gift."
-		"hu" "{HIGHLIGHT}{1} kreditet{NORMAL} ajándékoztál el."
-		"chi" "你丢弃 {HIGHLIGHT}{1} credits{NORMAL}."
+		"en" "You dropped {green}{1} credits{default} as a gift."
+		"hu" "{green}{1} kreditet{default} ajándékoztál el."
+		"chi" "你丢弃 {green}{1} credits{default}."
 	}
 
 	"Must be Alive"

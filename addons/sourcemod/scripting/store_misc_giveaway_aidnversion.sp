@@ -13,7 +13,7 @@ ConVar 	gc_iCredits,
 		gc_bOwnCredits,
 		gc_vFlagStart;
 		
-ConVar gc_sTag;
+//ConVar gc_sTag;
 char g_sChatPrefix[128];
 
 //char g_sTag[32];
@@ -28,7 +28,7 @@ public Plugin myinfo = {
 	name = "Store Giveaway AiDN™ version",
 	author = "nuclear silo, AiDN™",
 	description = "Giveaway plugin compatible with zephyrus store.",
-	version = "1.1",
+	version = "1.2",
 	url = ""
 }
 
@@ -52,10 +52,9 @@ public void OnPluginStart()
 	if(g_cvarChatTag){}
 }
 
-public void OnConfigsExecuted()
+public void Store_OnConfigExecuted(char[] prefix)
 {
-	gc_sTag = FindConVar("sm_store_chat_tag");
-	gc_sTag.GetString(g_sChatPrefix, sizeof(g_sChatPrefix));
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
 public int PlayerCount()

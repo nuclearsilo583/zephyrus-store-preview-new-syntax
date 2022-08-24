@@ -2,6 +2,7 @@
 
 #include <regex>
 #include <sdktools>
+#include <autoexecconfig>
 
 #if defined _zephstocks_included
  #endinput
@@ -219,7 +220,7 @@ stock int HookConVar(char[] name, any type, Function callback=INVALID_FUNCTION)
 
 stock int RegisterConVar(char[] name, char[] value, char[] description, any type, Function callback=INVALID_FUNCTION, int flags=0, bool hasMin=false, float min=0.0, bool hasMax=false, float max=0.0)
 {
-	Handle cvar = CreateConVar(name, value, description, flags, hasMin, min, hasMax, max);
+	Handle cvar = AutoExecConfig_CreateConVar(name, value, description, flags, hasMin, min, hasMax, max);
 	HookConVarChange(cvar, GlobalConVarChanged);
 	g_eCvars[g_iCvars].hCvar = cvar;
 	g_eCvars[g_iCvars].eType = type;
