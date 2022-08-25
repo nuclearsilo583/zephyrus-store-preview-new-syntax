@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview system"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.0.5"
+#define PLUGIN_VERSION "7.0.6"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -3591,10 +3591,24 @@ public void SQLCallback_LoadClientInventory_Equipment(Handle owner, Handle hndl,
 			if(m_iUniqueId == -1)
 				continue;
 				
-			if(!Store_HasClientItem(client, m_iUniqueId))
+			// Client Dont have the item
+			if(!Store_HasClientItem(client, m_iUniqueId)) 
+			{
+				//PrintToChat(client, "You dont have item/ unequip");
 				Store_UnequipItem(client, m_iUniqueId);
-			else
-				Store_UseItem(client, m_iUniqueId, true, SQL_FetchInt(hndl, 3));
+			}
+			// Client has item but VIP period is expired. Sell the item.
+			else if(Store_HasClientItem(client, m_iUniqueId) && !GetClientPrivilege(client, g_eItems[m_iUniqueId].iFlagBits))
+			{
+				//PrintToChat(client, "You ahve have item but no flag/ Sold.");
+				Store_SellItem(client, m_iUniqueId);
+			}
+			// Client has item and has access to the item.
+			else 
+			{
+				//PrintToChat(client, "You have item/ equip");
+				Store_UseItem(client, m_iUniqueId, true, SQL_FetchInt(hndl, 3)); 
+			}
 		}
 		g_eClients[client].bLoaded = true;
 	}
@@ -4349,9 +4363,9 @@ any Store_UseItem(int client,int itemid, bool synced=false,int slot=0)
 		return 1;
 	}
 	
-	Store_SaveClientData(client);
-	Store_SaveClientInventory(client);
-	Store_SaveClientEquipment(client);
+	//Store_SaveClientData(client);
+	//Store_SaveClientInventory(client);
+	//Store_SaveClientEquipment(client);
 	
 	return 0;
 }
@@ -4394,9 +4408,9 @@ void Store_UnequipItem(int client,int itemid, bool fn=true)
 		}
 	}
 	
-	Store_SaveClientData(client);
-	Store_SaveClientInventory(client);
-	Store_SaveClientEquipment(client);
+	//Store_SaveClientData(client);
+	//Store_SaveClientInventory(client);
+	//Store_SaveClientEquipment(client);
 }
 
 int Store_GetEquippedItemFromHandler(int client,any handler,int slot=0)
