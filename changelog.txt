@@ -7,7 +7,7 @@
 #Format rules: since I live in Viet Nam so the date format in here is DD/MM/YYYY not MM/DD/YYYY
 ================================================================================================================================
 ################################################################################################
-Update 24/8/2022
+Update 26/8/2022
 - Add bonus option for most of module gamble (Ratio/Bonus ratio will be specified by cvar.)
 - Update earning daily checkin.
 	-> The old daily give player 24hrs before check for daily again. This is annoying because of 24hrs waiting
