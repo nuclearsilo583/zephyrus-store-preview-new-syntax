@@ -4,7 +4,7 @@
 
 #undef REQUIRE_PLUGIN
 #undef REQUIRE_EXTENSIONS
-#include <multicolors>
+#include <colorvariables>
 #include <autoexecconfig>
 #include <store>
 
@@ -21,7 +21,7 @@ enum GameStatus {
 	Status_Draw
 }
 
-ConVar gc_iMax, gc_iMin, gc_iLose, gc_iWon;
+ConVar gc_iMax, gc_iMin, gc_iLose, gc_iWon, gc_bBonus, gc_fBonusRatio, gc_fBonusRatioAmount;
 
 char g_sSuits[4][5];
 char g_sCards[13][3];
@@ -58,7 +58,7 @@ public Plugin myinfo =
 	name = "Blackjack",
 	author = "HerrMagic and Originalz ft. Jannik, AiDN™, nuclear silo",
 	description = "Blackjack game Zephyrus's , nuclear silo's edited store",
-	version = "1.5"
+	version = "1.6"
 }
 
 public OnPluginStart()
@@ -69,10 +69,14 @@ public OnPluginStart()
 	
 	//ConVars
 	
+	//gc_bVietNamRules = AutoExecConfig_CreateConVar("store_blackjack_vietnam_rules", "0", "Enable Viet Name's BJ rules. Dueler draw to 16 and stands on all 16. Player stand from 16 to 21.", _, true, 0.0, true, 1.0);
 	gc_iMax = AutoExecConfig_CreateConVar("store_blackjack_max", "2000", "Maximum amount of credits to spend", _, true, 0.0);
 	gc_iMin = AutoExecConfig_CreateConVar("store_blackjack_min", "20", "Minimum amount of credits to spend.", _, true, 0.0);
 	gc_iLose = AutoExecConfig_CreateConVar("store_blackjack_lose", "500", "Amount of credits player lost to show in public.");
 	gc_iWon = AutoExecConfig_CreateConVar("store_blackjack_won", "500", "Amount of credits player won to show in public.");
+	gc_bBonus = AutoExecConfig_CreateConVar("store_blackjack_bonus", "1", "Enable bonus credits for betting above ratio of Max Bet.", _, true, 0.0, true, 1.0);
+	gc_fBonusRatio = AutoExecConfig_CreateConVar("store_blackjack_bonus_ratio", "0.75", "Minimun pertage of max bet to be able to get bonus credits.");
+	gc_fBonusRatioAmount = AutoExecConfig_CreateConVar("store_blackjack_bonus_ratio_amount", "0.5", "Ratio of bonus on betting base on Max Bet of the game.");
 	AutoExecConfig(true, "blackjack", "sourcemod/store");
 	
 	// Some basic setup to fill our deck
@@ -102,7 +106,7 @@ public OnPluginStart()
 	HookEvent("player_spawn", Event_OnPlayerSpawn);
 	
 	// Supress warnings about unused variables.....
-	if(g_cvarChatTag){}
+	//if(g_cvarChatTag){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
@@ -472,7 +476,7 @@ ShowGamePanel(client)
 					}
 				}
 			}
-			case Status_BlackJack:
+			case Status_BlackJack: // Following rules of BlackJack. BlackJack User will won x2.5 time of the bet.
 			{
 				Format(sBuffer, sizeof(sBuffer), "%t", "You won");
 				DrawPanelItem(hPanel, sBuffer, ITEMDRAW_RAWLINE);
@@ -480,11 +484,19 @@ ShowGamePanel(client)
 				if(ServerCommand("sm_givecredits")){}
 				if(!g_bMoneyDealt[client])
 				{
-					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*3);
+					if(gc_bBonus.BoolValue && (g_iPlayerPot[client] >= RoundToCeil((gc_iMax.IntValue*gc_fBonusRatio.FloatValue))))
+					{
+						Store_SetClientCredits(client, Store_GetClientCredits(client)+RoundToCeil(g_iPlayerPot[client]*2.5+(g_iPlayerPot[client]*gc_fBonusRatioAmount.FloatValue)));
+					}
+					else Store_SetClientCredits(client, Store_GetClientCredits(client)+RoundToCeil(g_iPlayerPot[client]*2.5));
+					
 					if (g_iPlayerPot[client] > gc_iWon.IntValue)
 					{
 						Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
-						CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, sBuffer);
+						
+						if(gc_bBonus.BoolValue && (g_iPlayerPot[client] >= RoundToCeil((gc_iMax.IntValue*gc_fBonusRatio.FloatValue))))
+							CPrintToChat(client, "%s%t - %t", g_sChatPrefix, "Player won x Credits", client, RoundToCeil(g_iPlayerPot[client]*2.5), g_sCreditsName, sBuffer, "Bet Bonus", RoundToCeil(g_iPlayerPot[client]*gc_fBonusRatioAmount.FloatValue));
+						else CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, RoundToCeil(g_iPlayerPot[client]*2.5), g_sCreditsName, sBuffer);
 					}
 				}
 			}
@@ -496,10 +508,21 @@ ShowGamePanel(client)
 				if (g_iPlayerPot[client] > gc_iWon.IntValue)
 				{
 					Format(sBuffer, sizeof(sBuffer), "%t", "blackjack");
-					CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, sBuffer);
+					
+					if(gc_bBonus.BoolValue && (g_iPlayerPot[client] >= RoundToCeil((gc_iMax.IntValue*gc_fBonusRatio.FloatValue))))
+						CPrintToChat(client, "%s%t - %t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, sBuffer, "Bet Bonus", RoundToCeil(g_iPlayerPot[client]*gc_fBonusRatioAmount.FloatValue));
+					else CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, g_iPlayerPot[client]*2, g_sCreditsName, sBuffer);
 				}
+				
 				if(!g_bMoneyDealt[client])
-					Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*2);
+				{
+					if(gc_bBonus.BoolValue && (g_iPlayerPot[client] >= RoundToCeil((gc_iMax.IntValue*gc_fBonusRatio.FloatValue))))
+					{
+						Store_SetClientCredits(client, Store_GetClientCredits(client)+RoundToCeil(g_iPlayerPot[client]*2+(g_iPlayerPot[client]*gc_fBonusRatioAmount.FloatValue)));
+					}
+					else Store_SetClientCredits(client, Store_GetClientCredits(client)+g_iPlayerPot[client]*2);
+					
+				}
 			}
 			case Status_Draw:
 			{

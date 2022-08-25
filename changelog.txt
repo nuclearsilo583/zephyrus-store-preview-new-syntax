@@ -6,6 +6,28 @@
 
 #Format rules: since I live in Viet Nam so the date format in here is DD/MM/YYYY not MM/DD/YYYY
 ================================================================================================================================
+################################################################################################
+Update 24/8/2022
+- Add bonus option for most of module gamble (Ratio/Bonus ratio will be specified by cvar.)
+- Update earning daily checkin.
+	-> The old daily give player 24hrs before check for daily again. This is annoying because of 24hrs waiting
+		and player have to wait up to 2 days by their timer to be able to checkin again.
+		This update will force the daily can be able to checkin after 12 A.M
+These updates were requested by issue [#98] (https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/issues/98)
+################################################################################################
+Files changes:
+- store_gamble_blackjack.sp
+- store_gamble_coinflip.sp
+- store_gamble_dice.sp
+- store_misc_earnings.sp
+- store.phrases.txt
+
+Which files you should update/compile/replace:
+- If you want to use the bonus system for the gambling modules reinstall 3 store_gamble_ module.
+- If you don't want player to wait 24
+- Update translations files is always a MUST.
+
+If you're using earning module while using sqlite to store player daily data. Please edit your .sq3 and delete any store daily cookies.
 
 ################################################################################################
 Update 24/8/2022

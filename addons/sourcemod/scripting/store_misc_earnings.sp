@@ -85,6 +85,7 @@ Database g_hDB;
 char g_sDBBuffer[400];
 int g_iDailyDate[MAXPLAYERS + 1];
 int g_iDailyDay[MAXPLAYERS + 1];
+//int g_iDailyStart[MAXPLAYERS + 1];
 bool g_bDailyCached[MAXPLAYERS + 1];
 
 int g_iActive[MAXPLAYERS + 1];
@@ -98,6 +99,7 @@ StringMap g_hSum[MAXPLAYERS + 1];
 int g_iTime[MAXPLAYERS + 1][2];
 
 char g_szGameDir[64];
+char CurrentDate[20];
 
 ConVar Warmup_Enable;
 bool GAME_CSS = false;
@@ -107,7 +109,7 @@ public Plugin myinfo =
 	name = "Store - Earnings module",
 	author = "shanapu, AiDN™, nuclear silo, azalty", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "This modules can only be use in CSS, CS:GO. Dont install if you use for tf2, dods, l4d",
-	version = "2.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -150,17 +152,94 @@ public void OnPluginStart()
 
 	g_cDate = new Cookie("store_date", "Store Daily Date", CookieAccess_Protected);
 	g_cDay = new Cookie("store_day", "Store Daily Day", CookieAccess_Protected);
-
-	Warmup_Enable = CreateConVar("sm_store_earning_enable_warmup", "1", "Whether to enable earning credits while in warmup");
-	gc_sDB = CreateConVar("sm_store_earning_database", "", "The database config name that will be used for daily credits\nKeep empty to use local storage (clientprefs)\nSpecify a MySQL database to sync daily rewards across all your servers");
 	
-	AutoExecConfig(true, "earnings", "sourcemod/store")
+	AutoExecConfig_SetFile("earnings", "sourcemod/store");
+	AutoExecConfig_SetCreateFile(true);
+
+	Warmup_Enable = AutoExecConfig_CreateConVar("sm_store_earning_enable_warmup", "1", "Whether to enable earning credits while in warmup");
+	gc_sDB = AutoExecConfig_CreateConVar("sm_store_earning_database", "", "The database config name that will be used for daily credits\nKeep empty to use local storage (clientprefs)\nSpecify a MySQL database to sync daily rewards across all your servers");
+	
+	//AutoExecConfig(true, "earnings", "sourcemod/store")
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
 
 	LoadConfig();
 }
 
-public void OnConfigsExecuted()
+public void OnLibraryAdded(const char[] name)
 {
+	if (!StrEqual(name, "SteamWorks"))
+		return;
+
+	gp_bSteamWorks = true;
+}
+
+// Prepare Plugin & modules
+public void OnMapStart()
+{
+	CreateTimer(1.0, Timer_Timer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public void OnClientConnected(int client)
+{
+	ConnectTime[client] = GetTime();
+}
+
+public void OnClientDisconnect(int client)
+{
+	if (IsFakeClient(client))
+		return;
+
+	g_bGroupMember[client] = false;
+	
+	ConnectTime[client] = 0;
+	
+	g_iDailyDate[client] = 0;
+	g_iDailyDay[client] = 0;
+	//g_iDailyStart[client] = 0;
+	g_bDailyCached[client] = false;
+}
+
+public void OnClientPostAdminCheck(int client)
+{
+	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+	if (IsFakeClient(client))
+		return;
+
+	g_iActive[client] = 0;
+	g_iSum[client] = 0;
+	g_fClientMulti[client] = 1.0;
+
+	g_iTime[client][INACTIVE] = 0;
+	g_iTime[client][ACTIVE] = 0;
+
+	for (int i = 0; i < g_iCount; i++)
+	{
+		if (!CheckFlagBits(client, g_iFlagBits[i]))
+			continue;
+
+		g_iActive[client] = i;
+	}
+
+	g_bGroupMember[client] = false;
+	if (gp_bSteamWorks)
+	{
+		SteamWorks_GetUserGroupStatus(client, g_iGroup[g_iActive[client]]);
+	}
+
+	delete g_hSum[client];
+	g_hSum[client] = new StringMap();
+	
+	if (g_hDB && !g_bDailyCached[client])
+		GetDailyVarsFromDB(client);
+}
+
+public void Store_OnConfigExecuted(char[] prefix)
+{
+	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+	
+	gc_bFFA = FindConVar("mp_teammates_are_enemies");
+
 	static bConfigExecuted;
 	
 	if (bConfigExecuted)
@@ -205,6 +284,8 @@ void OnSQLConnect(Database db, const char[] error, any data)
 				... "steamid varchar(32) PRIMARY KEY NOT NULL, "
 				... "store_date INTEGER, "
 				... "store_day INTEGER);")
+				
+	//g_hDB.Query(SQL_NullCallback, "ALTER TABLE store_daily_rewards ADD COLUMN start_date int(11) default '0'");
 	
 	// Mid-game load support for Daily Rewards
 	for (int i = 1; i <= MaxClients; i++)
@@ -231,8 +312,76 @@ public void OnClientCookiesCached(int client)
 	g_bDailyCached[client] = true;
 }
 
+public void OnAllPluginsLoaded()
+{
+	gp_bSteamWorks = LibraryExists("SteamWorks");
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (!StrEqual(name, "SteamWorks"))
+		return;
+
+	gp_bSteamWorks = false;
+}
+
+void GetDailyVarsFromDB(int client)
+{
+	char steamid[32];
+	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+	
+	DataPack pack = new DataPack();
+	pack.WriteCell(GetClientUserId(client));
+	pack.WriteString(steamid);
+	
+	FormatEx(g_sDBBuffer, sizeof(g_sDBBuffer), "SELECT store_date, store_day FROM store_daily_rewards WHERE steamid = '%s'", steamid);
+	g_hDB.Query(OnDailyRewardsLoaded, g_sDBBuffer, pack);
+}
+
+void OnDailyRewardsLoaded(Database db, DBResultSet results, const char[] error, DataPack pack)
+{
+	if (!results)
+	{
+		LogError("OnDailyRewardsLoaded query failure: %s", error);
+		return;
+	}
+	
+	char steamid[32];
+
+	pack.Reset();
+	
+	int client = GetClientOfUserId(pack.ReadCell());
+	pack.ReadString(steamid, sizeof(steamid));
+	
+	if (!client) // Verify if the client disconnected during the query
+		return;
+	
+	if (results.FetchRow()) // Verify if a row was found
+	{
+		g_iDailyDate[client] = results.FetchInt(0);
+		g_iDailyDay[client] = results.FetchInt(1);
+		//g_iDailyStart[client] = results.FetchInt(2);
+	}
+	else //Create blank value for client
+	{
+		char query[255];
+		FormatTime(CurrentDate, sizeof(CurrentDate), "%Y%m%d");
+		FormatEx(query, sizeof(query), "INSERT INTO store_daily_rewards(steamid, store_date, store_day) VALUES('%s', %i, %i);",
+														steamid, StringToInt(CurrentDate), 0);
+		g_hDB.Query(SQL_NullCallback, query);
+	}
+	// If a row wasn't found, don't change anything since the value is reset on client disconnect anyway
+	
+	g_bDailyCached[client] = true;
+}
+
 Action Command_Daily(int client, int args)
 {
+	FormatTime(CurrentDate, sizeof(CurrentDate), "%Y%m%d");
+	
+	char steamid[32];
+	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+	
 	if (g_iDaily[g_iActive[client]][0] == -1 || !CheckSteamAuth(client, g_sSteam[client]))
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "You dont have permission");
@@ -257,26 +406,37 @@ Action Command_Daily(int client, int args)
 	{
 		
 	}
-	int iNow = GetTime();
+	int iNow = StringToInt(CurrentDate);
 	
 	
-	if (DAY_IN_SECONDS + g_iDailyDate[client] > iNow)
+	if (iNow - g_iDailyDate[client] == 0)
 	{
-		SecToTime(g_iDailyDate[client] + DAY_IN_SECONDS - iNow, sBuffer, sizeof(sBuffer));
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Wait until next daily", sBuffer);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Wait until next daily 2");
 	}
 	else
 	{
-		if (DAY_IN_SECONDS * 2 + g_iDailyDate[client] < iNow || g_iDailyDay[client] < 1)
+		if (iNow - g_iDailyDate[client] >=2 || g_iDailyDay[client] < 1)
 		{
+			if(g_iDailyDate[client])
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Lose Streak Of", (iNow - g_iDailyDate[client]))
+				
 			g_iDailyDay[client] = 1;
+			//g_iDailyStart[client] = iNow;
+			
+			//Reset start date from database to current date
+			//FormatEx(g_sDBBuffer, sizeof(g_sDBBuffer), "UPDATE store_daily_rewards(steamid, start_date) VALUES('%s', %i);",
+			//											steamid, iNow);
+			//g_hDB.Query(SQL_NullCallback, g_sDBBuffer);
 		}
 
 		Store_SetClientCredits(client, Store_GetClientCredits(client) + g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1]);
 
 		switch(g_iDailyDay[client])
 		{
-			case 2, 3, 4, 5, 6: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1], g_sCreditsName, "playing x on our server in row", g_iDailyDay[client]);
+			case 2, 3, 4, 5, 6: 
+			{
+				CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1], g_sCreditsName, "playing x on our server in row", g_iDailyDay[client]);
+			}
 			case 7:
 			{
 				CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1], g_sCreditsName, "playing x on our server in row", g_iDailyDay[client]);
@@ -284,7 +444,14 @@ Action Command_Daily(int client, int args)
 				Store_SQLLogMessage(client, LOG_EVENT, "Mastered the daily challange (7days) for %i credits'", g_iDaily[g_iActive[client]][g_iDailyDay[client] - 1]);
 				g_iDailyDay[client] = 0;
 			}
-			default: CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][0], g_sCreditsName, "start daily challange");
+			default:
+			{
+
+				CPrintToChat(client, "%s%t%t", g_sChatPrefix, "You earned x Credits for", g_iDaily[g_iActive[client]][0], g_sCreditsName, "start daily challange");
+				//FormatEx(g_sDBBuffer, sizeof(g_sDBBuffer), "REPLACE INTO store_daily_rewards(steamid, start_date) VALUES('%s', %i);",
+				//										steamid, iNow);
+				//g_hDB.Query(SQL_NullCallback, g_sDBBuffer);
+			}
 		}
 
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "You'll earn x Credits tomorrow", g_iDaily[g_iActive[client]][g_iDailyDay[client]], g_sCreditsName);
@@ -300,9 +467,6 @@ Action Command_Daily(int client, int args)
 		}
 		else
 		{
-			char steamid[32];
-			GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
-			
 			FormatEx(g_sDBBuffer, sizeof(g_sDBBuffer), "REPLACE INTO store_daily_rewards(steamid, store_date, store_day) VALUES('%s', %i, %i);",
 														steamid, iNow, g_iDailyDay[client] + 1);
 			g_hDB.Query(SQL_NullCallback, g_sDBBuffer);
@@ -314,109 +478,6 @@ Action Command_Daily(int client, int args)
 	}
 
 	return Plugin_Handled;
-}
-
-public void OnAllPluginsLoaded()
-{
-	gp_bSteamWorks = LibraryExists("SteamWorks");
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-	if (!StrEqual(name, "SteamWorks"))
-		return;
-
-	gp_bSteamWorks = false;
-}
-
-public void OnLibraryAdded(const char[] name)
-{
-	if (!StrEqual(name, "SteamWorks"))
-		return;
-
-	gp_bSteamWorks = true;
-}
-
-// Prepare Plugin & modules
-public void OnMapStart()
-{
-	CreateTimer(1.0, Timer_Timer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-}
-
-public void Store_OnConfigExecuted(char[] prefix)
-{
-	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
-	
-	gc_bFFA = FindConVar("mp_teammates_are_enemies");
-}
-
-public void OnClientConnected(int client)
-{
-	ConnectTime[client] = GetTime();
-}
-
-public void OnClientPostAdminCheck(int client)
-{
-	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
-	if (IsFakeClient(client))
-		return;
-
-	g_iActive[client] = 0;
-	g_iSum[client] = 0;
-	g_fClientMulti[client] = 1.0;
-
-	g_iTime[client][INACTIVE] = 0;
-	g_iTime[client][ACTIVE] = 0;
-
-	for (int i = 0; i < g_iCount; i++)
-	{
-		if (!CheckFlagBits(client, g_iFlagBits[i]))
-			continue;
-
-		g_iActive[client] = i;
-	}
-
-	g_bGroupMember[client] = false;
-	if (gp_bSteamWorks)
-	{
-		SteamWorks_GetUserGroupStatus(client, g_iGroup[g_iActive[client]]);
-	}
-
-	delete g_hSum[client];
-	g_hSum[client] = new StringMap();
-	
-	if (g_hDB && !g_bDailyCached[client])
-		GetDailyVarsFromDB(client);
-}
-
-void GetDailyVarsFromDB(int client)
-{
-	char steamid[32];
-	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
-	FormatEx(g_sDBBuffer, sizeof(g_sDBBuffer), "SELECT store_date, store_day FROM store_daily_rewards WHERE steamid = '%s'", steamid);
-	g_hDB.Query(OnDailyRewardsLoaded, g_sDBBuffer, GetClientUserId(client));
-}
-
-void OnDailyRewardsLoaded(Database db, DBResultSet results, const char[] error, any data)
-{
-	if (!results)
-	{
-		LogError("OnDailyRewardsLoaded query failure: %s", error);
-		return;
-	}
-	
-	int client = GetClientOfUserId(data);
-	if (!client) // Verify if the client disconnected during the query
-		return;
-	
-	if (results.FetchRow()) // Verify if a row was found
-	{
-		g_iDailyDate[client] = results.FetchInt(0);
-		g_iDailyDay[client] = results.FetchInt(1);
-	}
-	// If a row wasn't found, don't change anything since the value is reset on client disconnect anyway
-	
-	g_bDailyCached[client] = true;
 }
 
 Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], const float damagePosition[3])
@@ -507,20 +568,6 @@ int GetClientOfAuthID(int authid)
 	}
 
 	return -1;
-}
-
-public void OnClientDisconnect(int client)
-{
-	if (IsFakeClient(client))
-		return;
-
-	g_bGroupMember[client] = false;
-	
-	ConnectTime[client] = 0;
-	
-	g_iDailyDate[client] = 0;
-	g_iDailyDay[client] = 0;
-	g_bDailyCached[client] = false;
 }
 
 void GiveCredits(int client, int credits, char[] reason, any ...)
@@ -1259,7 +1306,7 @@ bool IsValidClient(int client, bool bots = true, bool dead = true)
 
 	return true;
 }
-
+/*
 void SecToTime(int time, char[] buffer, int size)
 {
 	int iHours = 0;
@@ -1290,7 +1337,7 @@ void SecToTime(int time, char[] buffer, int size)
 		Format(buffer, size, "%t", "x seconds", iSeconds);
 	}
 }
-
+*/
 void SQL_NullCallback(Database db, DBResultSet results, const char[] error, any data)
 {
 	if (!results)

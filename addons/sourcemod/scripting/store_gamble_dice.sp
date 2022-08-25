@@ -36,7 +36,7 @@
 #include <store>
 #include <zephstocks>
 
-#include <multicolors>
+#include <colorvariables>
 
 #include <autoexecconfig>
 
@@ -45,6 +45,8 @@ ConVar gc_iMax;
 ConVar gc_fAutoStop;
 ConVar gc_fSpeed;
 ConVar gc_bAlive;
+
+ConVar gc_bBonus, gc_fBonusRatio, gc_fBonusRatioAmount;
 
 char g_sCreditsName[64] = "credits";
 char g_sChatPrefix[128];
@@ -65,7 +67,7 @@ public Plugin myinfo =
 	name = "Store - Dice gamble module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "Origin code is from Shanapu - I just edit to be compaitble with Zephyrus Store",
-	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.6", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -84,6 +86,9 @@ public void OnPluginStart()
 	gc_bAlive = AutoExecConfig_CreateConVar("store_dice_alive", "1", "0 - Only dead player can start a game. 1 - Allow alive player to start a game.", _, true, 0.0);
 	gc_iMin = AutoExecConfig_CreateConVar("store_dice_min", "20", "Minium amount of credits to spend", _, true, 1.0);
 	gc_iMax = AutoExecConfig_CreateConVar("store_dice_max", "2000", "Maximum amount of credits to spend", _, true, 2.0);
+	gc_bBonus = AutoExecConfig_CreateConVar("store_dice_bonus", "1", "Enable bonus credits for betting above ratio of Max Bet.", _, true, 0.0, true, 1.0);
+	gc_fBonusRatio = AutoExecConfig_CreateConVar("store_dice_bonus_ratio", "0.75", "Minimun pertage of max bet to be able to get bonus credits.");
+	gc_fBonusRatioAmount = AutoExecConfig_CreateConVar("store_dice_bonus_ratio_amount", "0.5", "Ratio of bonus on betting base on Max Bet of the game.");
 
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
@@ -890,15 +895,19 @@ float GetAutoStopTime()
 void ProcessWin(int client, int bet, int multiply)
 {
 	char sBuffer[255];
-	int iProfit = bet * multiply;
+	int iProfit;
+	if(gc_bBonus.BoolValue && (bet >= RoundToCeil((gc_iMax.IntValue*gc_fBonusRatio.FloatValue))))
+		iProfit = bet * multiply + RoundToCeil(bet*gc_fBonusRatioAmount.FloatValue);
+	else iProfit = bet * multiply;
 
 	// Add profit to balance
 	Store_SetClientCredits(client, Store_GetClientCredits(client) + iProfit);
 
 	// Play sound and notify other player abot this win
 	Format(sBuffer, sizeof(sBuffer), "%t", "dice");
-	CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, iProfit, g_sCreditsName, sBuffer);
-
+	if(gc_bBonus.BoolValue && (bet >= RoundToCeil((gc_iMax.IntValue*gc_fBonusRatio.FloatValue))))	
+		CPrintToChatAll("%s%t - %t", g_sChatPrefix, "Player won x Credits", client, bet * multiply, g_sCreditsName, sBuffer, "Bet Bonus", RoundToCeil(bet*gc_fBonusRatioAmount.FloatValue));
+	else CPrintToChatAll("%s%t", g_sChatPrefix, "Player won x Credits", client, bet * multiply, g_sCreditsName, sBuffer);
 	//FakeClientCommandEx(client, "play %s", g_sMenuItem);
 	EmitSoundToClient(client, g_sMenuItem);
 }

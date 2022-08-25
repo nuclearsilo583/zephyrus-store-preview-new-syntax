@@ -1,5 +1,22 @@
 ﻿"Phrases"
 {
+	"Lose Streak Of"
+	{
+		"#format" "{1:i}"
+		"en"		"You have lost your daily streak of {green}{1} {default}day(s)."
+	}
+	
+	"Wait until next daily 2"
+	{
+		"en"		"You have checkin today. Please comeback tomorrow."
+	}
+	
+	"Bet Bonus"
+	{
+		"#format" "{1:i}"
+		"en"	"{yellow}Bonus credits: {green}{1}."
+	}
+	
 	"Show trails"
 	{
 		"en"		"Show trails"
