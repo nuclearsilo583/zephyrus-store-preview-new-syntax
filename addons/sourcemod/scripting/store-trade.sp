@@ -260,7 +260,7 @@ public int MenuHandler_InitTrade(Handle menu, MenuAction action, int client, int
 			if(g_iTraders[i] == GetClientUserId(client))
 			{
 				//Chat(i, "%t", "Trade Refused", client);
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Trade Refused");
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Trade Refused", client);
 				g_iTraders[i] = 0;
 				//return;
 			}
