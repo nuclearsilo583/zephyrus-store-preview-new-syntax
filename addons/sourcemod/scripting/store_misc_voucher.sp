@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Voucher module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -356,14 +356,39 @@ public Action Command_Say(int client, const char[] command,int argc)
 
 public Action Command_Voucher(int client, int args)
 {
+	char sBuffer[64];
+	
 	if (client == 0)
 	{
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "Command is in-game only");
 
 		return Plugin_Handled;
 	}
-
-	Menu_Voucher(client);
+	
+	if(args == 0)
+	{
+		Menu_Voucher(client);
+		return Plugin_Handled;
+	}
+	else if (args == 1)
+	{
+		if(GetUserFlagBits(client) & (ADMFLAG_ROOT) == (ADMFLAG_ROOT))
+		{
+			GetCmdArg(1, sBuffer, sizeof(sBuffer));
+			Admin_Voucher_ItemName(client, sBuffer);
+			return Plugin_Handled;
+		}
+		else CPrintToChat(client, "%s%t", g_sChatPrefix, "You dont have permission");
+	}
+	else
+	{
+		if(GetUserFlagBits(client) & (ADMFLAG_ROOT) == (ADMFLAG_ROOT))
+		{
+			CPrintToChat(client, "%s%s", g_sChatPrefix, "Usage: \"sm_voucher\" or \"sm_voucher <item_name_or_uid>\"");
+			return Plugin_Handled;
+		}
+		else Menu_Voucher(client);
+	}
 
 	return Plugin_Handled;
 }
@@ -448,6 +473,7 @@ public Action Command_CreateVoucherCode(int client, int args)
 
 public Action Command_CreateItemVoucherCode(int client, int args)
 {
+	char sBuffer[64];
 	if (client == 0)
 	{
 		//CPrintToChat(client, "%s%t", g_sChatPrefix, "Command is in-game only");
@@ -455,7 +481,18 @@ public Action Command_CreateItemVoucherCode(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	AdminItemVoucherMenu(client);
+	if(args == 0)
+	{
+		AdminItemVoucherMenu(client);
+		return Plugin_Handled;
+	}
+	else if (args == 1)
+	{
+		GetCmdArg(1, sBuffer, sizeof(sBuffer));
+		Admin_Voucher_ItemName(client, sBuffer);
+		return Plugin_Handled;
+	}
+	else CPrintToChat(client, "%s%s", g_sChatPrefix, "Usage: \"sm_createitemvoucher\" or \"sm_createitemvoucher <item_name_or_uid>\"");
 	
 	return Plugin_Handled;
 }
@@ -1026,10 +1063,37 @@ public Action Timer_Input2Late(Handle tmr, int userid)
 // Menus
 /////////////////////////////////////////////
 
-void AdminItemVoucherMenu(int client)
+void Admin_Voucher_ItemName(int client, char[] sItemName)
+{
+	int iItemCount = 0;
+	int g_iItems = Store_GetStoreItemsCount(); // Get number of valid item in store
+	for(int i = 0; i<g_iItems; i++)
+	{	
+		Store_Item item;
+		Type_Handler handler;
+
+		Store_GetItem(i, item);
+
+		Store_GetHandler(item.iHandler, handler);
+		
+		if((StrContains(item.szName, sItemName, false) != -1 || StrContains(item.szUniqueId, sItemName, false) != -1))
+		{
+			iItemCount++;
+		}
+	}
+	
+	if(iItemCount <= 0)
+	{
+		//Not Found
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item not found");
+	}
+	else AdminItemVoucherMenu(client, sItemName);
+}
+
+void AdminItemVoucherMenu(int client, char[] sItem = "")
 {
 	char sBuffer[255], Buffer[255], sIndexTemp[128];
-	//char sItemName[64], sItemType[32], sItemUid[PLATFORM_MAX_PATH];
+	char sItemName[PLATFORM_MAX_PATH];
 	int g_iItems = Store_GetStoreItemsCount(); // Get number of valid item in store
 	Menu menu = CreateMenu(Handler_AdminItemVoucherMenu);
 	
@@ -1044,18 +1108,38 @@ void AdminItemVoucherMenu(int client)
 		Store_GetItem(i, item);
 
 		Store_GetHandler(item.iHandler, handler);
-
-		if(item.iPlans == 0 && item.iPrice > 0 && item.szSteam[0] == '\0' /*&& !StrContains(handler.szType, "package")*/)
+		
+		strcopy(sItemName, sizeof(sItemName) , sItem);
+		if(!StrEqual(sItemName, ""))
 		{
-			FormatEx(sIndexTemp, sizeof(sIndexTemp), "%i", i);
-			Format(Buffer, sizeof(Buffer), "%s \"%s\" (%s)", item.szName, handler.szType, item.szUniqueId);
-			menu.AddItem(sIndexTemp, Buffer);
+			if(item.iPlans == 0 && item.iPrice > 0 && item.szSteam[0] == '\0' && (StrContains(item.szName, sItemName, false) != -1 || StrContains(item.szUniqueId, sItemName, false) != -1))
+			{
+				FormatEx(sIndexTemp, sizeof(sIndexTemp), "%i", i);
+				Format(Buffer, sizeof(Buffer), "%s \"%s\" (%s)", item.szName, handler.szType, item.szUniqueId);
+				menu.AddItem(sIndexTemp, Buffer);
+			}
+			else if(item.iPlans != 0 && item.szSteam[0] == '\0' && strcmp(handler.szType, "package")!=0 && (StrContains(item.szName, sItemName, false) != -1 || StrContains(item.szUniqueId, sItemName, false) != -1))
+			{
+				FormatEx(sIndexTemp, sizeof(sIndexTemp), "%i", i);
+				Format(Buffer, sizeof(Buffer), "%s \"%s\" (%s)", item.szName, handler.szType, item.szUniqueId);
+				menu.AddItem(sIndexTemp, Buffer);
+			}
+			//else CPrintToChat(client, "%s%s", g_sChatPrefix, "This item cannot be convert to voucher.");
 		}
-		else if(item.iPlans != 0 && item.szSteam[0] == '\0' && strcmp(handler.szType, "package")!=0)
+		else
 		{
-			FormatEx(sIndexTemp, sizeof(sIndexTemp), "%i", i);
-			Format(Buffer, sizeof(Buffer), "%s \"%s\" (%s)", item.szName, handler.szType, item.szUniqueId);
-			menu.AddItem(sIndexTemp, Buffer);
+			if(item.iPlans == 0 && item.iPrice > 0 && item.szSteam[0] == '\0' /*&& !StrContains(handler.szType, "package")*/)
+			{
+				FormatEx(sIndexTemp, sizeof(sIndexTemp), "%i", i);
+				Format(Buffer, sizeof(Buffer), "%s \"%s\" (%s)", item.szName, handler.szType, item.szUniqueId);
+				menu.AddItem(sIndexTemp, Buffer);
+			}
+			else if(item.iPlans != 0 && item.szSteam[0] == '\0' && strcmp(handler.szType, "package")!=0)
+			{
+				FormatEx(sIndexTemp, sizeof(sIndexTemp), "%i", i);
+				Format(Buffer, sizeof(Buffer), "%s \"%s\" (%s)", item.szName, handler.szType, item.szUniqueId);
+				menu.AddItem(sIndexTemp, Buffer);
+			}
 		}
 	}
 

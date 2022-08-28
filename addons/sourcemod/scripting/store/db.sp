@@ -45,21 +45,21 @@ public void Store_DB_HouseKeeping(Handle db)
 	SQL_TVoid(db, m_szQuery);
 	
 	char m_szDriver[2];
-	SQL_ReadDriver(g_hDatabase, STRING(m_szDriver));
+	SQL_ReadDriver(db, STRING(m_szDriver));
 	
 	if (g_eCvars[g_cvarLogLast].aCache>0)
 	{
 		if(m_szDriver[0] == 'm')
 		{
 			Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < CURDATE()-%i", g_eCvars[g_cvarLogLast].aCache);
-			SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+			SQL_TVoid(db, m_szLogCleaningQuery);
 			Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_logs WHERE `date` < CURDATE()-%i", g_eCvars[g_cvarLogLast].aCache);
-			SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+			SQL_TVoid(db, m_szLogCleaningQuery);
 		}
 		else
 		{
 			Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < (SELECT DATETIME('now', '-%i day'))", g_eCvars[g_cvarLogLast].aCache);
-			SQL_TVoid(g_hDatabase, m_szLogCleaningQuery);
+			SQL_TVoid(db, m_szLogCleaningQuery);
 		}
 	}
 }

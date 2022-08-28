@@ -364,39 +364,6 @@ public Handle Store_CreditTimer(int client)
 	return CreateTimer(g_eCvars[g_cvarCreditTimer].aCache, Timer_CreditTimer, g_eClients[client].iUserId, TIMER_REPEAT);
 }
 
-public void FakeMenuHandler_StoreReloadConfig(Handle menu, MenuAction action, int client,int param2)
-{
-	if (action == MenuAction_End)
-		CloseHandle(menu);
-	else if (action == MenuAction_Select)
-	{
-		if(menu == INVALID_HANDLE)
-		{
-			if(!g_eCvars[gc_iReloadType].aCache)
-			{
-				if(ReloadTimer != INVALID_HANDLE)
-				{
-					//Chat(client, "%t", "Admin chat reload timer exist");
-					CPrintToChat(client, "%s%t", g_sChatPrefix, "Admin chat reload timer exist");
-				}
-				else
-				{
-					hTime = view_as<int>(g_eCvars[gc_iReloadDelay].aCache);
-					ReloadTimer = CreateTimer(1.0, Timer_ReloadConfig);
-				}
-			}
-			else
-			{
-				Store_ReloadConfig();
-				//Chat(client, "%s", "Config reloaded. Please restart or change map");
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Config reloaded. Please restart or change map");
-			}
-		}
-	}
-	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
-		RedisplayAdminMenu(g_hAdminMenu, client);
-}
-
 public Action Timer_ReloadConfig(Handle timer, DataPack pack)
 {
 	char map[128];
@@ -671,4 +638,28 @@ stock void AdminGiveCredits(int client, int m_iCredits)
 	Store_SaveClientData(client);
 	Store_SaveClientInventory(client);
 	Store_SaveClientEquipment(client);
+}
+
+stock void Store_Player_ResetLoadout(int client)
+{
+	if(g_hDatabase == INVALID_HANDLE)
+	{
+		LogError("Database connection is lost or not yet initialized.");
+		return;
+	}
+	
+	char m_szQuery[256];
+	char m_szAuthId[32];
+
+	GetLegacyAuthString(client, STRING(m_szAuthId));
+	if(m_szAuthId[0] == 0)
+		return;
+		
+	Format(STRING(m_szQuery), "DELETE FROM store_equipment WHERE `player_id`=%d", g_eClients[client].iId_Client);
+	SQL_TVoid(g_hDatabase, m_szQuery);
+	
+	for(int i=0; i<=g_iItems;++i)
+	{
+		Store_UnequipItem(client, i);
+	}
 }

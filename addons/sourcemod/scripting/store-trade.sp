@@ -284,7 +284,7 @@ public int MenuHandler_InitTrade(Handle menu, MenuAction action, int client, int
 		if(param2 == 1)
 		{
 			//Chat(target, "%t", "Trade Refused", client);
-			CPrintToChat(client, "%s%t", g_sChatPrefix, "Trade Refused");
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Trade Refused", client);
 			return 0;
 		}
 

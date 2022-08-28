@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview system"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.0.7"
+#define PLUGIN_VERSION "7.0.8"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -83,11 +83,11 @@ Handle ReloadTimer = INVALID_HANDLE;
 //////////////////////////////
 #include "store/api.sp"
 #include "store/cvars.sp"
-#include "store/menus.sp"
 #include "store/db.sp"
+#include "store/admin.sp"
+#include "store/menus.sp"
 #include "store/configs.sp"
 #include "store/logs.sp"
-#include "store/admin.sp"
 #include "store/events.sp"
 #include "store/commands.sp"
 #include "store/forwards.sp"
@@ -281,8 +281,8 @@ public void OnPluginStart()
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 {
-	Store_Natives_OnNativeInit();
-	Store_Forward_OnForwardInit();
+	Store_Natives_OnNativeInit(); // store/natives.sp
+	Store_Forward_OnForwardInit(); // store/forwards.sp
 
 	#if !defined STANDALONE_BUILD
 	MarkNativeAsOptional("ZR_IsClientZombie");
@@ -299,7 +299,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error,int err_max)
 
 public void OnAllPluginsLoaded()
 {
-	Store_Configs_OnAllPluginLoaded();
+	Store_Configs_OnAllPluginLoaded(); // store/configs.sp
 
 	if(GetFeatureStatus(FeatureType_Native, "Donate_RegisterHandler")==FeatureStatus_Available)
 		Donate_RegisterHandler("Store", Store_OnPaymentReceived);
@@ -350,13 +350,13 @@ public void OnConfigsExecuted()
 	//Jihad_OnConfigsExecuted();
 	
 	// Call foward Store_OnConfigsExecuted
-	Store_Forward_OnConfigsExecuted();
+	Store_Forward_OnConfigsExecuted(); // store/configs.sp
 
 	// Connect to the database
-	Store_DB_ConfigsExecuted_ConnectDatabase();
+	Store_DB_ConfigsExecuted_ConnectDatabase(); // store/db.sp
 
 	// Logging
-	Store_Logs_ConfigsExecuted_Logging();
+	Store_Logs_ConfigsExecuted_Logging(); // store/logs.sp
 }
 
 #if !defined STANDALONE_BUILD

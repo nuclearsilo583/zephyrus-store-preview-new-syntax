@@ -7,6 +7,32 @@
 #Format rules: since I live in Viet Nam so the date format in here is DD/MM/YYYY not MM/DD/YYYY
 ================================================================================================================================
 ################################################################################################
+Update 28/8/2022
+- Re-add store core combined version (no splited files). This version and store.sp are the same and will be both updated by the time being.
+- Fix store-trade and store.phrases (Pull request #105 https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/pull/105)
+- Update translations phrases for private custom weapon model shooting sound modules.
+################################################################################################
+Files changes:
+- store.sp / store_combine.sp (v7.0.7 --> v7.0.8)
+- store-trade.sp
+- store_misc_voucher.sp (v2.1 --> v2.2)
+- store.phrases.txt
+- Splited core include files 
+	- scripting/store/commands.sp
+	- scripting/store/db.sp
+	- scripting/store/menus/menu_handler.sp
+	- scripting/store/store_functions.sp
+	- scripting/store_misc_voucher.sp
+
+Which files you should update/compile/replace:
+- If you're using the splited core version. Update all the splited core include files which listed above. Recompile/install store.sp
+	--> Using the combined version of core just install store_combine.sp and rename store_combine.smx to store.smx
+- Update store-trade.sp since we're using the latest version of chat-processor. The message will be blank message if you're using the old version.
+- Optional: store_misc_voucher.sp
+- Must: store.phrases.txt
+
+
+################################################################################################
 Update 26/8/2022
 - Add bonus option for most of module gamble (Ratio/Bonus ratio will be specified by cvar.)
 - Update earning daily checkin.
@@ -28,6 +54,9 @@ Which files you should update/compile/replace:
 - Update translations files is always a MUST.
 
 If you're using earning module while using sqlite to store player daily data. Please edit your .sq3 and delete any store daily cookies.
+
+
+
 
 ################################################################################################
 Update 24/8/2022
@@ -64,6 +93,9 @@ Which files you should update/compile/replace:
 
 - store.phrases.txt (MUST if you install new version of store and chat-processor)
 
+
+
+
 ################################################################################################
 Update 6/8/2022
 - Fix grenade model crash
@@ -76,6 +108,9 @@ Files changes:
 - store_item_grenskins.sp (v1.3 --> v1.4)
 - store_item_cpsupport.sp (v2.7 --> v2.8)
 - store_misc_voucher.sp (v2.0 --> v2.1)
+
+
+
 
 ################################################################################################
 Update 5/8/2022 :

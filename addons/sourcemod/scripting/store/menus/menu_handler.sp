@@ -99,3 +99,52 @@ public int MenuHandler_Confirm(Menu menu, MenuAction action, int client, int par
 	
 	return 0;
 }
+
+public void FakeMenuHandler_StoreReloadConfig(Handle menu, MenuAction action, int client,int param2)
+{
+	if (action == MenuAction_End)
+		CloseHandle(menu);
+	else if (action == MenuAction_Select)
+	{
+		if(menu == INVALID_HANDLE)
+		{
+			if(!g_eCvars[gc_iReloadType].aCache)
+			{
+				if(ReloadTimer != INVALID_HANDLE)
+				{
+					//Chat(client, "%t", "Admin chat reload timer exist");
+					CPrintToChat(client, "%s%t", g_sChatPrefix, "Admin chat reload timer exist");
+				}
+				else
+				{
+					hTime = view_as<int>(g_eCvars[gc_iReloadDelay].aCache);
+					ReloadTimer = CreateTimer(1.0, Timer_ReloadConfig);
+				}
+			}
+			else
+			{
+				Store_ReloadConfig();
+				//Chat(client, "%s", "Config reloaded. Please restart or change map");
+				CPrintToChat(client, "%s%t", g_sChatPrefix, "Config reloaded. Please restart or change map");
+			}
+		}
+	}
+	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
+		RedisplayAdminMenu(g_hAdminMenu, client);
+}
+
+public void FakeMenuHandler_StoreResetLoadout(Handle menu, MenuAction action, int client,int param2)
+{
+	if (action == MenuAction_End)
+		CloseHandle(menu);
+	else if (action == MenuAction_Select)
+	{
+		if(menu == INVALID_HANDLE)
+		{
+			Store_Player_ResetLoadout(client);
+			CPrintToChat(client, "%s%t", g_sChatPrefix, "Client Loadout Reset");
+		}
+	}
+	else if (action == MenuAction_Cancel && param2 == MenuCancel_ExitBack)
+		RedisplayAdminMenu(g_hAdminMenu, client);
+}

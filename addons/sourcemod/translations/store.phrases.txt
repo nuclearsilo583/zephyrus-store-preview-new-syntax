@@ -1,5 +1,63 @@
 ﻿"Phrases"
 {
+	"Client Loadout Reset"
+	{
+		"en" "Your loadout has been reset."
+	}
+	
+	"Store Confirm Reset Loadout"
+	{
+		"en" "Are you sure you want to reset your loadout. All the item will be unequipped?"
+	}
+	
+	"Custom Weapon Sound Menu Tag"
+	{
+		"en"	"{lightblue}[{green}Custom Weapon Sound{lightblue}]{default}"
+	}
+	
+	"Custom Weapon Sound Menu Title"
+	{
+		"en"	"Custom Weapon Sound Volume Control Menu"
+	}
+	
+	"Custom Weapon Sound Menu Volume"
+	{
+		"#format"	"{1:T}"
+		"en"	"Custom Weapon Sound: {1}"
+	}
+	
+	"Custom Weapon Sound Enabled"
+	{
+		"en"	"Enabled"
+	}
+
+	"Custom Weapon Sound Disabled"
+	{
+		"en"	"Disabled"
+	}
+	
+	"Custom Weapon Sound Menu Vol"
+	{
+		"#format"	"{1:i}"
+		"en"	"Volume: {1}"
+	}
+	
+	"Custom Weapon Sound Text Disable"
+	{
+		"en"	"Custom Weapon sound is {red}Disabled{default}."
+	}
+	
+	"Custom Weapon Sound Text Enable"
+	{
+		"en"	"Custom Weapon sound is {lightgreen}Enabled{default}."
+	}
+	
+	"Custom Weapon Sound Text Volume"
+	{
+		"#format"	"{1:d}"
+		"en"	"Custom Weapon sound is {lightgreen}Enabled{default}. Volume: {lightgreen}{1}"
+	}
+	
 	"Lose Streak Of"
 	{
 		"#format" "{1:i}"

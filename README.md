@@ -5,14 +5,18 @@
 - TF2: now supported
 
 # Newly added
-- Update syntax to stable SM 1.11 (since SM 1.11 is now the stable branch for sourcemod. Any error that cause with SM 1.10 will be no longer supported).
+Pinned: SM 1.11 is now the stable branch for sourcemod. Any error that cause with SM 1.10 will be no longer supported
+
+- Added !rsloadout to reset current loadout for client (All items will be unequipped).
+- Better sync between store_equipment and store_items table for expired items.
+- Added !voucher <item_name/uid> and !createitemvoucher <item_name/uid> Root admin command for creating specified items.
 
 # zephyrus-store (compatible with SM 1.11).
 My rewritten zephyrus store
 
-Store system is mainly support for CS:GO.
+Store system is mainly supported for CS:GO.
 
-P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have some module that need to rework to be able to use. I will rework any that needed and will store in `<game_name>_modules` folders. Check for it (if you see no item that store in that folder, which mean you need to install any you wish from the main scripting folder and test run if you may find any error.)
+P/S: Note. Store is mainly supported for csgo, any others game (css, l4d2) may have some module that need to rework to be able to use. I will rework any that needed and will store in `<game_name>_modules` folders. Check for it (if you see no item that store in that folder, which mean you need to install any you wish from the main scripting folder and test run if you may find any error.)
 
 # Modules that has preview support:
 - Player Skin (by zephyrus) [youtube](https://www.youtube.com/watch?v=pzkwoiB-jlo)
@@ -30,8 +34,6 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Grenade skin (by zephyrus)
 - Sprays
 - Say sound
-- Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
-	(Please uncomment //#define WEAPONS_KNIVES to enable this module)
 - Name tag, scoreboard tag, name and message color.
 - Colored Smoke ported from SHOP. ([youtube](https://www.youtube.com/watch?v=cTyMnAmgixI))
 	(You can change smoke color or change smoke particle's material to custom material.)
@@ -41,6 +43,8 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Bullet Spark (by shanapu)
 - Grenade trail (by zephyrus)
 - Laser sight (by zephyrus)
+- Re-add valve's weapon skins and knives (warning: this may cause your server get ban. Please use at your own risk).
+	(Please uncomment //#define WEAPONS_KNIVES to enable this module)
 # New feature added:
 - Added "preview" key value enable preview system
 - Added "steam" key value which support for exclusive skin (special thanks Shanabu)
@@ -57,6 +61,7 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
 - Support for in-game reload items.txt config without having restart server. (You need to change or reload map or may get some bugs). Note this option only work for testing stuff. You still need a full restart on some items.
 - Store Earning credits (Warning: This modules only supported for csgo. If you're using the 2009 source engine. Dont use this. If you're using csgo please disable all the earning method of the core store.sp in the cfg file)
 - Added custom name tag color for client who bought the name tag.
+- Added !rsloadout to reset current loadout for client (All items will be unequipped).
 
 # Private Modules
 - Custom Weapon Model with shooting sound support (Contact me for more info). ([Preview video](https://youtu.be/iixbG1SIuJA)).
@@ -72,11 +77,12 @@ P/S: Note. Store mainly supported for csgo, any others game (css, l4d2) may have
   * particles ( optional )
   * sound ( optional )
 * Go to your addons/sourcemod/scripting/ folder.
-* Compile drag and drop store.sp to compile.exe
-* Find store.smx inside compiled folder which created in the same directory.
-* Drag store.smx to addons/sourcemod/plugins or addons/sourcemod/plugins/(your_new_sub_folder_for_store) (optional)
-* Do the same way with module store_item_, store_gamble_, store_misc_ (Some module cannot work for some game please head to the <game_name>_modules in the same directory)
-* Drag the compiled .smx module to the plugins/ folder
+* Compile drag and drop store.sp or store_combined to compile.exe
+* Find store.smx/store_combined inside compiled folder which created in the same directory.
+* Drag store.smx/store_combined to addons/sourcemod/plugins or addons/sourcemod/plugins/(your_new_sub_folder_for_store) (optional).
+* Do the same way with module store_item_, store_gamble_, store_misc_ (Some module cannot work for some game please head to the <game_name>_modules in the same directory).
+* Only install what module you want to use.
+* Drag the compiled .smx module to the plugins/ folder.
 * Edit addons/sourcemod/configs/store/items.txt for your store items/menu.
 * Run the server and check for error logs.
 
@@ -87,6 +93,8 @@ https://steamcommunity.com/id/nuclearsilo/
 
 - Resource for download:
 https://drive.google.com/drive/folders/1Eol0XG_H2Ofuyx3K-TFJ-6j8DUKz0Df8?usp=sharing
+
+- Discord: nuclear silo#5972
 
 
 

@@ -8,6 +8,7 @@ void Store_Commands_OnPluginStart()
 	RegConsoleCmd("sm_gift", Command_Gift);
 	RegConsoleCmd("sm_givecredits", Command_GiveCredits);
 	RegConsoleCmd("sm_resetplayer", Command_ResetPlayer);
+	RegConsoleCmd("sm_rsloadout", Command_ResetLoadout);
 	RegConsoleCmd("sm_credits", Command_Credits);
 	RegServerCmd("sm_store_custom_credits", Command_CustomCredits);
 	
@@ -175,7 +176,7 @@ public Action Command_GiveCredits(int client,int params)
 
 	char m_szTmp[64];
 	if(!GetCmdArg(2, STRING(m_szTmp)))
-		CPrintToChat(client, "%s Usage: sm_givecredits <target> <credits>", g_sChatPrefix);
+		CReplyToCommand(client, "%s Usage: sm_givecredits <target> <credits>", g_sChatPrefix);
 	
 	int m_iCredits = StringToInt(m_szTmp);
 
@@ -426,5 +427,26 @@ public Action Command_ReloadConfig(int client, int args)
 		CReplyToCommand(client, "%s %t", g_sChatPrefix, "Config reloaded. Please restart or change map");
 	}
 	
+	return Plugin_Handled;
+}
+
+public Action Command_ResetLoadout(int client, int args)
+{
+	if(!client)
+		return Plugin_Handled;
+
+	if((g_eClients[client].iCredits == -1 && g_eClients[client].iItems == -1) || !g_eClients[client].bLoaded)
+	{
+		//Chat(client, "%t", "Inventory hasnt been fetched");
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Inventory hasnt been fetched");
+		return Plugin_Handled;
+	}
+	else
+	{
+		char sBuffer[128];
+		Format(sBuffer, sizeof(sBuffer), "%t", "Store Confirm Reset Loadout");
+		Store_DisplayConfirmMenu(client, sBuffer, FakeMenuHandler_StoreResetLoadout, 0);
+	}
+
 	return Plugin_Handled;
 }
