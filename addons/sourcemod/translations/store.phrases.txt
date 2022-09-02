@@ -3,216 +3,257 @@
 	"Client Loadout Reset"
 	{
 		"en" "Your loadout has been reset."
+		"pt" "Seus equipamentos foram resetados."
 	}
 	
 	"Store Confirm Reset Loadout"
 	{
-		"en" "Are you sure you want to reset your loadout. All the item will be unequipped?"
+		"en" "Are you sure you want to reset your loadout? All the item will be unequipped."
+		"pt" "Você tem certeza que você quer resetar os equipamentos? Todos os itens vão ser desequipados"
 	}
 	
 	"Custom Weapon Sound Menu Tag"
 	{
 		"en"	"{lightblue}[{green}Custom Weapon Sound{lightblue}]{default}"
+		"pt"	"{lightblue}[{green}Som da Arma Customizada{lightblue}]{default}"
 	}
 	
 	"Custom Weapon Sound Menu Title"
 	{
 		"en"	"Custom Weapon Sound Volume Control Menu"
+		"pt" 	"Menu de Controle de Som de Arma Customizada"
 	}
 	
 	"Custom Weapon Sound Menu Volume"
 	{
 		"#format"	"{1:T}"
 		"en"	"Custom Weapon Sound: {1}"
+		"pt"	"Som da Arma Customizada: {1}"
 	}
 	
 	"Custom Weapon Sound Enabled"
 	{
 		"en"	"Enabled"
+		"pt"	"Ativado"
 	}
 
 	"Custom Weapon Sound Disabled"
 	{
 		"en"	"Disabled"
+		"pt"	"Ativado"
 	}
 	
 	"Custom Weapon Sound Menu Vol"
 	{
 		"#format"	"{1:i}"
 		"en"	"Volume: {1}"
+		"pt"	"Volume: {1}"
 	}
 	
 	"Custom Weapon Sound Text Disable"
 	{
 		"en"	"Custom Weapon sound is {red}Disabled{default}."
+		"pt" 	"Som de Arma Customizada está {red}Desativado{default}."
 	}
 	
 	"Custom Weapon Sound Text Enable"
 	{
 		"en"	"Custom Weapon sound is {lightgreen}Enabled{default}."
+		"pt"	"Som de Arma Customizada está {lightgreen}Ativado{default}."
 	}
 	
 	"Custom Weapon Sound Text Volume"
 	{
 		"#format"	"{1:d}"
 		"en"	"Custom Weapon sound is {lightgreen}Enabled{default}. Volume: {lightgreen}{1}"
+		"pt"	"Som de Arma Customizada está {lightgreen}Ativado{default}. Volume: {lightgreen}{1}"
 	}
 	
 	"Lose Streak Of"
 	{
 		"#format" "{1:i}"
 		"en"		"You have lost your daily streak of {green}{1} {default}day(s)."
+		"pt"		"Você perdeu a sua sequência diária de {green}{1} {default}dia(s)."
 	}
 	
 	"Wait until next daily 2"
 	{
 		"en"		"You have checkin today. Please comeback tomorrow."
+		"pt"		"Você já fez o checkin hoje. Por favor, volte amanhã."
 	}
 	
 	"Bet Bonus"
 	{
 		"#format" "{1:i}"
 		"en"	"{yellow}Bonus credits: {green}{1}."
+		"pt"	"{yellow}Créditos Bonus: {green}{1}."
 	}
 	
 	"Show trails"
 	{
 		"en"		"Show trails"
+		"pt"		"Mostrar rastro"
 	}
 
 	"Hide trails"
 	{
 		"en"		"Hide trails"
+		"pt"		"Esconder rastro"
 	}
 
 	"Show bullet tracer"
 	{
 		"en"		"Show bullet tracers"
+		"pt"		"Mostrar rastro da bala"
 	}
 
 	"Hide bullet tracer"
 	{
 		"en"		"Hide bullet tracers"
+		"pt"		"Esconder rastro da bala"
 	}
 
 	"Show gloves"
 	{
 		"en"		"Show gloves"
+		"pt"		"Mostrar luvas"
 	}
 
 	"Hide gloves"
 	{
 		"en"		"Hide gloves"
+		"pt"		"Esconder luvas"
 	}
 
 	"Show pets"
 	{
 		"en"		"Show pets"
+		"pt"		"Mostrar pets"
 	}
 
 	"Hide pets"
 	{
 		"en"		"Hide pets"
+		"pt"		"Esconder pets"
 	}
 
 	"Show bullet sparks"
 	{
 		"en"		"Show bullet sparks"
+		"pt"		"Mostrar faísca do tiro"
 	}
 
 	"Hide bullet sparks"
 	{
 		"en"		"Hide bullet sparks"
+		"pt"		"Esconder faísca do tiro"
 	}
 
 	"Show paintball"
 	{
 		"en"		"Show paintballs"
+		"pt"		"Mostrar paintball"
 	}
 
 	"Hide paintball"
 	{
 		"en"		"Hide paintballs"
+		"pt"		"Esconder paintball"
 	}
 
 	"Show particles"
 	{
 		"en"		"Show particles"
+		"pt"		"Mostrar partículas"
 	}
 
 	"Hide particles"
 	{
 		"en"		"Hide particles"
+		"pt"		"Esconder partículas"
 	}
 
 	"arms"
 	{
 		"en" "arms"
+		"pt" "braços"
 	}
 	
 	"gloves"
 	{
 		"en" "gloves"
+		"pt" "luvas"
 	}
 	
 	"Volume set"
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{green}{1} {default}volume set to {purple}{2}"
+		"pt"		"{green}{1} {default}volume alterado para {purple}{2}"
 		"fr"		"Volume {green}{1} {default}réglé à {purple}{2}"
 	}
 	
 	"CP Chat Tag Color Option"
 	{
 		"en"	"Chat tag color option"
+		"pt"	"Opções de cor de tag"
 	}
 
 	"CP Disable Color - Menu"
 	{
 		"en"	"Disable color"
+		"pt"	"Desativar cor"
 	}
 
 	"CP Changed color"
 	{
 		"en"		"You changed your color to: "
+		"pt"		"Você mudou a sua cor para: "
 	}
 	
 	"CP Scoreboard Preview"
 	{
 		"en"		"Showing preview scoreboard tag, please press TAB button."
+		"pt"		"Mostrando prévia da tag no placar, por favor aperte TAB."
 	}
 	
 	"CP Disabled Color"
 	{
 		"en" "Custom tag color disabled."
+		"pt" "Tag de cor customizada está desativada"
 	}
 	
 	"CP No file found"
 	{
 		"en" "The custom tag color for user has been disabled. Please contact admin for further support."
+		"pt" "A tag de cor customizada foi desativada para jogadores. Contate um administrador para mais informações."
 	}
 	
 	"CP No Name Tag Equipped"
 	{
 		"en" "You dont have any name tag equipped"
+		"pt" "Você não tem nenhuma tag equipada"
 	}
 	
 	"You collected"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You collected {1} {2}"
+		"pt"		"Você coletou {1} {2}"
 		"hu"		"Felvettél {1} kreditet"
 	}
 
 	"No pick up - removed"
 	{
 		"en"		"No one pick up your dropped credits. The credits were removed."
+		"pt"		"Ninguém pegou os créditos dropados. Os créditos foram removidos."
 		"hu"		"Senki nem vette fel az eldobott krediteket. A kreditek törlésre kerültek."
 	}
 
 	"No pick up - back to you"
 	{
 		"en"		"No one pick up your dropped credits. You get it back."
+		"pt"		"Ninguém pegou os créditos dropados. Você recebeu eles de volta."
 		"hu"		"Senki nem vette fel az eldobott krediteket. Visszakaptad."
 	}
 	
@@ -220,6 +261,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You dropped {1} {2}"
+		"pt"		"Você dropou {1} {2}"
 		"hu"		"Eldobtál {1} kreditet"
 	}
 	
@@ -227,6 +269,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"	"Too many {1} on the ground, you can't drop more at this time!"
+		"pt"	"Tem {1} de mais no chão, você não pode dropar mais por agora!"
 		"hu"	"Túl sok kredit van a földön, nem tudsz jelenleg eldobni többet!"
 	}
 
@@ -234,40 +277,47 @@
 	{
 		"#format" "{1:i},{2:s}"
 		"en" "You earned {green}{1}{default} credits for killing {green}{2}."
+		"pt" "Você ganhou {green}{1}{default} credditos por matar {green}{2}."
 	}
 
 	"Admin chat reload timer exist"
 	{
 		"#format" "{1:i}"
 		"en" "You have already reload the config. Please change or reload the map."
+		"pt" "Você já recarregou a config. Por favor, mude ou recarregue o mapa."
 	}
 	
 	"Timer_Server_ReloadConfig"
 	{
 		"#format" "{1:i}"
 		"en" "Admin has reload store config. The map will be reloaded in {1} sec!"
+		"pt" "A loja foi recarregada pelo Admin. O mapa vai ser recarredo em {1} seg!"
 	}
 	
 	"confirm_reload_type_0"
 	{
 		"#format" "{1:i}"
 		"en" "Do you want to reset config?\nThe map will be reload after {1} sec!"
+		"pt" "Você quer resetar a config?\nO mapa vai ser recarregado em {1} seg!"
 	}
 	
 	"confirm_reload_type_1"
 	{
 		"en" "Do you want to reset config?\nYou need to change the map to apply or may get some bugs."
+		"pt" "Você tem certeza que quer resetar a config?\n Você precisa de mudar o mapa para evitar bugs."
 	}
 	
 	"Config reloaded. Please restart or change map"
 	{
 		"en" "Config reloaded. Please restart or change map."
+		"pt" "Config recarregada. Por favor, recarregue ou mude o mapa."
 	}
 	
 	"QuizzGenerated"
     {
         "#format" "{1:i},{2:s},{3:i},{4:i},{5:s}"
         "en"    "How much is {lime}{1} {2} {lime}{3}{default}? | Prize: {lime}{4}{default} {5}"
+				"pt"		"Quanto é {lime}{1} {2} {lime}{3}{default}? | Prêmio: {lime}{4}{default} {5}"
         "hu"    "Mennyi {lime}{1}{default} {2} {lime}{3}{default}? | Nyeremény: {lime}{4}{default} kredit"
     }
 
@@ -275,6 +325,7 @@
     {
         "#format" "{1:s},{2:i},{3:s}"
         "en"     "{1} got the answer right and won {lime}{2}{default} {3}!"
+				"pt"		 "{1} acertou e ganhou {lime}{2}{default} {3}!"
         "hu"    "{1} leírta a helyes választ és nyert {lime}{2}{default} kreditet!"
     }
 
@@ -282,6 +333,7 @@
     {
         "#format" "{1:i}"
         "en"    "Time's up. The correct answer was {lime}{1}{default}."
+				"pt"		"Tempo acabou. A resposta correta era {lime}{1}{default}."
         "hu"    "Lejárt az idő. A helyes válasz a(z) {lime}{1}{default} volt."
     }
 
@@ -289,6 +341,7 @@
     {
         "#format"    "{1:d}"
         "en"    "You have to wait {red}{1}{default} seconds before trying to use this command again."
+				"pt"		"Você precisa de esperar {red}{1}{default} segundos antes de tentar usar esse comando novamente."
         "hu"    "Várnod kell {red}{1}{default} másodpercet, hogy használhasd újra a parancsot."
     }
 
@@ -296,6 +349,7 @@
     {
         "#format"    "{1:d}"
         "en"        "You lost your bet, because the next number was: {orange}{1}"
+				"pt"        "Você perdeu a sua aposta porque o próximo número era: {orange}{1}"
         "hu"        "Elvesztetted a tétet, mivel a következő szám a {orange}{1}{default} lett volna."
     }
 
@@ -303,6 +357,7 @@
     {
         "#format"    "{1:d}"
         "en"        "The chosen number is: {orange}{1}"
+				"pt"				"O número escolhido é: {orange}{1}"
         "hu"        "A kiválasztott szám: {orange}{1}"
     }
 
@@ -310,6 +365,7 @@
     {
         "#format"    "{1:d}"
         "en"        "The next number was: {orange}{1}"
+				"pt"				"O próximo número era: {orange}{1}"
         "hu"        "A következő szám: {orange}{1}"
     }
 
@@ -317,6 +373,7 @@
     {
         "#format"    "{1:d}"
         "en"        "The chosen number is: <font color='#FFD700'>{1}"
+				"pt"				"O número escolhido é: <font color='#FFD700'>{1}"
         "hu"        "A kiválasztott szám: <font color='#FFD700'>{1}"
     }
 
@@ -324,6 +381,7 @@
     {
         "#format"    "{1:d}"
         "en"        "The next number was: <font color='#FFD700'>{1}"
+				"pt"				"O próximo número era: <font color='#FFD700'>{1}"
         "hu"        "A következő szám: <font color='#FFD700'>{1}"
     }
 
@@ -331,24 +389,28 @@
     {
         "#format"    "{1:i},{2:s}"
         "en"        "You have successfully placed {orange}{1}{default} {2}."
+				"pt"				"Você colocou {orange}{1}{default} {2} com sucesso."
         "hu"        "Sikeresen fogadtál {orange}{1}{default} kredit összegben."
     }
 
     "Only number"
     {
         "en"        "You can type only numbers..."
+				"pt"				"Você pode digitar apenas números..."
         "hu"        "Csak számokat írhatsz be..."
     }
 
     "Higher"
     {
         "en"        "HIGHER"
+				"pt"				"MAIOR"
         "hu"        "NAGYOBB"
     }
 
     "Lower"
     {
         "en"        "LOWER"
+				"pt"				"MENOR"
         "hu"        "KISEBB"
     }
 
@@ -356,12 +418,14 @@
     {
         "#format"    "{1:i},{2:i}"
         "en"        "A number between {1} to {2} has been chosen for you guess if the next number will be higher or lower than the chosen number."
+				"pt"				"Um número entre {1} e {2} foi escolhido para você adivinhar se o próximo número será maior ou menor que o número determinado."
         "hu"        "Egy szám {1} és {2} között kiválasztásra kerül és neked el kell döntened az a szám nagyobb vagy kisebb a kiválasztott számnál."
     }
 
     "Hol Info 2"
     {
         "en"        "If you choose the good one, you will win twice your bet."
+				"pt"				"Se você escolher um bom, você vai ganhar duas vezes a sua aposta."
         "hu"        "Ha sikerül a jót kiválasztani, akkor a téted kétszeresét nyered."
     }
 
@@ -369,30 +433,35 @@
     {
         "#format"    "{1:i}"
         "en"        "There is a {1} second(s) pause between each games."
+				"pt"				"Existe uma pausa de {1} segundo(s) entre cada jogo."
         "hu"        "Minden játék között {1} másodperc szünet van."
     }
 
     "high or low"
     {
         "en"        "High or Low"
+				"pt"				"Maior ou Menor"
         "hu"        "Nagyobb vagy Kisebb"
     }
 	
 	"ColoredSmoke"
 	{
 		"en"        "Colored Smoke"
+		"pt"				"Smoke Colorida"
 		"chi"       "颜色烟雾"
 	}
 
 	"scoreboardtag"
     {
         "en"        "Scoreboard Tag"
-		"chi"       "计分板标签"
+				"pt"				"Tag de Placar"
+				"chi"       "计分板标签"
     }
 
 	"Press"
 	{
 		"en"        "Press"
+		"pt"				"Pressione"
 		"hu"        "Nyomd meg"
 		"chi"       "按"
 	}
@@ -401,6 +470,7 @@
 	{
 		"#format"    "{1:d}"
 		"en"        "Amount: {1}"
+		"pt"				"Quantidade: {1}"
 		"hu"        "Összeg: {1}"
 		"chi"       "数量：{1}"
 	}
@@ -408,6 +478,7 @@
 	"Edit Amount"
 	{
 		"en"        "Edit Amount: "
+		"pt"				"Editar Quantidade:"
 		"hu"        "Összeg módosítása: "
 		"chi"       "编辑数量："
 	}
@@ -415,6 +486,7 @@
 	"Up"
 	{
 		"en"        "Up"
+		"pt"				"Acima"
 		"hu"        "Felfelé"
 		"chi"       "向上"
 	}
@@ -422,6 +494,7 @@
 	"Down"
 	{
 		"en"        "Down"
+		"pt"				"Abaixo"
 		"hu"        "Lefelé"
 		"chi"       "向下"
 	}
@@ -429,6 +502,7 @@
 	"Down2"
 	{
 		"en"        "                      5 = Down"
+		"pt"				"                      5 = Abaixo"
 		"hu"        "                      5 = Lefelé"
 		"chi"       "                      5 = 向下"
 	}
@@ -436,6 +510,7 @@
 	"You"
 	{
 		"en"        "YOU"
+		"pt"        "VOCÊ"
 		"hu"        "NEKED"
 		"chi"       "你"
 	}
@@ -449,6 +524,7 @@
 	"Dealer"
 	{
 		"en"        "DEALER"
+		"pt"				"DISTRIBUIDOR"
 		"hu"        "OSZTÓ"
 		"chi"       "庄家"
 	}
@@ -457,6 +533,7 @@
 	{
 		"#format"    "{1:d},{2:d}"
 		"en"        "             DEAL     +{1}     -{2}"
+		"pt"        "     DISTRIBUIDOR     +{1}     -{2}"
 		"hu"        "          RENDBEN     +{1}     -{2}"
 		"chi"       "             成交     +{1}     -{2}"
 	}
@@ -465,6 +542,7 @@
 	{
 		"#format"    "{1:d},{2:d}"
 		"en"        "Credits: {1}          Pot: {2}"
+		"pt"				"Créditos: {1}          Ganho: {2}"
 		"hu"        "Kreditek: {1}         Tét: {2}"
 		"chi"       "点数：{1}          存钱罐：{2}"
 	}
@@ -472,6 +550,7 @@
 	"Hit"
 	{
 		"en"        "Hit"
+		"pt"				"Acerto"
 		"hu"        "Lap kérés"
 		"chi"       "拿牌"
 	}
@@ -479,6 +558,7 @@
 	"Stay"
 	{
 		"en"        "Stand"
+		"pt"				"Ficar"
 		"hu"        "Tartózkodás"
 		"chi"       "停牌"
 	}
@@ -486,6 +566,7 @@
 	"Double"
 	{
 		"en"        "Double"
+		"pt"				"Dobrar"
 		"hu"        "Duplázás"
 		"chi"       "加倍"
 	}
@@ -499,6 +580,7 @@
 	"You lose"
 	{
 		"en"        "- you lost"
+		"pt"				"- você perdeu"
 		"hu"        "- vesztettél -"
 		"chi"       "- 你输了"
 	}
@@ -506,6 +588,7 @@
 	"You won"
 	{
 		"en"        "!!! YOU WON !!!"
+		"pt"        "!!! VOCÊ GANHOU !!!"
 		"hu"        "!!! NYERTÉL !!!"
 		"chi"       "!!! 你赢了 !!!"
 	}
@@ -513,6 +596,7 @@
 	"Dead heat"
 	{
 		"en"        "- dead heat -"
+		"pt"				"- Estourou -"
 		"hu"        "- holtverseny -"
 		"chi"       "- 不分胜负 -"
 	}
@@ -520,6 +604,7 @@
 	"Try again"
 	{
 		"en"        "Try again"
+		"pt"				"Tentar novamente"
 		"hu"        "Próbáld újra"
 		"chi"       "再试一次"
 	}
@@ -527,6 +612,7 @@
 	"Type in chat !blackjack"
 	{
 		"en"        "Type in chat !blackjack <bet>"
+		"pt"        "Escreva no chat !blackjack <aposta>"
 		"hu"        "Írd be: !blackjack <tét>"
 		"chi"       "在聊天输入 !blackjack <赌注>"
 	}
@@ -534,72 +620,84 @@
 	"Blackjack Info 4"
 	{
 		"en"        "- Your hand value must get closer to 21 without go over and higher than dealer hand to win the game.\n- \"A\" + 10 value card = BlackJack. This is an instant win."
+		"pt"        "- Sua mão deve ser mais próxima possível de 21 (sem passar) e maior do que a da mão do Distribuidor para vencer o jogo.\n- \"A\" Carta de valor + 10 = BlackJack. Isto é, uma vitória Instantânea."
 		"chi"       "- 你手牌的总值必须接近21点而不能超过21点的情况下打败庄家来获胜。\n- \"A\" + 10 值卡 = 21点。这就是直接胜利。"
 	}
 
 	"Blackjack Info 3"
 	{
 		"en"        "- \"10,J,Q,K\": Counted as 10.\n- 2-9 Counted as their face value."
+		"pt"				"- \"10,J,Q,K\": Contam como 10.\n- 2-9 Contam o valor normal."
 		"chi"       "- \"10,J,Q,K\"：被算为10。\n- 2-9 以纸面价值计算。"
 	}
 
 	"Blackjack Info 2"
 	{
 		"en"        "Counting rules:\n- \"A\" card can be counted as 1/11. If the hand value exceeding 21 this card must be counted as 1."
+		"pt"        "Regras de contagem:\n- \"A\" carta pode ser contada como 1/11. Se o valor da mão exceder 21, esta carta deve ser contada como 1."
 		"chi"       "计算规则：\n- \"A\" 卡可以被算做1或11。假如手牌价值超过了21点则此卡必须被算为1。"
 	}
 
 	"Blackjack Info 1"
 	{
 		"en"        "Blackjack is a game that the card value in your hand must higher than the dealer without exceeding 21"
+		"pt"				"Blackjack é um jogo que o valor da carna na sua mãe deve ser maior do que a do Distribuidor sem exceder 21"
 		"chi"       "21点是一个让自己手牌价值在不超过21点的前提下超过庄家的游戏。"
 	}
 
 	"Crash set auto"
 	{
 		"en"        "Set auto cashout value"
+		"pt"				"Escolher valor retirada automática"
 		"chi"       "设置自动兑现值"
 	}
 
 	"Crash auto input"
 	{
 		"en"        "Type your auto cashout in chat"
+		"pt"				"Escreva o seu valor de retirada automática no chat"
 		"chi"       "在聊天区输入你的自动兑现"
 	}
 
 	"Crash Auto On Panel"
 	{
 		"en"        "Turn on auto cashout"
+		"pt"				"Ativar retirada automática"
 		"chi"       "打开自动兑现"
 	}
 
 	"Crash Auto Off Panel"
 	{
 		"en"        "Turn off auto cashout"
+		"pt"				"Desativar retirada automática"
 		"chi"       "关闭自动兑现"
 	}
 
 	"Crash Auto Off"
 	{
 		"en"        "Off"
+		"pt"				"Desligado"
 		"chi"       "关"
 	}
 
 	"Crash Auto On"
 	{
 		"en"        "On"
+		"pt"				"Ligado"
 		"chi"       "开"
 	}
 
 	"Client Auto Cashout pref"
 	{
 		"en"        "Auto Cashout:"
+		"pt"				"Retirada Automática:"
 		"chi"       "自动兑现："
 	}
 
 	"Crash auto input set"
 	{
 		"en"        "Crash auto cash out set"
+		"pt"				"Crash de Saque Automático definido"
 		"chi"       "设置了爆出现金自动兑现"
 	}
 
@@ -607,54 +705,63 @@
 	{
 		"#format"    "{1:0.2f}"
 		"en"        "Wrong input (must be {1} or above)."
+		"pt"        "Entrada errada (deve ser {1} ou mais)."
 	}
 
 	"Crash Info 4"
 	{
 		"#format"    "{1:i},{2:s},{3:i},{4:s}"
 		"en"        "- Minimum bet value is {1} {2}. Maximum bet value is {3} {4}. These limits may change with time."
+		"pt"				"- Valor mínimo de aposta é {1} {2}. Valor máximo de aposta é {3} {4}. Esses valores podem mudar com o tempo."
 		"hu"        "- A minimum tét értéke {1} kredit. A maximális tét értéke {3} kredit. Ezek a határok idővel változhatnak."
 	}
 
 	"Crash Info 3"
 	{
 		"en"        "- The multiplier starts at 1.00x and you can cash out any time."
+		"pt"				"- O multiplicador começa em 1.00x e você pode sacar a qualquer momento."
 		"hu"        "- A szorzó 1,00x -nál kezdődik, és bármikor lehetőség van a megállításra."
 	}
 
 	"Crash Info 2"
 	{
 		"en"        "- Crash is the game where players can bet on a multiplier, this multiplier related to an increasing curve that can crash at any moment."
+		"pt"				"- Crash é um jogo que os jogadores podem apostar em um multiplicador, esse multiplicador é relacionado a uma curva crescente que pode quebrar a qualquer momento."
 		"hu"        "- A Crash az, ahol a játékosok fogadhatnak és van egy szorzó, ami egy növekvő görbéhez kapcsolódik, és ez a görbe bármikor összeomolhat."
 	}
 
 	"Crash Info 1"
 	{
 		"en"        "           What is/How to play: Crash"
+		"pt"        "           O que é/Como jogar: Crash"
 		"hu"        "           Mi is a Crash/Hogy kell játszani a Crasht"
 	}
 
 	"Crash Already Start"
 	{
 		"en"        "Crash game is currently in progress. Please wait next game."
+		"pt"				"Crash atualmente está em progresso. Por favor, aguarde o próximo jogo."
 		"hu"        "A Crash még jelenleg tart. Kérlek várd meg a következő játékot."
 	}
 
 	"Cash out"
 	{
 		"en"        "Cash out"
+		"pt"				"Sacar"
 		"hu"        "Megállítás"
 	}
 
 	"Crash!"
 	{
 		"en"        "Crash!"
+		"pt"				"Quebrou!"
 		"hu"        "Vége!"
 	}
 
 	"Gained"
 	{
 		"en"        "Gained"
+		"pt"				"Ganhou"
 		"hu"        "Nyereményed"
 	}
 
@@ -662,12 +769,14 @@
 	{
 		"#format"    "{1:d},{2:s}"
 		"en"        "Gained: {1} {2}"
+		"pt"				"Ganhou: {1} {2}"
 		"hu"        "Nyereményed: {1} kredit"
 	}
 
 	"Starting"
 	{
 		"en"        "Starting"
+		"pt"				"Começando"
 		"hu"        "Kezdés"
 	}
 
@@ -675,6 +784,7 @@
 	{
 		"#format"   "{1:d}"
 		"en"        "{green}{1} minute(s) {default}before crash starts."
+		"pt"				"{green}{1} minuto(s) {default}antes do crash começar."
 		"hu"        "{green}{1} perc {default}mielőtt elkezdődik a crash."
 	}
 
@@ -682,6 +792,7 @@
 	{
 		"#format"   "{1:d}"
 		"en"        "{green}{1} second(s) {default}before crash starts."
+		"pt"				"{green}{1} segundo(s) {default}antes do crash começar."
 		"hu"        "{green}{1} másodperc {default}mielőtt elkezdődik a crash."
 	}
 
@@ -694,6 +805,7 @@
 	{
 		"#format"    "{1:N},{2:d},{3:s},{4:2.2f},{5:s}"
 		"en"        "{1} has won {2} {3} with multiplier of x{4} at {5}."
+		"pt"				"{1} ganhou {2} {3} com o multiplicador de x{4} at {5}."
 		"hu"        "{1} nyert {2} kreditet x{4} szorzóval a {5} játékon."
 	}
 
@@ -701,12 +813,14 @@
 	{
 		"#format"   "{1:d},{2:2.2f}"
 		"en"        "You won {1} credits with x{2}."
+		"pt"				"Você ganhou {1} creditos com x{2}"
 		"hu"        "Nyertél {1} kreditet x{2} szorzóval."
 	}
 
 	"Type in chat !crash"
 	{
 		"en"        "Type in chat !crash <bet>"
+		"pt"				"Escreva no chat !crash <aposta>"
 		"hu"        "Írd be: !crash <tét>"
 	}
 
@@ -714,6 +828,7 @@
 	{
 		"#format" 	"{1:s},{2:i}"
 		"en"		"<font color='#00CCFF'>Admin <font color='#ff0000'>{1}<font color='#00CCFF'> opened a giveaway with <font color='#15fb00'>{2} <font color='#00CCFF'>credits"
+		"pt"		"<font color='#00CCFF'>Admin <font color='#ff0000'>{1}<font color='#00CCFF'> começou um sorteio com <font color='#15fb00'>{2} <font color='#00CCFF'>créditos"
 		"chi"		"<font color='#00CCFF'>管理员 <font color='#ff0000'>{1}<font color='#00CCFF'> 开启了一次赠送活动，含有 <font color='#15fb00'>{2} <font color='#00CCFF'>点数"
 	}
 
@@ -721,6 +836,7 @@
 	{
 		"#format" 	"{1:i}"
 		"en"		"<font color='#15fb00'>|| Giveaway starts in <font color='#ffff00'>{1}<font color='#15fb00'> seconds ||"
+		"pt"		"<font color='#15fb00'>|| O Sorteio começa em <font color='#ffff00'>{1}<font color='#15fb00'> segundos ||"
 		"chi"		"<font color='#15fb00'>|| 赠送活动开始时间剩余 <font color='#ffff00'>{1}<font color='#15fb00'> 秒 ||"
 	}
 
@@ -728,6 +844,7 @@
 	{
 		"#format" 	"{1:s},{2:s}"
 		"en"		"<font color='#dd2f2f'>{1}\n<font color='#00CCFF'>|| <font color='#15fb00'>Winner: <font color='#ff0000'>{2}<font color='#00CCFF'> ||"
+		"pt"		"<font color='#dd2f2f'>{1}\n<font color='#00CCFF'>|| <font color='#15fb00'>Ganhador: <font color='#ff0000'>{2}<font color='#00CCFF'> ||"
 		"chi"		"<font color='#dd2f2f'>{1}\n<font color='#00CCFF'>|| <font color='#15fb00'>胜者: <font color='#ff0000'>{2}<font color='#00CCFF'> ||"
 	}
 
@@ -735,6 +852,7 @@
 	{
 		"#format" 	"{1:s},{2:s},{3:i}"
 		"en"		"{yellow}{1} {purple}{2} {default}won a giveaway with {green}{3} {yellow}credits"
+		"pt"		"{yellow}{1} {purple}{2} {default}ganhou um giveway com {green}{3} {yellow}créditos"
 		"chi"		"{yellow}{1} {purple}{2} {default}赢得了一次赠送活动，含有 {green}{3} {yellow}点数"
 	}
 
@@ -747,24 +865,28 @@
 	"Low - #1-3 (1:2)"
 	{
 		"en"		"Low - #1-3 (1:2)"
+		"pt"		"Baixo - #1-3 (1:2)"
 		"chi"		"低 - #1-3 (1:2)"
 	}
 
 	"High - #4-6 (1:2)"
 	{
 		"en"		"High - #4-6 (1:2)"
+		"pt"		"Alto - #4-6 (1:2)"
 		"chi"		"高 - #4-6 (1:2)"
 	}
 
 	"Choose Number (1:6)"
 	{
 		"en"		"Choose Number (1:6)"
+		"pt"		"Escolher número (1:6)"
 		"chi"		"选择数字 (1:6)"
 	}
 
 	"Game in progress"
 	{
 		"en"		"Your current bet game is in progress. Please wait until it finished"
+		"pt"		"A sua aposta atual está em progresso. Por favor, aguarde."
 		"chi"		"你的当前博彩游戏正在运行。请等待其完成"
 	}
 
@@ -772,94 +894,111 @@
 	{
 		"#format"	"{1:s},{2:i}"
 		"en"		"{yellow}{1}{purple} To do a giveaway the server must contain at least {green}{2} {purple}players."
+		"pt"		"{yellow}{1}{purple} Para fazer um sorteio no servidor devem ter pelo menos {green}{2} {purple}jogadores."
 		"chi"		"{yellow}{1}{purple} 想开始一次赠送活动服务器必须有至少 {green}{2} {purple}玩家。"
 	}
 
 	"Credit Giveaway Not Enough"
 	{
 		"en" "You don't have enough credits to create giveaway."
+		"pt" "Você não tem créditos suficientes para criar um sorteio."
 	}
 
 	"No have flag"
 	{
 		"en" "You don't have access to use this command."
+		"pt" "Você não tem acesso para usar esse comando."
 	}
 
 	"Now run a giveaway"
 	{
 		"en"		"Now running a giveaway, try again in a few seconds."
+		"pt"		"Está acontecendo um sortio, tente novamente em alguns segundos."
 	}
 
 	"Lootbox map ended"
 	{
 		"en" "The map has ended. Please wait for next map"
+		"pt" "O mapa acabou. Por favor aguarde até o próximo mapa"
 		"chi" "地图已结束。请等待下个地图"
 	}
 
 	"Lootbox round ended"
 	{
 		"en" "The round has ended. Please wait for new round"
+		"pt" "O rodada acabou. Por favor aguarde até a próxima rodada"
 		"chi" "回合已结束。请等待新回合"
 	}
 
 	"Lootbox warm up"
 	{
 		"en" "You can't open in warmup"
+		"pt" "Você não pode abrir durante o aquecimento"
 		"chi" "你不能在热身时打开"
 	}
 
 	"Lootbox case is opening"
 	{
 		"en" "Please wait until your previous case has been opened"
+		"pt" "Por favor, aguarde até que sua caixa anterior seja aberta"
 		"chi" "请等待你先前的箱子打开"
 	}
 
 	"Client valid voucher"
 	{
 		"en" "Your generated and valid voucher are:\n "
+		"pt" "Seu Voucher válido gerado é:\n "
 		"chi" "你的生成的有效的代金券是：\n "
 	}
 
 	"All valid voucher"
 	{
 		"en" "All generated and valid voucher are:\n "
+		"pt" "Todos os Vouchers gerados e válidos são:\n"
 		"chi" "所有生成的有效的代金券是：\n "
 	}
 	
 	"Create Item Voucher"
 	{
 		"en" "Create an Items Voucher (Admin Only)"
+		"pt" "Criar um Voucher de Item (Apenas Admin)"
 	}
 	
 	"Title Admin Voucher Menu"
 	{
 		"en" "Admin item Voucher Creator Menu"
+		"pt" "AdminMenu de criação de Voucher"
 	}
 	
 	"Title Admin Voucher Duration Menu"
 	{
 		"en" "Admin item Voucher Creator Menu.\n \nChoose the item duration."
+		"pt" "AdminMenu Criador de Voucher de item.\n \nEscolha a duração do item."
 	}
 	
 	"Enter Admin Item Voucher Expiration"
 	{
 		"en"		"Please enter the expiration time (in seconds) for the item in the chat!"
+		"pt"		"Por favor digite a data de expiração do item (em segundos) para o item no chat!"
 	}
 	
 	"Enter Admin Item Voucher Expiration Error"
 	{
 		"en"		"Invalid number format. Please try again."
+		"pt"		"Número em formato inválido. Por favor tente novamente."
 	}
 
 	"Check All Voucher"
 	{
 		"en" "Check All valid and available voucher (Admin Only)"
+		"pt" "Verifique todos os Vouchers válidos (Apenas Admin)"
 		"chi" "检查全部有效的可用的代金券（管理员限定）"
 	}
 
 	"Check Your valid Voucher"
 	{
 		"en" "Check your generated and valid available voucher"
+		"pt" "Verifique seu voucher válido gerado"
 		"chi" "检查你的生成的有效的代金券"
 	}
 
@@ -867,6 +1006,7 @@
 	{
 		"#format" "{1:i},{2:s},{3:s},{4:i},{5:i},{6:s}"
 		"en" "You are generating {green}{1} {default}{2}limited voucher{3} with values {purple}{4}-{5} {green}{6}"
+		"pt" "Você está gerando {green}{1} {default}{2}voucher limitado{3} com os valores {purple}{4}-{5} {green}{6}"
 		"chi" "你生成 {green}{1} {default}{2}限定代金券{3} 含有额度 {purple}{4}-{5} {green}{6}"
 	}
 
@@ -874,42 +1014,49 @@
 	{
 		"#format" "{1:i},{2:s},{3:s},{4:i},{5:s}"
 		"en" "You are generating {green}{1} {default}{2}limited voucher{3} with value {purple}{4} {green}{5}"
+		"pt" "Você está gerando {green}{1} {default}{2}voucher limitado{3} com o valor {purple}{4} {green}{5}"
 		"chi" "你生成 {green}{1} {default}{2}限定代金券{3} 含有额度 {purple}{4} {green}{5}"
 	}
 
 	"Voucher Code 17 chars"
 	{
 		"en" "For now voucher code should be excatly 17 chars"
+		"pt" "Por enquanto, os códigos dos vouchers devem ter exatamente 17 caracteres"
 		"chi" "从现在起代金券代码必须是17字符"
 	}
 
 	"Item Voucher disabled"
 	{
 		"en" "Voucher creation for item is currently disabled."
+		"pt" "Criação de Voucher de item está desabilitado atualmente."
 		"chi" "此物品创造代金券已关闭"
 	}
 
 	"Command is in-game only"
 	{
 		"en" "You need to be alive to use this command."
+		"pt" "Você precisa de estar vivo para usar esse comando."
 		"chi" "你必须活着使用这个命令。"
 	}
 
 	"Credit Voucher Not Enough"
 	{
 		"en" "You don't have enough credits to create voucher."
+		"pt" "Você não tem créditos suficientes para criar um voucher."
 		"chi" "你没有足够的点数创造代金券。"
 	}
 
 	"Buy"
 	{
 		"en"		"Buy Item"
+		"pt"		"Comprar Item"
 		"chi"		"购买物品"
 	}
 
 	"Inventory"
 	{
 		"en"		"Inventory"
+		"pt"		"Inventário"
 		"chi"		"库存"
 	}
 
@@ -917,6 +1064,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You have reach the max uses of say sound. {1} max use(s) per map"
+		"pt"		"Você atingiu o máximo de usos de som (máximo {1} uso(s) por mapa)"
 		"chi"		"你已达到最大使用saysound次数。每地图 {1} 最大次数"
 	}
 
@@ -924,6 +1072,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You have reach the max uses of say sound. {1} Max use(s) per round"
+		"pt"		"Você atingiu o máximo de usos de som (máximo {1} uso(s) por rodada)"
 		"chi"		"你已达到最大使用saysound次数。每回合 {1} 最大次数"
 	}
 
@@ -931,6 +1080,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"-------------- Store Search Menu Suggestion --------------\n -All related items will be listed here\n - Your current search string: \"{1}\""
+		"pt"		"---------- Sugestões do Menu de Pesquisa da loja ---------\n -Todos os itens relacionados serão listados aqui\n - Sua pesquisa atual: \"{1}\""
 		"chi"		"-------------- 商店搜索菜单建议 --------------\n -所有相关的物品会在此处列出\n - 你当前搜索的内容: \"{1}\""
 	}
 
@@ -938,24 +1088,28 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"Price: {1}"
+		"pt"		"Preço: {1}"
 		"chi"		"价格：{1}"
 	}
 
 	"Cant be bought"
 	{
 		"en" "This item can not be bought"
+		"pt" "Esse item não pode ser comprado"
 		"chi" "此物品无法购买"
 	}
 
 	"Owned"
 	{
 		"en" "[Owned]"
+		"pt" "[Tenho]"
 		"chi" "[拥有]"
 	}
 
 	"Item not found"
 	{
 		"en" "Item not found"
+		"pt" "Item não encontrado"
 		"chi" "找不到物品"
 	}
 
@@ -964,6 +1118,7 @@
 	{
 		"#format"	"{1:t}"
 		"en"		"{darkred}{1} {default}hidden. You wont't see them anymore."
+		"pt"		"{darkred}{1} {default}escondido. Você não vai vê-los mais."
 		"chi"		"{darkred}{1} {default}隐藏。你不会再看到它们了。"
 	}
 
@@ -971,6 +1126,7 @@
 	{
 		"#format"	"{1:t}"
 		"en"		"{green}{1}s {default}are visible again."
+		"pt"		"{green}{1}s {default}está visível novamente."
 		"chi"		"{green}{1} {default}又可见了。"
 	}
 
@@ -978,18 +1134,21 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"Buy Item ({1})"
+		"pt"		"Comprar Item ({1})"
 		"chi"		"购买物品 ({1})"
 	}
 
 	"LevelIcon"
 	{
 		"en" "level icon"
+		"pt" "ícone de nível"
 		"chi" "等级图标"
 	}
 
 	"Preview Item"
 	{
 		"en"		"Preview This Item"
+		"pt"		"Visualizar Item"
 		"chi"		"预览这个物品"
 	}
 	
@@ -1002,17 +1161,20 @@
 	"This is the preview text"
 	{
 		"en"		" This is the preview text."
+		"pt"		" Este é o texto de visualização."
 	}
 	
 	"Spawn Preview"
 	{
 		"en"		"Spawned a preview. Preview will disappear in 45 seconds"
+		"pt"		"Visualização Gerada. A Visualização desaparecerá em 45 segundos"
 		"chi"		"已生成一个预览。预览会在45秒之后消失。"
 	}
 
 	"Play Preview"
 	{
 		"en"		"Playing preview sound for you."
+		"pt"		"Reproduzindo o som para você."
 		"chi"		"为你播放预览声音。"
 	}
 
@@ -1020,17 +1182,20 @@
 	{
 		"#format"	"{1:.0f}"
 		"en"		"Spawned a preview. Preview will disappear in {1} seconds."
+		"pt"		"Visualização Gerada. A Visualização desaparecerá em {1} segundos."
 	}
 
 	"Parachute Reloaded"
 	{
 		"en"		"Parachute Reloaded"
+		"pt"		"Paraquedas Recarregado"
 		"chi"		"降落伞重新装载"
 	}
 
 	"Parachute Empty"
 	{
 		"en"		"Parachute Empty"
+		"pt"		"Paraquedas Vazio"
 	}
 
 
@@ -1038,6 +1203,7 @@
 	{
 		"#format"	"{1:i},{2:i},{3:i}"
 		"en"		"{1} hours {2} minutes and {3} seconds"
+		"pt"		"{1} horas {2} minutos e {3} segundos"
 		"chi"		"{1} 小时 {2} 分钟 {3} 秒"
 	}
 
@@ -1045,6 +1211,7 @@
 	{
 		"#format"	"{1:i},{2:i}"
 		"en"		"{1} minutes and {2} seconds"
+		"pt"		"{1} minutos e {2} segundos"
 		"chi"		"{1} 分钟 {2} 秒"
 	}
 
@@ -1052,6 +1219,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"{1} seconds"
+		"pt"		"{1} segundos"
 		"chi"		"{1} 秒"
 	}
 
@@ -1079,24 +1247,28 @@
 	"Back"
 	{
 		"en"		"Back"
+		"pt"		"Voltar"
 		"chi"		"返回"
 	}
 
 	"Exit"
 	{
 		"en"		"Exit"
+		"pt"		"Sair"
 		"chi"		"返回"
 	}
 
 	"Close"
 	{
 		"en"		"Close"
+		"pt"		"Fechar"
 		"chi"		"关闭"
 	}
 
 	"Cancel"
 	{
 		"en"		"Cancel"
+		"pt"		"Cancelar"
 		"chi"		"取消"
 	}
 
@@ -1104,6 +1276,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Discount: '{1}' has started! Happy shopping!"
+		"pt"		"Desconto: '{1}' começou! Boas compras!"
 		"chi"		"折扣：'{1}' 已开始！购物愉快！"
 	}
 
@@ -1111,6 +1284,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Discount: '{1}' is active! Happy shopping!"
+		"pt"		"Desconto: '{1}' está ativado! Boas compras!"
 		"chi"		"折扣： '{1}' 是激活的！购物愉快！"
 	}
 
@@ -1118,12 +1292,14 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Discount: '{1}' has ended."
+		"pt"		"Desconto: '{1}' acabou."
 		"chi"		"折扣：'{1}' 已结束。"
 	}
 
 	"discount"
 	{
 		"en"		" SALE"
+		"pt"		" Oferta"
 		"chi"		" 特惠"
 	}
 
@@ -1136,6 +1312,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You received {1} {green}{2}."
+		"pt"		"Você recebeu {1} {green}{2}."
 		"chi"		"你收到了 {1} {green}{2}。"
 	}
 
@@ -1143,6 +1320,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You received {1} {2}."
+		"pt"		"Você recebeu {1} {2}."
 		"chi"		"你收到了 {1} {2}。"
 	}
 
@@ -1150,6 +1328,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Place {1} {2}"
+		"pt"		"Lugar {1} {2}"
 		"chi"		"放入 {1} {2}"
 	}
 
@@ -1157,6 +1336,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Rerun {1} {2}"
+		"pt"		"Repetir {1} {2}"
 		"chi"		"重运行 {1} {2}"
 	}
 
@@ -1164,6 +1344,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You win {1} {2}"
+		"pt"		"Você venceu {1} {2}"
 		"chi"		"你赢得 {1} {2}"
 	}
 
@@ -1171,6 +1352,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You lost {1} {2}"
+		"pt"		"Você perdeu {1} {2}"
 		"chi"		"你输掉 {1} {2}"
 	}
 
@@ -1178,6 +1360,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You'll earn {1} {2} tomorrow!"
+		"pt"		"Você receberá {1} {2} amanhã!"
 		"chi"		"你会在明天赚得 {1} {2} ！"
 	}
 
@@ -1185,69 +1368,82 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"You have to wait {1} until next daily."
+		"pt"		"Você precisa de esperar {1} até o próximo diário."
 		"chi"		"你必须等 {1} 直到下一次日常。"
 	}
 
 	"start daily challange"
 	{
 		"en"		"start the 'daily challange'. Play next 6 days to received full bonus"
+		"pt"		"começar o 'desafio diário'. Jogue nos próximos 6 dias para receber o bônus total"
 		"chi"		"开始'日常挑战'。接下来6天来玩可获得完整奖励"
 	}
 
 	"You mastered the daily challange"
 	{
 		"en"		"You mastered the 'daily challange'! Try to beat it again!"
+		"pt"		"Você masterizou o 'desafio diário'! Tente vencê-lo novamente!"
 		"chi"		"你制霸了'日常挑战'！尝试再次挑战！"
 	}
 
 	"You earned this round"
     {
         "en"        "You earned this round:"
+				"pt"				"Você ganhou nessa rodada:"
     }
 
     "You earned no points this round"
     {
         "en"        "You earned no points this round."
+				"pt"				"Você não ganhou pontos essa rodada."
     }
 
     "escape as VIP"
     {
         "en"        "escape as VIP"
+				"pt"				"fugir como VIP"
     }
 
     "kill the VIP"
     {
         "en"        "kill the VIP"
+				"pt"				"matar o VIP"
     }
 
     "hostage rescued"
     {
         "en"        "hostage rescued"
+				"pt"				"refém resgatado"
     }
 
     "bomb explode"
     {
         "en"        "bomb explode"
+				"pt"				"bomba explodiu"
     }
 
     "bomb defused"
     {
         "en"        "bomb defused"
+				"pt"				"bomba desarmada"
     }
 
     "bomb planted"
     {
         "en"        "bomb planted"
+				"pt"				"bomba plantada"
     }
 
     "be the MVP"
     {
         "en"        "be the MVP"
+				"pt"				"ser o MVP"
     }
 
     "win the round"
     {
         "en"        "win the round"
+				"pt"				"ganhar a rodada"
     }
 
     "kill"
@@ -1267,7 +1463,7 @@
 
     "decoy grenade  kill"
     {
-        "en"        "decoy grenade  kill"
+        "en"        "decoy grenade kill"
     }
 
     "molotov kill"
@@ -1323,188 +1519,223 @@
     "playing on the server"
     {
         "en"        "playing on the server"
+				"pt"				"jogando no servidor"
     }
 
     "idle on the server"
     {
         "en"        "idle on the server"
+				"pt"				"inativo no servidor"
     }
 
 	"Change your bet"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Change your bet: {1} {2}"
+		"pt"		"Altere sua aposta: {1} {2}"
 	}
 
 	"Bet on"
 	{
 		"en"		"Bet on"
+		"pt"		"Apostar em"
 	}
 
 	"Red"
 	{
 		"en"		"red"
+		"pt"		"vermelho"
 	}
 
 	"Black"
 	{
 		"en"		"black"
+		"pt"		"preto"
 	}
 
 	"Green"
 	{
 		"en"		"green"
+		"pt"		"verde"
 	}
 
 	"Lost bet"
 	{
 		"en"		"Failed! You lost your bet"
+		"pt"		"Falhou! Você perdeu a sua aposta"
 	}
 
 	"Must be dead"
 	{
 		"en"		"You must be dead to play"
+		"pt"		"Você deve estar morto para jogar"
 	}
 
 	"wasted"
 	{
 		"en"		"wasted"
+		"pt"		"perdeu"
 	}
 
 	"bet x"
 	{
 		"en"		"bet x"
+		"pt"		"apostar x"
 	}
 
 	"Press to Stop"
 	{
 		"en"		"Press to Stop!"
+		"pt"		"Aperte para Parar!"
 	}
 
 	"Min Player"
 	{
 		"#format"	"{1:i}"
-		"en"		"We need at least {1} player "
+		"en"		"We need at least {1} player(s) "
+		"pt"		"Precisamos de pelo menos {1} jogador(es) "
 	}
 
 	"Press to Start"
 	{
 		"en"		"Press to Start!"
+		"pt"		"pressione para começar!"
 	}
 
 	"Bet on a Head/Tail"
 	{
 		"en"		"Bet on a Head/Tail"
+		"pt"		"Apostar na Cara/Coroa"
 	}
 
 	"Bet on a color"
 	{
 		"en"		"Bet on a color and if this color is choosen you win!"
+		"pt"		"Aposte em uma cor e se essa cor for escolhida você ganha!"
 	}
 
 	"Bet on a team"
 	{
 		"en"		"Bet on a team and if the team win the round you win!"
+		"pt"		"Aposte em um time e se o time ganhar a rodada você ganha!"
 	}
 
 	"Bet on a number"
 	{
 		"en"		"Bet on Low (#1-3) on High (#4-6) or a exact number. If you choice is diced you win!"
+		"pt"		"Aposte baixo (#1-3) ou alto (#4-6) ou em um número exato. Se a sua escolha cair no dado, você ganha!"
 	}
 
 	"Player won x Credits"
     {
         "#format"    "{1:N},{2:i},{3:s},{4:s}"
         "en"        "{1} has won {2} {3} at {4}."
+				"pt"        "{1} ganhou {2} {3} no {4}."
     }
 
     "Player lost x Credits"
     {
         "#format"    "{1:N},{2:i},{3:s},{4:s}"
         "en"        "{1} has lost {2} {3} at {4}."
+				"pt"        "{1} perdeu {2} {3} no {4}."
     }
 
 	"Game Info"
 	{
 		"en"		"Game Info"
+		"pt"		"Informação do Jogo"
 	}
 
 	"TeamBet not betted"
 	{
 		"en"		"There was no bet on the other team, so you got the credits back."
+		"pt"		"Não houve aposta no outro time, então você recebeu os créditos de volta."
 	}
 
 	"TeamBet Won"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Your bet was successful. You won {1} {2}."
+		"pt"		"Sua aposta foi bem sucedida. Você ganhou {1} {2}."
 	}
 
 	"TeamBet Lost"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You lost {1} {2} on the bet."
+		"pt"		"Você perdeu {1} {2} na aposta."
 	}
 
 	"TeamBet Invalid Team"
 	{
 		"en"		"Invalid team identifier specified."
+		"pt"		"Identificador de equipe inválido especificado."
 	}
 
 	"TeamBet Placed"
 	{
 		"#format"	"{1:i}"
 		"en"		"You have successfully placed a bet of {1} credits."
+		"pt"		"Você fez com sucesso uma aposta de {1} créditos."
 	}
 
 	"TeamBet Already Placed"
 	{
 		"en"		"You have already placed your bet for the round."
+		"pt"		"Você já fez sua aposta para a rodada."
 	}
 
 	"TeamBet Period Over"
 	{
 		"en"		"The betting period is over for this round."
+		"pt"		"O período de apostas terminou para esta rodada."
 	}
 
 	"Jackpot paused"
 	{
 		"en"		"Jackpot paused."
+		"pt"		"Jackpot pausado."
 	}
 
 	"You can start a new Jackpot in"
 	{
 		"#format"	"{1:s}"
 		"en"		"You can start a new Jacktop in {1}."
+		"pt"		"Você pode iniciar um novo Jacktop em {1}."
 	}
 
 	"You can start a new Jackpot"
 	{
 		"en"		"You can start a new Jacktop"
+		"pt"		"Você pode iniciar um novo Jacktop"
 	}
 
 	"the prize will be drawn in"
 	{
 		"#format"	"{1:s}"
 		"en"		"the prize will be drawn in {1}s"
+		"pt"		"o prêmio será sorteado em {1}s"
 	}
 
 	"Bet Minium"
 	{
 		"#format"	"{1:i}"
 		"en"		"Bet Minimum ({1})"
+		"pt"		"Aposta mínima ({1})"
 	}
 
 	"Bet Maximum"
 	{
 		"#format"	"{1:i}"
 		"en"		"Bet Maximum ({1})"
+		"pt"		"Aposta Máxima ({1})"
 	}
 
 	"Bet Random"
 	{
 		"#format"	"{1:i},{2:i}"
 		"en"		"Bet Random ({1}-{2})"
+		"pt"		"Aposta aleatória ({1}-{2})"
 	}
 
 	"Jackpot: x Credits"
@@ -1528,52 +1759,62 @@
 	"No active Jackpot"
 	{
 		"en"		"No active Jackpot"
+		"pt"		"Sem Jackpot ativo"
 	}
 
 	"No active TeamBet"
 	{
 		"en"		"No team bets have been placed yet"
+		"pt"		"Nenhuma aposta de equipe foi feita ainda"
 	}
 
 	"Tail"
 	{
 		"en"		"Tail"
+		"pt"		"Coroa"
 	}
 
 	"Type in chat !dice"
 	{
 		"en"		"Type in chat !dice <bet> [l/h/#]"
+		"pt"		"Digite no chat !dice <aposta> [l/h/#]"
 	}
 
 	"Your bet"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Your bet: {1} {2}"
+		"pt"		"Sua aposta: {1} {2}"
 	}
 
 	"Low #1-3"
 	{
 		"en"		"Low #1-3"
+		"pt"		"Baixo #1-3"
 	}
 
 	"High #4-6"
 	{
 		"en"		"High #4-6"
+		"pt"		"Alto #4-6"
 	}
 
 	"You won with"
 	{
 		"en"		"You won with"
+		"pt"		"Você ganhou com"
 	}
 
 	"You lost with"
 	{
 		"en"		"You lost with"
+		"pt"		"Você perdeu com"
 	}
 
 	"Bet * Multi = Your Win"
 	{
 		"en"		"Bet * Multi = Your Win"
+		"pt"		"Bet * Multi = Você ganhou"
 	}
 
 	"Mutli = PotCT + PotT / PotWinningTeam"
@@ -1584,26 +1825,31 @@
 	"Low #1-3' = "
 	{
 		"en"		"Low #1-3' = "
+		"pt"		"Baixo #1-3' = "
 	}
 
 	"High #4-6 = "
 	{
 		"en"		"High #4-6 = "
+		"pt"		"Alto #4-6 = "
 	}
 
 	"Win = "
 	{
 		"en"		"Win = "
+		"pt"		"Ganhou = "
 	}
 
 	"Exact #x  = "
 	{
 		"en"		"Exact #x  = "
+		"pt"		"Exato #x  = "
 	}
 
 	"No matching color"
 	{
 		"en"		"No matching color, use: r/red, b/black or g/green"
+		"pt"		"Sem cor correspondente, use: r/red, b/black ou g/green"
 	}
 
 	"Jackpot chances"
@@ -1616,199 +1862,221 @@
 	{
 		"#format"	"{1:i},{2:s},{3:.2f}"
 		"en"		"Your Bet: {1} {2} - Chance: {3}%"
+		"pt"		"Sua aposta: {1} {2} - Chance: {3}%"
 	}
 
 	"in x time"
 	{
 		"#format"	"{1:s}"
 		"en"		"in {1}."
+		"pt"		"em {1}."
 	}
 
 	"You already cashed in"
 	{
 		"#format"	"{1:i},{2:s},{3:.1f},{4:i},{5:s}"
 		"en"		"You already cashed {1} {2} into the jackpot. Current win chance: {3}%% Jackpot: {4} {5}"
+		"pt"		"Você já retirou {1} {2} no jackpot. Chance de ganho atual: {3}%% Jackpot: {4} {5}"
 	}
 
 	"Noone else cashed in"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"Noone else cashed into the Jackpot. You get your {1} {2} back!"
+		"pt"		"Ninguém mais ganhou dinheiro no Jackpot. Você recebeu seu {1} {2} de volta!"
 	}
 
 	"Winner is not in game anymore"
 	{
 		"en"		"Winner is not in game anymore, trying to find a new winner."
+		"pt"		"Vencedor não está mais no jogo, tentando achar um novo ganhador."
 	}
 
 	"Second Winner is not in game anymore"
 	{
 		"en"		"Second winner is also not in game anymore, last try to find a new winner."
+		"pt"		"O segundo vencedor também não está mais no jogo, a última tentativa de encontrar um novo vencedor."
 	}
 
 	"All players disconnect"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"All participating players disconnect, nobody get his {2} back, lol. Jackpot was {1} {2}!"
+		"pt"		"Todos os jogadores participantes se desconectam, ninguém recebe seu {2} de volta, :V. O jackpot foi de {1} {2}!"
 	}
 
 	"Your current winning chance has changed"
 	{
 		"#format"	"{1:.2f}"
 		"en"		"Your current winning chance has changed to {1}%"
+		"pt"		"Sua chance de ganhar atual mudou para {1}%"
 	}
 
 	"You have to spend at least x credits."
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You have to spend at least {1} {2}."
+		"pt"		"Você tem que gastar pelo menos {1} {2}."
 	}
 
 	"You have to spend at least x credits"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You have to spend at least {1} {2}."
+		"pt"		"Você tem que gastar pelo menos {1} {2}."
 	}
 
 	"You can't spend that much credits"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You can't spend that much credits (Max: {1} {2})."
+		"pt"		"Você não pode gastar tantos créditos (Max: {1} {2})."
 	}
 
 	"You won the Jackpot"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You won the Jackpot with {1} {2}!"
+		"pt"		"Você ganhou o Jackpot com {1} {2}!"
 	}
 
 	"Player won the Jackpot"
 	{
 		"#format"	"{1:N},{2:i},{3:s}"
 		"en"		"{1} won the Jackpot with {2} {3}!"
+		"pt"		"{1} ganhou o Jackpot com {2} {3}!"
 	}
 
 	"You won the Jackpot - Fee"
 	{
 		"#format"	"{1:i},{2:s},{3:i},{4:s},{5:i}"
 		"en"		"You won the Jackpot with {1} {2} minus the casino fee of {3} {4} ({5}%)."
+		"pt"		"Você ganhou o Jackpot com {1} {2} menos da taxa do cassino de {3} {4} ({5}%)."
 	}
 
 	"Player opened jackpot"
 	{
 		"#format"	"{1:N},{2:i},{3:s}"
 		"en"		"{1} has opened a jackpot with {2} {3}. Cash-in to grab that money!"
+		"pt"		"{1} abriu um jackpot com {2} {3}. Faça cash-in para pegar esse dinheiro!"
 	}
 
 	"Player added to jackpot"
 	{
 		"#format"	"{1:N},{2:i},{3:s},{4:.2f},{5:i},{6:s}"
 		"en"		"{1} has cashed {2} {3} into the jackpot, his current winning chance is:{4}% (Jackpot: {5} {6})"
+		"pt"		"{1} ganhou {2} {3} no jackpot, sua chance de ganhar atual é:{4}% (Jackpot: {5} {6})"
 	}
 
 	"or use buttons below"
 	{
 		"en"		"or use buttons below"
+		"pt"		"ou use os botões abaixo"
 	}
 
 	"Type in chat !jackpot"
 	{
 		"en"		"Type in chat !jackpot <bet>"
+		"pt"		"Escreva no chat !jackpot <aposta>"
 	}
 
 	"Type in chat !roulette"
 	{
 		"en"		"Type in chat !roulette <bet> [r/b/g]"
+		"pt"		"Escreva no chat !roulette <aposta> [r/b/g]"
 	}
 
 	"Type in chat !coinflip"
 	{
 		"en"		"Type in chat !coinflip <bet> [h/t]"
+		"pt"		"Escreva no chat !coinflip <aposta> [h/t]"
 	}
 
 	"Type in chat !bet"
 	{
 		"en"		"Type in chat !bet <bet> [ct/t]"
+		"pt"		"Escreva no chat !bet <aposta> [ct/t]"
 	}
 
 	"Type in chat !crowns"
 	{
 		"en"		"Type in chat !crowns <bet>"
+		"pt"		"Escreva no chat !crowns <aposta>"
 	}
 
 	"Head"
 	{
 		"en"		"Head"
+		"pt"		"Cara"
 	}
 
 	"Get three on a kind"
 	{
 		"en"		"Get three on a kind"
+		"pt"		"Pegue três em um tipo"
 	}
 
 	"Jetpack Reloaded"
 	{
 		"en"		"Jetpack is reloaded"
+		"pt"		"Jetpack recarregada"
 		"chi"		"喷气背包已重载"
 	}
 
 	"Jetpack Empty"
 	{
 		"en"		"Jetpack is empty"
+		"pt"		"Jetpack está vazia"
 		"chi"		"喷气背包空"
-	}
-
-	"Jihad Failed"
-	{
-		"en"		"Your bomb has failed to explode."
 	}
 
 	"Jihad Failed All"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} jihad bomb has failed to explode."
+		"pt"		"{1} bomba da jihad falhou para explodir."
 	}
 
 	"received Spawn"
 	{
 		"#format"	"{1:s}"
-		"en"		"You'll received {1} on next spawn"
+		"en"		"You'll receive {1} on next spawn"
+		"pt"		"Você receberá {1} no próximo spawn"
 	}
 
 
 	"infinityammo"
 	{
 		"en"		"Infinity Ammo"
+		"pt"		"Munição Infinita"
 		"chi"		"无限弹药"
 	}
 
 	"flashlight"
 	{
 		"en"		"Flashlight"
+		"pt"		"Lanterna"
 		"chi"		"手电筒"
 	}
 
 	"dice"
 	{
 		"en"		"Dice"
+		"pt"		"Dado"
 		"chi"		"骰子"
 	}
 
 	"grenademodel"
 	{
 		"en"		"Grenade model"
+		"pt"		"Modelo de Granada"
 		"chi"		"手雷模型"
-	}
-
-	"grenadetrail"
-	{
-		"en"		"Grenade trail"
-		"chi"		"手雷轨迹"
 	}
 
 	"bullet_impact"
 	{
 		"en"		"Bullet impact"
+		"pt"		"Impacto da bala"
 		"chi"		"子弹撞击"
 	}
 
@@ -1821,29 +2089,34 @@
 	"hitsound"
 	{
 		"en"		"Hitsound"
+		"pt"		"Som de acerto"
 	}
 
 	"command"
 	{
 		"en"		"Player/Server Command"
+		"pt"		"Comando de Jogador/Servidor"
 		"chi"		"玩家/服务器命令"
 	}
 
 	"respawn"
 	{
 		"en"		"Respawn"
+		"pt"		"Renascer"
 		"chi"		"重生"
 	}
 
 	"daily"
 	{
 		"en"		"Daily Bonus"
+		"pt"		"Bônus Diário"
 		"chi"		"日常奖励"
 	}
 
 	"teambet"
 	{
 		"en"		"TeamBet"
+		"pt"		"Equipe de Aposta"
 		"chi"		"团队竞猜"
 	}
 
@@ -1861,6 +2134,7 @@
 	"roulette"
 	{
 		"en"		"Roulette"
+		"pt"		"Roleta"
 	}
 
 	"instabomb"
@@ -1876,12 +2150,14 @@
 	"weaponmodel"
 	{
 		"en"		"Weapon Model"
+		"pt"		"Arma Customizada"
 		"chi"		"武器模型"
 	}
 
 	"attachment"
 	{
 		"en"		"Attachment"
+		"pt"		"Acessório"
 		"chi"		"附件"
 	}
 
@@ -1918,6 +2194,7 @@
 	"froggyjump"
 	{
 		"en"		"Froggy Jump"
+		"pt"		"Pulo de Sapo"
 		"chi"		"蛙跳"
 	}
 
@@ -1930,11 +2207,13 @@
 	"mvp_sound"
 	{
 		"en"		"MVP anthems"
+		"pt"		"Música de destaque"
 	}
 
 	"hunterjump"
 	{
 		"en"		"Hunter Jump"
+		"pt"		"Pulo de Caçador"
 		"chi"		"Hunter 跳"
 	}
 
@@ -1947,6 +2226,7 @@
 	"bulletsparks"
 	{
 		"en"		"Bullet Sparks"
+		"pt"		"Faíscas de bala"
 	}
 
 	"painter"
@@ -1977,16 +2257,19 @@
 	"nofalldamage"
 	{
 		"en"		"No Fall Damage"
+		"pt"		"Sem dano de queda"
 	}
 
 	"mirror"
 	{
 		"en"		"mirror"
+		"pt"		"espelho"
 	}
 
 	"thirdperson"
 	{
 		"en"		"thirdperson"
+		"pt"		"terceira pessoa"
 	}
 
 	"noselfdamage"
@@ -1997,36 +2280,43 @@
 	"particle"
 	{
 		"en"		"Particles"
+		"pt"		"Partículas"
 	}
 
 	"noduckdelay"
 	{
 		"en"		"No Duck delay"
+		"pt"		"Agachamento sem pausa"
 	}
 
 	"nearest"
 	{
 		"en"		"Nearest"
+		"pt"		"Mais próximo"
 	}
 
 	"direction"
 	{
 		"en"		"Direction"
+		"pt"		"Direção"
 	}
 
 	"distance"
 	{
 		"en"		"distance"
+		"pt"		"distância"
 	}
 
 	"connect"
 	{
 		"en"		"Connect Message"
+		"pt"		"Mensagem ao Conectar"
 	}
 
 	"casino"
 	{
 		"en"		"Casino"
+		"pt"		"Cassino"
 	}
 
 	"emote"
@@ -2037,6 +2327,7 @@
 	"Item Voucher"
 	{
 		"en"		"Make Voucher from item"
+		"pt"		"Fazer voucher do item"
 		"chi"		"给物品制作代金券"
 	}
 
@@ -2044,6 +2335,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
 		"en"		"You have convert {green}{1} ({2}){default} to Voucher {purple}{3}{default}."
+		"pt"		"Você converteu {green}{1} ({2}){default} em Voucher {purple}{3}{default}."
 		"chi"		"你已转换 {green}{1} ({2}){default} 为代金券 {purple}{3}{default}。"
 	}
 
@@ -2051,6 +2343,7 @@
 	{
 		"#format"	"{1:s},{2:i},{3:s}"
 		"en"		"Created new voucher {purple}{1} {default}with value {yellow}{2} {default}{3}"
+		"pt"		"Criado novo voucher {purple}{1} {default}com valor {yellow}{2} {default}{3}"
 		"chi"		"创造了新的代金券 {purple}{1} {default} 价值 {yellow}{2} {default}{3}"
 	}
 
@@ -2058,12 +2351,14 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Voucher Code: {1}"
+		"pt"		"Código do Voucher: {1}"
 		"chi"		"代金券代码: {1}"
 	}
 
 	"Package Voucher"
 	{
 		"en"		"Make Voucher from package"
+		"pt"		"Fazer Voucher do pacote"
 		"chi"		"从包制作代金券"
 	}
 
@@ -2071,6 +2366,7 @@
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"Are you sure you want convert {1} ({2}) to coupon?\nWARNING: If item in voucher expires before redeemed.\nThis voucher will be expired."
+		"pt"		"Tem certeza de que deseja converter {1} ({2}) em cupom?\nAVISO: Se o item no voucher expirar antes de ser resgatado.\nEste voucher expirará."
 		"chi"		"你确定要把 {1} ({2}) 转换为代金券吗？\n警告：假如在物品在兑换之前过期。\n此代金券将过期。"
 	}
 
@@ -2083,108 +2379,126 @@
 	"Redeem Voucher"
 	{
 		"en"		"Redeem a Voucher"
+		"pt"		"Resgatar um Voucher"
 		"chi"		"兑换一个代金券"
 	}
 
 	"Check Voucher"
 	{
 		"en"		"Check a Voucher"
+		"pt"		"Varificar um Voucher"
 		"chi"		"检查一个代金券"
 	}
 
 	"Purchase Voucher"
 	{
 		"en"		"Purchase a Voucher"
+		"pt"		"Comprar um Voucher"
 		"chi"		"购买一个代金券"
 	}
 
 	"Create Voucher"
 	{
 		"en"		"Create a Voucher"
+		"pt"		"Criar um Voucher"
 		"chi"		"创造一个代金券"
 	}
 
 	"SQL Cooldown"
 	{
 		"en"		"For security reasons you can not submit multiple requests in a short period."
+		"pt"		"Por motivos de segurança você não pode enviar várias solicitações em um curto período."
 		"chi"		"因为安全原因你不能短期提交多个请求。"
 	}
 
 	"Limited"
 	{
 		"en"		"Limited - one player"
+		"pt"		"Limitado - um jogador"
 		"chi"		"有限制的 - 单个玩家"
 	}
 
 	"Unlimited"
 	{
 		"en"		"Unlimited - several players"
+		"pt"		"Sem limite - vários jogadores"
 		"chi"		"无限制的 - 多个玩家"
 	}
 
 	"To late chat input"
 	{
 		"en"		"Your text input has not been done in the given time"
+		"pt"		"Sua entrada de texto não foi feita no tempo determinado"
 		"chi"		"你的文本输入没有在所给时间内完成"
 	}
 
 	"Start again from begin"
 	{
 		"en"		"Please start again from begin"
+		"pt"		"Por favor, comece novamente"
 		"chi"		"请从头再次开始"
 	}
 
 	"Voucher accepted"
 	{
 		"en"		"The Voucher was {green}accepted"
+		"pt"		"O Voucher foi {green}aceito"
 		"chi"		"代金券被{green}接受"
 	}
 
 	"Voucher accepted Panel"
 	{
 		"en"		"The Voucher was accepted"
+		"pt"		"O Voucher foi aceito"
 		"chi"		"代金券被接受"
 	}
 
 	"Enter number of vouchers"
 	{
 		"en"		"Please enter the number of voucher to create in the chat!"
+		"pt"		"Por favor, digite o número do voucher para criar no chat!"
 		"chi"		"请聊天输入要创建的代金券的数字！"
 	}
 
 	"Enter value of vouchers"
 	{
 		"en"		"Please enter the value of voucher to purchase in the chat!"
+		"pt"		"Por favor, insira o valor do voucher para comprar no chat!"
 		"chi"		"请聊天输入代金券的价值！"
 	}
 
 	"Enter minimum value"
 	{
-		"en"		"Please enter the minium value of Credits in the chat!"
+		"en"		"Please enter the minimum value of Credits in the chat!"
+		"pt"		"Por favor, insira o valor mínimo de Créditos no chat!"
 		"chi"		"请聊天输入点数的最小值！"
 	}
 
 	"Enter custom amount"
 	{
 		"en"		"Please enter your custom amount in the chat!"
+		"pt"		"Por favor, insira seu valor personalizado no chat!"
 		"chi"		"请聊天输入你的自定义数量！"
 	}
 
 	"Enter maximum value"
 	{
 		"en"		"Please enter the maximum value of Credits in the chat!"
+		"pt"		"Por favor, insira o valor máximo de Créditos no chat!"
 		"chi"		"请聊天输入点数的最大值！"
 	}
 
 	"Enter voucher code"
 	{
 		"en"		"Please enter your voucher code in the chat!"
+		"pt"		"Por favor, insira o código do seu voucher no chat!"
 		"chi"		"请聊天输入你的代金券的代码！"
 	}
 
 	"Succesfully purchased voucher"
 	{
 		"en"		"You successfully purchased a voucher"
+		"pt"		"Você comprou um voucher com sucesso"
 		"chi"		"你成功购买了一个代金券"
 	}
 
@@ -2192,6 +2506,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"The voucher has the value of {1} {2}"
+		"pt"		"O voucher tem o valor de {1} {2}"
 		"chi"		"此代金券有价值 {1} {2}"
 	}
 
@@ -2199,12 +2514,14 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"The voucher includes {1} ({2})"
+		"pt"		"O voucher inclui {1} ({2})"
 		"chi"		"此代金券含有 {1} ({2})"
 	}
 
 	"Voucher in chat and console"
 	{
 		"en"		"You can find the voucher code also in chat and console"
+		"pt"		"Você pode encontrar o código do voucher no chat e no console"
 		"chi"		"你可以在聊天栏和控制到找到代金券代码"
 	}
 
@@ -2212,6 +2529,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"The entered voucher code has expired on {1}"
+		"pt"		"O código do voucher inserido expirou em {1}"
 		"chi"		"输入的代金券代码已在 {1} 过期"
 	}
 
@@ -2219,18 +2537,21 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"The entered voucher code was already redeemed on {1}"
+		"pt"		"O código do voucher inserido já foi resgatado em {1}"
 		"chi"		"输入的代金券代码已在 {1} 被兑换"
 	}
 
 	"You already redeemed Voucher"
 	{
 		"en"		"You already redeemed the entered voucher code"
+		"pt"		"Você já resgatou o código do voucher inserido"
 		"chi"		"你已兑换了输入的代金券代码"
 	}
 
 	"You already own Voucher item"
 	{
 		"en"		"You already own the entered voucher item"
+		"pt"		"Você já possui o item de voucher inserido"
 		"chi"		"你已获得了代金券所含的物品"
 	}
 
@@ -2238,24 +2559,28 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"Creating voucher failed - Contact an admin with following timestamp: {1}"
+		"pt"		"Falha na criação do voucher - Entre em contato com um administrador com o seguinte carimbo de data/hora: {1}"
 		"chi"		"创造代金券失败 - 附带后面的时间戳联系管理员：{1}"
 	}
 
 	"and is unlimited"
 	{
 		"en"		"and is unlimited"
+		"pt"		"e é ilimitado"
 		"chi"		"并且是无限制的"
 	}
 
 	"and is limited"
 	{
 		"en"		"and is limited"
+		"pt"		"e é limitado"
 		"chi"		"并且是有限制的"
 	}
 
 	"Voucher valid"
 	{
 		"en"		"The voucher code is valid"
+		"pt"		"O código do voucher é válido"
 		"chi"		"代金券代码有效"
 	}
 
@@ -2263,6 +2588,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"The entered voucher code '{1}' is not valid!"
+		"pt"		"O código de voucher inserido '{1}' não é válido!"
 		"chi"		"输入的代金券代码 '{1}' 是无效的！"
 	}
 
@@ -2270,24 +2596,28 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"This voucher expire on {1}"
+		"pt"		"Este voucher expira em {1}"
 		"chi"		"代金券过期于 {1}"
 	}
 
 	"Wrong voucher code format"
 	{
 		"en"		"The Voucher code has wrong format. must be XXXXX-XXXXX-XXXXX"
+		"pt"		"O código do Voucher está no formato errado. deve ser XXXXX-XXXXX-XXXXX"
 		"chi"		"代金券代码格式错误。必须是 XXXXX-XXXXX-XXXXX"
 	}
 
 	"Value less than 1"
 	{
 		"en"		"You can't use a value less than 1."
+		"pt"		"Você não pode usar um valor menor que 1."
 		"chi"		"你不能使用小于1的值。"
 	}
 
 	"Not enough Credits"
 	{
 		"en"		"You don't have enough credits"
+		"pt"		"Você não tem créditos suficientes"
 		"chi"		"你没有足够的点数"
 	}
 
@@ -2295,6 +2625,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"You can't use a smaller value than your min value ({1})"
+		"pt"		"Você não pode usar um valor menor que seu valor mínimo ({1})"
 		"chi"		"你不能使用一个比你的最小值({1})还小的值"
 	}
 
@@ -2302,6 +2633,7 @@
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"You received a {green}{1} {yellow}({2})."
+		"pt"		"Você recebeu um {green}{1} {yellow}({2})."
 		"chi"		"你获得了一个 {green}{1} {yellow}({2})."
 	}
 
@@ -2309,6 +2641,7 @@
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"You received a {1} ({2})."
+		"pt"		"Você recebeu um {1} ({2})."
 		"chi"		"你收到了一个 {1} ({2})."
 	}
 
@@ -2321,18 +2654,21 @@
 	"Top Most Items"
 	{
 		"en"		"Top Most Items"
+		"pt"		"Top Mais Items"
 		"chi"		"物品排行榜"
 	}
 
 	"Top Inv Worth"
 	{
 		"en"		"Top Inventory Worth"
+		"pt"		"Top Valor de Inventário"
 		"chi"		"库存价值排行榜"
 	}
 
 	"Top Credits Inv Worth"
 	{
 		"en"		"Top Credits + Inv Worth"
+		"pt"		"Top Créditos + Valor de Inv"
 		"chi"		"积分 + 库存价值 排行榜"
 	}
 
@@ -2340,25 +2676,28 @@
 	{
 		"#format"	"{1:i},{2:i},{3:i}"
 		"en"		"{1} hour(s) {2} minute(s) and {3} second(s)"
+		"pt"		"{1} hora(s) {2} minuto(s) e {3} segundo(s)"
 	}
 
 	"x minutes, x seconds toplist"
 	{
 		"#format"	"{1:i},{2:i}"
 		"en"		"{1} minute(s) and {2} second(s)"
-		
+		"pt"		"{1} minuto(s) e {2} segundo(s)"
 	}
 
 	"x seconds toplist"
 	{
 		"#format"	"{1:i}"
 		"en"		"{1} second(s)"
+		"pt"		"{1} segundo(s)"
 	}
 	
 	"last update"
 	{
 		"#format"	"{1:s}"
 		"en"		"last update {1} ago"
+		"pt"		"ultima atualização há {1}"
 	}
 
 	"items"
@@ -2375,12 +2714,14 @@
 	"creditstoplist"
 	{
 		"en"		"credits"
+		"pt"		"créditos"
 	}
 
 	"You earned x Credits for"
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You earned {1} {2} for "
+		"pt"		"Você ganhou {1} {2} por "
 		"chi"		"你赚得了 {1} {2} 为。 "
 	}
 
@@ -2388,6 +2729,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"playing on our server {1} days in a row"
+		"pt"		"jogando em nosso servidor por {1} dias seguidos"
 		"chi"		"连续玩我们的服务器 {1} 天"
 	}
 
@@ -2395,6 +2737,7 @@
 	{
 		"#format"	"{1:i},{2:s},{3:s}"
 		"en"		"{1} {2} for '{3}'"
+		"pt"		"{1} {2} por '{3}'"
 		"chi"		"{1} {2} 为 '{3}'"
 	}
 
@@ -2402,13 +2745,14 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You earned {1} {2} this round"
+		"pt"		"Você ganhou {1} {2} nesta rodada"
 		"chi"		"你这回合赚得 {1} {2}"
 	}
 
 	"Total Credits"
 	{
 		"#format"	"{1:i},{2:s}"
-		"en"		"Total：{1} {2}"
+		"en"		"Total: {1} {2}"
 		"chi"		"总计：{1} {2}"
 	}
 
@@ -2416,6 +2760,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:i},{4:s}"
 		"en"		"You won, but already own {1} ({2}). Item was sold for {3} {4}"
+		"pt"		"Você ganhou, mas já possui {1} ({2}). O item foi vendido por {3} {4}"
 		"chi"		"你赢了，但已经拥有{1} ({2})。物品被卖出得{3} {4}"
 	}
 
@@ -2423,12 +2768,14 @@
 	{
 		"#format"	"{1:s},{2:s},{3:i},{4:s}"
 		"en"		"You already own {green}{1} ({2}). {default}You are funded back {yellow}{3} {lime}{4}"
+		"pt"		"Você já possui {green}{1} ({2}). {default}Você foi reembolsado {yellow}{3} {lime}{4}"
 		"chi"		"你已有{green}{1} ({2})。{default}你被退款回 {yellow}{3} {lime}{4}"
 	}
 
 	"Error occured, no price back. Inform admin log"
 	{
 		"en"		"Error occured on getting price back. Please contact admin"
+		"pt"		"Ocorreu um erro ao recuperar o preço. Entre em contato com o administrador"
 		"chi"		"收回价格回时发生错误。请联系管理员。"
 	}
 
@@ -2436,6 +2783,7 @@
 	{
 		"#format"	"{1:s},{2:t}"
 		"en"		"You won a {1} ({2})!"
+		"pt"		"Você ganhou um {1} ({2})!"
 		"chi"		"你赢得了{1} ({2})"
 	}
 
@@ -2443,6 +2791,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:t}"
 		"en"		"{green}{1} {default}opened a container and found {red}{2} ({3})!"
+		"pt"		"{green}{1} {default}abriu um contêiner e encontrou {red}{2} ({3})!"
 		"chi"		"{green}{1} {default}打开了一个箱子并发现了 {red}{2} ({3})！"
 	}
 
@@ -2450,24 +2799,28 @@
 	{
 		"#format"	"{1:s},{2:s},{3:t}"
 		"en"		"{green}{1} {default}opened a container and found {yellow}{2} ({3})!"
+		"pt"		"{green}{1} {default}abriu um contêiner e encontrou {yellow}{2} ({3})!"
 		"chi"		"{green}{1} {default}打开了一个箱子并发现了 {yellow}{2} ({3})！"
 	}
 
 	"You haven't opend the box in given time"
 	{
-		"en"		"You haven't opend the box in given time. The lootbox is back in your inventory"
+		"en"		"You haven't opened the box in given time. The lootbox is back in your inventory"
+		"pt"		"Você não abriu a caixa em determinado momento. A caixa de saque está de volta ao seu inventário"
 		"chi"		"你未能在所给时间内打开箱子。战利品箱已返回你的库存"
 	}
 
 	"Damage the crate to open"
 	{
 		"en"		"{darkred}Damage{default} the crate to {green}open!"
+		"pt"		"{darkred}Bata{default} na caixa para {green}abrir!"
 		"chi"		"{darkred}伤害{default}箱子来{green}打开！"
 	}
 
 	"You dont have permission"
 	{
 		"en" "You don't have permission to access this."
+		"pt" "Você não tem permissão para acessar isso."
 		"hu" "Nincs jogosultságod ehhez."
 		"chi" "发生错误,无权使用"
 	}
@@ -2476,12 +2829,14 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"Spam Protection. Please wait {1} seconds."
+		"pt"		"Proteção contra spam. Aguarde {1} segundos."
 		"chi"		"刷屏保护。请等待 {1} 秒。"
 	}
 
 	"Inventory hasnt been fetched"
 	{
 		"en" "Please wait. Your inventory hasn't been fetched yet."
+		"pt" "Por favor, espere. Seu inventário ainda não foi carregado."
 		"hu" "Várj egy kicsit. A tárgyaid még nem töltöttek be."
 		"chi" "请等待 数据可能未连接成功,或服务器数据正在维护,如果不是全部玩家,建议尝试重新加入服务器!."
 	}
@@ -2506,6 +2861,7 @@
 	{
 		"#format" "{1:s}"
 		"en" "{1} (Choose a plan)"
+		"pt" "{1} (Escolha um plano)"
 		"hu" "{1} (Válassz időszakot)"
 		"chi" "{1} (多选择)"
 	}
@@ -2514,6 +2870,7 @@
 	{
 		"#format" "{1:s}"
 		"en" "{1} [EQUIPPED]"
+		"pt" "{1} [EQUIPADO]"
 		"hu" "{1} [FELVÉVE]"
 		"chi" "{1} [装备中]"
 	}
@@ -2521,6 +2878,7 @@
 	"Item Equip"
 	{
 		"en" "Equip this item"
+		"pt" "Usar este item"
 		"hu" "Tárgy felvétele"
 		"chi" "装备这个物品"
 	}
@@ -2528,6 +2886,7 @@
 	"Item Unequip"
 	{
 		"en" "Unequip"
+		"pt" "Tirar este item"
 		"hu" "Tárgy levétele"
 		"chi" "取下这个物品"
 	}
@@ -2535,6 +2894,7 @@
 	"Item Use"
 	{
 		"en" "Use this item"
+		"pt" "Usar este item"
 		"hu" "Tárgy használata"
 		"chi" "使用这个物品"
 	}
@@ -2543,6 +2903,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "Sell for {1}"
+		"pt" "Vendeu por {1}"
 		"hu" "Eladás {1} kreditért"
 		"chi" "给系统回收 {1}"
 	}
@@ -2550,12 +2911,14 @@
 	"Item Gift"
 	{
 		"en" "gift this item"
+		"pt" "presenteou esse item"
 		"chi" "赠送这个物品"
 	}
 
 	"Title Store"
 	{
 		"en" "Store Menu"
+		"pt" "Menu da Loja"
 		"hu" "Bolt Menü"
 		"chi" "商店菜单"
 	}
@@ -2564,6 +2927,7 @@
 	{
 		"#format" "{1:i}"
 		"en" "Credits: {1}"
+		"pt" "Créditos: {1}"
 		"hu" "Kreditek: {1}"
 		"chi" "积分：{1}"
 	}
@@ -2572,6 +2936,7 @@
 	{
 		"#format" "{1:d},{2:d}"
 		"en" "Expires in {1}d {2}h"
+		"pt" "Expira em {1}d {2}h"
 		"hu" "Lejár {1}n {2}ó múlva"
 		"chi" "将在 {1}天 {2}小时 到期"
 	}
@@ -2579,6 +2944,7 @@
 	"Title Gift"
 	{
 		"en" "Choose a player to send gift to"
+		"pt" "Escohla um jogador para presentear"
 		"hu" "Játékos kiválasztása ajándékozáshoz"
 		"chi" "选择玩家赠送"
 	}
@@ -2586,6 +2952,7 @@
 	"Gift Player Left"
 	{
 		"en" "Selected player has already left the game."
+		"pt" "O jogador selecionado já saiu do jogo."
 		"hu" "A kiválasztott játékos már elhagyta a játékot."
 		"chi" "选择的玩家当前状态不在游戏!."
 	}
@@ -2593,6 +2960,7 @@
 	"Gift No Players"
 	{
 		"en" "There's noone you can gift this item to."
+		"pt" "Não há ninguém para quem você possa presentear este item."
 		"hu" "Nincs senki akinek odatudnád adni ezt a tárgyat."
 		"chi" "似乎没有人可以获得这个,可能对方已经拥有."
 	}
@@ -2601,6 +2969,7 @@
 	{
 		"#format" "{1:s},{2:t}"
 		"en" "You have bought a {purple}{1} {green}{2}{default}."
+		"pt" "Você comprou um {purple}{1} {green}{2}{default}."
 		"hu" "A következőt vetted: {purple}{1} {green}{2}{default}."
 		"chi" "你购买了1个 {purple}{1} {green}{2}{default}."
 	}
@@ -2609,6 +2978,7 @@
 	{
 		"#format" "{1:s},{2:t}"
 		"en" "You have sold a {purple}{1} {green}{2}{default}."
+		"pt" "Você vendeu um {purple}{1} {green}{2}{default}."
 		"hu" "A következőt adtad el: {purple}{1} {green}{2}{default}."
 		"chi" "你出售了 {purple}{1} {green}{2}{default}."
 	}
@@ -2617,6 +2987,7 @@
 	{
 		"#format" "{1:s},{2:s},{3:t}"
 		"en" "You have sent {green}{1}{default} a {purple}{2} {green}{3}{default} as a gift."
+		"pt" "Você enviou {green}{1}{default} um {purple}{2} {green}{3}{default} como presente."
 		"hu" "A következőt küldted: {purple}{2} {green}{3}{default} neki: {green}{1}{default}."
 		"chi" "你赠送了 {green}{1}{default} 个 {purple}{2} {green}{3}{default}."
 	}
@@ -2625,6 +2996,7 @@
 	{
 		"#format" "{1:s},{2:s},{3:t}"
 		"en" "{green}{1}{default} has sent you a {purple}{2} {green}{3}{default} as a gift."
+		"pt" "{green}{1}{default} enviou a você um {purple}{2} {green}{3}{default} como presente."
 		"hu" "{green}{1}{default} a következőt küldte neked: {purple}{2} {green}{3}{default}."
 		"chi" "{green}{1}{default} 赠送给你 {purple}{2} {green}{3}{default}."
 	}
@@ -2632,6 +3004,7 @@
 	"Credit Gift Disabled"
 	{
 		"en" "Credit gifting is disabled on this server."
+		"pt" "Presentear créditos está desabilitada neste servidor."
 		"hu" "A szerveren a kreditek ajándékozása ki van kapcsolva."
 		"chi" "当前无法使用积分赠送."
 	}
@@ -2639,6 +3012,7 @@
 	"Credit Invalid Amount"
 	{
 		"en" "Invalid amount of credits entered."
+		"pt" "Quantidade inválida de créditos inseridos."
 		"hu" "Hibás összeget adtál meg."
 		"chi" "错误的分数值."
 	}
@@ -2646,6 +3020,7 @@
 	"Credit Not Enough"
 	{
 		"en" "You don't have enough credits to buy this."
+		"pt" "Você não tem créditos suficientes para comprar isso."
 		"hu" "Nincs elég kredited ehhez."
 		"chi" "你没有足够的积分购买这个"
 	}
@@ -2653,6 +3028,7 @@
 	"Credit Too Many Matches"
 	{
 		"en" "More than one client were found."
+		"pt" "Mais de um client foi encontrado."
 		"hu" "Több mint egy játékos van ilyen névvel."
 		"chi" "相同客户端具有多个."
 	}
@@ -2660,6 +3036,7 @@
 	"Credit No Match"
 	{
 		"en" "No player was found."
+		"pt" "Nenhum jogador foi encontrado."
 		"hu" "Nincs ilyen játékos."
 		"chi" "未找到玩家."
 	}
@@ -2668,6 +3045,7 @@
 	{
 		"#format" "{1:d},{2:s}"
 		"en" "You have sent {green}{1}{default} credits to {green}{2}{default}."
+		"pt" "Você enviou {green}{1}{default} créditos para {green}{2}{default}."
 		"hu" "{green}{1}{default} kreditet küldtél neki: {green}{2}{default}."
 		"chi" "你已经发送 {green}{1}{default} credits积分给 {green}{2}{default}."
 	}
@@ -2676,6 +3054,7 @@
 	{
 		"#format" "{1:d},{2:s}"
 		"en" "{green}{2}{default} has sent you {green}{1}{default} credits."
+		"pt" "{green}{2}{default} enviou a você {green}{1}{default} créditos."
 		"hu" "{green}{2}{default} {green}{1}{default} kreditet küldött neked."
 		"chi" "{green}{2}{default} 给了你 {green}{1}{default} credits."
 	}
@@ -2684,6 +3063,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "Sell this package for {1}"
+		"pt" "Vender este pacote por {1}"
 		"hu" "Csomag eladása {1} kreditért"
 		"chi" "出售这个组合包 {1}"
 	}
@@ -2691,19 +3071,22 @@
 	"Package Gift"
 	{
 		"en" "Gift this package"
+		"pt" "Presentear este pacote"
 		"hu" "Csomag elajándékozása"
 		"chi" "赠送这个组合包"
 	}
 
 	"Player Skin module disabled"
 	{
-		"en"	"Store Player Skin module is currently temporary disabled."
+		"en"	"Store Player Skin module is currently temporarily disabled."
+		"pt"	"O módulo Store Player Skin está temporariamente desativado."
 		"hu"	"A Store Játékos Skin modulja jelenleg kivan kapcsolva."
 	}
 
 	"PlayerSkins Settings Changed"
 	{
 		"en" "Your new settings will be applied on next spawn."
+		"pt" "Suas novas configurações serão aplicadas no próximo spawn."
 		"hu" "Az új beállításaid a következő élettől fognak működni."
 		"chi" "您的新设置将在下个回合生效或当你重生."
 	}
@@ -2711,6 +3094,7 @@
 	"Confirm_Yes"
 	{
 		"en" "Yes"
+		"pt" "Sim"
 		"hu" "Igen"
 		"chi" "Yes-是的,我确认!"
 	}
@@ -2718,6 +3102,7 @@
 	"Confirm_No"
 	{
 		"en" "No"
+		"pt" "Não"
 		"hu" "Nem"
 		"chi" "No-不,返回!!"
 	}
@@ -2726,6 +3111,7 @@
 	{
 		"#format" "{1:s},{2:t}"
 		"en" "Are you sure you want to buy {1} {2}?"
+		"pt" "Tem certeza de que deseja comprar {1} {2}?"
 		"hu" "Biztosan meg akarod venni a következőt: {1} {2}?"
 		"chi" "购买确认 {1} {2}?"
 	}
@@ -2734,6 +3120,7 @@
 	{
 		"#format" "{1:s},{2:t},{3:d}"
 		"en" "Are you sure you want to sell {1} {2} for {3}?"
+		"pt" "Tem certeza de que deseja vender {1} {2} por {3}?"
 		"hu" "Biztosan el akarod adni a következőt: {1} {2}?"
 		"chi" "你确定你要出售 {1} {2} for {3}?"
 	}
@@ -2742,6 +3129,7 @@
 	{
 		"#format" "{1:s},{2:t},{3:s}"
 		"en" "Are you sure you want to gift {1} {2} to {3}?"
+		"pt" "Tem certeza que deseja presentear {1} {2} para {3}?"
 		"hu" "Biztosan el akarod ajándékozni a következőt: {1} {2} neki: {3}?"
 		"chi" "你确定你要赠送 {1} {2} 给 {3}?"
 	}
@@ -2750,6 +3138,7 @@
 	{
 		"#format" "{1:s},{2:t}"
 		"en" "Are you sure you want to drop {1} {2} as a gift?"
+		"pt" "Tem certeza de que deseja dropar {1} {2} como presente?"
 		"hu" "Biztosan el akarod ajándékozni a következőt: {1} {2}?"
 		"chi" "你确定你要丢弃 {1} {2} 在地上?"
 	}
@@ -2757,6 +3146,7 @@
 	"Override Enabled"
 	{
 		"en" "Your current skin doesn't support hats. Your skin will be changed."
+		"pt" "Sua skin atual não suporta chapéus. Sua skin será alterada."
 		"hu" "A jelenlegi skined nem támogatja a sapkákat. A skined megváltoztatjuk, hogy tudd viselni a sapkád."
 		"chi" "你的皮肤不支持装饰. 你的皮肤会被自动变化."
 	}
@@ -2764,6 +3154,7 @@
 	"Override Disabled"
 	{
 		"en" "Your skin doesn't support hats. Your equipped hat will be disabled."
+		"pt" "Sua skin não suporta chapéus. Seu chapéu equipado será desativado."
 		"hu" "A jelenlegi skined nem támogatja a sapkákat. A sapkád nem tudod felvenni."
 		"chi" "你的皮肤不支持装饰,你的帽子被自动禁用."
 	}
@@ -2772,6 +3163,7 @@
 	{
 		"#format" "{1:s}{2:d}"
 		"en" "{1} has been given {2} credits."
+		"pt" "{1} recebeu {2} créditos."
 		"hu" "{1} {2} kreditet kapott."
 		"chi" "{1} 获得 {2} credits."
 	}
@@ -2780,6 +3172,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "Your bet was successful. You won {1} credits."
+		"pt" "Sua aposta foi bem-sucedida. Você ganhou {1} créditos."
 		"hu" "Sikeres volt a fogadásod. Nyertél {1} kreditet."
 		"chi" "你的Bet 为你赢得了 {1} credits."
 	}
@@ -2788,6 +3181,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "You lost {1} credits on the bet."
+		"pt" "Você perdeu {1} créditos na aposta."
 		"hu" "{1} kreditet vesztettél a fogadáson."
 		"chi" "你失去了 {1} credits 因为Bet."
 	}
@@ -2795,6 +3189,7 @@
 	"Betting Invalid Team"
 	{
 		"en" "Invalid team identifier specified."
+		"pt" "Identificador de equipe especificado é inválido."
 		"hu" "Helytelen csapat azonosító."
 		"chi" "无效的组或队伍指定."
 	}
@@ -2803,6 +3198,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "You have successfully placed a bet of {1} credits."
+		"pt" "Você fez uma aposta de {1} créditos com sucesso."
 		"hu" "Sikeresen fogadtál {1} kredit értékben."
 		"chi" "你成功放置Bet {1} credits."
 	}
@@ -2810,6 +3206,7 @@
 	"Betting Already Placed"
 	{
 		"en" "You have already placed your bet for the round."
+		"pt" "Você já fez sua aposta para a rodada."
 		"hu" "Ebben a körben már fogadtál."
 		"chi" "你已经成功放置了Bet了!"
 	}
@@ -2817,6 +3214,7 @@
 	"Betting Period Over"
 	{
 		"en" "The betting period is over for this round."
+		"pt" "O período de apostas terminou para esta rodada."
 		"hu" "Ebben a körben már nem fogadhatsz."
 		"chi" "本轮下注已经结束..."
 	}
@@ -2825,6 +3223,7 @@
 	{
 		"#format" "{1:s}"
 		"en" "{1} has been resetted."
+		"pt" "{1} foi resetado."
 		"hu" "{1} nullázva lett."
 		"chi" "{1} 已被重置."
 	}
@@ -2833,6 +3232,7 @@
 	{
 		"#format" "{1:s},{2:d}"
 		"en" "{green}{1}{default} has {green}{2}{default} credits."
+		"pt" "{green}{1}{default} tem {green}{2}{default} créditos."
 		"hu" "{green}{1}{default} {green}{2}{default} kredittel rendelkezik."
 		"chi" "{green}{1}{default} 当前拥有 {green}{2}{default} credits."
 	}
@@ -2841,6 +3241,7 @@
 	{
 		"#format" "{1:d},{2:s}"
 		"en" "You earned {green}{1}{default} credits for killing {green}{2}{default}."
+		"pt" "Você ganhou {green}{1}{default} créditos por matar {green}{2}{default}."
 		"hu" "{green}{2}{default} megölésével {green}{1}{default} kreditet szereztél."
 		"chi" "你赚得 {green}{1}{default} Credits积分 击杀玩家 {green}{2}{default}."
 	}
@@ -2849,6 +3250,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "You earned {green}{1}{default} credits for playing on the server."
+		"pt" "Você ganhou {green}{1}{default} créditos por jogar no servidor."
 		"hu" "{green}{1}{default} kreditet szereztél az itt töltött időért."
 		"chi" "你获得 {green}{1}{default} credits积分 来自服务器."
 	}
@@ -2856,6 +3258,7 @@
 	"Drop Gift"
 	{
 		"en" "Drop as gift"
+		"pt" "Dropar como presente"
 		"hu" "Ajándékcsomagként eldobás"
 		"chi" "丢在地上,只有别人可以拾取"
 	}
@@ -2864,6 +3267,7 @@
 	{
 		"#format" "{1:s},{2:t}"
 		"en" "You picked up a {purple}{1} {green}{2}{default}."
+		"pt" "Você pegou um {purple}{1} {green}{2}{default}."
 		"hu" "A következőt vetted fel {purple}{1} {green}{2}{default}."
 		"chi" "你拾取礼物 {purple}{1} {green}{2}{default}."
 	}
@@ -2872,6 +3276,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "You picked up {green}{1} credits{default}."
+		"pt" "Você pegou {green}{1} créditos{default}."
 		"hu" "{green}{1} kreditet{default} vettél fel."
 		"chi" "你拾取 {green}{1} credits{default}."
 	}
@@ -2880,6 +3285,7 @@
 	{
 		"#format" "{1:d}"
 		"en" "You dropped {green}{1} credits{default} as a gift."
+		"pt" "Você dropou {green}{1} créditos{default} como presente."
 		"hu" "{green}{1} kreditet{default} ajándékoztál el."
 		"chi" "你丢弃 {green}{1} credits{default}."
 	}
@@ -2887,6 +3293,7 @@
 	"Must be Alive"
 	{
 		"en" "You must be alive to use this."
+		"pt" "Você deve estar vivo para usar isso."
 		"hu" "Ez a parancs halottként nem használható."
 		"chi" "你必须活着才能使用."
 	}
@@ -2894,6 +3301,7 @@
 	"TF Wrong Class"
 	{
 		"en" "This item was meant to be used with a different player class."
+		"pt" "Este item foi feito para ser usado com uma classe de jogador diferente."
 		"hu" "Ez a tárgy egy másik kaszthoz való."
 		"chi" "此物品是给不同的玩家兵种使用的。"
 	}
@@ -2901,6 +3309,7 @@
 	"Help_Back"
 	{
 		"en" "Back"
+		"pt" "Voltar"
 		"hu" "Back"
 		"chi" "返回-Back"
 	}
@@ -2908,6 +3317,7 @@
 	"Help_Exit"
 	{
 		"en" "Exit"
+		"pt" "Sair"
 		"hu" "Exit"
 		"chi" "退出-Exit"
 	}
@@ -2916,6 +3326,7 @@
 	{
 		"#format" "{1:.1f}"
 		"en" "[Jetpack] Fuel: {1}"
+		"pt" "[Jetpack] Combustível: {1}"
 		"hu" "[Jetpack] Üzemanyag: {1}"
 		"chi" "[喷气背包] 燃料: {1}"
 	}
@@ -2923,6 +3334,7 @@
 	"Health Round Limit"
 	{
 		"en" "You have reached the maximum amount of health packs you can buy this round."
+		"pt" "Você atingiu a quantidade máxima de pacotes de vida que pode comprar nesta rodada."
 		"hu" "Ebben a körben már elég életet vettél."
 		"chi" "You have reached the maximum amount of health packs you can buy this round."
 	}
@@ -2930,6 +3342,7 @@
 	"Respawn Round Limit"
 	{
 		"en" "You have reached the maximum number of respawns you can buy this round."
+		"pt" "Você atingiu o número máximo de respawns que pode comprar nesta rodada."
 		"hu" "Ebben a körben már elég újraéledést vettél."
 		"chi" "You have reached the maximum number of respawns you can buy this round."
 	}
@@ -2937,13 +3350,15 @@
 	"Jihad Wrong Team"
 	{
 		"en" "You can't use the bomb in this team."
+		"pt" "Você não pode usar a bomba nesta equipe."
 		"hu" "Ebben a csapatban nem használhatod a bombát."
 		"chi" "You can't use the bomb in this team."
 	}
 
-	"Jihad Failed"
+	"Jihad Failed" 
 	{
 		"en" "Your bomb has failed to explode."
+		"pt" "Sua bomba falhou para explodir."
 		"hu" "A robbantás sikertelen volt."
 		"chi" "Your bomb has failed to explode."
 	}
@@ -2951,6 +3366,7 @@
 	"Godmode Round Limit"
 	{
 		"en" "You have reached the maximum amount of godmodes you can buy this round."
+		"pt" "Você atingiu a quantidade máxima de Godmodes que pode comprar nesta rodada."
 		"hu" "Ebben a körben már elég örök életet vettél."
 		"chi" "You have reached the maximum amount of godmodes you can buy this round."
 	}
@@ -2958,6 +3374,7 @@
 	"Godmode Wrong Team"
 	{
 		"en" "You can't use godmode in this team."
+		"pt" "Você não pode usar o Godmode nesta equipe."
 		"hu" "Ebben a csapatban nem használhatod az örök életet."
 		"chi" "You can't use godmode in this team."
 	}
@@ -2966,6 +3383,7 @@
 	"package"
 	{
 		"en" "package"
+		"pt" "pacote"
 		"hu" "csomag"
 		"chi" "组合包"
 	}
@@ -2973,6 +3391,7 @@
 	"hat"
 	{
 		"en" "hat"
+		"pt" "chapéu"
 		"hu" "sapka"
 		"chi" "帽子"
 	}
@@ -2980,6 +3399,7 @@
 	"tracer"
 	{
 		"en" "tracer"
+		"pt" "tracejado"
 		"hu" "lézer"
 		"chi" "激光弹道"
 	}
@@ -2987,6 +3407,7 @@
 	"playerskin"
 	{
 		"en" "player skin"
+		"pt" "skin de jogador"
 		"hu" "játékos skin"
 		"chi" "人物皮肤"
 	}
@@ -2994,12 +3415,12 @@
 	"saysound"
 	{
 		"en" "say sound"
-
 	}
 
 	"zrclass"
 	{
 		"en" "player class"
+		"pt" "classe do jogador"
 		"hu" "játékos típus"
 		"chi" "僵尸-类型"
 	}
@@ -3007,6 +3428,7 @@
 	"trail"
 	{
 		"en" "trail"
+		"pt" "rastro"
 		"hu" "csík"
 		"chi" "足迹"
 	}
@@ -3014,6 +3436,7 @@
 	"grenadeskin"
 	{
 		"en" "grenade skin"
+		"pt" "skin de granada"
 		"hu" "gránát skin"
 		"chi" "手雷皮肤"
 	}
@@ -3021,6 +3444,7 @@
 	"grenadetrail"
 	{
 		"en" "grenade trail"
+		"pt" "rastro de granada"
 		"hu" "gránát csík"
 		"chi" "手雷足迹"
 	}
@@ -3028,6 +3452,7 @@
 	"weaponcolor"
 	{
 		"en" "weapon color"
+		"pt" "cor da arma"
 		"hu" "fegyver szín"
 		"chi" "武器颜色"
 	}
@@ -3035,6 +3460,7 @@
 	"tfunusual"
 	{
 		"en" "hat effect"
+		"pt" "efeito do chapéu"
 		"hu" "sapka effekt"
 		"chi" "帽子特效"
 	}
@@ -3042,6 +3468,7 @@
 	"tfhatdye"
 	{
 		"en" "hat dye"
+		"pt" "tintura do chapéu"
 		"hu" "sapka szín"
 		"chi" "帽子染色"
 	}
@@ -3049,6 +3476,7 @@
 	"tfweapon"
 	{
 		"en" "custom weapon"
+		"pt" "arma customizada"
 		"hu" "saját fegyver"
 		"chi"  "自定义武器"
 	}
@@ -3056,6 +3484,7 @@
 	"tfhead"
 	{
 		"en" "head size"
+		"pt" "tamanho da cabeça"
 		"hu" "fej méret"
 		"chi"  "头大小"
 	}
@@ -3063,6 +3492,7 @@
 	"tfhat"
 	{
 		"en" "building hat"
+		"pt" "chapéu de construção"
 		"hu" "építmény sapka"
 		"chi"  "建筑物帽子"
 	}
@@ -3070,6 +3500,7 @@
 	"tfweaponsize"
 	{
 		"en" "weapon size"
+		"pt" "tamanho da arma"
 		"hu" "fegyver méret"
 		"chi" "武器大小"
 	}
@@ -3077,6 +3508,7 @@
 	"paintball"
 	{
 		"en" "bullets"
+		"pt" "munição"
 		"hu" "golyók"
 		"chi" "弹孔"
 	}
@@ -3084,6 +3516,7 @@
 	"watergun"
 	{
 		"en" "effect"
+		"pt" "efeito"
 		"hu" "effekt"
 		"chi" "效果"
 	}
@@ -3091,6 +3524,7 @@
 	"nametag"
 	{
 		"en" "name tag"
+		"pt" "crachá"
 		"hu" "név tag"
 		"chi" "名字标签"
 	}
@@ -3098,6 +3532,7 @@
 	"namecolor"
 	{
 		"en" "name color"
+		"pt" "cor do nome"
 		"hu" "név szín"
 		"chi" "名字颜色"
 	}
@@ -3105,6 +3540,7 @@
 	"msgcolor"
 	{
 		"en" "message color"
+		"pt" "cor da mensagem"
 		"hu" "üzenet szín"
 		"chi" "消息颜色"
 	}
@@ -3112,6 +3548,7 @@
 	"jetpack"
 	{
 		"en" "rocket"
+		"pt" "foguete"
 		"hu" "rakéta"
 		"chi" "火箭"
 	}
@@ -3119,6 +3556,7 @@
 	"bunnyhop"
 	{
 		"en" "skill"
+		"pt" "habilidade"
 		"hu" "képesség"
 		"chi" "连跳"
 	}
@@ -3126,6 +3564,7 @@
 	"lasersight"
 	{
 		"en" "laser sight"
+		"pt" "mira-laser"
 		"hu" "lézer"
 		"chi" "激光瞄准器"
 	}
@@ -3133,6 +3572,7 @@
 	"health"
 	{
 		"en" "pack"
+		"pt" "pacote"
 		"hu" "csomag"
 		"chi" "生命"
 	}
@@ -3140,6 +3580,7 @@
 	"invisibility"
 	{
 		"en" "ability"
+		"pt"	"habilidade"
 		"hu" "képesség"
 		"chi" "隐身"
 	}
@@ -3147,6 +3588,7 @@
 	"speed"
 	{
 		"en" "ability"
+		"pt" "habilidade"
 		"hu" "képesség"
 		"chi" "速度"
 	}
@@ -3154,6 +3596,7 @@
 	"gravity"
 	{
 		"en" "ability"
+		"pt" "habilidade"
 		"hu" "képesség"
 		"chi" "重力"
 	}
@@ -3161,6 +3604,7 @@
 	"weapon"
 	{
 		"en" "weapon"
+		"pt" "arma"
 		"hu" "fegyver"
 		"chi" "武器"
 	}
@@ -3168,6 +3612,7 @@
 	"sound"
 	{
 		"en" "sound"
+		"pt" "som"
 		"hu" "hang"
 		"chi" "音效"
 	}
@@ -3182,6 +3627,7 @@
 	"jihad"
 	{
 		"en" "bomb"
+		"pt" "bomba"
 		"hu" "bomba"
 		"chi" "炸弹"
 	}
@@ -3189,6 +3635,7 @@
 	"godmode"
 	{
 		"en" "godmode"
+		"pt" "godmode"
 		"hu" "örök élet"
 		"chi" "上帝模式"
 	}
@@ -3196,6 +3643,7 @@
 	"knife"
 	{
 		"en" "knife"
+		"pt" "faca"
 		"hu" "kés"
 		"chi" "刀"
 	}
@@ -3210,6 +3658,7 @@
 	"weaponskin"
 	{
 		"en" "weapon skin"
+		"pt" "skin de arma"
 		"hu" "fegyver skin"
 		"chi" "武器皮肤"
 	}
@@ -3231,36 +3680,42 @@
 	"killeff"
 	{
 		"en" "kill eff:"
+		"pt" "efeito ao matar"
 		"chi" "击杀效果"
 	}
 
 	"spawneff"
 	{
 		"en" "spawn eff:"
+		"pt" "efeito ao nascer:"
 		"chi" "出生效果:"
 	}
 
 	"hiteff"
 	{
-		"en" "击中效果:"
+		"en" "hit effect:"
+		"pt" "efeito de acerto:"
 		"chi" "击中效果:"
 	}
 
 	"laserdraw"
 	{
 		"en" "laser draw:"
+		"pt" "desenho laser:"
 		"chi" "激光画:"
 	}
 
 	"Particles"
 	{
 		"en" "Particles:"
+		"pt" "Partículas:"
 		"chi" "粒子:"
 	}
 
 	"glow"
 	{
 		"en" "glow"
+		"pt" "brilho"
 		"hu" "ragyogás"
 	}
 
@@ -3273,6 +3728,7 @@
 	"CustomModel"
 	{
 		"en" "Custom Weapon Model:"
+		"pt" "Modelo Customizado de Arma"
 		"chi" "自定义武器模型:"
 	}
 }

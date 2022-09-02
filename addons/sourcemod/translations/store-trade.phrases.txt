@@ -3,42 +3,49 @@
 	"Offer item"
 	{
 		"en" "Offer this item"
+		"pt" "Oferecer este item"
 		"chi" "提供这个物品"
 	}
 
 	"Trade item"
 	{
 		"en" "Trade this item"
+		"pt" "Trocar este item"
 		"chi" "交易这个物品"
 	}
 
 	"Trade Cooldown"
 	{
 		"en" "Please wait a few minutes before trading again."
+		"pt" "Por favor, espere alguns minutos antes de trocar novamente."
 		"chi" "请等待几分钟再进行交易."
 	}
 
 	"Trade Successful"
 	{
 		"en" "The trade has finished successfully."
+		"pt" "A troca foi realizada com sucesso."
 		"chi" "交易成功"
 	}
 
 	"Trade Active"
 	{
 		"en" "You are already trading."
+		"pt" "Você já está fazendo uma troca"
 		"chi" "你已经在交易中了"
 	}
 
 	"Trade Not Active"
 	{
 		"en" "You are not trading."
+		"pt" "Você não está fazendo uma troca."
 		"chi" "你现在不在交易"
 	}
 
 	"Trade Select Player"
 	{
 		"en" "Select a player to trade with"
+		"pt" "Selecione um jogador para fazer a troca"
 		"chi" "选择一个玩家进行交易"
 	}
 
@@ -46,12 +53,14 @@
 	{
 		"#format" "{1:N}"
 		"en" "Would you like to trade with {1}?"
+		"pt" "Você gostaria de trocar com {1}?"
 		"chi" "你愿意和 {1} 交易吗？"
 	}
 
 	"Trade Confirm Cancel"
 	{
 		"en" "Would you like to cancel the trade?"
+		"pt" "Você gostaria de canceelar a troca?"
 		"chi" "你要取消交易吗？"
 	}
 
@@ -59,12 +68,14 @@
 	{
 		"#format" "{1:N}"
 		"en" "{1} has refused your trade request."
+		"pt" "{1} recusou sua proposta de troca."
 		"chi" "{1} 拒绝了交易请求"
 	}
 
 	"Trade Cancelled"
 	{
 		"en" "Your partner has cancelled the trade."
+		"pt" "Seu parceiro cancelou a troca."
 		"chi" "你的伙伴取消了这次交易"
 	}
 
@@ -72,18 +83,21 @@
 	{
 		"#format" "{1:N},{2:d}"
 		"en" "You are trading with {1}\n-----------------------------\nTo offer credits type !offer <amount>\nYou have offered {2} credits"
+		"pt" "Você está trocando com {1}\n---------------------------\nPara oferecer créditos digite !offer <quantidade>\nVocê ofereceu{2} créditos"
 		"chi" "你正在和 {1} 交易中\n-----------------------------\n想提供积分请输入 !offer <数量> (取掉<>)\n你提供了 {2} 积分"
 	}
 
 	"Player Left"
 	{
 		"en" "The player you wanted to trade with has left the game."
+		"pt" "O jogador que você queria trocar saiu do jogo."
 		"chi" "你想交易的玩家离开了游戏"
 	}
 
 	"Waiting for confirmation"
 	{
 		"en" "Please wait for the answer of the selected player."
+		"pt" "Por favor espere a resposta do jogador selecionado."
 		"chi" "请等待已选择玩家的应答"
 	}
 
@@ -91,6 +105,7 @@
 	{
 		"#format" "{1:s},{2:s}"
 		"en" "Do you want to offer your {1} {2}?"
+		"pt" "Você quer oferecere seu {1} {2}"
 		"chi" "你想提供你的 {1} {2} 吗？"
 	}
 
@@ -98,6 +113,7 @@
 	{
 		"#format" "{1:s},{2:s}"
 		"en" "Do you want to trade your {1} {2}?"
+		"pt" "Você quer trocar seu {1} {2}?"
 		"chi" "你想交易你的 {1} {2} 吗？"
 	}
 
@@ -105,30 +121,35 @@
 	{
 		"#format" "{1:s}"
 		"en" "Ready [{1}]"
+		"pt" "Pronto [{1}]"
 		"chi" "准备 [{1}]"
 	}
 
 	"Cancel"
 	{
 		"en" "Cancel trade"
+		"pt" "Cancelar troca"
 		"chi" "取消交易"
 	}
 
 	"Offer"
 	{
 		"en" "Offer an item"
+		"pt" "Oferecer um item"
 		"chi" "提供一个物品"
 	}
 
 	"Partner Ready"
 	{
 		"en" "Your partner is ready."
+		"pt" "Seu parceiro está pronto."
 		"chi" "你的伙伴已准备好"
 	}
 
 	"Partner Not Ready"
 	{
 		"en" "Your partner is not ready yet."
+		"pt" "Seu parceiro ainda não está pronto."
 		"chi" "你的伙伴还未准备"
 	}
 
@@ -136,12 +157,14 @@
 	{
 		"#format" "{1:d}"
 		"en" "Your partner offers {1} credit(s)"
+		"pt" "Seu parceiro ofereceu {1} crédito(s)"
 		"chi" "你的伙伴提供 {1} 积分"
 	}
 
 	"Partner Item Offer"
 	{
 		"en" "Your partner offers the following items:"
+		"pt" "Seu parceiro ofereceu os seguintes itens:"
 		"chi" "你的伙伴提供以下物品:"
 	}
 
@@ -149,12 +172,14 @@
 	{
 		"#format" "{1:d}"
 		"en" "Trade will end in {1} second(s)..."
+		"pt" "A troca vai acabar em {1} segundo(s)..."
 		"chi" "交易在 {1} 秒后关闭..."
 	}
 
 	"Trade Menu"
 	{
 		"en" "To reopen the trade menu, type !trade."
+		"pt" "Para reabrir o menu de troca, digite !trade."
 		"chi" "想再次打开交易菜单，聊天输入 !trade"
 	}
 }
