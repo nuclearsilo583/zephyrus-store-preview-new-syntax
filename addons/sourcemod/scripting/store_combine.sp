@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview system"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.0.8"
+#define PLUGIN_VERSION "7.0.9"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -4562,7 +4562,7 @@ bool CheckSteamAuth(int client, char[] steam)
 	if (!GetClientAuthId(client, AuthId_Steam2, sSteam, 32))
 		return false;
 
-	if (StrContains(steam, sSteam) == -1)
+	if (StrContains(steam, sSteam[7]) == -1) // sSteam[7] only keeps the :X:XXXXXXXX part of a SteamID2, so both STEAM_0 and STEAM_1 work
 		return false;
 
 	return true;
