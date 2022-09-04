@@ -609,7 +609,7 @@ bool CheckSteamAuth(int client, char[] steam)
 	if (!GetClientAuthId(client, AuthId_Steam2, sSteam, 32))
 		return false;
 
-	if (StrContains(steam, sSteam[7]) == -1) // sSteam[7] only keeps the :X:XXXXXXXX part of a SteamID2, so both STEAM_0 and STEAM_1 work
+	if (StrContains(steam, sSteam[8]) == -1) // sSteam[8] only keeps the X:XXXXXXXX part of a SteamID2 (strips 'STEAM_X:'), so both STEAM_0 and STEAM_1 work
 		return false;
 
 	return true;
