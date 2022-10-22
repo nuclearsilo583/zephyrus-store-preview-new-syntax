@@ -70,9 +70,9 @@ Cookie g_hHideCookie;
 public Plugin myinfo = 
 {
 	name = "Store - Player Skin Module (No ZR + ZR, gloves support)",
-	author = "nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	author = "nuclear silo, AiDN™, azalty", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "2.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -278,7 +278,7 @@ public int PlayerSkins_Equip(int client, int id)
 			{
 				Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 			}
-			else if(IsPlayerAlive(client) && IsValidClient(client, true) && GetClientTeam(client)==g_ePlayerSkins[m_iData].iTeam && g_eCvars[g_cvarSkinChangeInstant].aCache)
+			else if(IsValidClient(client, true) && IsPlayerAlive(client) && GetClientTeam(client)==g_ePlayerSkins[m_iData].iTeam && g_eCvars[g_cvarSkinChangeInstant].aCache)
 			{
 				Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 			}
@@ -287,7 +287,7 @@ public int PlayerSkins_Equip(int client, int id)
 		}
 		else // ZR MODE
 		{
-			if(IsPlayerAlive(client) && IsValidClient(client, true) && !ZR_IsClientZombie(client) && g_eCvars[g_cvarSkinChangeInstant].aCache) //&& GetClientTeam(client)==g_ePlayerSkins[m_iData][iTeam])
+			if(IsValidClient(client, true) && IsPlayerAlive(client) && !ZR_IsClientZombie(client) && g_eCvars[g_cvarSkinChangeInstant].aCache) //&& GetClientTeam(client)==g_ePlayerSkins[m_iData][iTeam])
 			{
 				Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].iBody, g_ePlayerSkins[m_iData].szArms, m_iData);
 			}
