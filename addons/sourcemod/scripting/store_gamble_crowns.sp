@@ -130,7 +130,12 @@ public Action Command_Crowns(int client, int args)
 
 		return Plugin_Handled;
 	}
-
+	else if (g_hTimerRun[client] != null)
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Game in progress");
+		
+		return Plugin_Handled;
+	}
 
 	//if (args < 1|| args > 1)
 	//{
