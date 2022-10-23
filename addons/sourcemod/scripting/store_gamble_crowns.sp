@@ -253,19 +253,30 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 				// show place color panel
 				else
 				{
-					int credits = Store_GetClientCredits(client);
-					switch(itemNum)
+					if (Store_GetClientCredits(client) >= g_iBet[client])
 					{
-						case 3: g_iBet[client] = gc_iMin.IntValue;
-						case 4: g_iBet[client] = credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits;
-						case 5: g_iBet[client] = GetRandomInt(gc_iMin.IntValue, credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits);
+						int credits = Store_GetClientCredits(client);
+
+						switch(itemNum)
+						{
+							case 3: g_iBet[client] = gc_iMin.IntValue;
+							case 4: g_iBet[client] = credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits;
+							case 5: g_iBet[client] = GetRandomInt(gc_iMin.IntValue, credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits);
+						}
+					
+						Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
+						Start_Crowns(client);
+
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
 					}
+					else
+					{
+						EmitSoundToClient(client, g_sMenuItem);
+						Panel_Crowns(client);
 
-					Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
-					Start_Crowns(client);
-
-					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
-					EmitSoundToClient(client, g_sMenuItem);
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits");
+					}
 				}
 			}
 			case 6:
@@ -282,11 +293,21 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 				// show place color panel
 				else
 				{
-					Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
-					Start_Crowns(client);
+					if (Store_GetClientCredits(client) >= g_iBet[client])
+					{
+						Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
+						Start_Crowns(client);
 
-					//FakeClientCommandEx(client, "play %s", g_sMenuItem);
-					EmitSoundToClient(client, g_sMenuItem);
+						//FakeClientCommandEx(client, "play %s", g_sMenuItem);
+						EmitSoundToClient(client, g_sMenuItem);
+					}
+					else
+					{
+						EmitSoundToClient(client, g_sMenuItem);
+						Panel_Crowns(client);
+
+						CPrintToChat(client, "%s%t", g_sChatPrefix, "Not enough Credits");
+					}
 				}
 			}
 			case 7:
