@@ -253,17 +253,17 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 				// show place color panel
 				else
 				{
-					if (Store_GetClientCredits(client) >= g_iBet[client])
-					{
-						int credits = Store_GetClientCredits(client);
+					int credits = Store_GetClientCredits(client);
 
-						switch(itemNum)
-						{
-							case 3: g_iBet[client] = gc_iMin.IntValue;
-							case 4: g_iBet[client] = credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits;
-							case 5: g_iBet[client] = GetRandomInt(gc_iMin.IntValue, credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits);
-						}
+					switch(itemNum)
+					{
+						case 3: g_iBet[client] = gc_iMin.IntValue;
+						case 4: g_iBet[client] = credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits;
+						case 5: g_iBet[client] = GetRandomInt(gc_iMin.IntValue, credits > gc_iMax.IntValue ? gc_iMax.IntValue : credits);
+					}
 					
+					if(g_iBet[client] <= credits && g_iBet[client] >= gc_iMin.IntValue)
+					{
 						Store_SetClientCredits(client, Store_GetClientCredits(client) - g_iBet[client]);
 						Start_Crowns(client);
 
@@ -272,6 +272,7 @@ public int Handler_Crowns(Menu panel, MenuAction action, int client, int itemNum
 					}
 					else
 					{
+						g_iBet[client] = 0;
 						EmitSoundToClient(client, g_sMenuItem);
 						Panel_Crowns(client);
 
