@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview system"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.0.9"
+#define PLUGIN_VERSION "7.1.0"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -161,7 +161,10 @@ int hTime;
 
 Handle ReloadTimer = INVALID_HANDLE;
 
-ConVar g_cvarChatTag2;
+ConVar g_cvarChatTag;
+
+#pragma unused g_cvarCenterTag
+ConVar g_cvarCenterTag;
 
 //////////////////////////////
 //			MODULES			//
@@ -302,7 +305,8 @@ public void OnPluginStart()
 	g_cvarCreditMessages = RegisterConVar("sm_store_credit_messages", "1", "Enable/disable messages when a player earns credits.", TYPE_INT);
 	
 	//g_cvarChatTag = RegisterConVar("sm_store_chat_tag", "[Store] ", "The chat tag to use for displaying messages.", TYPE_STRING);
-	g_cvarChatTag2 = AutoExecConfig_CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");
+	g_cvarChatTag = AutoExecConfig_CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");
+	g_cvarCenterTag = AutoExecConfig_CreateConVar("sm_store_center_tag", "[Store] ", "The chat tag to use for displaying messages in hint text box.");
 
 	g_cvarShowSTEAM = RegisterConVar("sm_store_show_steam_items", "0", "If you enable this STEAM items will be shown in grey.", TYPE_INT);
 	g_cvarShowVIP = RegisterConVar("sm_store_show_vip_items", "0", "If you enable this VIP items will be shown in grey.", TYPE_INT);
@@ -318,8 +322,8 @@ public void OnPluginStart()
 	gc_iReloadDelay = RegisterConVar("sm_store_reload_config_delay", "10", "Time in second to reload current map on store reload config. Dependence: \"sm_store_reload_config_type\" 0", TYPE_INT);
 	gc_iReloadNotify = RegisterConVar("sm_store_reload_config_notify", "1", "Store reloadconfig notify player", TYPE_INT);
 
+	g_cvarChatTag.AddChangeHook(OnSettingChanged);
 	
-	g_cvarChatTag2.AddChangeHook(OnSettingChanged);
 
 	// Register Commands
 	RegConsoleCmd("sm_store", Command_Store);
@@ -519,7 +523,7 @@ public void OnLibraryAdded(const char[] name)
 
 public void OnSettingChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	if (convar == g_cvarChatTag2)
+	if (convar == g_cvarChatTag)
 	{
 		strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), newValue);
 	}

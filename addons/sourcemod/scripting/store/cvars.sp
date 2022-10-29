@@ -30,7 +30,10 @@ int gc_iDescription = -1;
 int gc_iReloadType = -1;
 int gc_iReloadDelay = -1;
 int gc_iReloadNotify = -1;
-ConVar g_cvarChatTag2;
+ConVar g_cvarChatTag;
+
+#pragma unused g_cvarCenterTag
+ConVar g_cvarCenterTag;
 
 void Store_Cvars_OnPluginStart()
 {
@@ -61,7 +64,8 @@ void Store_Cvars_OnPluginStart()
 	g_cvarCreditMessages = RegisterConVar("sm_store_credit_messages", "1", "Enable/disable messages when a player earns credits.", TYPE_INT);
 	
 	//g_cvarChatTag = RegisterConVar("sm_store_chat_tag", "[Store] ", "The chat tag to use for displaying messages.", TYPE_STRING);
-	g_cvarChatTag2 = AutoExecConfig_CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");
+	g_cvarChatTag = AutoExecConfig_CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");
+	g_cvarCenterTag = AutoExecConfig_CreateConVar("sm_store_center_tag", "[Store] ", "The chat tag to use for displaying messages in hint text box.");
 
 	g_cvarShowSTEAM = RegisterConVar("sm_store_show_steam_items", "0", "If you enable this STEAM items will be shown in grey.", TYPE_INT);
 	g_cvarShowVIP = RegisterConVar("sm_store_show_vip_items", "0", "If you enable this VIP items will be shown in grey.", TYPE_INT);
@@ -78,7 +82,7 @@ void Store_Cvars_OnPluginStart()
 	gc_iReloadNotify = RegisterConVar("sm_store_reload_config_notify", "1", "Store reloadconfig notify player", TYPE_INT);
 
 	
-	g_cvarChatTag2.AddChangeHook(OnSettingChanged);
+	g_cvarChatTag.AddChangeHook(OnSettingChanged);
 	
 	// After every module was loaded we are ready to generate the cfg
 	//AutoExecConfig();
@@ -88,7 +92,7 @@ void Store_Cvars_OnPluginStart()
 
 public void OnSettingChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	if (convar == g_cvarChatTag2)
+	if (convar == g_cvarChatTag)
 	{
 		strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), newValue);
 	}

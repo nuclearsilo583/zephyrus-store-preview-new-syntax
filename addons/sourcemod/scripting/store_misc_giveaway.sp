@@ -10,8 +10,10 @@ ConVar gc_iCredits;
 ConVar gc_iMinPlayer;
 ConVar gc_iTimeInfo;
 ConVar gc_bAdmin;
+ConVar g_cvCenterTag;
 
 char g_sChatPrefix[128];
+char g_sCenterPrefix[128];
 
 //char g_sTag[32];
 char admins[MAX_NAME_LENGTH];
@@ -23,7 +25,7 @@ public Plugin myinfo = {
 	name = "Store Giveaway",
 	author = "nuclear silo",
 	description = "Giveaway plugin compatible with zephyrus store.",
-	version = "1.6",
+	version = "1.7",
 	url = ""
 }
 
@@ -40,14 +42,14 @@ public void OnPluginStart()
 	AutoExecConfig(true, "giveaway", "sourcemod/store");
 
 	LoadTranslations("store.phrases");
-	
-	// Supress warnings about unused variables.....
-	if(g_cvarChatTag){}
 }
 
 public void Store_OnConfigExecuted(char[] prefix)
 {
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
+	
+	g_cvCenterTag = FindConVar("sm_store_center_tag");
+	g_cvCenterTag.GetString(g_sCenterPrefix, sizeof(g_sCenterPrefix));
 }
 
 public int PlayerCount()
@@ -140,7 +142,7 @@ public Action TimerGiveaway(Handle timer, any client)
 		else randomNumber = GetRandomPlayerNoAdmin();
 		GetClientName(randomNumber, name, MAX_NAME_LENGTH);
 		
-		Format(sBuffer, sizeof(sBuffer), "%t", "Giveaway winner hint text", g_sChatPrefix, name)
+		Format(sBuffer, sizeof(sBuffer), "%t", "Giveaway winner hint text", g_sCenterPrefix, name)
 		PrintCenterTextAll(sBuffer);
 		CPrintToChatAll("%t", "Giveaway winner chat", g_sChatPrefix, name, credits);
 		
