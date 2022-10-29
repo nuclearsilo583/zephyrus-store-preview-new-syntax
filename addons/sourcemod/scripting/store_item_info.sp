@@ -45,7 +45,7 @@ public Plugin myinfo =
 	name = "Store - Info panel item module",
 	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -54,9 +54,6 @@ public void OnPluginStart()
 	Store_RegisterHandler("info","text", _, Info_Reset, Info_Config, Info_Equip, _, false, true);
 
 	LoadTranslations("store.phrases");
-	
-	// Supress warnings about unused variables.....
-	if(g_cvarChatTag){}
 }
 
 public void Info_Reset()

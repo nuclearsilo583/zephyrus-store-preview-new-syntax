@@ -21,7 +21,7 @@ public Plugin myinfo =
 	name = "Store - Crash gamble module",
 	author = "Emur, AiDN™, nuclear silo",
 	description = "Crash game Zephyrus's , nuclear silo's edited store",
-	version = "2.5"
+	version = "2.6"
 };
 
 //CVars
@@ -73,9 +73,6 @@ public void OnPluginStart()
 	AddCommandListener(Command_Say, "say_team");
 	
 	HookEvent("round_end", Event_RoundEnd);
-	
-	// Supress warnings about unused variables.....
-	if(g_cvarChatTag){}
 }
 
 public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)

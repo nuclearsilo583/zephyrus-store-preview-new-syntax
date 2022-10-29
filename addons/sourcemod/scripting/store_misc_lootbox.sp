@@ -89,7 +89,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "2.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -119,9 +119,6 @@ public void OnPluginStart()
 	AutoExecConfig_CleanFile();
 	
 	HookEvent("cs_win_panel_match", Event_End);
-	
-	// Supress warnings about unused variables.....
-	if(g_cvarChatTag){}
 }
 
 public void OnMapStart()

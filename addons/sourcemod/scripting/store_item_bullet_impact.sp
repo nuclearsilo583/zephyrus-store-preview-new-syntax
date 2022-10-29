@@ -61,7 +61,7 @@ public Plugin myinfo =
 	name = "Store - Bullet impact item module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.4", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "1.5", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -84,9 +84,6 @@ public void OnPluginStart()
 
 		OnClientCookiesCached(i);
 	}
-	
-	// Supress warnings about unused variables.....
-	if(g_cvarChatTag){}
 }
 
 public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
