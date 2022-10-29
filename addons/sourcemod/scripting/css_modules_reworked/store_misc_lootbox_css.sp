@@ -119,8 +119,6 @@ public void OnPluginStart()
 	AutoExecConfig_CleanFile();
 	
 	HookEventEx("teamplay_win_panel", Event_End);
-	
-	if(g_cvarChatTag){}
 }
 
 public void OnMapStart()
