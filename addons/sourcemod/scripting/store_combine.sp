@@ -1447,20 +1447,19 @@ void StoreLogMessage(int client = 0, int level, char[] message, any ...)
 	if(g_eCvars[g_cvarPluginsLogging].aCache == 2)
 	{
 		char sQuery[1024];
-		SQL_EscapeString(g_hDatabase, sQuery, sQuery, sizeof(sQuery));
 		if (client)
 		{
 			if(g_bMySQL)
-				Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", %i, \"%s\", CURRENT_TIMESTAMP, \"%s\", \"%s\")", sLevel, g_eClients[client].iId_Client, sReason, name, steamid);
+				SQL_FormatQuery(g_hDatabase, sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES('%s', %i, '%s', CURRENT_TIMESTAMP, '%s', '%s')", sLevel, g_eClients[client].iId_Client, sReason, name, steamid);
 			else
-				Format(sQuery, sizeof(sQuery), "INSERT INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", %i, \"%s\", CURRENT_TIMESTAMP, \"%s\", \"%s\")", sLevel, g_eClients[client].iId_Client, sReason, name, steamid);
+				SQL_FormatQuery(g_hDatabase, sQuery, sizeof(sQuery), "INSERT INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES('%s', %i, '%s', CURRENT_TIMESTAMP, '%s', '%s')", sLevel, g_eClients[client].iId_Client, sReason, name, steamid);
 		}
 		else
 		{
 			if(g_bMySQL)
-				Format(sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", \"0\", \"%s\", CURRENT_TIMESTAMP, \"Console\", \"0\")", sLevel, sReason);
+				SQL_FormatQuery(g_hDatabase, sQuery, sizeof(sQuery), "INSERT IGNORE INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES('%s', 0, '%s', CURRENT_TIMESTAMP, 'Console', '0')", sLevel, sReason);
 			else
-				Format(sQuery, sizeof(sQuery), "INSERT INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES(\"%s\", \"0\", \"%s\", CURRENT_TIMESTAMP, \"Console\", \"0\")", sLevel, sReason);
+				SQL_FormatQuery(g_hDatabase, sQuery, sizeof(sQuery), "INSERT INTO store_plugin_logs (level, player_id, reason, date, name, steam) VALUES('%s', 0, '%s', CURRENT_TIMESTAMP, 'Console', '0')", sLevel, sReason);
 		}
 		SQL_TQuery(g_hDatabase, SQLCallback_Void_Error, sQuery);
 	}
@@ -1975,12 +1974,12 @@ public Action Command_GiveCredits(int client,int params)
 		{
 			char m_szQuery[512];
 			if(g_bMySQL)
-				Format(STRING(m_szQuery), "INSERT IGNORE INTO store_players (authid, credits) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE credits=credits+%d", m_szTmp[8], m_iCredits, m_iCredits);
+				SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "INSERT IGNORE INTO store_players (authid, credits) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE credits=credits+%d", m_szTmp[8], m_iCredits, m_iCredits);
 			else
 			{
-				Format(STRING(m_szQuery), "INSERT OR IGNORE INTO store_players (authid) VALUES (\"%s\")", m_szTmp[8]);
+				SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "INSERT OR IGNORE INTO store_players (authid) VALUES ('%s')", m_szTmp[8]);
 				SQL_TVoid(g_hDatabase, m_szQuery);
-				Format(STRING(m_szQuery), "UPDATE store_players SET credits=credits+%d WHERE authid=\"%s\"", m_iCredits, m_szTmp[8]);
+				SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "UPDATE store_players SET credits=credits+%d WHERE authid='%s'", m_iCredits, m_szTmp[8]);
 			}
 			SQL_TVoid(g_hDatabase, m_szQuery);
 			//ChatAll("%t", "Credits Given", m_szTmp[8], m_iCredits);
@@ -2096,7 +2095,7 @@ public Action Command_ResetPlayer(int client,int params)
 		if(m_iReceiver == 0)
 		{
 			char m_szQuery[512];
-			Format(STRING(m_szQuery), "SELECT id, authid FROM store_players WHERE authid=\"%s\"", m_szTmp[9]);
+			SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "SELECT id, authid FROM store_players WHERE authid='%s'", m_szTmp[9]);
 			SQL_TQuery(g_hDatabase, SQLCallback_ResetPlayer, m_szQuery, g_eClients[client].iUserId);
 		}
 	}
@@ -3606,7 +3605,7 @@ public void SQLCallback_LoadClientInventory_Credits(Handle owner, Handle hndl, c
 		}
 		else
 		{
-			Format(STRING(m_szQuery), "INSERT INTO store_players (`authid`, `name`, `credits`, `date_of_join`, `date_of_last_join`) VALUES(\"%s\", '%s', %d, %d, %d)",
+			Format(STRING(m_szQuery), "INSERT INTO store_players (`authid`, `name`, `credits`, `date_of_join`, `date_of_last_join`) VALUES('%s', '%s', %d, %d, %d)",
 						g_eClients[client].szAuthId, g_eClients[client].szNameEscaped, g_eCvars[g_cvarStartCredits].aCache, m_iTime, m_iTime);
 			SQL_TQuery(g_hDatabase, SQLCallback_InsertClient, m_szQuery, userid);
 			g_eClients[client].iCredits = g_eCvars[g_cvarStartCredits].aCache;
@@ -3887,7 +3886,7 @@ public void Store_LoadClientInventory(int client)
 	if(m_szAuthId[0] == 0)
 		return;
 
-	Format(STRING(m_szQuery), "SELECT * FROM store_players WHERE `authid`=\"%s\"", m_szAuthId[8]);
+	Format(STRING(m_szQuery), "SELECT * FROM store_players WHERE `authid`='%s'", m_szAuthId[8]);
 
 	SQL_TQuery(g_hDatabase, SQLCallback_LoadClientInventory_Credits, m_szQuery, g_eClients[client].iUserId);
 }
@@ -3916,13 +3915,13 @@ public void Store_SaveClientInventory(int client)
 		if(!g_eClientItems[client][i].bSynced && !g_eClientItems[client][i].bDeleted)
 		{
 			g_eClientItems[client][i].bSynced = true;
-			Format(STRING(m_szQuery), "INSERT INTO store_items (`player_id`, `type`, `unique_id`, `date_of_purchase`, `date_of_expiration`, `price_of_purchase`) VALUES(%d, \"%s\", \"%s\", %d, %d, %d)", g_eClients[client].iId_Client, m_szType, m_szUniqueId, g_eClientItems[client][i].iDateOfPurchase, g_eClientItems[client][i].iDateOfExpiration, g_eClientItems[client][i].iPriceOfPurchase);
+			Format(STRING(m_szQuery), "INSERT INTO store_items (`player_id`, `type`, `unique_id`, `date_of_purchase`, `date_of_expiration`, `price_of_purchase`) VALUES(%d, '%s', '%s', %d, %d, %d)", g_eClients[client].iId_Client, m_szType, m_szUniqueId, g_eClientItems[client][i].iDateOfPurchase, g_eClientItems[client][i].iDateOfExpiration, g_eClientItems[client][i].iPriceOfPurchase);
 			SQL_TVoid(g_hDatabase, m_szQuery);
 		} else if(g_eClientItems[client][i].bSynced && g_eClientItems[client][i].bDeleted)
 		{
 			// Might have been synced already but ID wasn't acquired
 			if(g_eClientItems[client][i].iId_Client_Item==-1)
-				Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `player_id`=%d AND `type`=\"%s\" AND `unique_id`=\"%s\"", g_eClients[client].iId_Client, m_szType, m_szUniqueId);
+				Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `player_id`=%d AND `type`='%s' AND `unique_id`='%s'", g_eClients[client].iId_Client, m_szType, m_szUniqueId);
 			else
 				Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `id`=%d", g_eClientItems[client][i].iId_Client_Item);
 			SQL_TVoid(g_hDatabase, m_szQuery);
@@ -3948,13 +3947,13 @@ public void Store_SaveClientEquipment(int client)
 			{
 				if(g_eClients[client].aEquipment[m_iId]==-1)
 				{
-					Format(STRING(m_szQuery), "DELETE FROM store_equipment WHERE `player_id`=%d AND `type`=\"%s\" AND `slot`=%d", 
+					Format(STRING(m_szQuery), "DELETE FROM store_equipment WHERE `player_id`=%d AND `type`='%s' AND `slot`=%d", 
 											g_eClients[client].iId_Client, g_eTypeHandlers[i].szType, a);
 				}
-				else Format(STRING(m_szQuery), "UPDATE store_equipment SET `unique_id`=\"%s\" WHERE `player_id`=%d AND `type`=\"%s\" AND `slot`=%d", 
+				else Format(STRING(m_szQuery), "UPDATE store_equipment SET `unique_id`=\"%s\" WHERE `player_id`=%d AND `type`='%s' AND `slot`=%d", 
 												g_eItems[g_eClients[client].aEquipment[m_iId]].szUniqueId, g_eClients[client].iId_Client, g_eTypeHandlers[i].szType, a);
 			}
-			else Format(STRING(m_szQuery), "INSERT INTO store_equipment (`player_id`, `type`, `unique_id`, `slot`) VALUES(%d, \"%s\", \"%s\", %d)", 
+			else Format(STRING(m_szQuery), "INSERT INTO store_equipment (`player_id`, `type`, `unique_id`, `slot`) VALUES(%d, '%s', '%s', %d)", 
 											g_eClients[client].iId_Client, g_eTypeHandlers[i].szType, g_eItems[g_eClients[client].aEquipment[m_iId]].szUniqueId, a);
 	
 			SQL_TVoid(g_hDatabase, m_szQuery);
@@ -4468,7 +4467,7 @@ void Store_LogMessage(int client,int credits, const char[] message,any ...)
 	} else if(g_eCvars[g_cvarLogging].aCache == 2)
 	{
 		char m_szQuery[256];
-		Format(STRING(m_szQuery), "INSERT INTO store_logs (player_id, credits, reason, date) VALUES(%d, %d, \"%s\", CURRENT_TIMESTAMP)", g_eClients[client].iId_Client, credits, m_szReason);
+		SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "INSERT INTO store_logs (player_id, credits, reason, date) VALUES(%d, %d, '%s', CURRENT_TIMESTAMP)", g_eClients[client].iId_Client, credits, m_szReason);
 		SQL_TVoid(g_hDatabase, m_szQuery);
 	}
 }
@@ -4525,7 +4524,7 @@ public void Store_OnPaymentReceived(any FriendID,any quanity, Handle data)
 			any m_unAccountID = (FriendID-m_unMod)/2;
 
 			char m_szQuery[256];
-			Format(STRING(m_szQuery), "SELECT * FROM store_players WHERE `authid`=\"%d:%d\"", m_unMod, m_unAccountID);
+			Format(STRING(m_szQuery), "SELECT * FROM store_players WHERE `authid`='%d:%d'", m_unMod, m_unAccountID);
 			SQL_TQuery(g_hDatabase, SQLCallback_LoadClientInventory_Credits, m_szQuery, GetClientUserId(i));
 			break;
 		}

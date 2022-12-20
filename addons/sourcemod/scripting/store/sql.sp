@@ -201,7 +201,7 @@ public void SQLCallback_LoadClientInventory_Credits(Handle owner, Handle hndl, c
 		}
 		else
 		{
-			Format(STRING(m_szQuery), "INSERT INTO store_players (`authid`, `name`, `credits`, `date_of_join`, `date_of_last_join`) VALUES(\"%s\", '%s', %d, %d, %d)",
+			Format(STRING(m_szQuery), "INSERT INTO store_players (`authid`, `name`, `credits`, `date_of_join`, `date_of_last_join`) VALUES('%s', '%s', %d, %d, %d)",
 						g_eClients[client].szAuthId, g_eClients[client].szNameEscaped, g_eCvars[g_cvarStartCredits].aCache, m_iTime, m_iTime);
 			SQL_TQuery(g_hDatabase, SQLCallback_InsertClient, m_szQuery, userid);
 			g_eClients[client].iCredits = g_eCvars[g_cvarStartCredits].aCache;
