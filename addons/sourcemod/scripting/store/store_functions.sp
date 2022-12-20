@@ -157,6 +157,8 @@ public void Store_SaveClientInventory(int client)
 			SQL_TVoid(g_hDatabase, m_szQuery);
 		} else if(g_eClientItems[client][i].bSynced && g_eClientItems[client][i].bDeleted)
 		{
+			g_eClientItems[client][i].bSynced = false; // Prevents the function from trying to delete the item again the next time it's called
+			
 			// Might have been synced already but ID wasn't acquired
 			if(g_eClientItems[client][i].iId_Client_Item==-1)
 				Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `player_id`=%d AND `type`='%s' AND `unique_id`='%s'", g_eClients[client].iId_Client, m_szType, m_szUniqueId);
