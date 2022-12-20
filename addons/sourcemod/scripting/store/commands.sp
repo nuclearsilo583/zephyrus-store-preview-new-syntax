@@ -193,12 +193,12 @@ public Action Command_GiveCredits(int client,int params)
 		{
 			char m_szQuery[512];
 			if(g_bMySQL)
-				Format(STRING(m_szQuery), "INSERT IGNORE INTO store_players (authid, credits) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE credits=credits+%d", m_szTmp[8], m_iCredits, m_iCredits);
+				SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "INSERT IGNORE INTO store_players (authid, credits) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE credits=credits+%d", m_szTmp[8], m_iCredits, m_iCredits);
 			else
 			{
-				Format(STRING(m_szQuery), "INSERT OR IGNORE INTO store_players (authid) VALUES (\"%s\")", m_szTmp[8]);
+				SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "INSERT OR IGNORE INTO store_players (authid) VALUES ('%s')", m_szTmp[8]);
 				SQL_TVoid(g_hDatabase, m_szQuery);
-				Format(STRING(m_szQuery), "UPDATE store_players SET credits=credits+%d WHERE authid=\"%s\"", m_iCredits, m_szTmp[8]);
+				SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "UPDATE store_players SET credits=credits+%d WHERE authid='%s'", m_iCredits, m_szTmp[8]);
 			}
 			SQL_TVoid(g_hDatabase, m_szQuery);
 			//ChatAll("%t", "Credits Given", m_szTmp[8], m_iCredits);
@@ -314,7 +314,7 @@ public Action Command_ResetPlayer(int client,int params)
 		if(m_iReceiver == 0)
 		{
 			char m_szQuery[512];
-			Format(STRING(m_szQuery), "SELECT id, authid FROM store_players WHERE authid=\"%s\"", m_szTmp[9]);
+			SQL_FormatQuery(g_hDatabase, STRING(m_szQuery), "SELECT id, authid FROM store_players WHERE authid='%s'", m_szTmp[9]);
 			SQL_TQuery(g_hDatabase, SQLCallback_ResetPlayer, m_szQuery, g_eClients[client].iUserId);
 		}
 	}
