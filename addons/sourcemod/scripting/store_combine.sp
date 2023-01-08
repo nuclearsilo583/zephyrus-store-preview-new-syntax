@@ -1161,7 +1161,7 @@ public int Native_GiveItem(Handle plugin,int numParams)
 	}
 
 	int m_iDateOfPurchase = (purchase==0?GetTime():purchase);
-	int m_iDateOfExpiration = expiration+previousExpire;
+	int m_iDateOfExpiration = (expiration==0?expiration:expiration+previousExpire);
 
 	int m_iId = g_eClients[client].iItems++;
 	g_eClientItems[client][m_iId].iId_Client_Item = -1;
