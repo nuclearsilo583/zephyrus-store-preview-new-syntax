@@ -307,17 +307,21 @@ public int Native_GiveItem(Handle plugin,int numParams)
 	int price = GetNativeCell(5);
 
 	int previousExpire = 0;
-	int item = Store_GetClientItemId(client, itemid);
-	if (item != -1)
+	
+	if (g_cvarGiveItemBehavior.BoolValue)
 	{
-		previousExpire = g_eClientItems[client][item].iDateOfExpiration;
-		if (previousExpire == 0) // Permanent item?
-			return 0;
+		int item = Store_GetClientItemId(client, itemid);
+		if (item != -1)
+		{
+			previousExpire = g_eClientItems[client][item].iDateOfExpiration;
+			if (previousExpire == 0) // Permanent item?
+				return 0;
 
-		previousExpire -= GetTime(); // timestamp - currentTime
+			previousExpire -= GetTime(); // timestamp - currentTime
 
-		g_eClientItems[client][item].bDeleted = true;
-		Store_UnequipItem(client, item);
+			g_eClientItems[client][item].bDeleted = true;
+			Store_UnequipItem(client, item);
+		}
 	}
 
 	int m_iDateOfPurchase = (purchase==0?GetTime():purchase);

@@ -30,6 +30,7 @@ int gc_iDescription = -1;
 int gc_iReloadType = -1;
 int gc_iReloadDelay = -1;
 int gc_iReloadNotify = -1;
+ConVar g_cvarGiveItemBehavior;
 ConVar g_cvarChatTag;
 
 #pragma unused g_cvarCenterTag
@@ -75,7 +76,8 @@ void Store_Cvars_OnPluginStart()
 	g_cvarPluginsLogging = RegisterConVar("sm_store_plugins_logging", "2", "Enable Logging for module . 0 = disable, 1 = file log, 2 = SQL log (MySQL only)", TYPE_INT);																																								 
 	g_cvarSilent = RegisterConVar("sm_store_silent_givecredits", "0", "Controls the give credits message visibility. 0 = public 1 = private 2 = no message", TYPE_INT);
 	//g_cvarCredits = RegisterConVar("sm_store_cmd_credits_cooldown", "12", "Control of the spam cooldown time for !credits", TYPE_FLOAT);
-	
+	g_cvarGiveItemBehavior = RegisterConVar("sm_store_give_exist_item_behavior", "0", "Controls behavior when Store_GiveItem function gives an item already exists in client's inventory. 0 = create new one (default) , 1 = extend item date.");
+
 	gc_iDescription = RegisterConVar("sm_store_description", "2", "Show item description 1 - only in menu page under item name / 2 - both menu and item page / 3 - only in item page in title", TYPE_INT);
 	gc_iReloadType = RegisterConVar("sm_store_reload_config_type", "0", "Type of reload config: 1 - Change map manually / 0 - Instantly reload current map", TYPE_INT);
 	gc_iReloadDelay = RegisterConVar("sm_store_reload_config_delay", "10", "Time in second to reload current map on store reload config. Dependence: \"sm_store_reload_config_type\" 0", TYPE_INT);
