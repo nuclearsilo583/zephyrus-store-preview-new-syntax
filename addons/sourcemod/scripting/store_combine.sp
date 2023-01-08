@@ -1146,8 +1146,22 @@ public int Native_GiveItem(Handle plugin,int numParams)
 	int expiration = GetNativeCell(4);
 	int price = GetNativeCell(5);
 
+	int previousExpire = 0;
+	int item = Store_GetClientItemId(client, itemid);
+	if (item != -1)
+	{
+		previousExpire = g_eClientItems[client][item].iDateOfExpiration;
+		if (previousExpire == 0) // Permanent item?
+			return 0;
+
+		previousExpire -= GetTime(); // timestamp - currentTime
+
+		g_eClientItems[client][item].bDeleted = true;
+		Store_UnequipItem(client, item);
+	}
+
 	int m_iDateOfPurchase = (purchase==0?GetTime():purchase);
-	int m_iDateOfExpiration = expiration;
+	int m_iDateOfExpiration = expiration+previousExpire;
 
 	int m_iId = g_eClients[client].iItems++;
 	g_eClientItems[client][m_iId].iId_Client_Item = -1;
