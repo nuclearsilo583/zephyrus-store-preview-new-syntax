@@ -170,7 +170,7 @@ public void SQLCallback_LoadClientInventory_Credits(Handle owner, Handle hndl, c
 	else
 	{
 		int client = GetClientOfUserId(userid);
-		if(!client)
+		if (!client || !IsClientInGame(client))
 			return;
 		
 		char m_szQuery[256];
@@ -226,7 +226,7 @@ public void SQLCallback_LoadClientInventory_Items(Handle owner, Handle hndl, con
 	else
 	{	
 		int client = GetClientOfUserId(userid);
-		if(!client)
+		if (!client || !IsClientInGame(client))
 			return;
 
 		char m_szQuery[256];
@@ -280,7 +280,7 @@ public void SQLCallback_LoadClientInventory_Equipment(Handle owner, Handle hndl,
 	else
 	{
 		int client = GetClientOfUserId(userid);
-		if(!client)
+		if (!client || !IsClientInGame(client))
 			return;
 		
 		char m_szUniqueId[PLATFORM_MAX_PATH];

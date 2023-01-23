@@ -3596,7 +3596,7 @@ public void SQLCallback_LoadClientInventory_Credits(Handle owner, Handle hndl, c
 	else
 	{
 		int client = GetClientOfUserId(userid);
-		if(!client)
+		if (!client || !IsClientInGame(client))
 			return;
 		
 		char m_szQuery[256];
@@ -3652,7 +3652,7 @@ public void SQLCallback_LoadClientInventory_Items(Handle owner, Handle hndl, con
 	else
 	{	
 		int client = GetClientOfUserId(userid);
-		if(!client)
+		if (!client || !IsClientInGame(client))
 			return;
 
 		char m_szQuery[256];
@@ -3706,7 +3706,7 @@ public void SQLCallback_LoadClientInventory_Equipment(Handle owner, Handle hndl,
 	else
 	{
 		int client = GetClientOfUserId(userid);
-		if(!client)
+		if (!client || !IsClientInGame(client))
 			return;
 		
 		char m_szUniqueId[PLATFORM_MAX_PATH];
@@ -4092,10 +4092,7 @@ public void Store_SellItem(int client,int itemid)
 
 	g_eClients[client].iCredits += m_iCredits;
 	//Chat(client, "%t", "Chat Sold Item", g_eItems[itemid].szName, g_eTypeHandlers[g_eItems[itemid].iHandler].szType);
-	if (IsClientInGame(client)) // Prevents a rare error case where a restricted item would be auto-sold during a map change
-	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Chat Sold Item", g_eItems[itemid].szName, g_eTypeHandlers[g_eItems[itemid].iHandler].szType);
-	}
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Chat Sold Item", g_eItems[itemid].szName, g_eTypeHandlers[g_eItems[itemid].iHandler].szType);
 	
 	Store_UnequipItem(client, itemid);
 	
