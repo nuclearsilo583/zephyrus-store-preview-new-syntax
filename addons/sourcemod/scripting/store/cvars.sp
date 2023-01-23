@@ -19,6 +19,7 @@ int g_cvarPreview = -1;
 int g_cvarAdminFlag = -1;
 int g_cvarSaveOnDeath = -1;
 int g_cvarCreditMessages = -1;
+int g_cvarSellRestricted = -1;
 int g_cvarShowVIP = -1;
 int g_cvarShowSTEAM = -1;
 int g_cvarLogging = -1;
@@ -62,6 +63,7 @@ void Store_Cvars_OnPluginStart()
 	g_cvarPreview = RegisterConVar("sm_store_preview_enable", "1", "Enable/disable preview button.", TYPE_INT);
 	g_cvarSaveOnDeath = RegisterConVar("sm_store_save_on_death", "0", "Enable/disable client data saving on client death.", TYPE_INT);
 	g_cvarCreditMessages = RegisterConVar("sm_store_credit_messages", "1", "Enable/disable messages when a player earns credits.", TYPE_INT);
+	g_cvarSellRestricted = RegisterConVar("sm_store_sell_restricted", "0", "Enable/disable auto-selling restricted items if players don't have access to them anymore.", TYPE_INT);
 	
 	//g_cvarChatTag = RegisterConVar("sm_store_chat_tag", "[Store] ", "The chat tag to use for displaying messages.", TYPE_STRING);
 	g_cvarChatTag = AutoExecConfig_CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");

@@ -41,13 +41,13 @@ public void DisplayItemMenu(int client,int itemid)
 	if(g_eTypeHandlers[g_eItems[itemid].iHandler].bEquipable)
 	{
 		if(!m_bEquipped)
-			AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "0", "%t", "Item Equip");
+			AddMenuItemEx(m_hMenu, GetClientPrivilege(target, g_eItems[itemid].iFlagBits, m_iFlags) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED, "0", "%t", "Item Equip");
 		else
 			AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "3", "%t", "Item Unequip");
 	}
 	else
 	{
-		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "0", "%t", "Item Use");
+		AddMenuItemEx(m_hMenu, GetClientPrivilege(target, g_eItems[itemid].iFlagBits, m_iFlags) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED, "0", "%t", "Item Use");
 	}
 	//
 	if (g_eItems[itemid].bPreview)
