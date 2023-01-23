@@ -110,6 +110,7 @@ int g_cvarPreview = -1;
 int g_cvarAdminFlag = -1;
 int g_cvarSaveOnDeath = -1;
 int g_cvarCreditMessages = -1;
+int g_cvarSellRestricted = -1;
 int g_cvarShowVIP = -1;
 int g_cvarShowSTEAM = -1;
 int g_cvarLogging = -1;
@@ -304,6 +305,7 @@ public void OnPluginStart()
 	g_cvarPreview = RegisterConVar("sm_store_preview_enable", "1", "Enable/disable preview button.", TYPE_INT);
 	g_cvarSaveOnDeath = RegisterConVar("sm_store_save_on_death", "0", "Enable/disable client data saving on client death.", TYPE_INT);
 	g_cvarCreditMessages = RegisterConVar("sm_store_credit_messages", "1", "Enable/disable messages when a player earns credits.", TYPE_INT);
+	g_cvarSellRestricted = RegisterConVar("sm_store_sell_restricted", "0", "Enable/disable auto-selling restricted items if players don't have access to them anymore.", TYPE_INT);
 	
 	//g_cvarChatTag = RegisterConVar("sm_store_chat_tag", "[Store] ", "The chat tag to use for displaying messages.", TYPE_STRING);
 	g_cvarChatTag = AutoExecConfig_CreateConVar("sm_store_chat_tag_plugins", "[Store] ", "The chat tag to use for displaying messages.");
@@ -2583,13 +2585,13 @@ public void DisplayItemMenu(int client,int itemid)
 	if(g_eTypeHandlers[g_eItems[itemid].iHandler].bEquipable)
 	{
 		if(!m_bEquipped)
-			AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "0", "%t", "Item Equip");
+			AddMenuItemEx(m_hMenu, GetClientPrivilege(target, g_eItems[itemid].iFlagBits, m_iFlags) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED, "0", "%t", "Item Equip");
 		else
 			AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "3", "%t", "Item Unequip");
 	}
 	else
 	{
-		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "0", "%t", "Item Use");
+		AddMenuItemEx(m_hMenu, GetClientPrivilege(target, g_eItems[itemid].iFlagBits, m_iFlags) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED, "0", "%t", "Item Use");
 	}
 	//
 	if (g_eItems[itemid].bPreview)
@@ -2657,11 +2659,11 @@ public void DisplayPreviewMenu(int client, int itemid)
 	{
 		if(g_eTypeHandlers[g_eItems[itemid].iHandler].bEquipable)
 		if(!m_bEquipped)
-			AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "0", "%t", "Item Equip");
+			AddMenuItemEx(m_hMenu, GetClientPrivilege(target, g_eItems[itemid].iFlagBits, m_iFlags) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED, "0", "%t", "Item Equip");
 		else
 			AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "3", "%t", "Item Unequip");
 		else
-		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "0", "%t", "Item Use");
+		AddMenuItemEx(m_hMenu, GetClientPrivilege(target, g_eItems[itemid].iFlagBits, m_iFlags) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED, "0", "%t", "Item Use");
 	}
 	// Player don't own the item
 	else if (!g_bInvMode[client] && !Store_HasClientItem(target, itemid))
@@ -3725,11 +3727,18 @@ public void SQLCallback_LoadClientInventory_Equipment(Handle owner, Handle hndl,
 				//PrintToChat(client, "You dont have item/ unequip");
 				Store_UnequipItem(client, m_iUniqueId);
 			}
-			// Client has item but VIP period is expired. Sell the item.
+			// Client has item but VIP period is expired.
 			else if(Store_HasClientItem(client, m_iUniqueId) && !GetClientPrivilege(client, g_eItems[m_iUniqueId].iFlagBits))
 			{
 				//PrintToChat(client, "You ahve have item but no flag/ Sold.");
-				Store_SellItem(client, m_iUniqueId);
+				if (g_eCvars[g_cvarSellRestricted].aCache)
+				{
+					Store_SellItem(client, m_iUniqueId); // Sell the item.
+				}
+				else
+				{
+					Store_UnequipItem(client, m_iUniqueId); // Just prevent the player from equipping it.
+				}
 			}
 			// Client has item and has access to the item.
 			else 

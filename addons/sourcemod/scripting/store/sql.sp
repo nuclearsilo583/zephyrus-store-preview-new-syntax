@@ -302,11 +302,18 @@ public void SQLCallback_LoadClientInventory_Equipment(Handle owner, Handle hndl,
 				//PrintToChat(client, "You dont have item/ unequip");
 				Store_UnequipItem(client, m_iUniqueId);
 			}
-			// Client has item but VIP period is expired. Sell the item.
+			// Client has item but VIP period is expired.
 			else if(Store_HasClientItem(client, m_iUniqueId) && !GetClientPrivilege(client, g_eItems[m_iUniqueId].iFlagBits))
 			{
 				//PrintToChat(client, "You ahve have item but no flag/ Sold.");
-				Store_SellItem(client, m_iUniqueId);
+				if (g_eCvars[g_cvarSellRestricted].aCache)
+				{
+					Store_SellItem(client, m_iUniqueId); // Sell the item.
+				}
+				else
+				{
+					Store_UnequipItem(client, m_iUniqueId); // Just prevent the player from equipping it.
+				}
 			}
 			// Client has item and has access to the item.
 			else 
