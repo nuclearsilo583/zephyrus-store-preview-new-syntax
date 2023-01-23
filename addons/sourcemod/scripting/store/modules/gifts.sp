@@ -126,6 +126,9 @@ public bool Gifts_OnHandler(int client, char[] info, int itemid)
 
 public void Gifts_MenuHandler(Handle menu, MenuAction action, int client, int param2)
 {
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
+		return;
+	
 	if(action == MenuAction_Select)
 	{
 		if(menu == INVALID_HANDLE)
@@ -153,6 +156,9 @@ public void Gifts_MenuHandler(Handle menu, MenuAction action, int client, int pa
 
 public void Gifts_OnPickUp(int client)
 {
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
+		return;
+	
 	int m_iCredits = GetRandomInt(g_eCvars[g_cvarGiftsMinimum].aCache, g_eCvars[g_cvarGiftsMaximum].aCache);
 	Store_SetClientCredits(client, Store_GetClientCredits(client)+m_iCredits);
 	Chat(client, "%t", "Gift Credit Picked", m_iCredits);
@@ -160,6 +166,9 @@ public void Gifts_OnPickUp(int client)
 
 public void Gifts_OnPickUpItem(int client, int data,int owner)
 {
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
+		return;
+	
 	Handle m_hData = view_as<Handle>(data);
 
 	int itemid = ReadPackCell(m_hData);
@@ -182,6 +191,9 @@ public void Gifts_OnPickUpItem(int client, int data,int owner)
 
 public void Gifts_OnPickUpCredit(int client,int data,int owner)
 {
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
+		return;
+	
 	Store_SetClientCredits(client, Store_GetClientCredits(client)+data);
 	Chat(client, "%t", "Gift Credit Picked", data);
 
