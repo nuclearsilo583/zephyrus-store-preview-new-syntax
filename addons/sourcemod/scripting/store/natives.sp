@@ -185,7 +185,7 @@ public int Native_SetClientCredits(Handle plugin,int numParams)
 	int client = GetNativeCell(1);
 	int m_iCredits = GetNativeCell(2);
 	Store_LogMessage(client, m_iCredits-g_eClients[client].iCredits, "Set by external plugin");
-	g_eClients[client].iCredits = g_eClients[client].iCredits + m_iCredits < 0 ? 0 : m_iCredits;
+	g_eClients[client].iCredits = m_iCredits < 0 ? 0 : m_iCredits;
 	Store_SaveClientData(client);
 	return 1;
 }

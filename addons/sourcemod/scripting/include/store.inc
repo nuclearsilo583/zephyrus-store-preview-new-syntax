@@ -165,7 +165,6 @@ native int Store_GetClientCredits(int client);
  *
  * @param client		Index of client.
  * @param credits		Amount of credits.
- * @param reason		Optional reason for changed credits.
  * 
  * @noreturn
  */
