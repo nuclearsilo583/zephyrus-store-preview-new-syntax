@@ -72,7 +72,7 @@ public Plugin myinfo =
 	name = "Store - Player Skin Module (No ZR + ZR, gloves support)",
 	author = "nuclear silo, AiDN™, azalty", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -473,19 +473,20 @@ void Store_SetClientArmsModel(int client, const char[] model, int index)
 
 void Store_SetClientModel(int client, const char[] model, const int skin=0, const int body=0, const char[] arms="", int index)
 {
-
 	SetEntityModel(client, model);
 
 	SetEntProp(client, Prop_Send, "m_nSkin", skin);
 	
-	if (body > 0)
+	if (body >= 0)
     {
         // set?
 		SetEntProp(client, Prop_Send, "m_nBody", body);
     }
+	else SetEntProp(client, Prop_Send, "m_nBody", 0);
 	
 	//CreateTimer(0.15, Timer_RemovePlayerWeapon, GetClientUserId(client));
 	
+
 	if(GAME_CSGO && arms[0]!=0)
 	{
 		if(!g_bGlovesPluginEnable)
@@ -503,6 +504,15 @@ void Store_SetClientModel(int client, const char[] model, const int skin=0, cons
 			RemoveClientGloves(client, index);
 			SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
 		}
+		
+		//Create Fake event to refresh the arm if the current model is the same because changing bodygroup
+		Event event = CreateEvent("player_spawn", true);
+		if (event == null)
+			return;
+
+		event.SetInt("userid", GetClientUserId(client));
+		event.FireToClient(client);
+		event.Cancel();
 	}
 }
 

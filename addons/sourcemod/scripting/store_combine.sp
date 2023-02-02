@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview system"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.1.0"
+#define PLUGIN_VERSION "7.1.1"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""

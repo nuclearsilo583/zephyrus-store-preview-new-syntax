@@ -26,4 +26,11 @@
 		"name"			"Dark turquoise"
 		"color"			"{darkturquoise}"
 	}
+	
+	"6" // Rainbow
+	{
+		"name"			"Rainbow"
+		"flag"			"o"
+		"color"			"rainbow"
+	}
 }

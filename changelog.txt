@@ -7,6 +7,31 @@
 #Format rules: since I live in Viet Nam so the date format in here is DD/MM/YYYY not MM/DD/YYYY
 ================================================================================================================================
 ################################################################################################
+Update 3/2/2023 (Thanks for you guy keep updating/fixing this store and maintain this project.)
+- Merge Pull Request from #93 to #137 (Check https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/pull/) ( by azalty and Kroytz. Thanks :) )
+- Fixed gifts store module ignoring sm_store_gifts_enabled (by azalty)
+- Fixed items being removed in a certain scenario (by azalty)
+- Fixed problems with Native_SetClientCredits. (by azalty)
+- Changed handling of restricted items when players don't have access to them anymore. (by azalty)
+- Fixed load queries going through map changes. (by azalty)
+- Change Chat Processor behavior on stripping rainbow string. Added rainbow tag support in !tgs.
+- Fixed arms model not refresh by equiping the same model skin (with different bodygroup)
+################################################################################################
+Files changes:
+- store_combine.sp (v7.0.7 --> v7.1.1)
+- store.sp (v7.0.7 --> v7.1.1)
+- Splited core include files 
+	- scripting/store/cvars.sp
+	- scripting/store/natives.sp
+	- scripting/store/sql.sp
+	- scripting/store/store_functions.sp
+	- scripting/store/menus/item_menu.sp
+	- scripting/store/menus/preview_menu.sp
+- gift.sp
+- store_item_cpsupport.sp
+- store_item_playerskins.sp
+
+################################################################################################
 Update 28/8/2022
 - Re-add store core combined version (no splited files). This version and store.sp are the same and will be both updated by the time being.
 - Fix store-trade and store.phrases (Pull request #105 https://github.com/nuclearsilo583/zephyrus-store-preview-new-syntax/pull/105)

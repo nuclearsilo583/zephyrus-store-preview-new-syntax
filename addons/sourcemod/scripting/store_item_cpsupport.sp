@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "2.9", 
+	version = "3.0", 
 	url = ""
 };
 
@@ -280,7 +280,7 @@ public int DisplayMenuShop(int client)
 	if (!kvtShop.GotoFirstSubKey())
 		return 0;
 		
-	char ItemID[150], name[50], color[20];
+	char ItemID[150], name[50], color[20], flag[8];
 	Format(sBuffer, sizeof(sBuffer), "%t", "CP Disable Color - Menu");
 	shopmenu.AddItem("disabled", sBuffer);
 	do
@@ -288,8 +288,9 @@ public int DisplayMenuShop(int client)
 		kvtShop.GetSectionName(ItemID, sizeof(ItemID));
 		kvtShop.GetString("name", name, sizeof(name));
 		kvtShop.GetString("color", color, sizeof(color));
+		kvtShop.GetString("flag", flag, sizeof(flag), "");
 		Format(sBuffer, sizeof(sBuffer), "%s", name);
-		shopmenu.AddItem(ItemID, name);
+		shopmenu.AddItem(ItemID, name, HasPermission(client, flag) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
 	} while (kvtShop.GotoNextKey());
 	shopmenu.ExitButton = true;
 	shopmenu.Display(client, 20);
@@ -445,7 +446,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		int iNameColor = Store_GetDataIndex(iEquippedNameColor);
 		if(StrEqual(g_sNameColors[iNameColor], "rainbow"))
 		{
-            String_Rainbow(name, sNameColor, sizeof(sNameColor));
+            Rainbow_String(name, sNameColor, sizeof(sNameColor));
 			//strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[iNameColor]);
 		}
 		else strcopy(sNameColor, sizeof(sNameColor), g_sNameColors[iNameColor]);
@@ -454,6 +455,8 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	if(!StrEqual(g_szColors[author], "disabled", true))
 	{
 		int iNameColor;
+		char temp[MAXLENGTH_NAME], temp2[MAXLENGTH_NAME];
+		
 		if (iEquippedNameColor >= 0)
 		{
 			iNameColor = Store_GetDataIndex(iEquippedNameColor);
@@ -465,7 +468,25 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 			//PrintToChat(author, "have }");
 			if(iEquippedNameColor>=0 && StrEqual(g_sNameColors[iNameColor], "rainbow"))
 			{
-				Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
+				if(StrEqual(g_szColors[author], "rainbow"))
+				{
+					strcopy(temp, sizeof(temp), sNameTag2[1]);
+					Rainbow_String(temp, temp2, sizeof(temp2));
+					Format(sName, sizeof(sName), "%s{teamcolor}%s", temp2, sNameColor);
+				}
+				else Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
+			}
+			else if(iEquippedNameColor>=0 && StrEqual(g_szColors[author], "rainbow"))
+			{
+				strcopy(temp, sizeof(temp), sNameTag2[1]);
+				Rainbow_String(temp, temp2, sizeof(temp2));
+				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
+			}
+			else if(StrEqual(g_szColors[author], "rainbow"))
+			{
+				strcopy(temp, sizeof(temp), sNameTag2[1]);
+				Rainbow_String(temp, temp2, sizeof(temp2));
+				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
 			}
 			else Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag2[1], sNameColor, name);
 		}
@@ -474,7 +495,25 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 			//PrintToChat(author, "no have }");
 			if(iEquippedNameColor>=0 && StrEqual(g_sNameColors[iNameColor], "rainbow"))
 			{
-				Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
+				if(StrEqual(g_szColors[author], "rainbow"))
+				{
+					strcopy(temp, sizeof(temp), sNameTag2[1]);
+					Rainbow_String(temp, temp2, sizeof(temp2));
+					Format(sName, sizeof(sName), "%s{teamcolor}%s", temp2, sNameColor);
+				}
+				else Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
+			}
+			else if(iEquippedNameColor>=0 && StrEqual(g_szColors[author], "rainbow"))
+			{
+				strcopy(temp, sizeof(temp), sNameTag2[1]);
+				Rainbow_String(temp, temp2, sizeof(temp2));
+				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
+			}
+			else if(StrEqual(g_szColors[author], "rainbow"))
+			{
+				strcopy(temp, sizeof(temp), sNameTag2[1]);
+				Rainbow_String(temp, temp2, sizeof(temp2));
+				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
 			}
 			else Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag, sNameColor, name);
 		}
@@ -506,7 +545,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		if(StrEqual(g_sMessageColors[m_iData], "rainbow"))
         {
             char sBuffer[256];
-            String_Rainbow(message, sBuffer, sizeof(sBuffer));
+            Rainbow_String(message, sBuffer, sizeof(sBuffer));
             strcopy(message, MAXLENGTH_MESSAGE, sBuffer);
         }
 		else Format(message, MAXLENGTH_BUFFER, "%s%s", g_sMessageColors[Store_GetDataIndex(iEquippedMsgColor)], sMessage);
@@ -600,7 +639,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 	{
 		if(StrEqual(g_sNameColors[index], "rainbow"))
 		{
-			String_Rainbow(clientname, sBuffer, sizeof(sBuffer));
+			Rainbow_String(clientname, sBuffer, sizeof(sBuffer));
 			Format(sBuffer, sizeof(sBuffer), "%s :{default}", sBuffer);
 		}
 		else
@@ -614,7 +653,7 @@ public void Store_OnPreviewItem(int client, char[] type, int index)
 		Format(PreviewBuffer, sizeof(PreviewBuffer), "%t", "This is the preview text");
 		
 		if(StrEqual(g_sMessageColors[index], "rainbow"))
-			String_Rainbow(PreviewBuffer, sBuffer, sizeof(sBuffer));
+			Rainbow_String(PreviewBuffer, sBuffer, sizeof(sBuffer));
 		else
 			Format(sBuffer, sizeof(sBuffer), " %s%s", g_sMessageColors[index], PreviewBuffer);
 		CPrintToChat(client, "%t", "CP Preview", " ", Buffer, sBuffer);
@@ -676,6 +715,31 @@ public Action Clantag(Handle timer, int client)
 	return Plugin_Handled;
 }
 #endif
+
+void Rainbow_String(const char[] input, char[] output, int maxLen)
+{
+	char sTemp[MAXLENGTH_NAME];
+	int len = strlen(input);
+	for (int i = 0; i < len; i++)
+	{
+		if (IsCharSpace(input[i]))
+		{
+			Format(sTemp, sizeof(sTemp), "%s%c", sTemp, input[i]);
+			continue;
+		}
+		
+		int bytes = GetCharBytes(input[i]) + 1;
+		char[] c = new char[bytes];
+		strcopy(c, bytes, input[i]);
+		//Format(sTemp, sizeof(sTemp), "%s%c%s", sTemp, GetColor(++color), c);
+		Format(sTemp, sizeof(sTemp), "%s%c%s", sTemp, RandomColor(), c);
+		if (IsCharMB(input[i]))
+			i += bytes - 2;
+	}
+	
+	
+	strcopy(output, maxLen, sTemp);
+}
 
 void String_Rainbow(const char[] input, char[] output, int maxLen)
 {
@@ -743,3 +807,36 @@ int RandomColor()
 		default: return '\x07';
 	}
 }
+
+stock bool HasPermission(int iClient, char[] flagString) 
+{
+	if (StrEqual(flagString, "")) 
+	{
+		return true;
+	}
+	
+	AdminId admin = GetUserAdmin(iClient);
+	
+	if (admin != INVALID_ADMIN_ID)
+	{
+		int count, found, flags = ReadFlagString(flagString);
+		for (int i = 0; i <= 20; i++) 
+		{
+			if (flags & (1<<i)) 
+			{
+				count++;
+				
+				if (GetAdminFlag(admin, view_as<AdminFlag>(i))) 
+				{
+					found++;
+				}
+			}
+		}
+
+		if (count == found) {
+			return true;
+		}
+	}
+
+	return false;
+} 
