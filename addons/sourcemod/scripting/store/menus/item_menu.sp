@@ -3,6 +3,7 @@ public void DisplayItemMenu(int client,int itemid)
 	g_iMenuNum[client] = 1;
 	g_iMenuBack[client] = g_eItems[itemid].iParent;
 	int target = g_iMenuClient[client];
+	int m_iFlags = GetUserFlagBits(client);									
 
 	Handle m_hMenu = CreateMenu(MenuHandler_Item);
 	SetMenuExitBackButton(m_hMenu, true);
