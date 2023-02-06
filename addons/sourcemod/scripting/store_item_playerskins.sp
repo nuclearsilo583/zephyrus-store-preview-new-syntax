@@ -72,7 +72,7 @@ public Plugin myinfo =
 	name = "Store - Player Skin Module (No ZR + ZR, gloves support)",
 	author = "nuclear silo, AiDN™, azalty", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "2.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.3", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 }
 
@@ -359,12 +359,12 @@ public int Arms_Equip(int client, int id)
 	if (g_ePlayerArms[m_iData].iTeam == 4)
 	{
 		Store_SetClientArmsModel(client, g_ePlayerArms[m_iData].szModel, m_iData);
-		CPrintToChat(client, " arms team 4");
+		//CPrintToChat(client, " arms team 4");
 	}
 	else if(IsPlayerAlive(client) && IsValidClient(client, true) && GetClientTeam(client)==g_ePlayerArms[m_iData].iTeam)
 	{
 		Store_SetClientArmsModel(client, g_ePlayerArms[m_iData].szModel, m_iData);
-		CPrintToChat(client, " arms team 2,3");
+		//CPrintToChat(client, " arms team 2,3");
 	}
 	else if(Store_IsClientLoaded(client))
 		CPrintToChat(client, "%s%t", g_sChatPrefix, "PlayerSkins Settings Changed");
@@ -469,6 +469,7 @@ void Store_SetClientArmsModel(int client, const char[] model, int index)
 {
 	if(index){}
 	SetEntPropString(client, Prop_Send, "m_szArmsModel", model);
+	CreateFakeSpawnEvent(client);
 }
 
 void Store_SetClientModel(int client, const char[] model, const int skin=0, const int body=0, const char[] arms="", int index)
@@ -505,14 +506,7 @@ void Store_SetClientModel(int client, const char[] model, const int skin=0, cons
 			SetEntPropString(client, Prop_Send, "m_szArmsModel", arms);
 		}
 		
-		//Create Fake event to refresh the arm if the current model is the same because changing bodygroup
-		Event event = CreateEvent("player_spawn", true);
-		if (event == null)
-			return;
-
-		event.SetInt("userid", GetClientUserId(client));
-		event.FireToClient(client);
-		event.Cancel();
+		CreateFakeSpawnEvent(client);
 	}
 }
 
@@ -693,6 +687,18 @@ public Action Timer_KillPreview(Handle timer, int client)
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
 
 	return Plugin_Stop;
+}
+
+public void CreateFakeSpawnEvent(int client)
+{
+	//Create Fake event to refresh the arm if the current model is the same because changing bodygroup
+	Event event = CreateEvent("player_spawn", true);
+	if (event == null)
+		return;
+
+	event.SetInt("userid", GetClientUserId(client));
+	event.FireToClient(client);
+	event.Cancel();
 }
 
 stock bool IsValidClient(int client, bool nobots = true)
