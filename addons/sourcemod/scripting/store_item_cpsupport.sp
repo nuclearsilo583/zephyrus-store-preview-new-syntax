@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name = "Store - Chat Processor item module with Scoreboard Tag",
 	author = "nuclear silo, Mesharsky, AiDN™", 
 	description = "Chat Processor item module by nuclear silo, the Scoreboard Tag for Zephyrus's by Mesharksy, for nuclear silo's edited store by AiDN™",
-	version = "3.0", 
+	version = "3.1", 
 	url = ""
 };
 
@@ -432,6 +432,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	char sName[MAXLENGTH_NAME*2];
 	char sNameTag[MAXLENGTH_NAME];
 	char sNameTag2[2][MAXLENGTH_NAME];
+	//char sNameTag2_0[2][MAXLENGTH_NAME];
 	char sNameColor[32];
 
 	if (iEquippedNameTag >= 0)
@@ -439,6 +440,8 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		int iNameTag = Store_GetDataIndex(iEquippedNameTag);
 		strcopy(sNameTag, sizeof(sNameTag), g_sNameTags[iNameTag]);
 		ExplodeString(sNameTag, "}", sNameTag2, 2, MAXLENGTH_NAME);
+		//PrintToConsoleAll("[0]: %s", sNameTag2[0]); //DEBUG
+		//PrintToConsoleAll("[1]: %s", sNameTag2[1]); //DEBUG
 	}
 
 	if (iEquippedNameColor >= 0)
@@ -455,7 +458,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	if(!StrEqual(g_szColors[author], "disabled", true))
 	{
 		int iNameColor;
-		char temp[MAXLENGTH_NAME], temp2[MAXLENGTH_NAME];
+		char temp[MAXLENGTH_NAME*2], temp2[MAXLENGTH_NAME*2];
 		
 		if (iEquippedNameColor >= 0)
 		{
@@ -463,11 +466,15 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		}
 		
 		//if(StrContains(sNameTag, "}", true))
+		// Checking if the name tag have } symbol. Ex: {green}[TAG]; [TAG]{default};
+		// sNameTag2[1][0] refer to the first string it found. In this case is {green}[TAG]
 		if(sNameTag2[1][0] != '\0')
 		{
-			//PrintToChat(author, "have }");
+			//PrintToChat(author, "have }"); //Debug
+			// the author have name color equipped and their name color is set to rainbow
 			if(iEquippedNameColor>=0 && StrEqual(g_sNameColors[iNameColor], "rainbow"))
 			{
+				// Check if the custom !tgs of the author is rainbow
 				if(StrEqual(g_szColors[author], "rainbow"))
 				{
 					strcopy(temp, sizeof(temp), sNameTag2[1]);
@@ -476,42 +483,49 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 				}
 				else Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
 			}
+			// the author have name color equipped and custom !tgs is rainbow
 			else if(iEquippedNameColor>=0 && StrEqual(g_szColors[author], "rainbow"))
 			{
 				strcopy(temp, sizeof(temp), sNameTag2[1]);
 				Rainbow_String(temp, temp2, sizeof(temp2));
 				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
 			}
+			// The author  dont have name color equipped but custom !tgs is rainbow
 			else if(StrEqual(g_szColors[author], "rainbow"))
 			{
 				strcopy(temp, sizeof(temp), sNameTag2[1]);
 				Rainbow_String(temp, temp2, sizeof(temp2));
 				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
 			}
+			// Other cases
 			else Format(sName, sizeof(sName), "%s%s{teamcolor}%s%s", g_szColors[author], sNameTag2[1], sNameColor, name);
 		}
-		else 
+		else // The other case is [TAG]{green}. The slited string will be [TAG]{green and NULL_STRING;
 		{
-			//PrintToChat(author, "no have }");
+			//PrintToChat(author, "no have }"); // DEBUG
+			// the author have name color equipped and name color is set to rainbow.
 			if(iEquippedNameColor>=0 && StrEqual(g_sNameColors[iNameColor], "rainbow"))
 			{
+				// the custom !tgs is rainbow
 				if(StrEqual(g_szColors[author], "rainbow"))
 				{
-					strcopy(temp, sizeof(temp), sNameTag2[1]);
+					strcopy(temp, sizeof(temp), sNameTag2[0]);
 					Rainbow_String(temp, temp2, sizeof(temp2));
 					Format(sName, sizeof(sName), "%s{teamcolor}%s", temp2, sNameColor);
 				}
-				else Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[1], sNameColor);
+				else Format(sName, sizeof(sName), "%s%s{teamcolor}%s", g_szColors[author], sNameTag2[0], sNameColor);
 			}
+			// the author have name color equipped and custom !tgs is rainbow
 			else if(iEquippedNameColor>=0 && StrEqual(g_szColors[author], "rainbow"))
 			{
-				strcopy(temp, sizeof(temp), sNameTag2[1]);
+				strcopy(temp, sizeof(temp), sNameTag2[0]);
 				Rainbow_String(temp, temp2, sizeof(temp2));
 				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
 			}
+			// custom !tgs is rainbow.
 			else if(StrEqual(g_szColors[author], "rainbow"))
 			{
-				strcopy(temp, sizeof(temp), sNameTag2[1]);
+				strcopy(temp, sizeof(temp), sNameTag2[0]);
 				Rainbow_String(temp, temp2, sizeof(temp2));
 				Format(sName, sizeof(sName), "%s{teamcolor}%s%s", temp2, sNameColor, name);
 			}
@@ -535,7 +549,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	
 	//ReplaceColors(sName, sizeof(sName), author);
 
-	strcopy(name, MAXLENGTH_NAME, sName);
+	strcopy(name, MAXLENGTH_NAME*2, sName);
 
 	if (iEquippedMsgColor >= 0)
 	{
