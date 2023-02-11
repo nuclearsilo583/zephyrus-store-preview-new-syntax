@@ -826,10 +826,15 @@ public void OnConfigsExecuted()
 	else
 	{
 		char m_szQuery[256], m_szLogCleaningQuery[256];
-		Format(STRING(m_szQuery), "delete `store_items`, `store_equipment`"
-								... "from  `store_items`, `store_equipment` "
-								... "where (store_items.unique_id = store_equipment.unique_id) "
-								... "and store_items.date_of_expiration<>0 and store_items.date_of_expiration<%d", GetTime());
+		// Remove expired and equipped items
+		Format(STRING(m_szQuery), "DELETE FROM store_items, store_equipment "
+								... "WHERE (store_items.unique_id = store_equipment.unique_id) "
+									... "AND store_items.date_of_expiration != 0 "
+									... "AND store_items.date_of_expiration < %d", GetTime());
+		SQL_TVoid(g_hDatabase, m_szQuery);
+		
+		// Remove expired and unequipped items
+		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE date_of_expiration != 0 AND date_of_expiration < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
 		
 		char m_szDriver[2];
@@ -3552,7 +3557,15 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 		
 		// Do some housekeeping
 		char m_szQuery[256], m_szLogCleaningQuery[256];
-		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE `date_of_expiration` <> 0 AND `date_of_expiration` < %d", GetTime());
+		// Remove expired and equipped items
+		Format(STRING(m_szQuery), "DELETE FROM store_items, store_equipment "
+								... "WHERE (store_items.unique_id = store_equipment.unique_id) "
+									... "AND store_items.date_of_expiration != 0 "
+									... "AND store_items.date_of_expiration < %d", GetTime());
+		SQL_TVoid(g_hDatabase, m_szQuery);
+		
+		// Remove expired and unequipped items
+		Format(STRING(m_szQuery), "DELETE FROM store_items WHERE date_of_expiration != 0 AND date_of_expiration < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
 		
 		/*Format(STRING(m_szVoucherQuery), "UPDATE store_voucher SET"
