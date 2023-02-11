@@ -331,7 +331,16 @@ public int MenuHandler_Shop(Menu menu, MenuAction action, int client, int item)
 			kvtShop.GetString("color", sItem, sizeof(sItem));
 
 			strcopy(g_szColors[client], sizeof(g_szColors), sItem);
-			CPrintToChat(client, "%s%t%s%s.", g_sChatPrefix, "CP Changed color", sItem, name);
+
+			if(StrEqual(sItem, "rainbow"))
+			{
+				char rainbow[50];
+				Rainbow_String(name, rainbow, sizeof(rainbow));
+				CPrintToChat(client, "%s%t%s.", g_sChatPrefix, "CP Changed color", rainbow);
+			}
+			else
+				CPrintToChat(client, "%s%t%s%s.", g_sChatPrefix, "CP Changed color", sItem, name);
+
 			SQL_UpdatePerk(client, sItem);
 		}
 	}
