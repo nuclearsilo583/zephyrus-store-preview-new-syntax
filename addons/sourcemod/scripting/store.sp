@@ -207,9 +207,8 @@ public void OnPluginStart()
 	}
 	
 	// Load the config file
-	
-	Store_Admin_AdminMenuOnPluginStart(); // store/admin.sp
 	Store_Cvars_OnPluginStart(); // store/cvars.sp
+	Store_Admin_AdminMenuOnPluginStart(); // store/admin.sp
 	Store_Commands_OnPluginStart(); // store/commands.sp
 	Store_Events_OnPluginStart(); // store/events.sp
 	Store_Configs_ReloadConfig(); // store/configs.sp

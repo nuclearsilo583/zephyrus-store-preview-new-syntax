@@ -29,6 +29,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <clientprefs>
 
 #include <multicolors> 
 #include <store>
@@ -61,6 +62,11 @@ int g_iMaxUses;
 
 int g_iUses[MAXPLAYERS + 1] = {0,...};
 
+float g_fPlayerVolume[MAXPLAYERS + 1] = {1.0, ...};
+Cookie g_hHideCookie;
+
+#define VOLUME_COOKIE_STEP 0.2
+
 /*
  * Build date: <DATE>
  * Build number: <BUILD>
@@ -82,12 +88,45 @@ public void OnPluginStart()
 	
 	g_iType = RegisterConVar("sm_store_saysound_type", "1", "Type of the max uses limit (0 = Map limit, 1 = Round limit)", TYPE_INT);
 	g_iMaxUses = RegisterConVar("sm_store_saysound_max_uses", "1", "Max uses", TYPE_INT);
+	
+	g_hHideCookie = new Cookie("SaySound_Volume_Cookie", "Cookie to set the volume of MVP sounds", CookieAccess_Private);
+	SetCookieMenuItem(PrefMenu, 0, "");
 
 	LoadTranslations("store.phrases");
 
 	HookEvent("player_say", Event_PlayerSay);
 	//HookEvent("round_end", Reset_Count ,EventHookMode_Pre);
 	HookEvent("round_start", Reset_Count);
+}
+
+public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
+{
+	if (actions == CookieMenuAction_DisplayOption)
+	{
+		FormatEx(buffer, maxlen, "SaySound Volume: %i%%", RoundToNearest(g_fPlayerVolume[client] * 100)); // Rounding because we never know
+	}
+	else if (actions == CookieMenuAction_SelectOption)
+	{
+		CMD_Volume(client);
+		ShowCookieMenu(client);
+	}
+}
+
+void CMD_Volume(int client)
+{
+	char sCookieValue[8];
+	
+	g_fPlayerVolume[client] = g_fPlayerVolume[client] - VOLUME_COOKIE_STEP;
+	
+	if (g_fPlayerVolume[client] < 0.0)
+		g_fPlayerVolume[client] = 1.0;
+	
+	FloatToString(g_fPlayerVolume[client], sCookieValue, sizeof(sCookieValue));
+	g_hHideCookie.Set(client, sCookieValue);
+	
+	char buffer[20];
+	FormatEx(buffer, sizeof(buffer), "%i%%", RoundToNearest(g_fPlayerVolume[client] * 100));
+	CPrintToChat(client, "%s%t", g_sChatPrefix, "Volume set", "saysound", buffer);
 }
 
 public void Reset_Count(Handle event , const char[] name , bool dontBroadcast)
@@ -152,7 +191,7 @@ public bool Sounds_Config(KeyValues &kv, int itemid)
 	kv.GetString("trigger", g_sTrigger[g_iCount], 64);
 	//g_iPerm[g_iCount] = kv.GetNum("perm", 0);
 	g_iCooldown[g_iCount] = kv.GetNum("cooldown", 30);
-	g_fVolume[g_iCount] = kv.GetFloat("volume", 0.5);
+	//g_fVolume[g_iCount] = kv.GetFloat("volume", 0.5);
 	g_iOrigin[g_iCount] = kv.GetNum("origin", 1);
 	//g_unPrice[g_iCount] = kv.GetNum("price");
 	g_iItemId[g_iCount] = itemid;
@@ -167,7 +206,7 @@ public bool Sounds_Config(KeyValues &kv, int itemid)
 		g_iCooldown[g_iCount] = 10;
 	}
 
-	if (g_fVolume[g_iCount] > 1.0)
+	/*if (g_fVolume[g_iCount] > 1.0)
 	{
 		g_fVolume[g_iCount] = 1.0;
 	}
@@ -175,7 +214,7 @@ public bool Sounds_Config(KeyValues &kv, int itemid)
 	if (g_fVolume[g_iCount] <= 0.0)
 	{
 		g_fVolume[g_iCount] = 0.05;
-	}
+	}*/
 
 	g_iCount++;
 
@@ -207,16 +246,33 @@ public int Sounds_Equip(int client, int itemid)
 			// Sound From global world
 			case 1:
 			{
-				EmitSoundToAll(g_sSound[iIndex], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[iIndex]);
-				//g_iUses[client]++;
+				for (int i = 1; i <= MaxClients; i++)
+				{
+					if (!IsClientInGame(i) || IsFakeClient(i))
+						continue;
+
+					if(g_fPlayerVolume[i]!=0.0)
+						EmitSoundToClient(i, g_sSound[iIndex], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fPlayerVolume[i]);
+				}
+				
+				//EmitSoundToAll(g_sSound[iIndex], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fPlayerVolume[i]);
 			}
 			// Sound From local player
 			case 2:
 			{
-				float fVec[3];
-				GetClientAbsOrigin(client, fVec);
-				EmitAmbientSound(g_sSound[iIndex], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[iIndex]);
-				//g_iUses[client]++;
+				//float fVec[3];
+				//GetClientAbsOrigin(client, fVec);
+				
+				for (int i = 1; i <= MaxClients; i++)
+				{
+					if (!IsClientInGame(i) || IsFakeClient(i))
+						continue;
+						
+					if(g_fPlayerVolume[i]!=0.0)
+						EmitSoundToClient(i, g_sSound[iIndex], client, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fPlayerVolume[i]);
+				}
+		
+				//EmitAmbientSound(g_sSound[iIndex], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fPlayerVolume[i]);
 			}
 			// Sound From player voice
 			case 3:
@@ -227,8 +283,17 @@ public int Sounds_Equip(int client, int itemid)
 
 				// player`s mouth
 				fPos[2] -= 3.0;
-				//g_iUses[client]++;
-				EmitSoundToAll(g_sSound[iIndex], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[iIndex], SNDPITCH_NORMAL, client, fPos, fAgl, true);
+				
+				for (int i = 1; i <= MaxClients; i++)
+				{
+					if (!IsClientInGame(i) || IsFakeClient(i))
+						continue;
+						
+					if(g_fPlayerVolume[i]!=0.0)
+						EmitSoundToClient(i, g_sSound[iIndex], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fPlayerVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
+				}
+				
+				//EmitSoundToAll(g_sSound[iIndex], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fPlayerVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
 			}
 		}
 	}
@@ -261,75 +326,6 @@ public void Event_PlayerSay(Event event, char[] name, bool dontBroadcast)
 	char sBuffer[32];
 	GetEventString(event, "text", sBuffer, sizeof(sBuffer));
 
-	//Old trigger method
-	/*for (int i = 0; i < g_iCount; i++)
-	{
-		if (strcmp(sBuffer, g_sTrigger[i]) == 0)
-		{
-			if (g_iSpam[client] > GetTime())
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Spam Cooldown", g_iSpam[client] - GetTime());
-				return;
-			}
-
-			if (!CheckFlagBits(client, g_iFlagBits[i]) || !Store_HasClientAccess(client) || !CheckSteamAuth(client, g_sSteam[i]))
-				return;
-
-			int credits = Store_GetClientCredits(client);
-			if (credits >= g_unPrice[i] || Store_HasClientItem(client, g_iItemId[i]))
-			{
-				switch (g_iOrigin[i])
-				{
-					// Sound From global world
-					case 1:
-					{
-						EmitSoundToAll(g_sSound[i], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
-					}
-					// Sound From local player
-					case 2:
-					{
-						float fVec[3];
-						GetClientAbsOrigin(client, fVec);
-						EmitAmbientSound(g_sSound[i], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
-					}
-					// Sound From player voice
-					case 3:
-					{
-						float fPos[3], fAgl[3];
-						GetClientEyePosition(client, fPos);
-						GetClientEyeAngles(client, fAgl);
-
-						// player`s mouth
-						fPos[2] -= 3.0;
-
-						EmitSoundToAll(g_sSound[i], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
-					}
-				}
-			
-				if (!Store_HasClientItem(client, g_iItemId[i]))
-				{
-					Store_SetClientCredits(client, credits - g_unPrice[i]);
-					if (g_iPerm[i] == 1)
-					{
-						Store_GiveItem(client, g_iItemId[i], 0, 0, g_unPrice[i]);
-					}
-				}
-				else if (g_iPerm[i] == 0)
-				{
-					Store_RemoveItem(client, g_iItemId[i]);
-				}
-
-				g_iSpam[client] = GetTime() + g_iCooldown[i];
-			}
-			else
-			{
-				CPrintToChat(client, "%s%t", g_sChatPrefix, "Credit Not Enough");
-			}
-
-			break;
-		}
-	}*/
-	
 	for (int i = 0; i < g_iCount; i++)
 	{
 		if (strcmp(sBuffer, g_sTrigger[i]) == 0)
@@ -352,14 +348,33 @@ public void Event_PlayerSay(Event event, char[] name, bool dontBroadcast)
 						// Sound From global world
 						case 1:
 						{
-							EmitSoundToAll(g_sSound[i], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
+							for (int z = 1; z <= MaxClients; z++)
+							{
+								if (!IsClientInGame(z) || IsFakeClient(z))
+									continue;
+
+								if(g_fPlayerVolume[z]!=0.0)
+									EmitSoundToClient(z, g_sSound[i], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fPlayerVolume[i]);
+							}
+							
+							//EmitSoundToAll(g_sSound[i], SOUND_FROM_WORLD, _, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
 						}
 						// Sound From local player
 						case 2:
 						{
-							float fVec[3];
-							GetClientAbsOrigin(client, fVec);
-							EmitAmbientSound(g_sSound[i], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
+							//float fVec[3];
+							//GetClientAbsOrigin(client, fVec);
+							
+							for (int z = 1; z <= MaxClients; z++)
+							{
+								if (!IsClientInGame(z) || IsFakeClient(z))
+									continue;
+									
+								if(g_fPlayerVolume[z]!=0.0)
+									EmitSoundToClient(z, g_sSound[i], client, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fPlayerVolume[i]);
+							}
+					
+							//EmitAmbientSound(g_sSound[i], fVec, SOUND_FROM_PLAYER, SNDLEVEL_RAIDSIREN, _, g_fVolume[i]);
 						}
 						// Sound From player voice
 						case 3:
@@ -370,8 +385,17 @@ public void Event_PlayerSay(Event event, char[] name, bool dontBroadcast)
 
 							// player`s mouth
 							fPos[2] -= 3.0;
-
-							EmitSoundToAll(g_sSound[i], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
+							
+							for (int z = 1; z <= MaxClients; z++)
+							{
+								if (!IsClientInGame(z) || IsFakeClient(z))
+									continue;
+									
+								if(g_fPlayerVolume[z]!=0.0)
+									EmitSoundToClient(z, g_sSound[i], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fPlayerVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
+							}
+							
+							//EmitSoundToAll(g_sSound[i], client, SNDCHAN_VOICE, SNDLEVEL_NORMAL, SND_NOFLAGS, g_fVolume[i], SNDPITCH_NORMAL, client, fPos, fAgl, true);
 						}
 					}
 
