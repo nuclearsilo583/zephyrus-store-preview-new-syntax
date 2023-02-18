@@ -89,7 +89,7 @@ public Plugin myinfo =
 	name = "Store - Lootbox module",
 	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "2.1", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -397,7 +397,8 @@ bool DropLootbox(int client, int index)
 	AcceptEntityInput(iLootbox, "Enable");
 	ActivateEntity(iLootbox);
 	
-	EmitAmbientSound("ui/panorama/case_drop_01.wav", fPos, _, _, _, _, _, _);
+	//EmitAmbientSound("ui/panorama/case_drop_01.wav", fPos, _, _, _, _, _, _);
+	EmitSoundToClient(client, "ui/panorama/case_drop_01.wav", iLootbox, _, _, _, _, _, _);
 
 	TeleportEntity(iLootbox, fPos, fAng, NULL_VECTOR);
 	
@@ -486,7 +487,7 @@ int CreateLight(int ent, float pos[3])
 
 public Action Timer_Open(Handle timer, int client)
 {
-	char temp[64], sUId[64], sParts[2][64];
+	char temp[64], sUId[64], sParts[2][64], sCredits[2][64];
 	strcopy(temp, sizeof(temp), g_sLootboxItems[g_iClientBox[client]][GetRandomInt(0, g_iItemLevelCount[g_iClientBox[client]][g_iClientLevel[client]] - 1)][g_iClientLevel[client]]); // sry
 	
 	int iCount = ExplodeString(temp, "-", sParts, 2, 64);
@@ -500,7 +501,61 @@ public Action Timer_Open(Handle timer, int client)
 	if (time == 0)
 		iCount = 1;
 
-	if (itemid == -1)
+	// Items not found but second slitted string is credits (this is credits in lootbox)
+	if (itemid == -1 && StrEqual(sParts[1], "credits"))
+	{
+		/***************
+		IDK what the fuck I've done at these lines. o.o
+		***************/
+		int credits;
+		bool g_bNegative;
+		
+		RequestFrame(Frame_DeleteBox, client);
+		
+		//Slit the first part for random credit.
+		//PrintToConsoleAll("%s", sParts[0]);
+		ExplodeString(sParts[0], ",", sCredits, 2, 64);
+		if(sCredits[1][0] == '\0') // If the second string is NULL_STRING
+		{
+			credits = StringToInt(sCredits[0]);
+			if(credits<=0)
+				g_bNegative = true;
+			
+			//PrintToConsoleAll("Null String");
+		}
+		else
+		{
+			int lower_bound, upper_bound;
+			lower_bound = StringToInt(sCredits[0]);
+			upper_bound = StringToInt(sCredits[1]);
+
+			if(lower_bound <= 0 || upper_bound <= 0)
+				g_bNegative = true;
+				
+			if(lower_bound>upper_bound)
+				credits = GetRandomInt(upper_bound, lower_bound);
+			else if (lower_bound<upper_bound)
+				credits = GetRandomInt(lower_bound, upper_bound);
+			else credits = lower_bound;
+				
+			//PrintToConsoleAll("2 Null String");
+		}
+		
+		if(g_bNegative) // credits is negative number or 0
+		{
+			Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
+			CPrintToChat(client, "%s%s", g_sChatPrefix, "Error occured, item back. Inform admin log");
+			Store_SQLLogMessage(client, LOG_ERROR, "Can't convert credits to posible give for lootbox #%i on level #%i.", g_iClientBox[client], g_iClientLevel[client]);
+			return Plugin_Stop;
+		}
+
+		Store_SetClientCredits(client, Store_GetClientCredits(client) + credits);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Chat won lootbox item credits", credits);
+		EmitSoundToClient(client, g_sPickUpSound[g_iClientBox[client]], client, _, _, _, _, _, _);
+		
+		return Plugin_Stop;
+	}
+	else if (itemid == -1) //Item not found
 	{
 		RequestFrame(Frame_DeleteBox, client);
 		Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
@@ -509,7 +564,7 @@ public Action Timer_Open(Handle timer, int client)
 		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
 		return Plugin_Stop;
 	}
-
+	
 	Store_Item item;
 	Store_GetItem(itemid, item);
 	Type_Handler handler;
@@ -594,9 +649,10 @@ public Action Timer_Open(Handle timer, int client)
 		Call_Finish();
 	}
 
-	float fVec[3];
-	GetClientAbsOrigin(client, fVec);
-	EmitAmbientSound(g_sPickUpSound[g_iClientBox[client]], fVec, _, _, _, _, _, _);
+	//float fVec[3];
+	//GetClientAbsOrigin(client, fVec);
+	//EmitAmbientSound(g_sPickUpSound[g_iClientBox[client]], fVec, _, _, _, _, _, _);
+	EmitSoundToClient(client, g_sPickUpSound[g_iClientBox[client]], client, _, _, _, _, _, _);
 
 	RequestFrame(Frame_DeleteBox, client);
 
@@ -684,7 +740,8 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	fPos[2] -= 0.2;
 	TeleportEntity(lootbox, fPos, NULL_VECTOR, NULL_VECTOR);
 	g_iClientSpeed[client] -= 5;
-	EmitAmbientSound("ui/csgo_ui_crate_item_scroll.wav", fPos, _, _, _, _, _, _);
+	//EmitAmbientSound("ui/csgo_ui_crate_item_scroll.wav", fPos, _, _, _, _, _, _);
+	EmitSoundToClient(client, "ui/csgo_ui_crate_item_scroll.wav", lootbox, _, _, _, _, _, _);
 
 	char sBuffer[128];
 	IntToString(g_iClientSpeed[client], sBuffer, sizeof(sBuffer));

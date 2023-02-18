@@ -19,10 +19,25 @@
 		"gold"						"2.000000" // Note grey, blue, purple, red, gold must have sum value at 100%
 		"time" 						"1296000" // Time for items of case. Fix for planed item since they will appear to be pernament item.
 		
-		// This config is a bit confusing. There're 2 type of config.
+		// This config is a bit confusing. There're 2 type of config. and credits configs is different. Please read carefully. O.O
 		// 1. "grey"					"uid_model_banana_joe" --> When opened a lootbox. The item's expiration date will have the "time" config.
 		// 2. "grey"					"uid_model_banana_joe-864000" --> When open a lootbox. The item will use the 864000 as a expiration time (in seconds) and no depend on "time"
 		// If you miss-type such as "uid_model_banana_joe-" or "uid_model_banana_joe-0". This will use the "time" config for expiration date.
+		//
+		//
+		// Below here is credits config for lootbox
+		// If the first string before "-" is a number. It will check the seconds string for "credits" string for credits config. if no "credits"
+		// it will throw error the item is not found and give client back their lootbox item.
+		//
+		//
+		// 3. "grey"					"300-credits" --> Client will receive 300 credits by this config.
+		// 4. "grey"					"300,500-credits" --> Client will receive random credits between 300 and 500
+		// 5. "grey"					"500,300-credits" --> Client will receive random credits between 300 and 500 (this order will be automatically correct by plugin)
+		// 6. "grey"					"0,0-credits" --> This config will throw error and give client item back
+		// 7. "grey"					"300,0-credits" --> This config will throw error and give client item back
+		// 8. "grey"					"0,300-credits" --> This config will throw error and give client item back
+		// Please put credits config carefully. I don't remember what I've done in the .sp (so dont ask me. It was a total mess).
+		//
 		// You can add multiple item for 1 "grey", "purple" .. item. Recommend only 30 items per case.
 		// You can config various day for each item.
 		"Items" 
@@ -31,6 +46,13 @@
 			"grey"					"uid_model_kim_jong_un-" // This item will have 15 days config ("time")
 			"blue"					"uid_model_ram_neptune-0" // This item will have 15 days config ("time")
 			"blue"					"uid_model_rom_neptune-604800" // This item will last for 7 days if receive.
+			"blue"					"300-credits" // Receieve 300 credits.
+			"blue"					"300,500-credits" // Receieve random credits between 300 and 500.
+			"blue"					"500,300-credits" // Receieve random credits between 300 and 500.
+			"blue"					"0,0-credits" // Throw error message and give item back.
+			"blue"					"0,500-credits" // Throw error message and give item back.
+			"blue"					"500,0-credits" // Throw error message and give item back.
+			"blue"					"500,-credits" // Receieve 500 credits.
 			"purple"				"uid_model_fox_miku_skin3" // This item will have 15 days config ("time")
 			"purple"				"uid_model_klee_genshin" // ...
 			"red"					"uid_model_kagura_nana_skin1" // ...
@@ -41,10 +63,3 @@
 		}
 	}
 }
-
-// IF you are upgrade voucher module from version 1.8 to 2.0 please execute these query to your database
-ALTER TABLE store_voucher MODIFY COLUMN voucher varchar(64) NOT NULL DEFAULT ' '
-ALTER TABLE store_voucher MODIFY COLUMN name_of_create varchar(64) NOT NULL DEFAULT ' '
-ALTER TABLE store_voucher MODIFY COLUMN steam_of_create varchar(64) NOT NULL DEFAULT ' '
-ALTER TABLE store_voucher MODIFY COLUMN name_of_redeem varchar(64) NOT NULL DEFAULT ' '
-ALTER TABLE store_voucher MODIFY COLUMN steam_of_redeem varchar(64) NOT NULL DEFAULT ' '
