@@ -2794,6 +2794,12 @@
 		"pt"		"{green}{1} {default}abriu um contêiner e encontrou {red}{2} ({3})!"
 		"chi"		"{green}{1} {default}打开了一个箱子并发现了 {red}{2} ({3})！"
 	}
+	
+	"Chat won lootbox item credits"
+	{
+		"#format"	"{1:i}"
+		"en"		"{default} You have opened a container and found {yellow}{1} {purple}credits!"
+	}
 
 	"Chat won lootbox item gold"
 	{
