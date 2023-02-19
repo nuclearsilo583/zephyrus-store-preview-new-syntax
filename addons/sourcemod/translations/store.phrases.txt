@@ -1,5 +1,13 @@
 ﻿"Phrases"
 {
+	"You already have VIP status!"
+	{
+		"en" "You already have VIP status!"
+	}
+	"buyvip"
+	{
+		"en" "vip"
+	}
 	"Client Loadout Reset"
 	{
 		"en" "Your loadout has been reset."
