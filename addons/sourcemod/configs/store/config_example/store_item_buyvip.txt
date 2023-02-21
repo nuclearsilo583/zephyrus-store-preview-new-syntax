@@ -1,6 +1,6 @@
 "VIP - 1 month"
 {
-	"type" "buyvip"
+	"type" "buyvip-r1ko"
 	"group" "VIP"
 	"time" "2592000"
 	"price"	"50000"

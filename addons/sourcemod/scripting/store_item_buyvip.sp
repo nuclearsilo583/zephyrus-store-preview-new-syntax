@@ -15,7 +15,7 @@ char g_sChatPrefix[128];
 
 public Plugin myinfo = 
 {
-	name = "Store - VIP Module",
+	name = "Store - VIP Module for R1KO's VIP Core",
 	author = "AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
 	version = "1.0", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
@@ -24,7 +24,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {	
-	Store_RegisterHandler("buyvip", "", VIP_OnMapStart, VIP_Reset, VIP_Config, VIP_Equip, VIP_Remove, true);
+	Store_RegisterHandler("buyvip-r1ko", "", VIP_OnMapStart, VIP_Reset, VIP_Config, VIP_Equip, VIP_Remove, true);
 	
 	LoadTranslations("store.phrases");
 }
