@@ -31,6 +31,13 @@ int gc_iDescription = -1;
 int gc_iReloadType = -1;
 int gc_iReloadDelay = -1;
 int gc_iReloadNotify = -1;
+int g_cvarCommandsStore = -1;
+int g_cvarCommandsInventory = -1;
+int g_cvarCommandsGift = -1;
+int g_cvarCommandsGive = -1;
+int g_cvarCommandsResetPlayer = -1;
+int g_cvarCommandsCredits = -1;
+int g_cvarCommandsResetLoadout = -1;
 ConVar g_cvarGiveItemBehavior;
 ConVar g_cvarChatTag;
 
@@ -85,7 +92,14 @@ void Store_Cvars_OnPluginStart()
 	gc_iReloadDelay = RegisterConVar("sm_store_reload_config_delay", "10", "Time in second to reload current map on store reload config. Dependence: \"sm_store_reload_config_type\" 0", TYPE_INT);
 	gc_iReloadNotify = RegisterConVar("sm_store_reload_config_notify", "1", "Store reloadconfig notify player", TYPE_INT);
 
-	
+	g_cvarCommandsStore = RegisterConVar("sm_store_commands_store", "sm_store,sm_shop", "A list of commands that can be used to open the store. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsInventory = RegisterConVar("sm_store_commands_inventory", "sm_inventory,sm_inv", "A list of commands that can be used to open the inventory. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsGift = RegisterConVar("sm_store_commands_gift", "sm_gift", "A list of commands that can be used to gift credits. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsGive = RegisterConVar("sm_store_commands_give", "sm_givecredits", "A list of commands that can be used to give credits (as an ADMIN). Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsResetPlayer = RegisterConVar("sm_store_commands_resetplayer", "sm_resetplayer,sm_store_resetplayer", "A list of commands that can be used to reset a player's data (as an ADMIN). Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsCredits = RegisterConVar("sm_store_commands_credits", "sm_credits", "A list of commands that can be used to display the amount of credits you have. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsResetLoadout = RegisterConVar("sm_store_commands_resetloadout", "sm_rsloadout,sm_resetloadout,sm_store_rsloadout,sm_store_resetloadout", "A list of commands that can be used to unequip all the equipped items you have. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+
 	g_cvarChatTag.AddChangeHook(OnSettingChanged);
 	
 	// After every module was loaded we are ready to generate the cfg

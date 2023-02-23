@@ -122,6 +122,13 @@ int gc_iDescription = -1;
 int gc_iReloadType = -1;
 int gc_iReloadDelay = -1;
 int gc_iReloadNotify = -1;
+int g_cvarCommandsStore = -1;
+int g_cvarCommandsInventory = -1;
+int g_cvarCommandsGift = -1;
+int g_cvarCommandsGive = -1;
+int g_cvarCommandsResetPlayer = -1;
+int g_cvarCommandsCredits = -1;
+int g_cvarCommandsResetLoadout = -1;
 ConVar g_cvarGiveItemBehavior;
 
 Store_Item g_eItems[STORE_MAX_ITEMS];
@@ -326,19 +333,19 @@ public void OnPluginStart()
 	gc_iReloadDelay = RegisterConVar("sm_store_reload_config_delay", "10", "Time in second to reload current map on store reload config. Dependence: \"sm_store_reload_config_type\" 0", TYPE_INT);
 	gc_iReloadNotify = RegisterConVar("sm_store_reload_config_notify", "1", "Store reloadconfig notify player", TYPE_INT);
 
+	g_cvarCommandsStore = RegisterConVar("sm_store_commands_store", "sm_store,sm_shop", "A list of commands that can be used to open the store. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsInventory = RegisterConVar("sm_store_commands_inventory", "sm_inventory,sm_inv", "A list of commands that can be used to open the inventory. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsGift = RegisterConVar("sm_store_commands_gift", "sm_gift", "A list of commands that can be used to gift credits. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsGive = RegisterConVar("sm_store_commands_give", "sm_givecredits", "A list of commands that can be used to give credits (as an ADMIN). Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsResetPlayer = RegisterConVar("sm_store_commands_resetplayer", "sm_resetplayer,sm_store_resetplayer", "A list of commands that can be used to reset a player's data (as an ADMIN). Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsCredits = RegisterConVar("sm_store_commands_credits", "sm_credits", "A list of commands that can be used to display the amount of credits you have. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+	g_cvarCommandsResetLoadout = RegisterConVar("sm_store_commands_resetloadout", "sm_rsloadout,sm_resetloadout,sm_store_rsloadout,sm_store_resetloadout", "A list of commands that can be used to unequip all the equipped items you have. Two commands must be separated by a comma (,). Max 10 commands.", TYPE_STRING);
+
 	g_cvarChatTag.AddChangeHook(OnSettingChanged);
 	
 
 	// Register Commands
-	RegConsoleCmd("sm_store", Command_Store);
-	RegConsoleCmd("sm_shop", Command_Store);
-	RegConsoleCmd("sm_inv", Command_Inventory);
-	RegConsoleCmd("sm_inventory", Command_Inventory);
-	RegConsoleCmd("sm_gift", Command_Gift);
-	RegConsoleCmd("sm_givecredits", Command_GiveCredits);
-	RegConsoleCmd("sm_resetplayer", Command_ResetPlayer);
-	RegConsoleCmd("sm_credits", Command_Credits);
-	RegConsoleCmd("sm_rsloadout", Command_ResetLoadout);
+	// --- Other commands are now registered in OnConfigsExecuted with the RegisterCommand function ---
 	RegServerCmd("sm_store_custom_credits", Command_CustomCredits);
 	
 	RegAdminCmd("sm_store_reloadconfig", Command_ReloadConfig, ADMFLAG_ROOT);																	  
@@ -811,6 +818,23 @@ public void OnMapEnd()
 
 public void OnConfigsExecuted()
 {
+	static bool bFirstLoad = true; // See https://wiki.alliedmods.net/Introduction_to_SourcePawn_1.7#Local_static
+	
+	if (bFirstLoad)
+	{
+		bFirstLoad = false;
+		
+		// Register commands
+		char sCommands[10][60]; // 10 commands of 60 bytes max
+		RegisterCommand(g_eCvars[g_cvarCommandsStore].sCache, Command_Store, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+		RegisterCommand(g_eCvars[g_cvarCommandsInventory].sCache, Command_Inventory, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+		RegisterCommand(g_eCvars[g_cvarCommandsGift].sCache, Command_Gift, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+		RegisterCommand(g_eCvars[g_cvarCommandsGive].sCache, Command_GiveCredits, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+		RegisterCommand(g_eCvars[g_cvarCommandsResetPlayer].sCache, Command_ResetPlayer, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+		RegisterCommand(g_eCvars[g_cvarCommandsCredits].sCache, Command_Credits, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+		RegisterCommand(g_eCvars[g_cvarCommandsResetLoadout].sCache, Command_ResetLoadout, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+	}
+	
 	//Jetpack_OnConfigsExecuted();
 	//Jihad_OnConfigsExecuted();
 	
@@ -4718,4 +4742,23 @@ public SMCResult Config_EndSection(Handle parser)
 
 public void Config_End(Handle parser, bool halted, bool failed) 
 {
+}
+
+/**
+ * Registers one or multiple commands that point towards the same callback.
+ * Designed to be used once in OnConfigsExecuted, to allow customizable commands.
+ * -
+ * const char[] command		A string containing the commands, starting with the sm_ prefix, and two commands being separated by a comma (,).
+ * Function callback		The command callback: the function that will be called when the command is executed.
+ * char[][] sCommands		A 2D string array. First dimension: max number of commands, second dimension: max command size.
+ * int sCommandsSize		sizeof(sCommands)
+ * int sCommandsSize2		sizeof(sCommands[])
+ */
+stock void RegisterCommand(const char[] command, Function callback, char[][] sCommands, int sCommandsSize, int sCommandsSize2)
+{
+	int iCommands = ExplodeString(g_eCvars[g_cvarCommandsStore].sCache, ",", sCommands, sCommandsSize, sCommandsSize2);
+	for (int i; i < iCommands; i++)
+	{
+		RegConsoleCmd(sCommands[i], callback);
+	}
 }
