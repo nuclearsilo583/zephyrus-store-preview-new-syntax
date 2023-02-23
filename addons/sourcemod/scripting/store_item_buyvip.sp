@@ -1,3 +1,5 @@
+//https://github.com/R1KO/VIP-Core
+
 #pragma semicolon 1
 #pragma newdecls required
 
