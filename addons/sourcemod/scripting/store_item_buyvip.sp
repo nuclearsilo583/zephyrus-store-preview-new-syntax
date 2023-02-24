@@ -26,7 +26,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {	
-	Store_RegisterHandler("buyvip-r1ko", "", VIP_OnMapStart, VIP_Reset, VIP_Config, VIP_Equip, VIP_Remove, true);
+	Store_RegisterHandler("buyvip-r1ko", "", _, VIP_Reset, VIP_Config, VIP_Equip, _, false);
 	
 	LoadTranslations("store.phrases");
 }
@@ -36,9 +36,6 @@ public void Store_OnConfigExecuted(char[] prefix)
 	strcopy(g_sChatPrefix, sizeof(g_sChatPrefix), prefix);
 }
 
-public void VIP_OnMapStart()
-{
-}
 
 public void VIP_Reset()
 {
@@ -68,14 +65,7 @@ public int VIP_Equip(int client, int id)
 		int m_iData = Store_GetDataIndex(id);
 		
 		VIP_GiveClientVIP(_, client, g_iVIPTime[m_iData], g_sVIPGroup[m_iData], true);
-
-		Store_RemoveItem(client, id);
 	}
 	
-	return 0;
-}
-
-public int VIP_Remove(int client,int id)
-{
 	return 0;
 }
