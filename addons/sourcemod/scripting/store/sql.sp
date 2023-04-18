@@ -132,8 +132,8 @@ public void SQLCallback_Connect(Handle owner, Handle hndl, const char[] error, a
 		// Do some housekeeping
 		char m_szQuery[256], m_szLogCleaningQuery[256];
 		// Remove expired and equipped items
-		Format(STRING(m_szQuery), "DELETE FROM store_items, store_equipment "
-								... "WHERE (store_items.unique_id = store_equipment.unique_id) "
+		Format(STRING(m_szQuery), "DELETE store_items, store_equipment FROM store_items, store_equipment "
+								... "WHERE store_items.unique_id = store_equipment.unique_id "
 									... "AND store_items.date_of_expiration != 0 "
 									... "AND store_items.date_of_expiration < %d", GetTime());
 		SQL_TVoid(g_hDatabase, m_szQuery);
