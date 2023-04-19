@@ -34,27 +34,40 @@ public Action Timer_DatabaseTimeout(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public void Store_DB_HouseKeeping(Handle db)
+void Store_DB_HouseKeeping(Handle db)
 {
 	// Do some housekeeping
 	char m_szQuery[256], m_szLogCleaningQuery[256];
+	
+	char m_szDriver[12];
+	SQL_ReadDriver(db, STRING(m_szDriver));
+	
 	// Remove expired and equipped items
-	Format(STRING(m_szQuery), "DELETE FROM store_items, store_equipment "
-							... "WHERE (store_items.unique_id = store_equipment.unique_id) "
-								... "AND store_items.date_of_expiration != 0 "
-								... "AND store_items.date_of_expiration < %d", GetTime());
+	if (StrEqual(m_szDriver, "mysql"))
+	{
+		Format(STRING(m_szQuery), "DELETE store_items, store_equipment "
+								... "FROM store_items, store_equipment "
+								... "WHERE store_items.unique_id = store_equipment.unique_id "
+									... "AND store_items.date_of_expiration != 0 "
+									... "AND store_items.date_of_expiration < %d", GetTime());
+	}
+	else
+	{
+		Format(STRING(m_szQuery), "DELETE FROM store_items, store_equipment "
+								... "WHERE store_items.unique_id = store_equipment.unique_id "
+									... "AND store_items.date_of_expiration != 0 "
+									... "AND store_items.date_of_expiration < %d", GetTime());
+	}
 	SQL_TVoid(db, m_szQuery);
 	
 	// Remove expired and unequipped items
 	Format(STRING(m_szQuery), "DELETE FROM store_items WHERE date_of_expiration != 0 AND date_of_expiration < %d", GetTime());
 	SQL_TVoid(db, m_szQuery);
 	
-	char m_szDriver[2];
-	SQL_ReadDriver(db, STRING(m_szDriver));
 	
 	if (g_eCvars[g_cvarLogLast].aCache>0)
 	{
-		if(m_szDriver[0] == 'm')
+		if (StrEqual(m_szDriver, "mysql"))
 		{
 			Format(STRING(m_szLogCleaningQuery), "DELETE FROM store_plugin_logs WHERE `date` < CURDATE()-%i", g_eCvars[g_cvarLogLast].aCache);
 			SQL_TVoid(db, m_szLogCleaningQuery);
