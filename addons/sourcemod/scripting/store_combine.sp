@@ -4669,18 +4669,33 @@ void Store_DB_HouseKeeping(Handle db)
 	// Remove expired and equipped items
 	if (StrEqual(m_szDriver, "mysql"))
 	{
+		// This query removes expired items that are equipped, and also remove the rows from store_equipment - it doesn't remove unequipped items!
 		Format(STRING(m_szQuery), "DELETE store_items, store_equipment "
 								... "FROM store_items, store_equipment "
 								... "WHERE store_items.unique_id = store_equipment.unique_id "
+									... "AND store_items.player_id = store_equipment.player_id "
 									... "AND store_items.date_of_expiration != 0 "
 									... "AND store_items.date_of_expiration < %d", GetTime());
+		// Ugly syntax, but MySQL DOES allow DELETE clauses between multiple tables in a single query
 	}
 	else
 	{
-		Format(STRING(m_szQuery), "DELETE FROM store_items, store_equipment "
-								... "WHERE store_items.unique_id = store_equipment.unique_id "
-									... "AND store_items.date_of_expiration != 0 "
-									... "AND store_items.date_of_expiration < %d", GetTime());
+		// This query removes rows from store_equipment that are linked to items that are expired, BUT DOESN'T ACTUALLY REMOVE EXPIRED ITEMS FROM PLAYERS INVENTORIES! - This is done by the query after this one.
+		// ^ NOTE THAT THE BEHAVIOR OF THIS QUERY DIFFERS FROM THE MySQL ONE!
+		// For easier copy-pasting: DELETE FROM store_equipment WHERE ROWID IN (SELECT store_equipment.ROWID FROM store_items, store_equipment WHERE store_items.unique_id = store_equipment.unique_id AND store_items.player_id = store_equipment.player_id AND store_items.date_of_expiration != 0 AND store_items.date_of_expiration < %d);
+		Format(STRING(m_szQuery), "DELETE FROM store_equipment "
+								... "WHERE ROWID IN "
+									... "("
+									...	"SELECT store_equipment.ROWID "
+										... "FROM store_items, store_equipment "
+										... "WHERE store_items.unique_id = store_equipment.unique_id "
+											... "AND store_items.player_id = store_equipment.player_id "
+											... "AND store_items.date_of_expiration != 0 "
+											... "AND store_items.date_of_expiration < %d"
+									... ") ", GetTime());
+		// SQLite doesn't allow DELETE clauses between multiple tables in a single query. GRRRR!!!
+		
+		// Btw, ROWID is the default hidden SQLite primary key, because the store_equipment table doesn't have one
 	}
 	SQL_TVoid(db, m_szQuery);
 	
