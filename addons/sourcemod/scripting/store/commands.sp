@@ -36,7 +36,7 @@ void Store_Commands_OnConfigsExecuted()
  */
 stock void RegisterCommand(const char[] command, ConCmd callback, char[][] sCommands, int sCommandsSize, int sCommandsSize2)
 {
-	int iCommands = ExplodeString(g_eCvars[g_cvarCommandsStore].sCache, ",", sCommands, sCommandsSize, sCommandsSize2);
+	int iCommands = ExplodeString(command, ",", sCommands, sCommandsSize, sCommandsSize2);
 	for (int i = 0; i < iCommands; i++)
 	{
 		RegConsoleCmd(sCommands[i], callback);
