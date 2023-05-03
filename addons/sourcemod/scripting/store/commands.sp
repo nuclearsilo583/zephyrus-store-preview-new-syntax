@@ -29,15 +29,15 @@ void Store_Commands_OnConfigsExecuted()
  * Designed to be used once in OnConfigsExecuted, to allow customizable commands.
  * -
  * const char[] command		A string containing the commands, starting with the sm_ prefix, and two commands being separated by a comma (,).
- * Function callback		The command callback: the function that will be called when the command is executed.
+ * ConCmd callback			The command callback: the function that will be called when the command is executed.
  * char[][] sCommands		A 2D string array. First dimension: max number of commands, second dimension: max command size.
  * int sCommandsSize		sizeof(sCommands)
  * int sCommandsSize2		sizeof(sCommands[])
  */
-stock void RegisterCommand(const char[] command, Function callback, char[][] sCommands, int sCommandsSize, int sCommandsSize2)
+stock void RegisterCommand(const char[] command, ConCmd callback, char[][] sCommands, int sCommandsSize, int sCommandsSize2)
 {
 	int iCommands = ExplodeString(g_eCvars[g_cvarCommandsStore].sCache, ",", sCommands, sCommandsSize, sCommandsSize2);
-	for (int i; i < iCommands; i++)
+	for (int i = 0; i < iCommands; i++)
 	{
 		RegConsoleCmd(sCommands[i], callback);
 	}
