@@ -4661,7 +4661,7 @@ public void Config_End(Handle parser, bool halted, bool failed)
 void Store_DB_HouseKeeping(Handle db)
 {
 	// Do some housekeeping
-	char m_szQuery[256], m_szLogCleaningQuery[256];
+	char m_szQuery[600], m_szLogCleaningQuery[256];
 	
 	char m_szDriver[12];
 	SQL_ReadDriver(db, STRING(m_szDriver));
