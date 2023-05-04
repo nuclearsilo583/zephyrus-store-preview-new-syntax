@@ -814,6 +814,8 @@ public void OnConfigsExecuted()
 	//Jetpack_OnConfigsExecuted();
 	//Jihad_OnConfigsExecuted();
 	
+	Store_Cvars_OnConfigsExecuted();
+	
 	// Call foward Store_OnConfigsExecuted
 	Forward_OnConfigsExecuted();
 
@@ -4723,4 +4725,10 @@ void Store_DB_HouseKeeping(Handle db)
 			SQL_TVoid(db, m_szLogCleaningQuery);
 		}
 	}
+}
+
+void Store_Cvars_OnConfigsExecuted()
+{
+	// Needed, because OnSettingChanged isn't called on config execution if the cvar has the default value (as there is no change in the cvar's value)
+	g_cvarChatTag.GetString(g_sChatPrefix, sizeof(g_sChatPrefix));
 }

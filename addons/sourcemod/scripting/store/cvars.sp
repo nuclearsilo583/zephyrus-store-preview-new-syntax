@@ -102,6 +102,12 @@ public void OnSettingChanged(ConVar convar, const char[] oldValue, const char[] 
 	}
 }
 
+void Store_Cvars_OnConfigsExecuted()
+{
+	// Needed, because OnSettingChanged isn't called on config execution if the cvar has the default value (as there is no change in the cvar's value)
+	g_cvarChatTag.GetString(g_sChatPrefix, sizeof(g_sChatPrefix));
+}
+
 //////////////////////////////
 //			CONVARS	 		//
 //////////////////////////////

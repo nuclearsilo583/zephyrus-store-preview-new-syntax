@@ -348,6 +348,8 @@ public void OnConfigsExecuted()
 	//Jetpack_OnConfigsExecuted();
 	//Jihad_OnConfigsExecuted();
 	
+	Store_Cvars_OnConfigsExecuted(); // store/cvars.sp
+	
 	// Call foward Store_OnConfigsExecuted
 	Store_Forward_OnConfigsExecuted(); // store/configs.sp
 
