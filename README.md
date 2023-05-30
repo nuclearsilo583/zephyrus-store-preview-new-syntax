@@ -64,7 +64,8 @@ P/S: Note. Store is mainly supported for csgo, any others game (css, l4d2) may h
 - Added !rsloadout to reset current loadout for client (All items will be unequipped).
 
 # Private Modules
-- Custom Weapon Model with shooting sound support (Contact me for more info). ([Preview video](https://youtu.be/iixbG1SIuJA)).
+- ~~Custom Weapon Model with shooting sound support (Contact me for more info). ([Preview video](https://youtu.be/iixbG1SIuJA)).~~
+CS2 will be released in no time so it's no point selling this. But if you do really want to have it before cs2. Contact me.
 
 ### How to install
 * Download latest release or (green) Code button -> Download Zip.

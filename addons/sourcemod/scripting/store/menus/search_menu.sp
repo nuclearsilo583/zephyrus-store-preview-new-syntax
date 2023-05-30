@@ -94,6 +94,7 @@ public int Store_ItemNameMenu_Handler(Menu hEdictMenu, MenuAction hAction, int c
 			
 			g_iMenuBack[client]=g_eItems[StringToInt(sSelected)].iParent;
 			g_iMenuClient[client]=client;
+			g_iMenuNum[client] = 1;
 
 			if(g_eItems[StringToInt(sSelected)].iHandler == g_iPackageHandler)
 				DisplayStoreMenu(client, g_iSelectedItem[client]);
@@ -110,9 +111,13 @@ public int Store_ItemNameMenu_Handler(Menu hEdictMenu, MenuAction hAction, int c
 					DisplayItemMenu(client, StringToInt(sSelected));
 				else 
 				{
+					g_iSelectedPlan[client] = -1;
+					//DisplayStoreMenu(client, g_eItems[StringToInt(sSelected)].iParent);
 					char sTitle[128];
 					Format(sTitle, sizeof(sTitle), "%t", "Confirm_Buy", g_eItems[g_iSelectedItem[client]].szName, g_eTypeHandlers[g_eItems[g_iSelectedItem[client]].iHandler].szType);
 					Store_DisplayConfirmMenu(client, sTitle, MenuHandler_Store, 0);
+					
+					//CPrintToChatAll("This item is %s %s with itemid is %i and price is %i", g_eItems[g_iSelectedItem[client]].szName, g_eTypeHandlers[g_eItems[g_iSelectedItem[client]].iHandler].szType, g_iSelectedItem[client], g_eItems[g_iSelectedItem[client]].iPrice)
 				}
 			}
 		}

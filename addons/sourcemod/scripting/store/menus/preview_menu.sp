@@ -129,9 +129,9 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 			}
 			else
 			{
-				Store_BuyItem(client, g_iSelectedItem[client], itemid);
-				//BuyItem(client, itemid);
-				DisplayPreviewMenu(client, itemid);
+				Store_BuyItem(client, itemid);
+				//DisplayPreviewMenu(client, itemid);
+				DisplayItemMenu(client, itemid);
 			}
 		}
 		else if (strcmp(sId, "item_plan") == 0)

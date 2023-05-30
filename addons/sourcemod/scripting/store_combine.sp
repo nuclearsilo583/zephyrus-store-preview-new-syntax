@@ -5,7 +5,7 @@
 #define PLUGIN_NAME "Store - The Resurrection with preview system"
 #define PLUGIN_AUTHOR "Zephyrus, nuclear silo, AiDN™"
 #define PLUGIN_DESCRIPTION "A completely new Store system with preview rewritten by nuclear silo"
-#define PLUGIN_VERSION "7.1.1"
+#define PLUGIN_VERSION "7.1.2"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -1834,6 +1834,7 @@ public int Store_ItemNameMenu_Handler(Menu hEdictMenu, MenuAction hAction, int c
 			
 			g_iMenuBack[client]=g_eItems[StringToInt(sSelected)].iParent;
 			g_iMenuClient[client]=client;
+			g_iMenuNum[client] = 1;
 
 			if(g_eItems[StringToInt(sSelected)].iHandler == g_iPackageHandler)
 				DisplayStoreMenu(client, g_iSelectedItem[client]);
@@ -1853,10 +1854,13 @@ public int Store_ItemNameMenu_Handler(Menu hEdictMenu, MenuAction hAction, int c
 				//	DisplayItemMenu(client, StringToInt(sSelected));
 				else 
 				{
-					//DisplayItemMenu(client, StringToInt(sSelected));
+					g_iSelectedPlan[client] = -1;
+					//DisplayStoreMenu(client, g_eItems[StringToInt(sSelected)].iParent);
 					char sTitle[128];
 					Format(sTitle, sizeof(sTitle), "%t", "Confirm_Buy", g_eItems[g_iSelectedItem[client]].szName, g_eTypeHandlers[g_eItems[g_iSelectedItem[client]].iHandler].szType);
 					Store_DisplayConfirmMenu(client, sTitle, MenuHandler_Store, 0);
+					
+					//CPrintToChatAll("This item is %s %s with itemid is %i and price is %i", g_eItems[g_iSelectedItem[client]].szName, g_eTypeHandlers[g_eItems[g_iSelectedItem[client]].iHandler].szType, g_iSelectedItem[client], g_eItems[g_iSelectedItem[client]].iPrice)
 				}
 			}
 		}
@@ -2741,9 +2745,9 @@ public int MenuHandler_Preview(Menu menu, MenuAction action, int client, int par
 			}
 			else
 			{
-				Store_BuyItem(client, g_iSelectedItem[client], itemid);
-				//BuyItem(client, itemid);
-				DisplayPreviewMenu(client, itemid);
+				Store_BuyItem(client, itemid);
+				//DisplayPreviewMenu(client, itemid);
+				DisplayItemMenu(client, itemid);
 			}
 		}
 		else if (strcmp(sId, "item_plan") == 0)
