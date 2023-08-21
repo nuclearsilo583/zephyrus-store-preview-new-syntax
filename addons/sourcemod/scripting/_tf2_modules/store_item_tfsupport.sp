@@ -1,7 +1,10 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <saxtonhale>
+
+#undef REQUIRE_PLUGIN
+#tryinclude <saxtonhale>
+#define REQUIRE_PLUGIN
 
 #include <store>
 #include <zephstocks>
@@ -48,7 +51,7 @@ int g_iTFHeads = 0;
 int g_iTFHats = 0;
 int g_iTFWeaponSizes = 0;
 
-Handle g_hSdkEquipWearable;
+// Handle g_hSdkEquipWearable;
 
 Handle g_hHatIDs = INVALID_HANDLE;
 Handle g_hRemoveTimer[MAXPLAYERS+1]={INVALID_HANDLE};
@@ -84,7 +87,7 @@ public OnPluginStart()
 	if(!TFSupport_ReadItemSchema())
 		return;
 
-	Handle m_hGameConf = LoadGameConfigFile("store.gamedata");
+	/*Handle m_hGameConf = LoadGameConfigFile("store.gamedata");
 	if (m_hGameConf != INVALID_HANDLE)
 	{
 		StartPrepSDKCall(SDKCall_Player);
@@ -95,7 +98,7 @@ public OnPluginStart()
 		CloseHandle(m_hGameConf);
 	}
 	else
-		return;
+		return;*/
 
 	Store_RegisterHandler("tfunusual", "unusual_id", TFSupport_OnMapStart, TFSupport_Reset, TFUnusual_Config, TFSupport_Equip, TFSupport_Remove, true);
 	Store_RegisterHandler("tfhatdye", "color", TFSupport_OnMapStart, TFSupport_Reset, TFHatDye_Config, TFSupport_Equip, TFSupport_Remove, true);
@@ -110,6 +113,12 @@ public OnPluginStart()
 	HookEvent("player_upgradedobject",	TFHat_UpgradeObject);
 	HookEvent("player_dropobject", 		TFHat_DropObject);
 	HookEvent("player_carryobject",		TFHat_PickupObject);
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    MarkNativeAsOptional("VSH_GetSaxtonHaleUserId");
+    return APLRes_Success;
 }
 
 public void TFSupport_OnMapStart()
@@ -286,8 +295,10 @@ public TFWeapon_Equip(int client, int id)
 		return 1;
 	}
 
+	#if defined REQUIRE_PLUGIN
 	if(GetFeatureStatus(FeatureType_Native, "VSH_GetSaxtonHaleUserId")==FeatureStatus_Available && VSH_GetSaxtonHaleUserId()==GetClientUserId(client))
 		return 1;
+	#endif
 
 	int idx = Store_GetDataIndex(id);
 
@@ -460,12 +471,14 @@ public int TFWeapon_RemoveChild(int client)
 	g_iClientWeapons[client][0] = -1;
 	g_iClientWeapons[client][1] = -1;
 	g_iClientWeapons[client][2] = -1;
+
+	return 0;
 }
 
 public int TFWeapon_CreateChild(client, idx)
 {
 	if(g_eTFWeapons[idx].m_szModel[0]==0)
-		return;
+		return -1;
 
 	int m_iTeam = GetClientTeam(client);
 	int parent = CreateEntityByName("tf_wearable");
@@ -552,6 +565,8 @@ public int TFWeapon_CreateChild(client, idx)
 	SDKHook(g_iClientWeapons[client][2], SDKHook_SetTransmit, Hook_TFSetTransmit);
 
 	g_hRemoveTimer[client]=INVALID_HANDLE;
+
+	return 0;
 }
 
 /*stock void TF2_EquipWearable(int iOwner,int iItem)
@@ -755,19 +770,21 @@ public Action TFHat_PlayerBuiltObject(Handle event, const char[] name, bool dont
 public int TFHat_Destroy(int ent)
 {
 	if(!ent || !IsValidEntity(ent))
-		return;
+		return -1;
 
 	int ent2 = EntRefToEntIndex(g_iEntHats[ent]);
 	if(ent2 && IsValidEntity(ent2))
 		AcceptEntityInput(ent2, "Kill");
 	g_iEntHats[ent] = 0;
+
+	return 0;
 }
 
 public int TFHat_Spawn(int ent, int owner, TFObjectType type)
 {
 	int m_iEquippedHat = Store_GetEquippedItem(owner, "tfhat", _:type);
 	if(m_iEquippedHat < 0)
-		return;
+		return -1;
 	int data = Store_GetDataIndex(m_iEquippedHat);
 
 	float pPos[3], pAng[3];
@@ -828,13 +845,15 @@ public int TFHat_Spawn(int ent, int owner, TFObjectType type)
 
 		g_iEntHats[ent]=EntIndexToEntRef(prop);
 	}
+
+	return 0;
 }
 
 public int TFWeaponSize_ResizeWeapon(int client)
 {
 	int m_iEquippedSize = Store_GetEquippedItem(client, "tfweaponsize");
 	if(m_iEquippedSize < 0)
-		return;
+		return -1;
 
 	for(int i=0;i<6;++i)
 	{
@@ -844,6 +863,8 @@ public int TFWeaponSize_ResizeWeapon(int client)
 			SetEntPropFloat(ent, Prop_Send, "m_flModelScale", g_flClientWeaponSize[client]);
 		}
 	}
+
+	return 0;
 }
 
 
@@ -854,4 +875,6 @@ public int Bonemerge(int ent)
 	m_iEntEffects |= 1;
 	m_iEntEffects |= 128;
 	SetEntProp(ent, Prop_Send, "m_fEffects", m_iEntEffects);
+
+	return 0;
 }
