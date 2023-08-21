@@ -87,18 +87,18 @@ public OnPluginStart()
 	if(!TFSupport_ReadItemSchema())
 		return;
 
-	Handle m_hGameConf = LoadGameConfigFile("store.gamedata");
+	/*Handle m_hGameConf = LoadGameConfigFile("store.gamedata");
 	if (m_hGameConf != INVALID_HANDLE)
 	{
 		StartPrepSDKCall(SDKCall_Player);
 		PrepSDKCall_SetFromConf(m_hGameConf, SDKConf_Virtual, "EquipWearable");
 		PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
-		// g_hSdkEquipWearable = EndPrepSDKCall();
+		g_hSdkEquipWearable = EndPrepSDKCall();
 
 		CloseHandle(m_hGameConf);
 	}
 	else
-		return;
+		return;*/
 
 	Store_RegisterHandler("tfunusual", "unusual_id", TFSupport_OnMapStart, TFSupport_Reset, TFUnusual_Config, TFSupport_Equip, TFSupport_Remove, true);
 	Store_RegisterHandler("tfhatdye", "color", TFSupport_OnMapStart, TFSupport_Reset, TFHatDye_Config, TFSupport_Equip, TFSupport_Remove, true);
