@@ -2,7 +2,7 @@
 {
 	"model" "models/player/custom_player/eminem/pedobear/pedobear.mdl"
 	"arms" "models/player/custom_player/eminem/pedobear/pedobear_arms.mdl" // no arms files? use "models/weapons/ct_arms_gign.mdl"
-	"team" "4"
+	"team" "4" 	// CS game Ts: 2, CTs: 3 || L4D2: infected: 2, survivors: 3 || NMRIH please use 4 no matter what.
 	"type" "playerskin"
 	"preview" "1"
 	"skin" "0" // Integer. Choose the model family skins

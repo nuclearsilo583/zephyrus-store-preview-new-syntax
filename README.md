@@ -1,8 +1,9 @@
 # Current development
-- CSGO: emote
+~~- CSGO: emote~~
 - CSS: done (if you want more module contact me)
 - L4D2: now supported ([youtube](https://www.youtube.com/watch?v=70m5xKlp1Wo))
 - TF2: now supported
+- NMRiH: now supported (check game modules folder)
 
 # Newly added
 Pinned: SM 1.11 is now the stable branch for sourcemod. Any error that cause with SM 1.10 will be no longer supported
@@ -65,7 +66,10 @@ P/S: Note. Store is mainly supported for csgo, any others game (css, l4d2) may h
 
 # Private Modules
 - ~~Custom Weapon Model with shooting sound support (Contact me for more info). ([Preview video](https://youtu.be/iixbG1SIuJA)).~~
-CS2 will be released in no time so it's no point selling this. But if you do really want to have it before cs2. Contact me.
+
+~~CS2 will be released in no time so it's no point selling this. But if you do really want to have it before cs2. Contact me.~~
+
+CS2 has been released so custom weapon model with sound will be trashed.
 
 ### How to install
 * Download latest release or (green) Code button -> Download Zip.
@@ -87,6 +91,11 @@ CS2 will be released in no time so it's no point selling this. But if you do rea
 * Edit addons/sourcemod/configs/store/items.txt for your store items/menu.
 * Run the server and check for error logs.
 
+### Notes:
+- The root scripting folder was mainly support for csgo.
+- For NMRiH chat modules to work. Install [this](https://github.com/dysphie/chat-processor-multicolors)
+- There are some modules in root folder may compatible with 2009 source engine (css, tf2, l4d2, nmrih) but some may not work unless there'is a rework of them.
+- If you use this for NMRiH and the chat tag have something like {color_string}. Change every `#include <colorvariables>` to `#include <multicolors>`
 
 # Important links
 - Contact me via steam for bug report:

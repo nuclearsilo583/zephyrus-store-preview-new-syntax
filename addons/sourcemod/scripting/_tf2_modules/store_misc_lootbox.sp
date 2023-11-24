@@ -35,8 +35,8 @@
 #include <store> 
 
 #include <multicolors>
-#include <smartdm> //https://forums.alliedmods.net/attachment.php?attachmentid=136152&d=1406298576
-#include <autoexecconfig> //https://raw.githubusercontent.com/Impact123/AutoExecConfig/development/autoexecconfig.inc
+#include <smartdm>
+#include <autoexecconfig>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -53,10 +53,12 @@
 ConVar gc_bVisible, gc_bItemSellable;
 
 char g_sChatPrefix[128];
-char g_sCreditsName[64] = "Credits";
+char g_sCreditsName[64] = "credits";
 float g_fSellRatio;
 
 char g_sPickUpSound[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
+char g_sOpenSound[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
+char g_sDropSound[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
 char g_sModel[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
 char g_sEfxFile[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
 char g_sEfxName[MAX_LOOTBOXES][PLATFORM_MAX_PATH];
@@ -77,6 +79,7 @@ int g_iItemID[MAX_LOOTBOXES];
 int g_iBoxCount = 0;
 int g_iItemLevelCount[MAX_LOOTBOXES][LEVEL_AMOUNT];
 
+bool roundend = false;
 bool mapend = false;
 
 int m_iOpenProp[MAXPLAYERS+1] = {-1, ...};
@@ -85,10 +88,10 @@ Handle gf_hPreviewItem;
 
 public Plugin myinfo = 
 {
-	name = "Store - Lootbox module [TF2:Modules]",
-	author = "shanapu, nuclear silo", // If you should change the code, even for your private use, please PLEASE add your name to the author here
+	name = "Store - Lootbox module [TF2]",
+	author = "shanapu, nuclear silo, AiDN™", // If you should change the code, even for your private use, please PLEASE add your name to the author here
 	description = "",
-	version = "1.7", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
+	version = "2.2", // If you should change the code, even for your private use, please PLEASE make a mark here at the version number
 	url = ""
 };
 
@@ -104,6 +107,9 @@ public void OnPluginStart()
 	Store_RegisterHandler("lootbox","lootbox", Lootbox_OnMapStart, Lootbox_Reset, Lootbox_Config, Lootbox_Equip, _, false);
 
 	LoadTranslations("store.phrases");
+
+	HookEvent("teamplay_round_win", Event_RoundEnd);
+	HookEvent("teamplay_round_start", Event_RoundStart);
 
 	AutoExecConfig_SetFile("lootbox", "sourcemod/store");
 	AutoExecConfig_SetCreateFile(true);
@@ -146,6 +152,8 @@ public Action OnLogAction(Handle source, Identity ident,int client,int target, c
 		}
 		mapend = true;
 	}
+	
+	return Plugin_Continue;
 }
 
 public void Event_End(Event event, const char[] name, bool dontBroadcast)
@@ -163,7 +171,7 @@ public void Event_End(Event event, const char[] name, bool dontBroadcast)
 		RequestFrame(Frame_DeleteBox, i);
 		
 	}
-	mapend = true;
+	roundend = true;
 }
 
 public void OnClientDisconnect(int client)
@@ -214,9 +222,25 @@ public void Lootbox_OnMapStart()
 			AddFileToDownloadsTable(sBuffer);
 			PrecacheSound(g_sPickUpSound[i], true);
 		}
+		
+		FormatEx(sBuffer, sizeof(sBuffer), "sound/%s", g_sOpenSound[i]);
+		if (FileExists(sBuffer, true) && g_sOpenSound[i][0])
+		{
+			AddFileToDownloadsTable(sBuffer);
+			PrecacheSound(g_sOpenSound[i], true);
+		}
+		
+		FormatEx(sBuffer, sizeof(sBuffer), "sound/%s", g_sDropSound[i]);
+		if (FileExists(sBuffer, true) && g_sDropSound[i][0])
+		{
+			AddFileToDownloadsTable(sBuffer);
+			PrecacheSound(g_sDropSound[i], true);
+		}
 	}
-
-	PrecacheSound("ui/csgo_ui_crate_item_scroll.wav", true);
+	
+	PrecacheSound("ui/itemcrate_shuffle.wav", true);
+	PrecacheSound("ui/item_crate_drop.wav", true);
+	PrecacheSound("ui/itemcrate_smash_ultrarare_short.wav", true);
 }
 
 public void Lootbox_Reset()
@@ -247,6 +271,8 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 	kv.GetString("file", g_sEfxFile[g_iBoxCount], PLATFORM_MAX_PATH);
 	kv.GetString("name", g_sEfxName[g_iBoxCount], PLATFORM_MAX_PATH);
 	kv.GetString("sound", g_sPickUpSound[g_iBoxCount], PLATFORM_MAX_PATH, "");
+	kv.GetString("open_sound", g_sOpenSound[g_iBoxCount], PLATFORM_MAX_PATH, "");
+	kv.GetString("drop_sound", g_sDropSound[g_iBoxCount], PLATFORM_MAX_PATH, "");
 	g_iTime[g_iBoxCount] = kv.GetNum("time", 0);
 	g_iPriceBack[g_iBoxCount] = kv.GetNum("price_back", 0);
 	g_iSellRatio[g_iBoxCount] = kv.GetFloat("sell_ratio", 0.5);
@@ -320,9 +346,14 @@ public bool Lootbox_Config(KeyValues &kv, int itemid)
 
 public int Lootbox_Equip(int client, int itemid)
 {
+	if (roundend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
+	{
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox round ended");
+		return 1;
+	}
 	if (mapend) // Check if client open in after round end has call ? This also cause massive error log on next round since case's prop are invalid.
 	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox map ended");
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox map ended");
 		return 1;
 	}
 	if (!IsPlayerAlive(client))
@@ -333,7 +364,7 @@ public int Lootbox_Equip(int client, int itemid)
 
 	if (g_iLootboxEntityRef[client] != INVALID_ENT_REFERENCE) // Prevent spam. The previous case wont be killed.
 	{
-		CPrintToChat(client, "%s%t", g_sChatPrefix, "Lootbox case is opening");
+		CPrintToChat(client, "%s %t", g_sChatPrefix, "Lootbox case is opening");
 		return 1;
 	}
 	
@@ -376,12 +407,8 @@ bool DropLootbox(int client, int index)
 
 	DispatchKeyValue(iLootbox, "model", g_sModel[index]);
 	DispatchSpawn(iLootbox);
-	SetVariantString("fall");
-	AcceptEntityInput(iLootbox, "SetAnimation");
 	AcceptEntityInput(iLootbox, "Enable");
 	ActivateEntity(iLootbox);
-	
-	EmitAmbientSound("ui/panorama/case_drop_01.wav", fPos, _, _, _, _, _, _);
 
 	TeleportEntity(iLootbox, fPos, fAng, NULL_VECTOR);
 	
@@ -404,20 +431,12 @@ bool DropLootbox(int client, int index)
 		SDKHook(iLight, SDKHook_SetTransmit, Hook_SetTransmit);
 	}
 	
-	HookSingleEntityOutput(iLootbox, "OnAnimationDone", Case_OnAnimationDone, true);
+	if(g_sDropSound[index][0])
+		EmitSoundToClient(client, g_sDropSound[index], iLootbox, _, _, _, 0.5);
 
 	g_iLootboxEntityRef[client] = EntIndexToEntRef(iLootbox);
 
 	return true;
-}
-
-public void Case_OnAnimationDone(const char[] output, int caller, int activator, float delay) 
-{
-	if(IsValidEntity(caller))
-	{
-		SetVariantString("open");
-		AcceptEntityInput(caller, "SetAnimation");
-	}
 }
 
 /*
@@ -472,7 +491,7 @@ int CreateLight(int ent, float pos[3])
 
 public Action Timer_Open(Handle timer, int client)
 {
-	char temp[64], sUId[64], sParts[2][64];
+	char temp[64], sUId[64], sParts[2][64], sCredits[2][64];
 	strcopy(temp, sizeof(temp), g_sLootboxItems[g_iClientBox[client]][GetRandomInt(0, g_iItemLevelCount[g_iClientBox[client]][g_iClientLevel[client]] - 1)][g_iClientLevel[client]]); // sry
 	
 	int iCount = ExplodeString(temp, "-", sParts, 2, 64);
@@ -486,7 +505,63 @@ public Action Timer_Open(Handle timer, int client)
 	if (time == 0)
 		iCount = 1;
 
-	if (itemid == -1)
+	// Items not found but second slitted string is credits (this is credits in lootbox)
+	if (itemid == -1 && StrEqual(sParts[1], "credits"))
+	{
+		/***************
+		IDK what the fuck I've done at these lines. o.o
+		***************/
+		int credits;
+		bool g_bNegative;
+		
+		RequestFrame(Frame_DeleteBox, client);
+		
+		//Slit the first part for random credit.
+		//PrintToConsoleAll("%s", sParts[0]);
+		ExplodeString(sParts[0], ",", sCredits, 2, 64);
+		if(sCredits[1][0] == '\0') // If the second string is NULL_STRING
+		{
+			credits = StringToInt(sCredits[0]);
+			if(credits<=0)
+				g_bNegative = true;
+			
+			//PrintToConsoleAll("Null String");
+		}
+		else
+		{
+			int lower_bound, upper_bound;
+			lower_bound = StringToInt(sCredits[0]);
+			upper_bound = StringToInt(sCredits[1]);
+
+			if(lower_bound <= 0 || upper_bound <= 0)
+				g_bNegative = true;
+				
+			if(lower_bound>upper_bound)
+				credits = GetRandomInt(upper_bound, lower_bound);
+			else if (lower_bound<upper_bound)
+				credits = GetRandomInt(lower_bound, upper_bound);
+			else credits = lower_bound;
+				
+			//PrintToConsoleAll("2 Null String");
+		}
+		
+		if(g_bNegative) // credits is negative number or 0
+		{
+			Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
+			CPrintToChat(client, "%s%s", g_sChatPrefix, "Error occured, item back. Inform admin log");
+			Store_SQLLogMessage(client, LOG_ERROR, "Can't convert credits to posible give for lootbox #%i on level #%i.", g_iClientBox[client], g_iClientLevel[client]);
+			return Plugin_Stop;
+		}
+
+		Store_SetClientCredits(client, Store_GetClientCredits(client) + credits);
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Chat won lootbox item credits", credits);
+		
+		if(g_sPickUpSound[g_iClientBox[client]][0])
+			EmitSoundToClient(client, g_sPickUpSound[g_iClientBox[client]], client, _, _, _, 0.5);
+		
+		return Plugin_Stop;
+	}
+	else if (itemid == -1) //Item not found
 	{
 		RequestFrame(Frame_DeleteBox, client);
 		Store_GiveItem(client, g_iItemID[g_iClientBox[client]], 0, 0, 0);
@@ -495,7 +570,7 @@ public Action Timer_Open(Handle timer, int client)
 		Store_SQLLogMessage(client, LOG_ERROR, "Can't find item uid %s for lootbox #%i on level #%i.", sUId, g_iClientBox[client], g_iClientLevel[client]);
 		return Plugin_Stop;
 	}
-
+	
 	Store_Item item;
 	Store_GetItem(itemid, item);
 	Type_Handler handler;
@@ -524,19 +599,37 @@ public Action Timer_Open(Handle timer, int client)
 		if(g_iTime[g_iClientBox[client]] && iCount < 2)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+			{
+				if(item.iPlans!=0)
+				{
+					Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 2);
+				}
+				else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], item.iPrice);
+			}
 			else Store_GiveItem(client, itemid, _, GetTime() + g_iTime[g_iClientBox[client]], 1);
 		}
 		else if (g_iTime[g_iClientBox[client]] && iCount > 1)
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, GetTime() + time, item.iPrice);
+			{
+				if(item.iPlans!=0)
+				{
+					Store_GiveItem(client, itemid, _, GetTime() + time, 2);
+				}
+				else Store_GiveItem(client, itemid, _, GetTime() + time, item.iPrice);
+			}
 			else Store_GiveItem(client, itemid, _, GetTime() + time, 1);
 		}
 		else 
 		{
 			if(gc_bItemSellable.IntValue)
-				Store_GiveItem(client, itemid, _, _, item.iPrice);
+			{
+				if(item.iPlans!=0)
+				{
+					Store_GiveItem(client, itemid, _, _, 2);
+				}
+				else Store_GiveItem(client, itemid, _, _, item.iPrice);
+			}
 			else Store_GiveItem(client, itemid, _, _, 1);
 		}
 		char sBuffer[128];
@@ -562,9 +655,11 @@ public Action Timer_Open(Handle timer, int client)
 		Call_Finish();
 	}
 
-	float fVec[3];
-	GetClientAbsOrigin(client, fVec);
-	EmitAmbientSound(g_sPickUpSound[g_iClientBox[client]], fVec, _, _, _, _, _, _);
+	//float fVec[3];
+	//GetClientAbsOrigin(client, fVec);
+	//EmitAmbientSound(g_sPickUpSound[g_iClientBox[client]], fVec, _, _, _, _, _, _);
+	if(g_sPickUpSound[g_iClientBox[client]][0])
+		EmitSoundToClient(client, g_sPickUpSound[g_iClientBox[client]], client, _, _, _, 0.5);
 
 	RequestFrame(Frame_DeleteBox, client);
 
@@ -579,6 +674,8 @@ public Action Timer_RemoveEfx(Handle timer, int reference)
 	{
 		AcceptEntityInput(iEnt, "kill");
 	}
+	
+	return Plugin_Continue;
 }
 
 int PrecacheParticleSystem(const char[] particleSystem)
@@ -650,7 +747,9 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	fPos[2] -= 0.2;
 	TeleportEntity(lootbox, fPos, NULL_VECTOR, NULL_VECTOR);
 	g_iClientSpeed[client] -= 5;
-	EmitAmbientSound("ui/csgo_ui_crate_item_scroll.wav", fPos, _, _, _, _, _, _);
+	//EmitAmbientSound("ui/csgo_ui_crate_item_scroll.wav", fPos, _, _, _, _, _, _);
+	if(g_sOpenSound[g_iClientBox[client]][0])
+		EmitSoundToClient(client, g_sOpenSound[g_iClientBox[client]], lootbox, _, _, _, _, _, _);
 
 	char sBuffer[128];
 	IntToString(g_iClientSpeed[client], sBuffer, sizeof(sBuffer));
@@ -693,13 +792,15 @@ public Action Timer_Color(Handle timer, DataPack pack)
 			return Plugin_Stop;
 		}
 	}
-	
+
+
 	float percent = GetRandomFloat(0.0001, 100.0);
 
 	if (percent < g_fChance[index][LEVEL_GREY])
 	{
 		SetEntityRenderColor(lootbox, 155, 255, 255, 255);
 		g_iClientLevel[client] = LEVEL_GREY;
+
 		DispatchKeyValue(light, "_light", "155 255 255 255");
 		return Plugin_Continue;
 	}
@@ -708,6 +809,7 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_BLUE])
 	{
 		SetEntityRenderColor(lootbox, 0, 0, 255, 255);
+
 		DispatchKeyValue(light, "_light", "0 0 255 255");
 		g_iClientLevel[client] = LEVEL_BLUE;
 		return Plugin_Continue;
@@ -717,6 +819,7 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_PURPLE])
 	{
 		SetEntityRenderColor(lootbox, 255, 0, 255, 255);
+
 		DispatchKeyValue(light, "_light", "255 0 255 255");
 		g_iClientLevel[client] = LEVEL_PURPLE;
 		return Plugin_Continue;
@@ -726,6 +829,7 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_RED])
 	{
 		SetEntityRenderColor(lootbox, 255, 0, 0, 255);
+
 		DispatchKeyValue(light, "_light", "255 0 0 255");
 		g_iClientLevel[client] = LEVEL_RED;
 		return Plugin_Continue;
@@ -736,6 +840,7 @@ public Action Timer_Color(Handle timer, DataPack pack)
 	if (percent < g_fChance[index][LEVEL_GOLD])
 	{
 		SetEntityRenderColor(lootbox, 255, 255, 0, 255);
+
 		DispatchKeyValue(light, "_light", "255 255 0 255");
 		g_iClientLevel[client] = LEVEL_GOLD;
 		return Plugin_Continue;
@@ -761,6 +866,29 @@ void CreateEffect(int client, float fPos[3])
 
 	CreateTimer(1.5, Timer_RemoveEfx, EntIndexToEntRef(iEfx));
 //	PrintToServer("fired %s", g_sEfxName[g_iClientBox[client]]);
+}
+
+
+public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (g_iLootboxEntityRef[i] != INVALID_ENT_REFERENCE)
+		{
+			Store_GiveItem(i, g_iItemID[g_iClientBox[i]], 0, 0, 0);
+
+			CPrintToChat(i, "%s%t", g_sChatPrefix, "You haven't opend the box in given time");
+		}
+		g_iClientBox[i] = -1;
+
+		RequestFrame(Frame_DeleteBox, i);
+	}
+	roundend = true;
+}
+
+public void Event_RoundStart(Event event, char[] name, bool dontBroadcast)
+{
+	roundend = false;
 }
 
 public void Frame_DeleteBox(int client)
