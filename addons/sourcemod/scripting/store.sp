@@ -345,6 +345,15 @@ public void OnMapEnd()
 
 public void OnConfigsExecuted()
 {
+	static bool bFirstLoad = true; // See https://wiki.alliedmods.net/Introduction_to_SourcePawn_1.7#Local_static
+	
+	if (bFirstLoad)
+	{
+		bFirstLoad = false;
+		
+		Store_Commands_OnConfigsExecuted(); // store/commands.sp
+	}
+	
 	//Jetpack_OnConfigsExecuted();
 	//Jihad_OnConfigsExecuted();
 	
