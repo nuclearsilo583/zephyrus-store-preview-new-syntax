@@ -22,7 +22,7 @@
 #endif
 
 #define MSG_LENGTH 192
-#define CVAR_LENGTH 128
+#define CVAR_LENGTH 256
 
 #define MAX_CVARS 128
 

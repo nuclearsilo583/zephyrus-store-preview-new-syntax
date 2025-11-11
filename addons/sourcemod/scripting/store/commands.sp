@@ -1,15 +1,7 @@
 void Store_Commands_OnPluginStart()
 {
 	// Register Commands
-	RegConsoleCmd("sm_store", Command_Store);
-	RegConsoleCmd("sm_shop", Command_Store);
-	RegConsoleCmd("sm_inv", Command_Inventory);
-	RegConsoleCmd("sm_inventory", Command_Inventory);
-	RegConsoleCmd("sm_gift", Command_Gift);
-	RegConsoleCmd("sm_givecredits", Command_GiveCredits);
-	RegConsoleCmd("sm_resetplayer", Command_ResetPlayer);
-	RegConsoleCmd("sm_rsloadout", Command_ResetLoadout);
-	RegConsoleCmd("sm_credits", Command_Credits);
+	// --- Other commands are now registered in OnConfigsExecuted with the RegisterCommand function ---
 	RegServerCmd("sm_store_custom_credits", Command_CustomCredits);
 	
 	RegAdminCmd("sm_store_reloadconfig", Command_ReloadConfig, ADMFLAG_ROOT);
@@ -17,6 +9,38 @@ void Store_Commands_OnPluginStart()
 	// Add a say command listener for shortcuts
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
+}
+
+void Store_Commands_OnConfigsExecuted()
+{	
+	// Register commands
+	char sCommands[10][60]; // 10 commands of 60 bytes max
+	RegisterCommand(g_eCvars[g_cvarCommandsStore].sCache, Command_Store, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+	RegisterCommand(g_eCvars[g_cvarCommandsInventory].sCache, Command_Inventory, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+	RegisterCommand(g_eCvars[g_cvarCommandsGift].sCache, Command_Gift, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+	RegisterCommand(g_eCvars[g_cvarCommandsGive].sCache, Command_GiveCredits, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+	RegisterCommand(g_eCvars[g_cvarCommandsResetPlayer].sCache, Command_ResetPlayer, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+	RegisterCommand(g_eCvars[g_cvarCommandsCredits].sCache, Command_Credits, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+	RegisterCommand(g_eCvars[g_cvarCommandsResetLoadout].sCache, Command_ResetLoadout, sCommands, sizeof(sCommands), sizeof(sCommands[]));
+}
+
+/**
+ * Registers one or multiple commands that point towards the same callback.
+ * Designed to be used once in OnConfigsExecuted, to allow customizable commands.
+ * -
+ * const char[] command		A string containing the commands, starting with the sm_ prefix, and two commands being separated by a comma (,).
+ * ConCmd callback			The command callback: the function that will be called when the command is executed.
+ * char[][] sCommands		A 2D string array. First dimension: max number of commands, second dimension: max command size.
+ * int sCommandsSize		sizeof(sCommands)
+ * int sCommandsSize2		sizeof(sCommands[])
+ */
+stock void RegisterCommand(const char[] command, ConCmd callback, char[][] sCommands, int sCommandsSize, int sCommandsSize2)
+{
+	int iCommands = ExplodeString(command, ",", sCommands, sCommandsSize, sCommandsSize2);
+	for (int i = 0; i < iCommands; i++)
+	{
+		RegConsoleCmd(sCommands[i], callback);
+	}
 }
 
 //////////////////////////////////
