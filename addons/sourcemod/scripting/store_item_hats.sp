@@ -7,7 +7,7 @@
 #include <sdkhooks>
 #include <thirdperson>
 #include <multicolors>
-
+#include <clientprefs>
 
 #pragma newdecls required
 #pragma dynamic 131072
@@ -40,6 +40,9 @@ int g_cvarOverrideEnabled = -1;
 
 bool g_bTOverride = false;
 bool g_bCTOverride = false;
+bool g_bHide[MAXPLAYERS + 1];
+Cookie g_hHideCookie;
+
 
 Handle g_hTimerPreview[MAXPLAYERS + 1];
 
@@ -69,7 +72,9 @@ public void OnPluginStart()
 	LoadTranslations("store.phrases");
 		
 	Store_RegisterHandler("hat", "model", Hats_OnMapStart, Hats_Reset, Hats_Config, Hats_Equip, Hats_Remove, true);
-		
+	g_hHideCookie = new Cookie("Hats_Hide_Cookie", "Cookie to check if Hats are blocked", CookieAccess_Private);
+	SetCookieMenuItem(PrefMenu, 0, "");
+	RegConsoleCmd("sm_hidehats", Command_Hide, "Hides the Hats");
 	g_cvarDefaultT = RegisterConVar("sm_store_hats_default_t", "models/player/t_leet.mdl", "Terrorist model that supports hats", TYPE_STRING);
 	g_cvarDefaultCT = RegisterConVar("sm_store_hats_default_ct", "models/player/ct_urban.mdl", "Counter-Terrorist model that supports hats", TYPE_STRING);
 	g_cvarOverrideEnabled = RegisterConVar("sm_store_hats_skin_override", "0", "Allow the store to override player model if it doesn't support hats", TYPE_INT);
@@ -309,13 +314,16 @@ public void RemoveHat(int client,int slot)
 
 public Action Hook_SetTransmit(int ent,int client)
 {
+	if(g_bHide[client]){
+	return Plugin_Handled;
+	}
 	if(GetFeatureStatus(FeatureType_Native, "IsPlayerInTP")==FeatureStatus_Available)
-		if(IsPlayerInTP(client))
-			return Plugin_Continue;
+	if(IsPlayerInTP(client))
+	return Plugin_Continue;
 
 	for(int i=0;i<STORE_MAX_SLOTS;++i)
-		if(ent == g_iClientHats[client][i])
-			return Plugin_Handled;
+	if(ent == g_iClientHats[client][i])
+	return Plugin_Handled;
 
 	if(client && IsClientInGame(client))
 	{
@@ -493,4 +501,38 @@ public Action Timer_KillPreview(Handle timer, int client)
 	g_iPreviewEntity[client] = INVALID_ENT_REFERENCE;
 
 	return Plugin_Stop;
+}
+
+public void PrefMenu(int client, CookieMenuAction actions, any info, char[] buffer, int maxlen)
+{
+	if (actions == CookieMenuAction_DisplayOption)
+	{
+		if (g_bHide[client])
+			FormatEx(buffer, maxlen, "%T", "Show hats", client);
+		else
+			FormatEx(buffer, maxlen, "%T", "Hide hats", client);
+	}
+
+	if (actions == CookieMenuAction_SelectOption)
+	{
+		Command_Hide(client, 0);
+		ShowCookieMenu(client);
+	}
+}
+
+Action Command_Hide(int client, int args)
+{
+	g_bHide[client] = !g_bHide[client];
+	if (g_bHide[client])
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item hidden", "hats");
+		g_hHideCookie.Set(client, "1");
+	}
+	else
+	{
+		CPrintToChat(client, "%s%t", g_sChatPrefix, "Item visible", "hats");
+		g_hHideCookie.Set(client, "0");
+	}
+
+	return Plugin_Handled;
 }
